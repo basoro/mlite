@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$title} - {$settings.nama_instansi}</title>
-    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <title>{?=isset_or($title)?} - {?=isset_or($settings.nama_instansi)?}</title>
+    <link rel="icon" href="{?=isset_or($opensimrs.path)?}/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
-    <link href="{?=url()?}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/font-awesome.css?v={?=isset_or($opensimrs.version)?}" rel="stylesheet">
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
     <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
     <script src="{?=url(THEMES)?}/js/theme.js"></script>
@@ -31,7 +31,7 @@
 </head>
 <body>
 <div class="container-fluid">
-<h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Poliklinik {$settings.nama_instansi}</h1>
+<h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{?=isset_or($logo)?}" alt="" width="60px"> Antrian Poliklinik {?=isset_or($settings.nama_instansi)?}</h1>
 <table class="table table-bordered table-striped lead text-primary">
   <thead class="bg-primary">
     <tr>
@@ -43,13 +43,13 @@
   <tbody>
     {loop: $display}
     <tr>
-      <th>{$value.nm_dokter}<small> - {$value.nm_poli}</small><br><small>[ Antrian: {$value.dalam_antrian.jumlah} - Terlayani: {$value.sudah_dilayani.jumlah} ]</small></th>
-      <td>{if: empty($value.dalam_pemeriksaan)}Kosong{else}{$value.dalam_pemeriksaan.no_reg} - {$value.dalam_pemeriksaan.nm_pasien}{/if}</td>
+      <th>{?=isset_or($value.nm_dokter)?}<small> - {?=isset_or($value.nm_poli)?}</small><br><small>[ Antrian: {?=isset_or($value.dalam_antrian.jumlah)?} - Terlayani: {?=isset_or($value.sudah_dilayani.jumlah)?} ]</small></th>
+      <td>{if: empty($value.dalam_pemeriksaan)}Kosong{else}{?=isset_or($value.dalam_pemeriksaan.no_reg)?} - {?=isset_or($value.dalam_pemeriksaan.nm_pasien)?}{/if}</td>
       <td>
         <marquee scrollamount="3">
           {if: !empty($value.selanjutnya)}
             {loop: $value.selanjutnya as $data}
-              - {$data.nm_pasien} (<strong>{$data.no_reg} - {$value.jam_mulai_selanjutnya}</strong>)
+              - {?=isset_or($data.nm_pasien)?} (<strong>{?=isset_or($data.no_reg)?} - {?=isset_or($value.jam_mulai_selanjutnya)?}</strong>)
             {/loop}
           {/if}
         </marquee>

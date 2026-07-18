@@ -16,14 +16,14 @@
     <tbody>
         {loop: $cetak}
         <tr>
-        <td>{$value.temp1}</td>
-        <td>{$value.temp2}</td>
-        <td>{$value.temp3}</td>
-        <td>{$value.temp4}</td>
-        <td>{$value.temp6}</td>
-        <td>{$value.temp7}</td>
-        <td>{$value.temp12} / {$value.temp13} </td>
-        <td>{$value.temp14}</td>
+        <td>{?=isset_or($value.temp1)?}</td>
+        <td>{?=isset_or($value.temp2)?}</td>
+        <td>{?=isset_or($value.temp3)?}</td>
+        <td>{?=isset_or($value.temp4)?}</td>
+        <td>{?=isset_or($value.temp6)?}</td>
+        <td>{?=isset_or($value.temp7)?}</td>
+        <td>{?=isset_or($value.temp12)?} / {?=isset_or($value.temp13)?} </td>
+        <td>{?=isset_or($value.temp14)?}</td>
         </tr>
         {/loop}
     </tbody>

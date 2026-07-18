@@ -1,0 +1,73 @@
+<style>
+    body { font-family: sans-serif; font-size: 12pt; color: #333; }
+    .header { width: 100%; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+    .logo { width: 80px; }
+    .instansi { font-size: 16pt; font-weight: bold; }
+    .alamat { font-size: 10pt; }
+    .title { text-align: center; margin-top: 20px; }
+    .title h2 { margin: 0; padding: 0; border-bottom: 1px solid #000; display: inline-block; width: 350px; }
+    .content { margin-top: 30px; line-height: 1.6; }
+    .footer { margin-top: 50px; width: 100%; }
+    .signature { text-align: center; width: 250px; float: right; }
+</style>
+
+<div class="header">
+    <table width="100%">
+        <tr>
+            <td width="15%"><img src="{?=url()?}/{?=isset_or($settings.logo)?}" class="logo"></td>
+            <td width="85%">
+                <div class="instansi">{?=isset_or($settings.nama_instansi)?}</div>
+                <div class="alamat">
+                    {?=isset_or($settings.alamat)?}, {?=isset_or($settings.kota)?}, {?=isset_or($settings.propinsi)?}<br>
+                    Telepon: {?=isset_or($settings.nomor_telepon)?} - Email: {?=isset_or($settings.email)?}
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="title">
+    <center>
+        <b><u>SURAT KETERANGAN SEHAT</u></b><br>
+        Nomor: {?=isset_or($surat.nomor_surat)?}
+    </center>
+</div>
+
+<div class="content">
+    <p>Yang bertanda tangan di bawah ini Dokter {?=isset_or($settings.nama_instansi)?}, menerangkan bahwa:</p>
+    <table width="100%">
+        <tr><td width="200">Nama</td><td width="10">:</td><td>{?=isset_or($pasien.nm_pasien)?}</td></tr>
+        <tr><td>Tanggal Lahir / Umur</td><td>:</td><td>{?=isset_or($pasien.tgl_lahir)?} / {?=hitungUmur($pasien.tgl_lahir)?}</td></tr>
+        <tr><td>Jenis Kelamin</td><td>:</td><td>{if: $pasien.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td></tr>
+        <tr><td style="vertical-align: top;">Alamat</td><td style="vertical-align: top;">:</td><td>{?=isset_or($pasien.alamat)?}, {?=isset_or($pasien.nm_kel)?}, {?=isset_or($pasien.nm_kec)?}, {?=isset_or($pasien.nm_kab)?}, {?=isset_or($pasien.nm_prop)?}</td></tr>
+    </table>
+
+    <p>Hasil pemeriksaan fisik kami pada tanggal <strong>{?=isset_or($surat.tanggal)?}</strong> adalah sebagai berikut:</p>
+    <table width="100%">
+        <tr><td width="200">Berat Badan</td><td width="10">:</td><td>{?=isset_or($surat.berat_badan)?} Kg</td></tr>
+        <tr><td>Tinggi Badan</td><td>:</td><td>{?=isset_or($surat.tinggi_badan)?} cm</td></tr>
+        <tr><td>Tekanan Darah</td><td>:</td><td>{?=isset_or($surat.tensi)?} mmHg</td></tr>
+        <tr><td>Golongan Darah</td><td>:</td><td>{?=isset_or($surat.gol_darah)?}</td></tr>
+        <tr><td style="vertical-align: top;">Riwayat Penyakit</td><td style="vertical-align: top;">:</td><td>{?=isset_or($surat.riwayat_penyakit)?}</td></tr>
+    </table>
+
+    <p>Surat Keterangan Sehat ini dipergunakan sebagai <strong>{?=isset_or($surat.keperluan)?}</strong>.</p>
+    
+    <p>Demikianlah surat keterangan ini dibuat dengan sebenarnya untuk digunakan sebagaimana mestinya.</p>
+</div>
+
+<div class="footer">
+    <div class="signature">
+        {?=isset_or($settings.kota)?}, {?=date('d-m-Y')?}<br>
+        Dokter Pemeriksa,<br><br>
+        {if: isset($esignature)}
+            <barcode code="{?=url(['esignature', 'verify', $esignature.signature_hash])?}" type="QR" size="0.8" error="M" disableborder="1" /><br>
+            <!-- <small>Signed Electronically</small><br> -->
+        {else}
+            <br><br><br>
+        {/if}
+        <br>
+        <strong>{?=isset_or($nm_dokter)?}</strong><br>
+        SIP: {?=isset_or($sip_dokter)?}
+    </div>
+</div>

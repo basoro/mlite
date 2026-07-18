@@ -47,7 +47,7 @@
                         <label>Produsen</label>
                         <select name="kode_produsen" id="kode_produsen" class="form-control" data-use-search="true">
                           {loop: $produsen}
-                            <option value="{$value.kode_produsen}">{$value.nama_produsen}</option>
+                            <option value="{?=isset_or($value.kode_produsen)?}">{?=isset_or($value.nama_produsen)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -55,7 +55,7 @@
                         <label>Merk</label>
                         <select name="id_merk" id="id_merk" class="form-control" data-use-search="true">
                           {loop: $merk}
-                            <option value="{$value.id_merk}">{$value.nama_merk}</option>
+                            <option value="{?=isset_or($value.id_merk)?}">{?=isset_or($value.nama_merk)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -73,7 +73,7 @@
                         <label>Kategori</label>
                         <select name="id_kategori" id="id_kategori" class="form-control" data-use-search="true">
                           {loop: $kategori}
-                            <option value="{$value.id_kategori}">{$value.nama_kategori}</option>
+                            <option value="{?=isset_or($value.id_kategori)?}">{?=isset_or($value.nama_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -81,7 +81,7 @@
                         <label>Jenis</label>
                         <select name="id_jenis" id="id_jenis" class="form-control" data-use-search="true">
                           {loop: $jenis}
-                            <option value="{$value.id_jenis}">{$value.nama_jenis}</option>
+                            <option value="{?=isset_or($value.id_jenis)?}">{?=isset_or($value.nama_jenis)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -119,29 +119,29 @@
         <tbody>
           {loop: $inventaris_barang}
           <tr class="inventarisbarang"
-          data-kode_barang="{$value.kode_barang}"
-          data-nama_barang="{$value.nama_barang}"
-          data-jml_barang="{$value.jml_barang}"
-          data-kode_produsen="{$value.kode_produsen}"
-          data-id_merk="{$value.id_merk}"
-          data-thn_produksi="{$value.thn_produksi}"
-          data-isbn="{$value.isbn}"
-          data-id_kategori="{$value.id_kategori}"
-          data-id_jenis="{$value.id_jenis}"
+          data-kode_barang="{?=isset_or($value.kode_barang)?}"
+          data-nama_barang="{?=isset_or($value.nama_barang)?}"
+          data-jml_barang="{?=isset_or($value.jml_barang)?}"
+          data-kode_produsen="{?=isset_or($value.kode_produsen)?}"
+          data-id_merk="{?=isset_or($value.id_merk)?}"
+          data-thn_produksi="{?=isset_or($value.thn_produksi)?}"
+          data-isbn="{?=isset_or($value.isbn)?}"
+          data-id_kategori="{?=isset_or($value.id_kategori)?}"
+          data-id_jenis="{?=isset_or($value.id_jenis)?}"
           >
-            <td>{$value.kode_barang}</td>
-            <td>{$value.nama_barang}</td>
-            <td>{$value.jml_barang}</td>
-            <td>{$value.kode_produsen}</td>
-            <td>{$value.nama_produsen}</td>
-            <td>{$value.id_merk}</td>
-            <td>{$value.nama_merk}</td>
-            <td>{$value.thn_produksi}</td>
-            <td>{$value.isbn}</td>
-            <td>{$value.id_kategori}</td>
-            <td>{$value.nama_kategori}</td>
-            <td>{$value.id_jenis}</td>
-            <td>{$value.nama_jenis}</td>
+            <td>{?=isset_or($value.kode_barang)?}</td>
+            <td>{?=isset_or($value.nama_barang)?}</td>
+            <td>{?=isset_or($value.jml_barang)?}</td>
+            <td>{?=isset_or($value.kode_produsen)?}</td>
+            <td>{?=isset_or($value.nama_produsen)?}</td>
+            <td>{?=isset_or($value.id_merk)?}</td>
+            <td>{?=isset_or($value.nama_merk)?}</td>
+            <td>{?=isset_or($value.thn_produksi)?}</td>
+            <td>{?=isset_or($value.isbn)?}</td>
+            <td>{?=isset_or($value.id_kategori)?}</td>
+            <td>{?=isset_or($value.nama_kategori)?}</td>
+            <td>{?=isset_or($value.id_jenis)?}</td>
+            <td>{?=isset_or($value.nama_jenis)?}</td>
           </tr>
           {/loop}
         </tbody>

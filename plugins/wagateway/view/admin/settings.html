@@ -8,15 +8,15 @@
             	  <div class="panel-body">
                     <div class="form-group">
                         <label>WA Api Server</label>
-                        <input type="text" name="wagateway[server]" class="form-control" value="{$wagateway.server}" />
+                        <input type="text" name="wagateway[server]" class="form-control" value="{?=isset_or($wagateway.server)?}" />
                     </div>
                     <div class="form-group">
                         <label>WA Api Token</label> <span class="pull-right">[<a href="#wagateway-modal" data-toggle="modal" class="small">Dapatkan Token Key Disini</a>]</span>
-                        <input type="text" name="wagateway[token]" class="form-control" value="{$wagateway.token}" />
+                        <input type="text" name="wagateway[token]" class="form-control" value="{?=isset_or($wagateway.token)?}" />
                     </div>
                     <div class="form-group">
                         <label>WA Number</label>
-                        <input type="text" name="wagateway[phonenumber]" class="form-control" value="{$wagateway.phonenumber}" placeholder="62812345678" />
+                        <input type="text" name="wagateway[phonenumber]" class="form-control" value="{?=isset_or($wagateway.phonenumber)?}" placeholder="62812345678" />
                     </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>

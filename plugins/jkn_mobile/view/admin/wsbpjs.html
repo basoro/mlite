@@ -1,0 +1,327 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3">
+      <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-heading">
+          <h4 class="panel-title">Menu Antrean</h4>
+        </div>
+        <div class="panel-body" style="padding: 0; max-height: 80vh; overflow-y: auto;">
+          <ul class="nav nav-pills nav-stacked" style="margin: 0;" id="menuList">
+            <li><a href="#" onclick="loadForm('ref_poli')"><span class="glyphicon glyphicon-list-alt"></span> Referensi Poli</a></li>
+            <li><a href="#" onclick="loadForm('ref_dokter')"><span class="glyphicon glyphicon-user"></span> Referensi Dokter</a></li>
+            <li><a href="#" onclick="loadForm('ref_jadwal_dokter')"><span class="glyphicon glyphicon-time"></span> Referensi Jadwal Dokter</a></li>
+            <li><a href="#" onclick="loadForm('ref_poli_fp')"><span class="glyphicon glyphicon-th-list"></span> Referensi Poli Finger Print</a></li>
+            <li><a href="#" onclick="loadForm('ref_pasien_fp')"><span class="glyphicon glyphicon-fingerprint"></span> Referensi Pasien Finger Print</a></li>
+            <li><a href="#" onclick="loadForm('update_jadwal_dokter')"><span class="glyphicon glyphicon-edit"></span> Update Jadwal Dokter</a></li>
+            <li><a href="#" onclick="loadForm('tambah_antrean')"><span class="glyphicon glyphicon-plus"></span> Tambah Antrean</a></li>
+            <li><a href="#" onclick="loadForm('tambah_antrean_farmasi')"><span class="glyphicon glyphicon-plus-sign"></span> Tambah Antrean Farmasi</a></li>
+            <li><a href="#" onclick="loadForm('update_waktu_antrean')"><span class="glyphicon glyphicon-time"></span> Update Waktu Antrean</a></li>
+            <li><a href="#" onclick="loadForm('batal_antrean')"><span class="glyphicon glyphicon-remove"></span> Batal Antrean</a></li>
+            <li><a href="#" onclick="loadForm('list_waktu_task')"><span class="glyphicon glyphicon-tasks"></span> List Waktu Task Id</a></li>
+            <li><a href="#" onclick="loadForm('dashboard_tanggal')"><span class="glyphicon glyphicon-calendar"></span> Dashboard Per Tanggal</a></li>
+            <li><a href="#" onclick="loadForm('dashboard_bulan')"><span class="glyphicon glyphicon-stats"></span> Dashboard Per Bulan</a></li>
+            <li><a href="#" onclick="loadForm('antrean_tanggal')"><span class="glyphicon glyphicon-calendar"></span> Antrean Per Tanggal</a></li>
+            <li><a href="#" onclick="loadForm('antrean_kodebooking')"><span class="glyphicon glyphicon-barcode"></span> Antrean Per Kode Booking</a></li>
+            <li><a href="#" onclick="loadForm('antrean_belum_dilayani')"><span class="glyphicon glyphicon-hourglass"></span> Antrean Belum Dilayani</a></li>
+            <li><a href="#" onclick="loadForm('antrean_belum_dilayani_detail')"><span class="glyphicon glyphicon-time"></span> Antrean Belum Dilayani Detail</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Area -->
+    <div class="col-md-9">
+      <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-heading">
+            <h4 class="panel-title" id="formTitle">WS BPJS</h4>
+        </div>
+        <div class="panel-body">
+            <div id="formContainer">
+                {?=isset_or($readme)?}
+            </div>
+            <div id="responseContainer" style="display:none; margin-top: 20px;">
+                <label>Response:</label>
+                <pre id="responseOutput" style="background: #f5f5f5; padding: 10px; border-radius: 4px;"></pre>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    var endpoints = {
+        'ref_poli': {
+            title: 'Referensi Poli',
+            method: 'GET',
+            url: 'ref/poli',
+            params: []
+        },
+        'ref_dokter': {
+            title: 'Referensi Dokter',
+            method: 'GET',
+            url: 'ref/dokter',
+            params: []
+        },
+        'ref_jadwal_dokter': {
+            title: 'Referensi Jadwal Dokter',
+            method: 'GET',
+            url: 'jadwaldokter/kodepoli/{kodepoli}/tanggal/{tanggal}',
+            params: [
+                {name: 'kodepoli', label: 'Kode Poli', type: 'text'},
+                {name: 'tanggal', label: 'Tanggal (YYYY-MM-DD)', type: 'date', default: new Date().toISOString().split('T')[0]}
+            ]
+        },
+        'ref_poli_fp': {
+            title: 'Referensi Poli Finger Print',
+            method: 'GET',
+            url: 'ref/poli/fp',
+            params: []
+        },
+        'ref_pasien_fp': {
+            title: 'Referensi Pasien Finger Print',
+            method: 'GET',
+            url: 'ref/pasien/fp/identitas/{identitas}/noidentitas/{noidentitas}',
+            params: [
+                {name: 'identitas', label: 'Jenis Identitas (nik/noka)', type: 'text'},
+                {name: 'noidentitas', label: 'Nomor Identitas', type: 'text'}
+            ]
+        },
+        'update_jadwal_dokter': {
+            title: 'Update Jadwal Dokter',
+            method: 'POST',
+            url: 'jadwaldokter/updatejadwaldokter',
+            params: [],
+            body: {
+                "kodepoli": "",
+                "kodesubspesialis": "",
+                "kodedokter": "",
+                "jadwal": [
+                    {
+                        "hari": "",
+                        "buka": "08:00",
+                        "tutup": "10:00"
+                    }
+                ]
+            }
+        },
+        'tambah_antrean': {
+            title: 'Tambah Antrean',
+            method: 'POST',
+            url: 'antrean/add',
+            params: [],
+            body: {
+                "kodebooking": "",
+                "jenispasien": "JKN",
+                "nomorkartu": "",
+                "nik": "",
+                "nohp": "",
+                "kodepoli": "",
+                "namapoli": "",
+                "pasienbaru": 0,
+                "norm": "",
+                "tanggalperiksa": "",
+                "kodedokter": "",
+                "namadokter": "",
+                "jampraktek": "",
+                "jeniskunjungan": 1,
+                "nomorreferensi": "",
+                "nomorantrean": "",
+                "angkaantrean": 0,
+                "estimasidilayani": 0,
+                "sisakuotajkn": 0,
+                "kuotajkn": 0,
+                "sisakuotanonjkn": 0,
+                "kuotanonjkn": 0,
+                "keterangan": ""
+            }
+        },
+        'tambah_antrean_farmasi': {
+            title: 'Tambah Antrean Farmasi',
+            method: 'POST',
+            url: 'antrean/farmasi/add',
+            params: [],
+            body: {
+                "kodebooking": "",
+                "jenisresep": "Non Racikan",
+                "nomorantrean": 0,
+                "keterangan": ""
+            }
+        },
+        'update_waktu_antrean': {
+            title: 'Update Waktu Antrean',
+            method: 'POST',
+            url: 'antrean/updatewaktu',
+            params: [],
+            body: {
+                "kodebooking": "",
+                "taskid": 1,
+                "waktu": 0
+            }
+        },
+        'batal_antrean': {
+            title: 'Batal Antrean',
+            method: 'POST',
+            url: 'antrean/batal',
+            params: [],
+            body: {
+                "kodebooking": "",
+                "keterangan": ""
+            }
+        },
+        'list_waktu_task': {
+            title: 'List Waktu Task Id',
+            method: 'POST',
+            url: 'antrean/getlisttask',
+            params: [],
+            body: {
+                "kodebooking": ""
+            }
+        },
+        'dashboard_tanggal': {
+            title: 'Dashboard Per Tanggal',
+            method: 'GET',
+            url: 'dashboard/waktutunggu/tanggal/{tanggal}/waktu/{waktu}',
+            params: [
+                {name: 'tanggal', label: 'Tanggal (YYYY-MM-DD)', type: 'date', default: new Date().toISOString().split('T')[0]},
+                {name: 'waktu', label: 'Waktu (rs/server)', type: 'text', default: 'rs'}
+            ]
+        },
+        'dashboard_bulan': {
+            title: 'Dashboard Per Bulan',
+            method: 'GET',
+            url: 'dashboard/waktutunggu/bulan/{bulan}/tahun/{tahun}/waktu/{waktu}',
+            params: [
+                {name: 'bulan', label: 'Bulan (01-12)', type: 'text', default: new Date().getMonth() + 1},
+                {name: 'tahun', label: 'Tahun (YYYY)', type: 'text', default: new Date().getFullYear()},
+                {name: 'waktu', label: 'Waktu (rs/server)', type: 'text', default: 'rs'}
+            ]
+        },
+        'antrean_tanggal': {
+            title: 'Antrean Per Tanggal',
+            method: 'GET',
+            url: 'antrean/pendaftaran/tanggal/{tanggal}',
+            params: [
+                {name: 'tanggal', label: 'Tanggal (YYYY-MM-DD)', type: 'date', default: new Date().toISOString().split('T')[0]}
+            ]
+        },
+        'antrean_kodebooking': {
+            title: 'Antrean Per Kode Booking',
+            method: 'GET',
+            url: 'antrean/pendaftaran/kodebooking/{kodebooking}',
+            params: [
+                {name: 'kodebooking', label: 'Kode Booking', type: 'text'}
+            ]
+        },
+        'antrean_belum_dilayani': {
+            title: 'Antrean Belum Dilayani',
+            method: 'GET',
+            url: 'antrean/pendaftaran/aktif',
+            params: []
+        },
+        'antrean_belum_dilayani_detail': {
+            title: 'Antrean Belum Dilayani Detail',
+            method: 'GET',
+            url: 'antrean/pendaftaran/kodepoli/{kodepoli}/kodedokter/{kodedokter}/hari/{hari}/jampraktek/{jampraktek}',
+            params: [
+                {name: 'kodepoli', label: 'Kode Poli', type: 'text'},
+                {name: 'kodedokter', label: 'Kode Dokter', type: 'text'},
+                {name: 'hari', label: 'Hari (1=Senin, ...)', type: 'text'},
+                {name: 'jampraktek', label: 'Jam Praktek (HH:mm-HH:mm)', type: 'text'}
+            ]
+        }
+    };
+
+    function loadForm(key) {
+        var config = endpoints[key];
+        if (!config) return;
+
+        $('#formTitle').text(config.title);
+        $('#responseContainer').hide();
+        $('#responseOutput').text('');
+
+        var html = '<form id="wsForm" onsubmit="submitForm(event, \'' + key + '\')">';
+        
+        // Method and URL display
+        html += '<div class="form-group"><label>URL Endpoint</label>';
+        html += '<div class="input-group"><span class="input-group-addon">' + config.method + '</span>';
+        html += '<input type="text" class="form-control" value="' + config.url + '" disabled></div></div>';
+
+        // Parameters
+        if (config.params && config.params.length > 0) {
+            html += '<h5>Parameters</h5>';
+            config.params.forEach(function(param) {
+                var val = param.default || '';
+                html += '<div class="form-group">';
+                html += '<label>' + param.label + '</label>';
+                html += '<input type="' + param.type + '" class="form-control" id="param_' + param.name + '" value="' + val + '" required>';
+                html += '</div>';
+            });
+        }
+
+        // Body (JSON)
+        if (config.body) {
+            html += '<h5>JSON Body</h5>';
+            html += '<div class="form-group">';
+            html += '<textarea class="form-control" id="jsonBody" rows="10">' + JSON.stringify(config.body, null, 2) + '</textarea>';
+            html += '</div>';
+        }
+
+        html += '<button type="submit" class="btn btn-primary">Kirim Request</button>';
+        html += '</form>';
+
+        $('#formContainer').html(html);
+    }
+
+    function submitForm(e, key) {
+        e.preventDefault();
+        var config = endpoints[key];
+        var url = config.url;
+        var method = config.method;
+        var data = null;
+
+        // Replace placeholders in URL
+        if (config.params) {
+            config.params.forEach(function(param) {
+                var val = $('#param_' + param.name).val();
+                url = url.replace('{' + param.name + '}', val);
+            });
+        }
+
+        // Get Body
+        if (config.body) {
+            try {
+                data = JSON.parse($('#jsonBody').val());
+                data = JSON.stringify(data);
+            } catch (err) {
+                alert('Invalid JSON Body');
+                return;
+            }
+        }
+
+        $('#responseContainer').show();
+        $('#responseOutput').text('Loading...');
+
+        $.ajax({
+            url: '{?=url([ADMIN, "jkn_mobile", "wsrequest"])?}',
+            method: 'POST',
+            data: {
+                endpoint: url,
+                method: method,
+                data: data
+            },
+            success: function(response) {
+                try {
+                    var json = JSON.parse(response);
+                    $('#responseOutput').text(JSON.stringify(json, null, 2));
+                } catch (e) {
+                    $('#responseOutput').text(response);
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#responseOutput').text('Error: ' + error);
+            }
+        });
+    }
+</script>

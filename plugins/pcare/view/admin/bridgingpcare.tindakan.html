@@ -12,13 +12,13 @@
 
   <div class="form-group">
     <label for="poli">Nomor Kunjungan</label>
-    <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="{$bridging_pcare.nomor_kunjungan}">
+    <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="{?=isset_or($bridging_pcare.nomor_kunjungan)?}">
   </div>
   <div class="form-group">
     <label for="poli">Tindakan</label>
     <select class="form-control" name="kdTindakan">
       {loop: $ref_tindakan}
-      <option value="{$value.kdTindakan}">{$value.nmTindakan}</option>
+      <option value="{?=isset_or($value.kdTindakan)?}">{?=isset_or($value.nmTindakan)?}</option>
       {/loop}
     </select>
   </div>
@@ -56,10 +56,10 @@
         {if: $data_tindakan}
         {loop: $data_tindakan.list}
         <tr>
-            <td>{$value.noKunjungan}</td>
-            <td>{$value.kdTindakanSK}</td>
-            <td>{$value.kdTindakan}</td>
-            <td>{$value.nmTindakan}</td>
+            <td>{?=isset_or($value.noKunjungan)?}</td>
+            <td>{?=isset_or($value.kdTindakanSK)?}</td>
+            <td>{?=isset_or($value.kdTindakan)?}</td>
+            <td>{?=isset_or($value.nmTindakan)?}</td>
         </tr>
         {/loop}
         {/if}

@@ -1,0 +1,95 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form id="kfa_form">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Kode KFA</label>
+                <input type="text" name="kode_kfa" class="form-control" value="{$kfa.form.kode_kfa}" required {if: !empty($kfa.form.kode_kfa)}readonly{/if}>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <label>Nama KFA</label>
+                <input type="text" name="nama_kfa" class="form-control" value="{$kfa.form.nama_kfa}" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Kode Bahan</label>
+                <input type="text" name="kode_bahan" class="form-control" value="{$kfa.form.kode_bahan}">
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <label>Nama Bahan</label>
+                <input type="text" name="nama_bahan" class="form-control" value="{$kfa.form.nama_bahan}">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-2">
+              <div class="form-group">
+                <label>Numerator</label>
+                <input type="text" name="numerator" class="form-control" value="{$kfa.form.numerator}">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label>Satuan Num</label>
+                <input type="text" name="satuan_num" class="form-control" value="{$kfa.form.satuan_num}">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label>Denominator</label>
+                <input type="text" name="denominator" class="form-control" value="{$kfa.form.denominator}">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label>Satuan Den</label>
+                <input type="text" name="satuan_den" class="form-control" value="{$kfa.form.satuan_den}">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Nama Satuan Den</label>
+                <input type="text" name="nama_satuan_den" class="form-control" value="{$kfa.form.nama_satuan_den}">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Kode Sediaan</label>
+                <input type="text" name="kode_sediaan" class="form-control" value="{$kfa.form.kode_sediaan}">
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="form-group">
+                <label>Nama Sediaan</label>
+                <input type="text" name="nama_sediaan" class="form-control" value="{$kfa.form.nama_sediaan}">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>Type</label>
+                <select name="type" class="form-control">
+                  <option value="obat" {if: $kfa.form.type == 'obat'}selected{/if}>Obat</option>
+                  <option value="alkes" {if: $kfa.form.type == 'alkes'}selected{/if}>Alkes</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+          <button type="button" class="btn btn-default" id="tutupform_btn">Batal</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

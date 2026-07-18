@@ -1,0 +1,99 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{if: $rujukan.form.id}Edit{else}Tambah{/if} Surat Rujukan</h3>
+            </div>
+            <div class="panel-body">
+                <form name="rujukan_form" action="{?=url(ADMIN.'/surat/rujukansave/'.@$rujukan.form.id)?}" method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Nomor Surat</label>
+                                <input type="text" name="nomor_surat" class="form-control" value="{$rujukan.form.nomor_surat}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>No. Rawat</label>
+                                <input type="text" name="no_rawat" class="form-control" value="{$rujukan.form.no_rawat}">
+                            </div>
+                            <div class="form-group">
+                                <label>No. Rekam Medis</label>
+                                <input type="text" name="no_rkm_medis" class="form-control" value="{$rujukan.form.no_rkm_medis}">
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Pasien</label>
+                                <input type="text" name="nm_pasien" class="form-control" value="{$rujukan.form.nm_pasien}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Lahir</label>
+                                <input type="date" name="tgl_lahir" class="form-control" value="{$rujukan.form.tgl_lahir}">
+                            </div>
+                            <div class="form-group">
+                                <label>Umur</label>
+                                <input type="text" name="umur" class="form-control" value="{$rujukan.form.umur}">
+                            </div>
+                            <div class="form-group">
+                                <label>Jenis Kelamin</label>
+                                <select name="jk" class="form-control">
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="L" {if: $rujukan.form.jk == 'L'}selected{/if}>Laki-laki</option>
+                                    <option value="P" {if: $rujukan.form.jk == 'P'}selected{/if}>Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Alamat</label>
+                                <textarea name="alamat" class="form-control" rows="3">{$rujukan.form.alamat}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Kepada</label>
+                                <input type="text" name="kepada" class="form-control" value="{$rujukan.form.kepada}">
+                            </div>
+                            <div class="form-group">
+                                <label>Di</label>
+                                <input type="text" name="di" class="form-control" value="{$rujukan.form.di}">
+                            </div>
+                            <div class="form-group">
+                                <label>Anamnesa</label>
+                                <textarea name="anamnesa" class="form-control" rows="2">{$rujukan.form.anamnesa}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Pemeriksaan Fisik</label>
+                                <textarea name="pemeriksaan_fisik" class="form-control" rows="2">{$rujukan.form.pemeriksaan_fisik}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Pemeriksaan Penunjang</label>
+                                <textarea name="pemeriksaan_penunjang" class="form-control" rows="2">{$rujukan.form.pemeriksaan_penunjang}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Diagnosa</label>
+                                <textarea name="diagnosa" class="form-control" rows="2">{$rujukan.form.diagnosa}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Terapi</label>
+                                <textarea name="terapi" class="form-control" rows="2">{$rujukan.form.terapi}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Alasan Dirujuk</label>
+                                <textarea name="alasan_dirujuk" class="form-control" rows="2">{$rujukan.form.alasan_dirujuk}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Dokter</label>
+                                <input type="text" name="dokter" class="form-control" value="{$rujukan.form.dokter}">
+                            </div>
+                            <div class="form-group">
+                                <label>Petugas</label>
+                                <input type="text" name="petugas" class="form-control" value="{$rujukan.form.petugas}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="save" class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
+                        <a href="{?=url(ADMIN.'/surat/rujukan')?}" class="btn btn-default"><i class="fa fa-arrow-left"></i> Kembali</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

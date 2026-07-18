@@ -2,12 +2,12 @@
     <table>
         <tr>
             <td>
-                <img width="70px" src='{?=url()?}/{$settings.logo}'/>
+                <img width="70px" src='{?=url()?}/{?=isset_or($settings.logo)?}'/>
             </td>
             <td>
-                <span style="font-size:24px">{$settings.nama_instansi}</span><br>
-                {$settings.alamat} - {$settings.nomor_telepon} - {$settings.email}<br>
-                {$settings.kota} - {$settings.propinsi}        
+                <span style="font-size:24px">{?=isset_or($settings.nama_instansi)?}</span><br>
+                {?=isset_or($settings.alamat)?} - {?=isset_or($settings.nomor_telepon)?} - {?=isset_or($settings.email)?}<br>
+                {?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}        
             </td>
         </tr>
     </table>
@@ -17,17 +17,17 @@
             <td><h3><center>Salinan e-Resep</center></h3></td>
         </tr>
     </table>
-    <div align="right">{$settings.kota}, {$tanggal}</div>
+    <div align="right">{?=isset_or($settings.kota)?}, {?=isset_or($tanggal)?}</div>
     <hr>
     <br>
-    Nama   : <b>{$pasien}</b><br>
-    Umur   : <b>{$umur}</b><br>
-    Alamat : <b>{$alamat}</b><br>
+    Nama   : <b>{?=isset_or($pasien)?}</b><br>
+    Umur   : <b>{?=isset_or($umur)?}</b><br>
+    Alamat : <b>{?=isset_or($alamat)?}</b><br>
     <hr>
     {loop: $detail}
     <h3>R/</h3>
-          {$value.nama_brng} - {$value.jml}<br>
-          {$value.aturan_pakai}<br>
+          {?=isset_or($value.nama_brng)?} - {?=isset_or($value.jml)?}<br>
+          {?=isset_or($value.aturan_pakai)?}<br>
     {/loop}
     <br><br><br>
 </div>

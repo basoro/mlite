@@ -26,17 +26,17 @@ class Admin extends AdminModule
       ['name' => 'Stok Darah', 'url' => url([ADMIN, 'utd', 'stokdarah']), 'icon' => 'database', 'desc' => 'Data Donor'],
       ['name' => 'Komponen Darah', 'url' => url([ADMIN, 'utd', 'komponendarah']), 'icon' => 'clipboard', 'desc' => 'Komponen Donor'],
     ];
-    return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+    return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
   }
 
   public function getPendonor()
   {
     $this->_addHeaderFiles();
     $pendonor = $this->db('utd_pendonor')
-      ->join('propinsi', 'propinsi.kd_prop=utd_pendonor.kd_prop')
-      ->join('kabupaten', 'kabupaten.kd_kab=utd_pendonor.kd_kab')
-      ->join('kecamatan', 'kecamatan.kd_kec=utd_pendonor.kd_kec')
-      ->join('kelurahan', 'kelurahan.kd_kel=utd_pendonor.kd_kel')
+      ->leftJoin('propinsi', 'propinsi.kd_prop=utd_pendonor.kd_prop')
+      ->leftJoin('kabupaten', 'kabupaten.kd_kab=utd_pendonor.kd_kab')
+      ->leftJoin('kecamatan', 'kecamatan.kd_kec=utd_pendonor.kd_kec')
+      ->leftJoin('kelurahan', 'kelurahan.kd_kel=utd_pendonor.kd_kel')
       ->toArray();
     return $this->draw('data.pendonor.html', [
       'pendonor' => $pendonor,
@@ -112,7 +112,7 @@ class Admin extends AdminModule
   {
     $this->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
     $cari = $_POST['cari'];
-    $this->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
+    $stmt = $this->db()->pdo()->prepare("INSERT INTO `mlite_temporary` (
       `temp1`,
       `temp2`,
       `temp3`,
@@ -130,33 +130,43 @@ class Admin extends AdminModule
     )
     SELECT *
     FROM `utd_pendonor`
-    WHERE (`no_pendonor` LIKE '%$cari%' OR `nama` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
+    WHERE (`no_pendonor` LIKE :cari OR `nama` LIKE :cari OR `alamat` LIKE :cari)
     ");
-
-    $cetak = $this->db('mlite_temporary')->toArray();
-    return $this->draw('cetak.utd.html', ['cetak' => $cetak]);
+    $stmt->execute([':cari' => "%$cari%"]);
     exit();
   }
 
   public function getCetakPendonor()
   {
-    $mpdf = new \Mpdf\Mpdf([
-      'mode' => 'utf-8',
-      'orientation' => 'L'
-    ]);
+      $mpdf = new \Mpdf\Mpdf([
+          'mode' => 'utf-8',
+          'orientation' => 'L'
+      ]);
 
-    $mpdf->SetHTMLHeader($this->core->setPrintHeader());
-    $mpdf->SetHTMLFooter($this->core->setPrintFooter());
-          
-    $url = url(ADMIN.'/tmp/cetak.utd.html');
-    $html = file_get_contents($url);
-    $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-    $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
 
-    // Output a PDF file directly to the browser
-    $mpdf->Output();
-    exit();      
+      // ambil data yang sama
+      $cetak = $this->db('mlite_temporary')->toArray();
 
+      // inject ke template
+      $this->tpl->set('cetak', $cetak);
+
+      // render HTML TANPA HTTP
+      $html = $this->draw('cetak.utd.html', ['cetak' => $cetak]);
+
+      $mpdf->WriteHTML(
+          $this->core->setPrintCss(),
+          \Mpdf\HTMLParserMode::HEADER_CSS
+      );
+
+      $mpdf->WriteHTML(
+          $html,
+          \Mpdf\HTMLParserMode::HTML_BODY
+      );
+
+      $mpdf->Output();
+      exit;
   }
 
   public function getDonor()
@@ -338,26 +348,49 @@ class Admin extends AdminModule
 
   public function getKartuDonor($no_pendonor)
   {
-      $pdf=new PDF_Code128('L', 'mm', array(59,98));
-      $pdf->AddPage();
-      $pdf->SetFont('Arial','',10);
-      $pdf->Code128(9,35,$no_pendonor,80,20);
-      $pdf->SetFont('Arial','B',16);
-      $pdf->SetXY(8,0);
-      $pdf->Cell(0,35,$no_pendonor);
-      $pdf->Output('kartudonor_'.$no_pendonor.'.pdf','I');
+      $mpdf = new \Mpdf\Mpdf([
+          'mode' => 'utf-8',
+          'format' => [98, 59], // width x height (mm)
+          'margin_left' => 5,
+          'margin_right' => 5,
+          'margin_top' => 5,
+          'margin_bottom' => 5,
+      ]);
+
+      $html = '
+      <div style="text-align:center; font-family: Arial;">
+          <div style="font-size:16px; font-weight:bold; margin-bottom:4mm;">
+              KARTU DONOR
+          </div>
+
+          <barcode 
+              code="'.$no_pendonor.'" 
+              type="C128" 
+              size="1.2" 
+              height="1.5" 
+          />
+
+          <div style="margin-top:3mm; font-size:14px; font-weight:bold;">
+              '.$no_pendonor.'
+          </div>
+      </div>
+      ';
+
+      $mpdf->WriteHTML($html);
+      $mpdf->Output('kartudonor_'.$no_pendonor.'.pdf', 'I');
+      exit;
   }
+
 
   public function setNoPendonor()
   {
       $date = date('Y-m-d');
-      $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_pendonor,6),signed)),0) FROM utd_pendonor");
-      $last_no->execute();
-      $last_no = $last_no->fetch();
-      if(empty($last_no[0])) {
-        $last_no[0] = '000000';
+      $urut = $this->db('utd_pendonor')
+          ->nextRightNumber('no_pendonor', 6);
+      if(empty($urut)) {
+        $urut = '000000';
       }
-      $next_no = sprintf('%06s', ($last_no[0] + 1));
+      $next_no = sprintf('%06s', $urut);
       $next_no = 'UTD'.$next_no;
 
       return $next_no;

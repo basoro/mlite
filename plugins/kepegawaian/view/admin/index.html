@@ -28,18 +28,18 @@
             				{if: !empty($pegawai.list)}
     								{loop: $pegawai.list}
     								<tr>
-    									<td>{$value.nik}</td>
-    									<td>{$value.nama}</td>
-                      <td>{$value.tmp_lahir}</td>
-                      <td>{$value.tgl_lahir}</td>
-                      <td>{$value.departemen}</td>
-                      <td>{$value.bidang}</td>
-                      <td>{$value.stts_aktif}</td>
+    									<td>{?=isset_or($value.nik)?}</td>
+    									<td>{?=isset_or($value.nama)?}</td>
+                      <td>{?=isset_or($value.tmp_lahir)?}</td>
+                      <td>{?=isset_or($value.tgl_lahir)?}</td>
+                      <td>{?=isset_or($value.departemen)?}</td>
+                      <td>{?=isset_or($value.bidang)?}</td>
+                      <td>{?=isset_or($value.stts_aktif)?}</td>
     									<td class="text-right">
-    										<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
+    										<a href="{?=isset_or($value.viewURL)?}" class="btn btn-primary btn-xs">
     											<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
     										</a>
-    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    										<a href="{?=isset_or($value.editURL)?}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
     										</a>
     									</td>

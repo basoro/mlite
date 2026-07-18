@@ -12,12 +12,12 @@
     {if: $resume_pasien}
     {loop: $resume_pasien}
     <tr>
-      <td>{$value.no_rawat}</td>
-      <td>{$value.keluhan_utama}</td>
-      <td>{$value.diagnosa_utama}</td>
-      <td>{$value.prosedur_utama}</td>
-      <td>{$value.keadaan}</td>
-      <td>{$value.nm_dokter}</td>
+      <td>{?=isset_or($value.no_rawat)?}</td>
+      <td>{?=isset_or($value.keluhan_utama)?}</td>
+      <td>{?=isset_or($value.diagnosa_utama)?}</td>
+      <td>{?=isset_or($value.prosedur_utama)?}</td>
+      <td>{?=isset_or($value.keadaan)?}</td>
+      <td>{?=isset_or($value.nm_dokter)?}</td>
     </tr>
     {/loop}
     {else}

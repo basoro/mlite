@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Radiology Worklist - Mini PACS mLITE</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Standard Bootstrap 3 & Assets -->
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/animate.min.css" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Light Theme Variables */
+            --primary-color: #0284c7;
+            --success-color: #10b981;
+            --info-color: #3b82f6;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-panel-head: #ffffff;
+            --bg-table-head: #f8fafc;
+            --nav-bg: linear-gradient(135deg, white, #f8fafc);
+            --nav-border: var(--primary-color);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --input-bg: #f8fafc;
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme Variables */
+            --primary-color: #38bdf8;
+            --bg-body: #020617;
+            --bg-card: #0f172a;
+            --bg-panel-head: #1e293b;
+            --bg-table-head: #1e293b;
+            --nav-bg: linear-gradient(135deg, #0f172a, #1e293b);
+            --nav-border: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #1e293b;
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Header / Navbar */
+        .pacs-navbar {
+            background: var(--nav-bg);
+            border-bottom: 3px solid var(--nav-border);
+            padding: 10px 0;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+
+        .navbar-brand-custom {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-main) !important;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .navbar-brand-custom img {
+            height: 38px;
+            margin-right: 12px;
+        }
+
+        .navbar-brand-custom span {
+            color: var(--primary-color);
+            margin-left: 4px;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--border-color);
+            color: var(--text-main);
+            margin-right: 10px;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-wrapper {
+            flex: 1;
+            padding-bottom: 40px;
+        }
+
+        .pacs-panel {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: 30px;
+            border: none;
+        }
+
+        .panel-heading-custom {
+            background: var(--bg-panel-head);
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title-custom {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .panel-body-custom {
+            padding: 25px;
+        }
+
+        /* Tables */
+        .table-responsive {
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .pacs-table {
+            width: 100%;
+            margin: 0 !important;
+        }
+
+        .pacs-table thead th {
+            background: var(--bg-table-head);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 15px 12px !important;
+            border-bottom: 2px solid var(--border-color) !important;
+        }
+
+        .pacs-table tbody td {
+            padding: 12px !important;
+            vertical-align: middle !important;
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .pacs-table tbody tr:hover {
+            background-color: var(--bg-table-head) !important;
+        }
+
+        /* Alerts */
+        .alert-modern {
+            border-radius: 10px;
+            border: none;
+            padding: 15px 20px;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .alert-modern i {
+            margin-right: 15px;
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        .alert-modern code {
+            background: rgba(0, 0, 0, 0.1);
+            color: inherit;
+        }
+
+        /* Buttons */
+        .btn-modern {
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            border: none;
+        }
+
+        .btn-modern i {
+            margin-right: 8px;
+        }
+
+        .btn-primary-modern {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary-modern:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Footer */
+        .pacs-footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 25px 0;
+            margin-top: auto;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-brand {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        h4 {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+        }
+
+        h4 i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        hr {
+            border-top: 1px solid var(--border-color);
+            margin: 30px 0;
+        }
+    </style>
+</head>
+
+<body data-theme="light">
+
+    <!-- Header -->
+    <header class="pacs-navbar">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-6">
+                    <a href="{?=url([ADMIN, 'mini_pacs', 'main'])?}" class="navbar-brand-custom">
+                        <img src="{?=url()?}/favicon.png" alt="mLITE Logo">
+                        mLITE mini <span>PACS</span>
+                    </a>
+                </div>
+                <div class="col-xs-6 text-right">
+                    <a href="{?=url([ADMIN, 'mini_pacs', 'main'])?}" class="btn btn-modern btn-success">
+                        <i class="fa fa-list-alt"></i> <span class="hidden-xs">Study</span>
+                    </a>
+                    <div id="themeToggle" class="theme-toggle" title="Ganti Tema">
+                        <i class="fa fa-moon-o"></i>
+                    </div>
+                    <a href="{?=url(ADMIN.'/logout')?}" class="btn btn-modern btn-danger btn-danger-modern"
+                        data-toggle="tooltip" data-placement="bottom" title="Keluar">
+                        <i class="fa fa-power-off"></i> <span class="hidden-xs">Keluar</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main-wrapper">
+        <div class="container-fluid">
+            {if: $pacs.notify}
+                <div class="alert alert-{$pacs.notify.type} animate fadeInDown" style="margin-bottom: 20px; border-radius: 12px; border: none; box-shadow: var(--shadow-sm);">
+                    <i class="fa fa-{? $pacs.notify.type == 'success' ? 'check-circle' : 'exclamation-triangle' ?}"></i> {$pacs.notify.text}
+                </div>
+            {/if}
+            <div class="pacs-panel">
+                <div class="panel-heading-custom">
+                    <h3 class="panel-title-custom">
+                        <i class="fa fa-list-alt text-primary"></i> DICOM Modality Worklist (MWL)
+                    </h3>
+                    <div class="panel-actions">
+                        <form action="{?=url([ADMIN, 'mini_pacs', 'updateworklist'])?}" method="post">
+                            <input type="hidden" name="mwl" value="mwl">
+                            <button type="submit" class="btn btn-modern btn-primary-modern">
+                                <i class="fa fa-refresh"></i> Update Semua Worklist
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="panel-body-custom">
+
+                    <div class="alert-modern">
+                        <i class="fa fa-info-circle"></i>
+                        <div>
+                            <strong>Service Info:</strong> Fitur Worklist memungkinkan alat Radiologi (CT, USG, X-Ray)
+                            untuk menarik data pasien secara otomatis.
+                            Pastikan service <code>wlmscpfs</code> berjalan di server.
+                            <br>File worklist disimpan di: <code>uploads/pacs/worklist/</code>
+                        </div>
+                    </div>
+
+                    <h4><i class="fa fa-file-text-o"></i> Daftar File Worklist (.wl)</h4>
+                    <div class="table-responsive">
+                        <table class="table pacs-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama File</th>
+                                    <th>Ukuran</th>
+                                    <th>Tanggal Update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {if: count($pacs.wl_files) > 0}
+                                {loop: $pacs.wl_files}
+                                <tr>
+                                    <td><i class="fa fa-file-code-o text-muted"></i> <strong>{$value.name}</strong></td>
+                                    <td>{$value.size} bytes</td>
+                                    <td>{$value.date}</td>
+                                </tr>
+                                {/loop}
+                                {else}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted" style="padding: 30px !important;">
+                                        Belum ada file worklist. Klik "Update" untuk men-generate.
+                                    </td>
+                                </tr>
+                                {/if}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <hr>
+
+                    <h4><i class="fa fa-clock-o"></i> Data Permintaan Radiologi Terpilih (Pending)</h4>
+                    <form action="{?=url([ADMIN, 'mini_pacs', 'updateselectedworklist'])?}" method="post">
+                        <input type="hidden" name="mwl" value="mwl">
+                        <div class="table-responsive">
+                            <table class="table pacs-table">
+                                <thead>
+                                    <tr>
+                                        <th width="40"><input type="checkbox" id="checkAll"></th>
+                                        <th>No. Order</th>
+                                        <th>No. Rawat</th>
+                                        <th>Nama Pasien</th>
+                                        <th>Tgl Permintaan</th>
+                                        <th>Jam</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {if: count($pacs.requests) > 0}
+                                    {loop: $pacs.requests}
+                                    <tr>
+                                        <td><input type="checkbox" name="selected_noorder[]" value="{$value.noorder}"
+                                                class="checkItem"></td>
+                                        <td><span class="label label-info">{$value.noorder}</span></td>
+                                        <td>{$value.no_rawat}</td>
+                                        <td><strong>{$value.nm_pasien}</strong></td>
+                                        <td>{$value.tgl_permintaan}</td>
+                                        <td>{$value.jam_permintaan}</td>
+                                    </tr>
+                                    {/loop}
+                                    {else}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted"
+                                            style="padding: 30px !important;">
+                                            Tidak ada permintaan radiologi yang sedang menunggu.
+                                        </td>
+                                    </tr>
+                                    {/if}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button type="submit" class="btn btn-modern btn-primary-modern">
+                                <i class="fa fa-save"></i> Sinkronisasi Ke Worklist File
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="pacs-footer">
+        <div class="container-fluid">
+            <div class="footer-content">
+                <div>
+                    <span class="footer-brand">Mini PACS mLITE</span>
+                    <span class="hidden-xs"> - DICOM MWL Service</span>
+                </div>
+                <div>
+                    &copy; {?=date('Y')?} <a href="https://mlite.id/" target="_blank">mLITE Indonesia</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Theme Logic
+            var savedTheme = localStorage.getItem('pacs-theme') || 'light';
+            applyTheme(savedTheme);
+
+            $('#themeToggle').on('click', function () {
+                var currentTheme = $('body').attr('data-theme');
+                var newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                applyTheme(newTheme);
+            });
+
+            function applyTheme(theme) {
+                $('body').attr('data-theme', theme);
+                localStorage.setItem('pacs-theme', theme);
+                var icon = $('#themeToggle i');
+                if (theme === 'dark') {
+                    icon.removeClass('fa-moon-o').addClass('fa-sun-o');
+                } else {
+                    icon.removeClass('fa-sun-o').addClass('fa-moon-o');
+                }
+            }
+
+            // Check All
+            $("#checkAll").click(function () {
+                $(".checkItem").prop('checked', $(this).prop('checked'));
+            });
+        });
+    </script>
+</body>
+
+</html>

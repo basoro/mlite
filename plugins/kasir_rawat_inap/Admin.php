@@ -9,12 +9,704 @@ use PHPMailer\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
+    public $assign = [];
+
+    protected function userIsAdmin()
+    {
+        $role = $this->core->getUserInfo('role', null, true);
+
+        if (is_array($role)) {
+            return in_array('admin', array_map('trim', $role), true);
+        }
+
+        if (is_string($role) && trim($role) !== '') {
+            $decoded = json_decode($role, true);
+            if (is_array($decoded)) {
+                return in_array('admin', array_map('trim', $decoded), true);
+            }
+
+            $roles = array_map('trim', explode(',', $role));
+            return in_array('admin', $roles, true);
+        }
+
+        return $this->core->getUserInfo('role') === 'admin';
+    }
 
     public function navigation()
     {
         return [
             'Kelola'   => 'manage',
+            'Kasir'    => 'shift',
+            'Laporan'  => 'report',
         ];
+    }
+
+    protected function getBillingClosingState($noRawat)
+    {
+        $noRawat = trim((string) $noRawat);
+        if ($noRawat === '') {
+            return [
+                'exists' => false,
+                'billing_exists' => false,
+                'edit_locked' => true,
+                'print_locked' => true,
+                'message' => 'Nomor rawat tidak valid.'
+            ];
+        }
+
+        $registration = $this->db('reg_periksa')->where('no_rawat', $noRawat)->oneArray();
+        if (!$registration) {
+            return [
+                'exists' => false,
+                'billing_exists' => false,
+                'edit_locked' => true,
+                'print_locked' => true,
+                'message' => 'Data registrasi pasien tidak ditemukan.'
+            ];
+        }
+
+        $billingExists = (bool) $this->db('mlite_billing')
+            ->where('no_rawat', $noRawat)
+            ->like('kd_billing', 'RI%')
+            ->oneArray();
+
+        if ($this->userIsAdmin()) {
+            return [
+                'exists' => true,
+                'registration' => $registration,
+                'billing_exists' => $billingExists,
+                'is_paid' => (($registration['status_bayar'] ?? '') === 'Sudah Bayar'),
+                'is_exam_closed' => (($registration['stts'] ?? '') === 'Sudah'),
+                'edit_locked' => false,
+                'print_locked' => false,
+                'message' => ''
+            ];
+        }
+
+        $splitLock = $this->getSplitBillSummaryForLocking($noRawat, 'Ranap');
+        $isPaid = (($registration['status_bayar'] ?? '') === 'Sudah Bayar');
+        if ($splitLock !== null) {
+            $isPaid = ((float) ($splitLock['total_sisa'] ?? 0) <= 0) && ((float) ($splitLock['total_tagihan'] ?? 0) > 0);
+        }
+        $isExamClosed = (($registration['stts'] ?? '') === 'Sudah');
+
+        $message = '';
+        if ($isPaid) {
+            $message = 'Billing sudah closing. Semua transaksi yang berkaitan dengan uang dikunci karena status bayar sudah lunas.';
+        } elseif (!$isExamClosed) {
+            $message = 'Billing belum dapat diproses. Status periksa belum selesai, sehingga kasir tidak dapat membuat nota atau bukti pembayaran.';
+        } elseif ($splitLock !== null && ((float) ($splitLock['total_sisa'] ?? 0) > 0) && (($registration['status_bayar'] ?? '') === 'Sudah Bayar')) {
+            $message = 'Terdapat tagihan susulan. Kasir dapat memproses pembayaran parsial per kelompok billing.';
+        }
+
+        return [
+            'exists' => true,
+            'registration' => $registration,
+            'billing_exists' => $billingExists,
+            'is_paid' => $isPaid,
+            'is_exam_closed' => $isExamClosed,
+            'edit_locked' => ($isPaid || !$isExamClosed),
+            'print_locked' => (!$billingExists && !$isExamClosed),
+            'message' => $message
+        ];
+    }
+
+    protected function respondBillingLock(array $billingControl, $json = false)
+    {
+        $message = $billingControl['message'] ?? 'Billing sedang dikunci.';
+
+        if ($json) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'error',
+                'message' => $message
+            ]);
+        } else {
+            echo $message;
+        }
+        exit();
+    }
+
+    protected function isBillingParsialEnabled()
+    {
+        $val = $this->settings->get('settings.billing_parsial');
+        if ($val === null || $val === '') {
+            return true;
+        }
+        return ((string) $val) === 'true';
+    }
+
+    protected function getSplitBillPaidByKelompok($noRawat)
+    {
+        try {
+            $stmt = $this->core->db()->pdo()->prepare("SELECT d.kelompok, SUM(d.jumlah_alokasi) AS total
+                FROM mlite_billing_pembayaran_detail d
+                INNER JOIN mlite_billing_pembayaran h ON h.id = d.pembayaran_id
+                WHERE h.no_rawat = ?
+                GROUP BY d.kelompok");
+            $stmt->execute([$noRawat]);
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $result = [];
+            foreach ($rows as $r) {
+                $k = strtoupper(trim((string) ($r['kelompok'] ?? '')));
+                if ($k === '') {
+                    continue;
+                }
+                $result[$k] = (float) ($r['total'] ?? 0);
+            }
+            return $result;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    protected function getSplitBillHistory($noRawat)
+    {
+        try {
+            $stmt = $this->core->db()->pdo()->prepare("SELECT h.id, h.tgl_bayar, h.jam_bayar, h.metode, h.jumlah_bayar, h.id_user, h.keterangan,
+                GROUP_CONCAT(DISTINCT d.kelompok ORDER BY d.id SEPARATOR ', ') AS kelompok,
+                GROUP_CONCAT(DISTINCT CASE d.kelompok
+                    WHEN 'ADMIN' THEN 'Administrasi/Kamar'
+                    WHEN 'TINDAKAN' THEN 'Tindakan'
+                    WHEN 'OBAT' THEN 'Obat & BHP'
+                    WHEN 'LAB' THEN 'Laboratorium'
+                    WHEN 'RAD' THEN 'Radiologi'
+                    WHEN 'OPERASI' THEN 'Operasi'
+                    WHEN 'TAMBAHAN' THEN 'Tambahan/Lain-lain'
+                    ELSE d.kelompok
+                END ORDER BY d.id SEPARATOR ', ') AS kelompok_label
+                FROM mlite_billing_pembayaran h
+                LEFT JOIN mlite_billing_pembayaran_detail d ON d.pembayaran_id = h.id
+                WHERE h.no_rawat = ?
+                GROUP BY h.id
+                ORDER BY h.tgl_bayar DESC, h.jam_bayar DESC, h.id DESC");
+            $stmt->execute([$noRawat]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    protected function buildSplitBillSummary($noRawat, array $totals)
+    {
+        $paid = $this->getSplitBillPaidByKelompok($noRawat);
+
+        $map = [
+            'ADMIN' => 'Administrasi/Kamar',
+            'TINDAKAN' => 'Tindakan',
+            'OBAT' => 'Obat & BHP',
+            'LAB' => 'Laboratorium',
+            'RAD' => 'Radiologi',
+            'OPERASI' => 'Operasi',
+            'TAMBAHAN' => 'Tambahan/Lain-lain'
+        ];
+
+        $groups = [];
+        $totalTagihan = 0;
+        $totalTerbayar = 0;
+        $totalSisa = 0;
+
+        foreach ($map as $code => $label) {
+            $total = (float) ($totals[$code] ?? 0);
+            $paidAmt = (float) ($paid[$code] ?? 0);
+            $remaining = $total - $paidAmt;
+            if ($remaining < 0) {
+                $remaining = 0;
+            }
+
+            $groups[] = [
+                'kelompok' => $code,
+                'label' => $label,
+                'total' => $total,
+                'paid' => $paidAmt,
+                'remaining' => $remaining,
+                'status' => ($remaining <= 0 ? 'Lunas' : ($paidAmt > 0 ? 'Parsial' : 'Open'))
+            ];
+
+            $totalTagihan += $total;
+            $totalTerbayar += $paidAmt;
+            $totalSisa += $remaining;
+        }
+
+        return [
+            'groups' => $groups,
+            'total_tagihan' => $totalTagihan,
+            'total_terbayar' => $totalTerbayar,
+            'total_sisa' => $totalSisa
+        ];
+    }
+
+    protected function calculateSplitBillGroupTotals($noRawat, $status = 'Ranap')
+    {
+        try {
+            $pdo = $this->core->db()->pdo();
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(ttl_biaya),0) AS total FROM kamar_inap WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $kamar = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya_rawat),0) AS total FROM rawat_inap_dr WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $tindakan = (float) ($stmt->fetchColumn() ?: 0);
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya_rawat),0) AS total FROM rawat_inap_pr WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $tindakan += (float) ($stmt->fetchColumn() ?: 0);
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya_rawat),0) AS total FROM rawat_inap_drpr WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $tindakan += (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(total + embalase + tuslah),0) AS total FROM detail_pemberian_obat WHERE no_rawat = ? AND status = ?");
+            $stmt->execute([$noRawat, $status]);
+            $obat = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya),0) AS total FROM periksa_lab WHERE no_rawat = ? AND status = ?");
+            $stmt->execute([$noRawat, $status]);
+            $lab = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(biaya),0) AS total FROM periksa_radiologi WHERE no_rawat = ? AND status = ?");
+            $stmt->execute([$noRawat, $status]);
+            $rad = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(
+                biayaoperator1+biayaoperator2+biayaoperator3+
+                biayaasisten_operator1+biayaasisten_operator2+
+                biayadokter_anak+biayaperawaat_resusitas+
+                biayadokter_anestesi+biayaasisten_anestesi+
+                biayabidan+biayaperawat_luar
+            ),0) AS total FROM operasi WHERE no_rawat = ? AND status = ?");
+            $stmt->execute([$noRawat, $status]);
+            $operasi = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(hargasatuan * jumlah),0) AS total FROM beri_obat_operasi WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $operasiObat = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(total),0) AS total FROM resep_pulang WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $obatPulang = (float) ($stmt->fetchColumn() ?: 0);
+
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(besar_biaya),0) AS total FROM tambahan_biaya WHERE no_rawat = ?");
+            $stmt->execute([$noRawat]);
+            $tambahan = (float) ($stmt->fetchColumn() ?: 0);
+
+            return [
+                'ADMIN' => $kamar,
+                'TINDAKAN' => $tindakan,
+                'OBAT' => $obat,
+                'LAB' => $lab,
+                'RAD' => $rad,
+                'OPERASI' => ($operasi + $operasiObat),
+                'TAMBAHAN' => ($obatPulang + $tambahan)
+            ];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    protected function getSplitBillSummaryForLocking($noRawat, $status = 'Ranap')
+    {
+        try {
+            if (!$this->isBillingParsialEnabled()) {
+                return null;
+            }
+            $totals = $this->calculateSplitBillGroupTotals($noRawat, $status);
+            if (!$totals) {
+                return null;
+            }
+            return $this->buildSplitBillSummary($noRawat, $totals);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    protected function updateStatusBayarFromSplitSummary($noRawat, array $summary)
+    {
+        $totalSisa = (float) ($summary['total_sisa'] ?? 0);
+        $totalTagihan = (float) ($summary['total_tagihan'] ?? 0);
+        $statusBayar = ($totalTagihan > 0 && $totalSisa <= 0) ? 'Sudah Bayar' : 'Belum Bayar';
+        try {
+            $this->db('reg_periksa')->where('no_rawat', $noRawat)->save(['status_bayar' => $statusBayar]);
+        } catch (\Exception $e) {
+        }
+    }
+
+    public function apiBilling($no_rawat)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'kasir_rawat_inap')) {
+             echo json_encode(['status' => 'error', 'message' => 'You do not have permission to access this resource']);
+             exit;
+        }
+        $no_rawat = revertNorawat($no_rawat);
+        $all = isset($_GET['all']) && $_GET['all'] == 'true';
+
+        $query = $this->db('mlite_billing')
+            ->where('no_rawat', $no_rawat)
+            ->like('kd_billing', 'RI%');
+
+        if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+            $query->where('tgl_billing', '>=', $_GET['tgl_awal'])
+                  ->where('tgl_billing', '<=', $_GET['tgl_akhir']);
+        }
+
+        if ($all) {
+            $billing = $query
+                ->desc('tgl_billing')
+                ->desc('jam_billing')
+                ->toArray();
+        } else {
+            $billing = $query
+                ->desc('tgl_billing')
+                ->desc('jam_billing')
+                ->oneArray();
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => $billing
+        ], JSON_PRETTY_PRINT);
+        exit;
+    }
+
+    public function apiBillingList()
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'kasir_rawat_inap')) {
+            echo json_encode(['status' => 'error', 'message' => 'You do not have permission to access this resource']);
+            exit;
+        }
+        
+        $page = $_GET['page'] ?? 1;
+        $per_page = $_GET['per_page'] ?? 10;
+        $offset = ($page - 1) * $per_page;
+        $search = $_GET['s'] ?? '';
+        $tgl_awal = $_GET['tgl_awal'] ?? date('Y-m-d');
+        $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+
+        $query = $this->db('mlite_billing')
+            ->join('reg_periksa', 'reg_periksa.no_rawat = mlite_billing.no_rawat')
+            ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
+            ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+            ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+            ->where('mlite_billing.tgl_billing', '>=', $tgl_awal)
+            ->where('mlite_billing.tgl_billing', '<=', $tgl_akhir)
+            ->like('mlite_billing.kd_billing', 'RI%');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('reg_periksa.no_rawat', 'LIKE', "%$search%")
+                  ->orWhere('pasien.nm_pasien', 'LIKE', "%$search%")
+                  ->orWhere('pasien.no_rkm_medis', 'LIKE', "%$search%");
+            });
+        }
+
+        $total = $query->count();
+        $data = $query->select('mlite_billing.*')
+            ->select('reg_periksa.no_rkm_medis')
+            ->select('reg_periksa.status_bayar')
+            ->select('pasien.nm_pasien')
+            ->select('dokter.nm_dokter')
+            ->select('poliklinik.nm_poli')
+            ->select('penjab.png_jawab')
+            ->offset($offset)
+            ->limit($per_page)
+            ->desc('mlite_billing.tgl_billing')
+            ->desc('mlite_billing.jam_billing')
+            ->toArray();
+
+        foreach ($data as &$row) {
+             $row['total_tagihan'] = $row['jumlah_harus_bayar'];
+             
+             // Get Room Info if available
+             $kamar = $this->db('kamar_inap')
+                ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
+                ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+                ->where('no_rawat', $row['no_rawat'])
+                ->desc('tgl_masuk')
+                ->limit(1)
+                ->oneArray();
+             
+             $row['nm_bangsal'] = $kamar['nm_bangsal'] ?? '-';
+             $row['kd_kamar'] = $kamar['kd_kamar'] ?? '-';
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => htmlspecialchars_array($data),
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $per_page
+        ]);
+        exit;
+    }
+
+    public function apiBillingDetail($no_rawat)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'kasir_rawat_inap')) {
+             echo json_encode(['status' => 'error', 'message' => 'You do not have permission to access this resource']);
+             exit;
+        }
+        $no_rawat = revertNorawat($no_rawat);
+        $billingControl = $this->getBillingClosingState($no_rawat);
+
+        // Basic Info
+        $reg_periksa = $this->db('reg_periksa')
+            ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+            ->where('reg_periksa.no_rawat', $no_rawat)
+            ->oneArray();
+
+        if (!$reg_periksa) {
+            echo json_encode(['status' => 'error', 'message' => 'Data not found']);
+            exit;
+        }
+        
+        $kamar_inap = $this->db('kamar_inap')
+            ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
+            ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+            ->where('no_rawat', $no_rawat)
+            ->desc('tgl_masuk')
+            ->limit(1)
+            ->oneArray();
+
+        $details = [];
+        $total_biaya = 0;
+
+        // 1. Registrasi (Usually for Ranap, is there registration fee? Maybe just Room charge)
+        // Check if there is a 'registrasi' component or if it's covered by Kamar
+        
+        // 2. Kamar (Room Charge)
+        if ($kamar_inap) {
+             // Calculate days
+             $masuk = new \DateTime($kamar_inap['tgl_masuk'] . ' ' . $kamar_inap['jam_masuk']);
+             $keluar = $kamar_inap['tgl_keluar'] == '0000-00-00' ? new \DateTime() : new \DateTime($kamar_inap['tgl_keluar'] . ' ' . $kamar_inap['jam_keluar']);
+             $interval = $masuk->diff($keluar);
+             $days = $interval->days;
+             if ($days == 0) $days = 1; // Minimum 1 day
+             
+             $biaya_kamar = $kamar_inap['trf_kamar'];
+             $total_kamar = $biaya_kamar * $days;
+             
+             $details[] = [
+                'kategori' => 'Kamar',
+                'nama' => $kamar_inap['nm_bangsal'] . ' (' . $days . ' hari)',
+                'biaya' => $biaya_kamar,
+                'jumlah' => $days,
+                'subtotal' => $total_kamar
+             ];
+             $total_biaya += $total_kamar;
+        }
+
+        // 3. Tindakan Dokter
+        $tindakan_dr = $this->db('rawat_inap_dr')
+            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)->toArray();
+        foreach ($tindakan_dr as $t) {
+            $details[] = [
+                'kategori' => 'Tindakan Dokter',
+                'nama' => $t['nm_perawatan'],
+                'biaya' => $t['biaya_rawat'],
+                'jumlah' => 1,
+                'subtotal' => $t['biaya_rawat']
+            ];
+            $total_biaya += $t['biaya_rawat'];
+        }
+
+        // 4. Tindakan Perawat
+        $tindakan_pr = $this->db('rawat_inap_pr')
+            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)->toArray();
+        foreach ($tindakan_pr as $t) {
+            $details[] = [
+                'kategori' => 'Tindakan Perawat',
+                'nama' => $t['nm_perawatan'],
+                'biaya' => $t['biaya_rawat'],
+                'jumlah' => 1,
+                'subtotal' => $t['biaya_rawat']
+            ];
+            $total_biaya += $t['biaya_rawat'];
+        }
+
+        // 5. Tindakan Dokter & Perawat
+        $tindakan_drpr = $this->db('rawat_inap_drpr')
+            ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)->toArray();
+        foreach ($tindakan_drpr as $t) {
+            $details[] = [
+                'kategori' => 'Tindakan Dokter & Perawat',
+                'nama' => $t['nm_perawatan'],
+                'biaya' => $t['biaya_rawat'],
+                'jumlah' => 1,
+                'subtotal' => $t['biaya_rawat']
+            ];
+            $total_biaya += $t['biaya_rawat'];
+        }
+
+        // 6. Obat & BHP
+        $obat = $this->db('detail_pemberian_obat')
+            ->join('databarang', 'databarang.kode_brng = detail_pemberian_obat.kode_brng')
+            ->where('no_rawat', $no_rawat)
+            ->where('detail_pemberian_obat.status', 'Ranap')
+            ->toArray();
+            
+        foreach ($obat as $o) {
+            $details[] = [
+                'kategori' => 'Obat & BHP',
+                'nama' => $o['nama_brng'],
+                'biaya' => $o['biaya_obat'],
+                'jumlah' => $o['jml'],
+                'subtotal' => $o['total'] + $o['embalase'] + $o['tuslah'],
+                'kode_brng' => $o['kode_brng'],
+                'tgl_peresepan' => $o['tgl_perawatan'],
+                'jam_peresepan' => $o['jam'],
+                'kd_bangsal' => $o['kd_bangsal'],
+                'type' => 'obat'
+            ];
+            $total_biaya += ($o['total'] + $o['embalase'] + $o['tuslah']);
+        }
+
+        // 7. Laboratorium
+        $lab = $this->db('periksa_lab')
+            ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw = periksa_lab.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)
+            ->where('periksa_lab.status', 'Ranap')
+            ->toArray();
+        foreach ($lab as $l) {
+            $details[] = [
+                'kategori' => 'Laboratorium',
+                'nama' => $l['nm_perawatan'],
+                'biaya' => $l['biaya'],
+                'jumlah' => 1,
+                'subtotal' => $l['biaya']
+            ];
+            $total_biaya += $l['biaya'];
+        }
+
+        // 8. Radiologi
+        $rad = $this->db('periksa_radiologi')
+            ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = periksa_radiologi.kd_jenis_prw')
+            ->where('no_rawat', $no_rawat)
+            ->where('periksa_radiologi.status', 'Ranap')
+            ->toArray();
+        foreach ($rad as $r) {
+            $details[] = [
+                'kategori' => 'Radiologi',
+                'nama' => $r['nm_perawatan'],
+                'biaya' => $r['biaya'],
+                'jumlah' => 1,
+                'subtotal' => $r['biaya']
+            ];
+            $total_biaya += $r['biaya'];
+        }
+        
+        // 9. Tambahan Biaya
+        $tambahan = $this->db('tambahan_biaya')->where('no_rawat', $no_rawat)->toArray();
+        foreach ($tambahan as $t) {
+             $details[] = [
+                'kategori' => 'Tambahan',
+                'nama' => $t['nama_biaya'],
+                'biaya' => $t['besar_biaya'],
+                'jumlah' => 1,
+                'subtotal' => $t['besar_biaya']
+            ];
+            $total_biaya += $t['besar_biaya'];
+        }
+
+        // 10. Obat Pulang
+        $resep_pulang = $this->db('resep_pulang')
+            ->join('databarang', 'databarang.kode_brng = resep_pulang.kode_brng')
+            ->where('resep_pulang.no_rawat', $no_rawat)
+            ->toArray();
+        foreach ($resep_pulang as $r) {
+            $details[] = [
+                'kategori' => 'Obat Pulang',
+                'nama' => $r['nama_brng'],
+                'biaya' => $r['harga'],
+                'jumlah' => $r['jml_barang'],
+                'subtotal' => $r['total'],
+                'kode_brng' => $r['kode_brng'],
+                'tanggal' => $r['tanggal'],
+                'jam' => $r['jam'],
+                'type' => 'obat_pulang'
+            ];
+            $total_biaya += $r['total'];
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => [
+                'registrasi' => $reg_periksa,
+                'kamar_inap' => $kamar_inap,
+                'details' => $details,
+                'total' => $total_biaya,
+                'billing_control' => $billingControl
+            ]
+        ], JSON_PRETTY_PRINT);
+        exit;
+    }
+
+    public function apiHapusItem()
+    {
+        try {
+            $payload = json_decode(file_get_contents('php://input'), true);
+            $billingControl = $this->getBillingClosingState($payload['no_rawat'] ?? '');
+            if ($billingControl['edit_locked']) {
+                $this->respondBillingLock($billingControl, true);
+            }
+
+            $type = $payload['type'] ?? '';
+
+            if ($type === 'obat') {
+                $payload['jml'] = $payload['jml'] ?? $payload['jumlah'] ?? 0;
+                $kd_bangsal = $payload['kd_bangsal'] ?? $this->settings->get('farmasi.deporanap');
+                $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $payload['kode_brng'])->where('kd_bangsal', $kd_bangsal)->oneArray();
+
+                $this->db('gudangbarang')
+                    ->where('kode_brng', $payload['kode_brng'])
+                    ->where('kd_bangsal', $kd_bangsal)
+                    ->update([
+                        'stok' => $get_gudangbarang['stok'] + $payload['jml']
+                    ]);
+
+                $this->db('riwayat_barang_medis')
+                    ->save([
+                        'kode_brng' => $payload['kode_brng'],
+                        'stok_awal' => $get_gudangbarang['stok'],
+                        'masuk' => $payload['jml'],
+                        'keluar' => '0',
+                        'stok_akhir' => $get_gudangbarang['stok'] + $payload['jml'],
+                        'posisi' => 'Pemberian Obat',
+                        'tanggal' => $payload['tgl_peresepan'],
+                        'jam' => $payload['jam_peresepan'],
+                        'petugas' => $this->core->getUserInfo('fullname', null, true),
+                        'kd_bangsal' => $kd_bangsal,
+                        'status' => 'Hapus',
+                        'no_batch' => $get_gudangbarang['no_batch'],
+                        'no_faktur' => $get_gudangbarang['no_faktur'],
+                        'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
+                    ]);
+
+                $this->db('detail_pemberian_obat')
+                    ->where('tgl_perawatan', $payload['tgl_peresepan'])
+                    ->where('jam', $payload['jam_peresepan'])
+                    ->where('no_rawat', $payload['no_rawat'])
+                    ->where('kode_brng', $payload['kode_brng'])
+                    ->where('jml', $payload['jml'])
+                    ->where('status', 'Ranap')
+                    ->where('kd_bangsal', $kd_bangsal)
+                    ->delete();
+            }
+
+            echo json_encode(['status' => 'success']);
+
+        } catch (\Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        exit;
     }
 
     public function anyManage()
@@ -38,7 +730,7 @@ class Admin extends AdminModule
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang, $status_periksa);
-        return $this->draw('manage.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        return $this->draw('manage.html', ['rawat_inap' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim)]);
     }
 
     public function anyDisplay()
@@ -62,7 +754,7 @@ class Admin extends AdminModule
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang, $status_periksa);
-        echo $this->draw('display.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        echo $this->draw('display.html', ['rawat_inap' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim)]);
         exit();
     }
 
@@ -147,8 +839,99 @@ class Admin extends AdminModule
 
     }
 
+    public function anyShift()
+    {
+        $this->_addHeaderFiles();
+        $user_id = $this->core->getUserInfo('id');
+        $open_shift = $this->db('mlite_kasir_shift')->where('user_id', $user_id)->isNull('waktu_tutup')->desc('id_shift')->oneArray();
+        return $this->draw('shift.html', ['open_shift' => $open_shift]);
+    }
+
+    public function postOpenKasir()
+    {
+        $user_id = $this->core->getUserInfo('id');
+        $cek = $this->db('mlite_kasir_shift')->where('user_id', $user_id)->isNull('waktu_tutup')->oneArray();
+        if ($cek) {
+            $this->notify('danger', 'Shift kasir masih terbuka');
+            redirect(url([ADMIN, 'kasir_rawat_inap', 'shift']));
+        }
+        $kas_awal = floatval($_POST['kas_awal'] ?? 0);
+        $this->db('mlite_kasir_shift')->save([
+            'user_id' => $user_id,
+            'waktu_buka' => date('Y-m-d H:i:s'),
+            'waktu_tutup' => null,
+            'kas_awal' => $kas_awal,
+            'keterangan' => $_POST['keterangan'] ?? ''
+        ]);
+        $this->notify('success', 'Shift kasir dibuka');
+        redirect(url([ADMIN, 'kasir_rawat_inap', 'shift']));
+    }
+
+    public function postCloseKasir()
+    {
+        $user_id = $this->core->getUserInfo('id');
+        $shift = $this->db('mlite_kasir_shift')->where('user_id', $user_id)->isNull('waktu_tutup')->desc('id_shift')->oneArray();
+        if (!$shift) {
+            $this->notify('danger', 'Tidak ada shift terbuka');
+            redirect(url([ADMIN, 'kasir_rawat_inap', 'shift']));
+        }
+        $kas_akhir = floatval($_POST['kas_akhir'] ?? 0);
+        $pdo = $this->db()->pdo();
+        $stmt = $pdo->prepare("SELECT IFNULL(SUM(jumlah_harus_bayar),0) as total FROM mlite_billing WHERE id_user = ? AND CONCAT(tgl_billing,' ',jam_billing) BETWEEN ? AND ?");
+        $stmt->execute([$user_id, $shift['waktu_buka'], date('Y-m-d H:i:s')]);
+        $row = $stmt->fetch();
+        $total = floatval($row[0] ?? 0);
+        $selisih = $kas_akhir - ($shift['kas_awal'] + $total);
+        $this->db('mlite_kasir_shift')->where('id_shift', $shift['id_shift'])->save([
+            'waktu_tutup' => date('Y-m-d H:i:s'),
+            'kas_akhir' => $kas_akhir,
+            'total_transaksi' => $total,
+            'selisih' => $selisih
+        ]);
+        $this->notify('success', 'Shift kasir ditutup');
+        redirect(url([ADMIN, 'kasir_rawat_inap', 'shift']));
+    }
+
+    public function anyReport()
+    {
+        $this->_addHeaderFiles();
+        $awal = isset($_GET['awal']) ? $_GET['awal'] : date('Y-m-d').' 00:00:00';
+        $akhir = isset($_GET['akhir']) ? $_GET['akhir'] : date('Y-m-d').' 23:59:59';
+        $pdo = $this->db()->pdo();
+        $stmt = $pdo->prepare("SELECT b.id_user, COALESCE(p.nama, u.fullname) AS nama_kasir, COUNT(*) transaksi, IFNULL(SUM(b.jumlah_harus_bayar),0) total, MIN(CONCAT(b.tgl_billing,' ',b.jam_billing)) mulai, MAX(CONCAT(b.tgl_billing,' ',b.jam_billing)) selesai FROM mlite_billing b INNER JOIN ( SELECT no_rawat, MAX(CONCAT(tgl_billing,' ',jam_billing)) AS max_waktu FROM mlite_billing WHERE kd_billing LIKE 'RI%' AND CONCAT(tgl_billing,' ',jam_billing) BETWEEN ? AND ? GROUP BY no_rawat ) latest ON latest.no_rawat=b.no_rawat AND CONCAT(b.tgl_billing,' ',b.jam_billing)=latest.max_waktu LEFT JOIN mlite_users u ON u.id=b.id_user LEFT JOIN pegawai p ON p.nik=u.username WHERE b.kd_billing LIKE 'RI%' GROUP BY b.id_user, nama_kasir");
+        $stmt->execute([$awal, $akhir]);
+        $rows = $stmt->fetchAll();
+
+        $detailStmt = $pdo->prepare("SELECT b.id_user, COALESCE(p.nama, u.fullname) AS nama_kasir, b.kd_billing, b.no_rawat, b.jumlah_harus_bayar, CONCAT(b.tgl_billing,' ',b.jam_billing) AS waktu, b.keterangan FROM mlite_billing b INNER JOIN ( SELECT no_rawat, MAX(CONCAT(tgl_billing,' ',jam_billing)) AS max_waktu FROM mlite_billing WHERE kd_billing LIKE 'RI%' AND CONCAT(tgl_billing,' ',jam_billing) BETWEEN ? AND ? GROUP BY no_rawat ) latest ON latest.no_rawat=b.no_rawat AND CONCAT(b.tgl_billing,' ',b.jam_billing)=latest.max_waktu LEFT JOIN mlite_users u ON u.id=b.id_user LEFT JOIN pegawai p ON p.nik=u.username WHERE b.kd_billing LIKE 'RI%' ORDER BY waktu ASC");
+        $detailStmt->execute([$awal, $akhir]);
+        $details = $detailStmt->fetchAll();
+
+        return $this->draw('report.html', ['awal' => $awal, 'akhir' => $akhir, 'rows' => $rows, 'details' => $details]);
+    }
+
+    public function anyReportExport()
+    {
+        $awal = isset($_GET['awal']) ? $_GET['awal'] : date('Y-m-d').' 00:00:00';
+        $akhir = isset($_GET['akhir']) ? $_GET['akhir'] : date('Y-m-d').' 23:59:59';
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="laporan_kasir_inap.csv"');
+        $pdo = $this->db()->pdo();
+        $stmt = $pdo->prepare("SELECT b.id_user, COALESCE(p.nama, u.fullname) AS nama_kasir, b.kd_billing, b.jumlah_harus_bayar, CONCAT(b.tgl_billing,' ',b.jam_billing) waktu FROM mlite_billing b INNER JOIN ( SELECT no_rawat, MAX(CONCAT(tgl_billing,' ',jam_billing)) AS max_waktu FROM mlite_billing WHERE kd_billing LIKE 'RI%' AND CONCAT(tgl_billing,' ',jam_billing) BETWEEN ? AND ? GROUP BY no_rawat ) latest ON latest.no_rawat=b.no_rawat AND CONCAT(b.tgl_billing,' ',b.jam_billing)=latest.max_waktu LEFT JOIN mlite_users u ON u.id=b.id_user LEFT JOIN pegawai p ON p.nik=u.username WHERE b.kd_billing LIKE 'RI%' ORDER BY waktu ASC");
+        $stmt->execute([$awal, $akhir]);
+        echo "id_user,nama_kasir,kd_billing,jumlah_harus_bayar,waktu\n";
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            echo $row['id_user'].",".($row['nama_kasir'] ?? '').",".$row['kd_billing'].",".$row['jumlah_harus_bayar'].",".$row['waktu']."\n";
+        }
+        exit();
+    }
+
     public function postSaveDetail()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       if($_POST['kat'] == 'tindakan') {
         $jns_perawatan = $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         if($_POST['provider'] == 'rawat_inap_dr') {
@@ -319,11 +1102,18 @@ class Admin extends AdminModule
           ]);
       }
 
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function postHapusDetail()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       if($_POST['provider'] == 'rawat_inap_dr') {
         $this->db('rawat_inap_dr')
         ->where('no_rawat', $_POST['no_rawat'])
@@ -348,11 +1138,18 @@ class Admin extends AdminModule
         ->where('jam_rawat', $_POST['jam_rawat'])
         ->delete();
       }
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function postHapusLaboratorium()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       $this->db('periksa_lab')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
@@ -360,11 +1157,18 @@ class Admin extends AdminModule
       ->where('jam', $_POST['jam_rawat'])
       ->where('status', 'Ranap')
       ->delete();
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function postHapusRadiologi()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       $this->db('periksa_radiologi')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
@@ -372,20 +1176,34 @@ class Admin extends AdminModule
       ->where('jam', $_POST['jam_rawat'])
       ->where('status', 'Ranap')
       ->delete();
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function postHapusTambahanBiaya()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       $this->db('tambahan_biaya')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('nama_biaya', $_POST['nama_biaya'])
       ->delete();
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function postHapusObat()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
 
       $this->db('gudangbarang')
@@ -423,11 +1241,14 @@ class Admin extends AdminModule
         ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
         ->delete();
 
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success']);
       exit();
     }
 
     public function anyRincian()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
 
       $rows_bangsal = $this->db('bangsal')
         ->join('kamar', 'kamar.kd_bangsal=bangsal.kd_bangsal')
@@ -491,20 +1312,135 @@ class Admin extends AdminModule
         $tindakan[] = $row;
       }
 
-      $rows_pemberian_obat = $this->db('detail_pemberian_obat')
-      ->where('no_rawat', $_POST['no_rawat'])
-      ->where('detail_pemberian_obat.status', 'Ranap')
-      ->toArray();
+      // $rows_pemberian_obat = $this->db('detail_pemberian_obat')
+      // ->where('no_rawat', $_POST['no_rawat'])
+      // ->where('detail_pemberian_obat.status', 'Ranap')
+      // ->toArray();
+
+      // $detail_pemberian_obat = [];
+      // $jumlah_total_obat = 0;
+      // $jumlah_total_embalase = 0;
+      // $jumlah_total_tuslah = 0;
+      // $no_obat = 1;
+      // foreach ($rows_pemberian_obat as $row) {
+      //   $row['nomor'] = $no_obat++;
+      //   $databarang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
+      //   $row['nama_brng'] = $databarang['nama_brng'];
+      //   $jumlah_total_obat += floatval($row['total']);
+      //   $jumlah_total_embalase += floatval($row['embalase']);
+      //   $jumlah_total_tuslah += floatval($row['tuslah']);
+      //   $detail_pemberian_obat[] = $row;
+      // }
+
+      // Collect racikan timestamps to exclude from detail_pemberian_obat
+      $exclude_jams = [];
+      $racikan_jams = $this->db('detail_obat_racikan')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      foreach($racikan_jams as $rj) {
+          $exclude_jams[] = $rj['jam'];
+      }
+
+      $query_pemberian = $this->db('detail_pemberian_obat')
+        ->where('detail_pemberian_obat.no_rawat', $_POST['no_rawat'])
+        ->where('detail_pemberian_obat.status', 'Ranap');
+
+      if(!empty($exclude_jams)) {
+          $query_pemberian->notIn('jam', $exclude_jams);
+      }
+
+      $rows_pemberian_obat = $query_pemberian->toArray();
 
       $detail_pemberian_obat = [];
       $jumlah_total_obat = 0;
+      $jumlah_total_embalase = 0;
+      $jumlah_total_tuslah = 0;
       $no_obat = 1;
       foreach ($rows_pemberian_obat as $row) {
         $row['nomor'] = $no_obat++;
         $databarang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
         $row['nama_brng'] = $databarang['nama_brng'];
         $jumlah_total_obat += floatval($row['total']);
+        $jumlah_total_embalase += floatval($row['embalase']);
+        $jumlah_total_tuslah += floatval($row['tuslah']);
         $detail_pemberian_obat[] = $row;
+      }
+
+      // Fetch detail_obat_racikan linked with riwayat_barang_medis for quantity
+      $rows_obat_racikan = $this->db('obat_racikan')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+
+      foreach ($rows_obat_racikan as $header) {
+        $ingredients_map = $this->db('detail_obat_racikan')
+            ->where('no_rawat', $header['no_rawat'])
+            ->where('no_racik', $header['no_racik'])
+            ->where('tgl_perawatan', $header['tgl_perawatan'])
+            ->where('jam', $header['jam'])
+            ->toArray();
+
+        $total_racikan = 0;
+        $total_embalase_racikan = 0;
+        $total_tuslah_racikan = 0;
+        $ingredient_rows = [];
+
+        foreach ($ingredients_map as $map) {
+            $row = $this->db('detail_pemberian_obat')
+                ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+                ->where('detail_pemberian_obat.no_rawat', $map['no_rawat'])
+                ->where('detail_pemberian_obat.kode_brng', $map['kode_brng'])
+                ->where('detail_pemberian_obat.tgl_perawatan', $map['tgl_perawatan'])
+                ->where('detail_pemberian_obat.jam', $map['jam'])
+                ->where('detail_pemberian_obat.status', 'Ranap')
+                ->oneArray();
+
+            if ($row) {
+                $subtotal = $row['total'];
+                
+                $total_racikan += $subtotal;
+                $total_embalase_racikan += $row['embalase'];
+                $total_tuslah_racikan += $row['tuslah'];
+    
+                // Prepare ingredient row (hide prices)
+                $row['nomor'] = ''; 
+                $row['nama_brng'] = str_repeat("\u{00A0}", 4) . ' - ' . $row['nama_brng'];
+                $row['total'] = 0;
+                $row['embalase'] = 0;
+                $row['tuslah'] = 0;
+                $row['biaya_obat'] = 0;
+                $row['jml'] = 0;
+                
+                $ingredient_rows[] = $row;
+            }
+        }
+
+        $header_row = [];
+        $header_row['nomor'] = $no_obat++;
+        $header_row['nama_brng'] = ">> Racikan " . $header['no_racik'] . ": " . $header['nama_racik'] . " (" . $header['jml_dr'] . " Bungkus)";
+        $header_row['jml'] = $header['jml_dr'];
+        
+        // Calculate unit price for display: total / qty
+        if ($header['jml_dr'] > 0) {
+            $header_row['biaya_obat'] = $total_racikan / $header['jml_dr'];
+        } else {
+            $header_row['biaya_obat'] = $total_racikan;
+        }
+
+        $header_row['total'] = $total_racikan;
+        $header_row['embalase'] = $total_embalase_racikan;
+        $header_row['tuslah'] = $total_tuslah_racikan;
+        $header_row['no_rawat'] = $header['no_rawat'];
+        $header_row['tgl_perawatan'] = $header['tgl_perawatan'];
+        $header_row['jam'] = $header['jam'];
+        $header_row['kode_brng'] = '-'; 
+        
+        $jumlah_total_obat += $total_racikan;
+        $jumlah_total_embalase += $total_embalase_racikan;
+        $jumlah_total_tuslah += $total_tuslah_racikan;
+
+        $detail_pemberian_obat[] = $header_row;
+        
+        foreach ($ingredient_rows as $row) {
+            $detail_pemberian_obat[] = $row;
+        }
       }
 
       $rows_periksa_lab = $this->db('periksa_lab')
@@ -562,6 +1498,61 @@ class Admin extends AdminModule
         $tambahan_biaya[] = $row;
       }
 
+      $rows_resep_pulang = $this->db('resep_pulang')
+        ->join('databarang', 'databarang.kode_brng=resep_pulang.kode_brng')
+        ->where('resep_pulang.no_rawat', $_POST['no_rawat'])
+        ->toArray();
+      $resep_pulang = [];
+      $no_resep_pulang = 1;
+      $jumlah_total_obat_pulang = 0;
+      foreach ($rows_resep_pulang as $row) {
+        $row['nomor'] = $no_resep_pulang++;
+        $jumlah_total_obat_pulang += $row['total'];
+        $resep_pulang[] = $row;
+      }
+
+      $totalTagihan = (float) $jumlah_total_bangsal
+        + (float) $jumlah_total
+        + (float) $jumlah_total_obat
+        + (float) $jumlah_total_embalase
+        + (float) $jumlah_total_tuslah
+        + (float) $jumlah_total_lab
+        + (float) $jumlah_total_radiologi
+        + (float) $jumlah_total_operasi
+        + (float) $jumlah_total_obat_operasi
+        + (float) $jumlah_total_obat_pulang
+        + (float) $jumlah_total_tambahan;
+
+      $billingTerakhir = $this->db('mlite_billing')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->like('kd_billing', 'RI%')
+        ->desc('id_billing')
+        ->oneArray();
+
+      $potonganAktif = (float) ($billingTerakhir['potongan'] ?? 0);
+      $jumlahHarusBayarAktif = isset($billingTerakhir['jumlah_harus_bayar'])
+        ? (float) $billingTerakhir['jumlah_harus_bayar']
+        : max(0, $totalTagihan - $potonganAktif);
+      $jumlahBayarAktif = (float) ($billingTerakhir['jumlah_bayar'] ?? 0);
+      $kembalianAktif = $jumlahBayarAktif - $jumlahHarusBayarAktif;
+
+      $billingParsialEnabled = $this->isBillingParsialEnabled();
+      $splitBill = null;
+      $splitHistory = [];
+      if ($billingParsialEnabled) {
+        $splitTotals = [
+          'ADMIN' => (float) $jumlah_total_bangsal,
+          'TINDAKAN' => (float) $jumlah_total,
+          'OBAT' => (float) ($jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah),
+          'LAB' => (float) $jumlah_total_lab,
+          'RAD' => (float) $jumlah_total_radiologi,
+          'OPERASI' => (float) ($jumlah_total_operasi + $jumlah_total_obat_operasi),
+          'TAMBAHAN' => (float) ($jumlah_total_obat_pulang + $jumlah_total_tambahan)
+        ];
+        $splitBill = $this->buildSplitBillSummary($_POST['no_rawat'], $splitTotals);
+        $splitHistory = $this->getSplitBillHistory($_POST['no_rawat']);
+      }
+
       echo $this->draw('rincian.html', [
         'rawat_inap_dr' => $rawat_inap_dr,
         'rawat_inap_pr' => $rawat_inap_pr,
@@ -569,18 +1560,32 @@ class Admin extends AdminModule
         'tindakan' => $tindakan,
         'jumlah_total' => $jumlah_total,
         'jumlah_total_obat' => $jumlah_total_obat,
+        'jumlah_total_embalase' => $jumlah_total_embalase,
+        'jumlah_total_tuslah' => $jumlah_total_tuslah,
         'bangsal' => $bangsal,
         'jumlah_total_bangsal' => $jumlah_total_bangsal,
-        'detail_pemberian_obat' => $detail_pemberian_obat,
+        'detail_pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat),
         'periksa_lab' => $periksa_lab,
         'jumlah_total_lab' => $jumlah_total_lab,
         'periksa_radiologi' => $periksa_radiologi,
         'jumlah_total_radiologi' => $jumlah_total_radiologi,
         'tambahan_biaya' => $tambahan_biaya,
         'jumlah_total_tambahan' => $jumlah_total_tambahan,
+        'resep_pulang' => htmlspecialchars_array($resep_pulang),
+        'jumlah_total_obat_pulang' => $jumlah_total_obat_pulang,
         'jumlah_total_operasi' => $jumlah_total_operasi,
         'jumlah_total_obat_operasi' => $jumlah_total_obat_operasi,
-        'no_rawat' => $_POST['no_rawat']
+        'total_tagihan' => $totalTagihan,
+        'billing_terakhir' => htmlspecialchars_array($billingTerakhir ?? []),
+        'potongan_aktif' => $potonganAktif,
+        'jumlah_harus_bayar_aktif' => $jumlahHarusBayarAktif,
+        'jumlah_bayar_aktif' => $jumlahBayarAktif,
+        'kembalian_aktif' => $kembalianAktif > 0 ? $kembalianAktif : 0,
+        'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'billing_control' => htmlspecialchars_array($billingControl),
+        'billing_parsial_enabled' => $billingParsialEnabled ? 'true' : 'false',
+        'split_bill' => $splitBill,
+        'split_history' => $splitHistory
       ]);
       exit();
     }
@@ -589,10 +1594,10 @@ class Admin extends AdminModule
     {
       $layanan = $this->db('jns_perawatan_inap')
         ->where('status', '1')
-        ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
+        ->like('nm_perawatan', '%'.htmlspecialchars($_POST['layanan'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
-      echo $this->draw('layanan.html', ['layanan' => $layanan]);
+      echo $this->draw('layanan.html', ['layanan' => htmlspecialchars_array($layanan)]);
       exit();
     }
 
@@ -602,17 +1607,17 @@ class Admin extends AdminModule
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
         ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
         ->where('status', '1')
-        ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
+        ->like('databarang.nama_brng', '%'.htmlspecialchars($_POST['obat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
-      echo $this->draw('obat.html', ['obat' => $obat]);
+      echo $this->draw('obat.html', ['obat' => htmlspecialchars_array($obat)]);
       exit();
     }
 
     public function anyTambahanBiaya()
     {
       $tambahan_biaya = $this->db('tambahan_biaya')
-        ->like('nama_biaya', '%'.$_POST['tambahan_biaya'].'%')
+        ->like('nama_biaya', '%'.htmlspecialchars($_POST['tambahan_biaya'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
       echo $this->draw('tambahan_biaya.html', ['tambahan_biaya' => $tambahan_biaya]);
@@ -623,10 +1628,10 @@ class Admin extends AdminModule
     {
       $laboratorium = $this->db('jns_perawatan_lab')
         ->where('status', '1')
-        ->like('nm_perawatan', '%'.$_POST['laboratorium'].'%')
+        ->like('nm_perawatan', '%'.htmlspecialchars($_POST['laboratorium'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
-      echo $this->draw('laboratorium.html', ['laboratorium' => $laboratorium]);
+      echo $this->draw('laboratorium.html', ['laboratorium' => htmlspecialchars_array($laboratorium)]);
       exit();
     }
 
@@ -634,10 +1639,10 @@ class Admin extends AdminModule
     {
       $radiologi = $this->db('jns_perawatan_radiologi')
         ->where('status', '1')
-        ->like('nm_perawatan', '%'.$_POST['radiologi'].'%')
+        ->like('nm_perawatan', '%'.htmlspecialchars($_POST['radiologi'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
-      echo $this->draw('radiologi.html', ['radiologi' => $radiologi]);
+      echo $this->draw('radiologi.html', ['radiologi' => htmlspecialchars_array($radiologi)]);
       exit();
     }
 
@@ -651,7 +1656,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["aturan"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["aturan"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -671,7 +1676,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kd_dokter"].': '.$row["nm_dokter"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["kd_dokter"].': '.$row["nm_dokter"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -691,7 +1696,7 @@ class Admin extends AdminModule
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["nip"].': '.$row["nama"].'</li>';
+            $output .= '<li class="list-group-item link-class">'.htmlspecialchars($row["nip"].': '.$row["nama"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</li>';
           }
         }
         echo $output;
@@ -701,13 +1706,111 @@ class Admin extends AdminModule
 
     }
 
+    public function postSplitpay()
+    {
+      if (!$this->isBillingParsialEnabled()) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Fitur billing parsial/split bill tidak diaktifkan.']);
+        exit();
+      }
+
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if (!$billingControl['exists']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
+      if (!$this->userIsAdmin() && !($billingControl['is_exam_closed'] ?? false)) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
+      if (!$this->userIsAdmin() && ($billingControl['edit_locked'] ?? false) && ($billingControl['is_paid'] ?? false)) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
+      $noRawat = trim((string) ($_POST['no_rawat'] ?? ''));
+      $kelompok = strtoupper(trim((string) ($_POST['kelompok'] ?? '')));
+      $metode = trim((string) ($_POST['metode'] ?? 'Tunai'));
+      $jumlah = (float) str_replace(',', '.', (string) ($_POST['jumlah_bayar'] ?? 0));
+
+      $allowed = ['ADMIN', 'TINDAKAN', 'OBAT', 'LAB', 'RAD', 'OPERASI', 'TAMBAHAN'];
+      if ($noRawat === '' || $kelompok === '' || !in_array($kelompok, $allowed, true) || $jumlah <= 0) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Data pembayaran split bill tidak valid.']);
+        exit();
+      }
+
+      $totals = $this->calculateSplitBillGroupTotals($noRawat, 'Ranap');
+      $summary = $this->buildSplitBillSummary($noRawat, $totals);
+      $remaining = 0;
+      foreach (($summary['groups'] ?? []) as $g) {
+        if (($g['kelompok'] ?? '') === $kelompok) {
+          $remaining = (float) ($g['remaining'] ?? 0);
+          break;
+        }
+      }
+      if ($remaining <= 0) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Kelompok billing sudah lunas.']);
+        exit();
+      }
+      if ($jumlah > $remaining) {
+        $jumlah = $remaining;
+      }
+
+      try {
+        $pdo = $this->core->db()->pdo();
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran (no_rawat, tgl_bayar, jam_bayar, metode, jumlah_bayar, id_user, keterangan)
+          VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+          $noRawat,
+          date('Y-m-d'),
+          date('H:i:s'),
+          $metode !== '' ? $metode : 'Tunai',
+          $jumlah,
+          (int) $this->core->getUserInfo('id'),
+          'Split bill'
+        ]);
+
+        $pembayaranId = (int) $pdo->lastInsertId();
+
+        $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran_detail (pembayaran_id, kelompok, jumlah_alokasi) VALUES (?, ?, ?)");
+        $stmt->execute([$pembayaranId, $kelompok, $jumlah]);
+
+        $pdo->commit();
+      } catch (\Exception $e) {
+        try { $this->core->db()->pdo()->rollBack(); } catch (\Exception $x) {}
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan pembayaran split bill.']);
+        exit();
+      }
+
+      $summary = $this->buildSplitBillSummary($noRawat, $this->calculateSplitBillGroupTotals($noRawat, 'Ranap'));
+      $this->updateStatusBayarFromSplitSummary($noRawat, $summary);
+
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success', 'message' => 'Pembayaran split bill berhasil disimpan.']);
+      exit();
+    }
+
     public function postSave()
     {
+      $billingControl = $this->getBillingClosingState($_POST['no_rawat'] ?? '');
+      if ($billingControl['edit_locked']) {
+        $this->respondBillingLock($billingControl, true);
+      }
+
       $_POST['id_user']	= $this->core->getUserInfo('id');
       $query = $this->db('mlite_billing')->save($_POST);
       if($query) {
         $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->update(['status_bayar' => 'Sudah Bayar']);
       }
+      header('Content-Type: application/json');
+      echo json_encode([
+        'status' => $query ? 'success' : 'error',
+        'message' => $query ? 'Billing berhasil disimpan.' : 'Billing gagal disimpan.'
+      ]);
       exit();
     }
 
@@ -716,13 +1819,36 @@ class Admin extends AdminModule
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
       $show = isset($_GET['show']) ? $_GET['show'] : "";
+      $noRawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : ($_POST['no_rawat'] ?? '');
+      $billingControl = $this->getBillingClosingState($noRawat);
       switch($show){
        default:
-        if($this->db('mlite_billing')->where('no_rawat', $_POST['no_rawat'])->like('kd_billing', 'RI%')->oneArray()) {
-          echo 'OK';
+        header('Content-Type: application/json');
+        if ($billingControl['print_locked']) {
+          echo json_encode([
+            'status' => 'error',
+            'message' => $billingControl['message']
+          ]);
+          exit();
+        }
+
+        if($billingControl['billing_exists']) {
+          echo json_encode([
+            'status' => 'success',
+            'message' => 'OK'
+          ]);
+        } else {
+          echo json_encode([
+            'status' => 'error',
+            'message' => 'Data faktur belum disimpan. Silahkan simpan dulu sebelum mencetak.'
+          ]);
         }
         break;
         case "besar":
+        if (!$billingControl['billing_exists']) {
+          echo 'Data faktur belum disimpan. Silahkan simpan dulu sebelum mencetak.';
+          exit();
+        }
         $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
 
         $result_detail['kamar_inap'] = $this->db('kamar_inap')
@@ -782,6 +1908,11 @@ class Admin extends AdminModule
           ->where('no_rawat', $_GET['no_rawat'])
           ->toArray();
 
+        $result_detail['resep_pulang'] = $this->db('resep_pulang')
+          ->join('databarang', 'databarang.kode_brng=resep_pulang.kode_brng')
+          ->where('resep_pulang.no_rawat', $_GET['no_rawat'])
+          ->toArray();
+
         $jumlah_total_operasi = 0;
         $operasis = $this->db('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $_GET['no_rawat'])->where('operasi.status', 'Ranap')->toArray();
         $result_detail['operasi'] = [];
@@ -802,60 +1933,180 @@ class Admin extends AdminModule
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
 
-        $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
-        $im=$qr->createImage(4,4);
-        imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
+        /* ===============================
+        * QR CODE
+        * =============================== */
+        $qr = QRCode::getMinimumQRCode(
+            $this->core->getUserInfo('fullname', null, true),
+            QR_ERROR_CORRECT_LEVEL_L
+        );
+        $im = $qr->createImage(4,4);
+        imagepng($im, BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
         imagedestroy($im);
 
-        $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
         $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
 
+        /* ===============================
+        * PREPARE TEMPLATE DATA
+        * =============================== */
+        $this->tpl->set('billing_obat', $this->settings->get('settings.billing_obat'));
+        $this->tpl->set('wagateway', $this->settings->get('wagateway'));
+        $this->tpl->set('billing', $result);
+        // $this->tpl->set('total_billing_obat', $total_detail_pemberian_obat);
+        $this->tpl->set('billing_besar_detail', $result_detail);
+        $this->tpl->set('pasien', $pasien);
+        $this->tpl->set('qrCode', $qrCode);
+        $this->tpl->set('fullname', $this->core->getUserInfo('fullname', null, true)); 
+
+        /* ===============================
+        * RENDER HTML SEKALI
+        * =============================== */
+        $html = $this->draw('billing.besar.html');
+
+        /* ===============================
+        * GENERATE PDF
+        * =============================== */
         if (file_exists(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf')) {
-          unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
+            unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
         }
 
         $mpdf = new \Mpdf\Mpdf([
-          'mode' => 'utf-8',
-          'format' => 'A4', 
-          'orientation' => 'P'
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P'
         ]);
-  
-        $css = '
-        <style>
-          del { 
-            display: none;
-          }
-          table {
-            padding-top: 1cm;
-            padding-bottom: 1cm;
-          }
-          td, th {
-            border-bottom: 1px solid #dddddd;
-            padding: 5px;
-          }        
-          tr:nth-child(even) {
-            background-color: #ffffff;
-          }
-        </style>
-        ';
-        
-        $url = url(ADMIN.'/tmp/billing.besar.html');
-        $html = file_get_contents($url);
-        $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-        $mpdf->WriteHTML($css);
+
+        $mpdf->WriteHTML(
+            $this->core->setPrintCss(),
+            \Mpdf\HTMLParserMode::HEADER_CSS
+        );
+
         $mpdf->WriteHTML($html);
-    
-        // Output a PDF file save to server
-        $mpdf->Output(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf','F');
-                
-        echo $this->draw('billing.besar.html', ['wagateway' => $this->settings->get('wagateway'), 'billing' => $result, 'billing_besar_detail' => $result_detail, 'jumlah_total_operasi' => $jumlah_total_operasi, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
+
+        $mpdf->Output(
+            UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',
+            'F'
+        );
+
+        /* ===============================
+        * OUTPUT HTML (PREVIEW)
+        * =============================== */
+        echo $html;
         break;
         case "kecil":
+        if (!$billingControl['billing_exists']) {
+          echo 'Data faktur belum disimpan. Silahkan simpan dulu sebelum mencetak.';
+          exit();
+        }
         $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
-        echo $this->draw('billing.kecil.html', ['billing' => $result, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
+        echo $this->draw('billing.kecil.html', ['billing' => htmlspecialchars_array($result), 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
+      }
+      exit();
+    }
+
+    public function anyKuitansiSplit()
+    {
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $pembayaranId = (int) ($_GET['pembayaran_id'] ?? 0);
+      if ($pembayaranId <= 0) {
+        echo 'ID pembayaran tidak valid.';
+        exit();
+      }
+
+      $pdo = $this->core->db()->pdo();
+
+      try {
+        $stmt = $pdo->prepare("SELECT h.id, h.no_rawat, h.tgl_bayar, h.jam_bayar, h.metode, h.jumlah_bayar, h.id_user, h.keterangan,
+          COALESCE(p.nama, u.fullname) AS nama_kasir
+          FROM mlite_billing_pembayaran h
+          LEFT JOIN mlite_users u ON u.id = h.id_user
+          LEFT JOIN pegawai p ON p.nik = u.username
+          WHERE h.id = ?");
+        $stmt->execute([$pembayaranId]);
+        $pembayaran = $stmt->fetch(\PDO::FETCH_ASSOC);
+      } catch (\Exception $e) {
+        $pembayaran = null;
+      }
+
+      if (!$pembayaran) {
+        echo 'Data pembayaran tidak ditemukan.';
+        exit();
+      }
+
+      $noRawat = (string) ($pembayaran['no_rawat'] ?? '');
+      $billingControl = $this->getBillingClosingState($noRawat);
+      if (!$billingControl['exists']) {
+        $this->respondBillingLock($billingControl, false);
+      }
+
+      if (!$this->userIsAdmin() && !($billingControl['is_exam_closed'] ?? false)) {
+        $this->respondBillingLock($billingControl, false);
+      }
+
+      try {
+        $stmt = $pdo->prepare("SELECT kelompok, jumlah_alokasi FROM mlite_billing_pembayaran_detail WHERE pembayaran_id = ? ORDER BY id ASC");
+        $stmt->execute([$pembayaranId]);
+        $detail = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      } catch (\Exception $e) {
+        $detail = [];
+      }
+
+      $labelMap = [
+        'ADMIN' => 'Administrasi/Kamar',
+        'TINDAKAN' => 'Tindakan',
+        'OBAT' => 'Obat & BHP',
+        'LAB' => 'Laboratorium',
+        'RAD' => 'Radiologi',
+        'OPERASI' => 'Operasi',
+        'TAMBAHAN' => 'Tambahan/Lain-lain'
+      ];
+
+      $detailDisplay = [];
+      $totalDetail = 0;
+      foreach ($detail as $d) {
+        $kelompok = strtoupper(trim((string) ($d['kelompok'] ?? '')));
+        $jumlah = (float) ($d['jumlah_alokasi'] ?? 0);
+        $totalDetail += $jumlah;
+        $detailDisplay[] = [
+          'kelompok' => $kelompok,
+          'label' => $labelMap[$kelompok] ?? $kelompok,
+          'jumlah_alokasi' => $jumlah
+        ];
+      }
+
+      $reg = $this->db('reg_periksa')->where('no_rawat', $noRawat)->oneArray();
+      $pasien = [];
+      if (!empty($reg['no_rkm_medis'])) {
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $reg['no_rkm_medis'])->oneArray();
+      }
+
+      $namaKasir = trim((string) ($pembayaran['nama_kasir'] ?? ''));
+      if ($namaKasir === '') {
+        $namaKasir = $this->core->getUserInfo('fullname', null, true);
+      }
+
+      $show = isset($_GET['show']) ? (string) $_GET['show'] : 'kecil';
+      if ($show === 'besar') {
+        echo $this->draw('kuitansi_split.besar.html', [
+          'pembayaran' => htmlspecialchars_array($pembayaran),
+          'detail' => htmlspecialchars_array($detailDisplay),
+          'pasien' => htmlspecialchars_array($pasien),
+          'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'total_detail' => $totalDetail
+        ]);
+      } else {
+        echo $this->draw('kuitansi_split.kecil.html', [
+          'pembayaran' => htmlspecialchars_array($pembayaran),
+          'detail' => htmlspecialchars_array($detailDisplay),
+          'pasien' => htmlspecialchars_array($pasien),
+          'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+          'total_detail' => $totalDetail
+        ]);
       }
       exit();
     }
@@ -873,7 +2124,7 @@ class Admin extends AdminModule
       $binary_content = file_get_contents($file);
 
       if ($binary_content === false) {
-         throw new Exception("Could not fetch remote content from: '$file'");
+         throw new \Exception("Could not fetch remote content from: '$file'");
       }
 
 	    $mail = new PHPMailer(true);

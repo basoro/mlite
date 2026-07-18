@@ -1,5 +1,7 @@
 <div class="row">
     <form action="{?=url(ADMIN.'/settings/saveGeneral')?}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_b64" value="1" />
+        <input type="hidden" name="_b64_fields" value="" />
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -9,57 +11,57 @@
                     <div class="form-group">
                         <label>Logo</label>
                         <div>
-                          <img src="{?=url()?}/{$settings.logo}" width="96" height="96" class="img-thumbnail" id="logoPreview" style="cursor:pointer;" onclick="$('input[name=logo]').click()" />
+                          <img src="{?=url()?}/{?=isset_or($settings.logo)?}" width="96" height="96" class="img-thumbnail" id="logoPreview" style="cursor:pointer;" onclick="$('input[name=logo]').click()" />
                           <input type="file" name="logo" class="form-control hidden" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Nama Instansi</label>
-                        <input type="text" name="nama_instansi" class="form-control" value="{$settings.nama_instansi}" required />
+                        <input type="text" name="nama_instansi" class="form-control" value="{?=isset_or($settings.nama_instansi)?}" required />
                     </div>
                     <div class="form-group">
                         <label>Alamat</label>
-                        <input type="text" name="alamat" class="form-control" value="{$settings.alamat}" required />
+                        <input type="text" name="alamat" class="form-control" value="{?=isset_or($settings.alamat)?}" required />
                     </div>
                     <div class="form-group">
                         <label>Kota/Kabupaten</label>
-                        <input type="text" name="kota" class="form-control" value="{$settings.kota}" required />
+                        <input type="text" name="kota" class="form-control" value="{?=isset_or($settings.kota)?}" required />
                     </div>
                     <div class="form-group">
                         <label>Propinsi</label>
-                        <input type="text" name="propinsi" class="form-control" value="{$settings.propinsi}" required />
+                        <input type="text" name="propinsi" class="form-control" value="{?=isset_or($settings.propinsi)?}" required />
                     </div>
                     <div class="form-group">
                         <label>Nomor Telepon</label>
-                        <input type="text" name="nomor_telepon" class="form-control" value="{$settings.nomor_telepon}" required />
+                        <input type="text" name="nomor_telepon" class="form-control" value="{?=isset_or($settings.nomor_telepon)?}" required />
                     </div>
                     <div class="form-group">
                         <label>E-Mail</label>
-                        <input type="text" name="email" class="form-control" value="{$settings.email}" required />
+                        <input type="text" name="email" class="form-control" value="{?=isset_or($settings.email)?}" required />
                     </div>
                     <div class="form-group">
                         <label>Website</label>
-                        <input type="text" name="website" class="form-control" value="{$settings.website}" required />
+                        <input type="text" name="website" class="form-control" value="{?=isset_or($settings.website)?}" required />
                     </div>
                     <div class="form-group">
                         <label>Halaman depan</label>
                         <select name="homepage" class="form-control" data-use-search="true">
                             {loop: $settings.pages}
-                            <option value="{$value.slug}" {if: $settings.homepage == $value.slug}selected{/if}>{$value.title} ({$value.slug})</option>
+                            <option value="{?=isset_or($value.slug)?}" {if: $settings.homepage == $value.slug}selected{/if}>{?=isset_or($value.title)?} ({?=isset_or($value.slug)?})</option>
                             {/loop}
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Wallpaper</label>
                         <div>
-                          <img src="{?=url()?}/{$settings.wallpaper}" width="320" height="240" class="img-thumbnail" id="wallpaperPreview" style="cursor:pointer;" onclick="$('input[name=wallpaper]').click()" />
+                          <img src="{?=url()?}/{?=isset_or($settings.wallpaper)?}" width="320" height="240" class="img-thumbnail" id="wallpaperPreview" style="cursor:pointer;" onclick="$('input[name=wallpaper]').click()" />
                           <input type="file" name="wallpaper" class="form-control hidden" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Dashboard Text Color</label>
                         <div id="text-color" class="input-group">
-                            <input type="text" name="text_color" class="form-control" value="{$settings.text_color}" required />
+                            <input type="text" name="text_color" class="form-control" value="{?=isset_or($settings.text_color)?}" required />
                             <span class="input-group-addon"><i></i></span>
                         </div>
                     </div>
@@ -68,6 +70,7 @@
                         <select name="theme_admin" class="form-control" onchange="change_theme(this,'theme_admin');" >
                             <option value="">Pilih tema</option>
                             <option value="ataaka"{if: $settings.theme_admin == 'ataaka'} selected{/if}>Ataaka</option>
+                            <option value="atilamedika"{if: $settings.theme_admin == 'atilamedika'} selected{/if}>Atilamedika</option>
                             <option value="bootstrap"{if: $settings.theme_admin == 'bootstrap'} selected{/if}>Default</option>
                             <option value="cerulean"{if: $settings.theme_admin == 'cerulean'} selected{/if}>Cerulean</option>
                             <option value="cosmo"{if: $settings.theme_admin == 'cosmo'} selected{/if}>Cosmo</option>
@@ -80,6 +83,7 @@
                             <option value="paper"{if: $settings.theme_admin == 'paper'} selected{/if}>Paper</option>
                             <option value="readable"{if: $settings.theme_admin == 'readable'} selected{/if}>Readable</option>
                             <option value="sandstone"{if: $settings.theme_admin == 'sandstone'} selected{/if}>Sandstone</option>
+                            <option value="sketchy"{if: $settings.theme_admin == 'sketchy'} selected{/if}>Sketchy</option>
                             <option value="simplex"{if: $settings.theme_admin == 'simplex'} selected{/if}>Simplex</option>
                             <option value="slate"{if: $settings.theme_admin == 'slate'} selected{/if}>Slate</option>
                             <option value="spacelab"{if: $settings.theme_admin == 'spacelab'} selected{/if}>Spacelab</option>
@@ -88,13 +92,13 @@
                             <option value="yeti"{if: $settings.theme_admin == 'yeti'} selected{/if}>Yeti</option>
                         </select>
                         <br><br>
-                        <img id="theme_admin" src="{?=url()?}/assets/img/{$settings.theme_admin}.png" width="400">
+                        <img id="theme_admin" src="{?=url()?}/assets/img/{?=isset_or($settings.theme_admin)?}.png" width="400">
                     </div>
                     <div class="form-group">
                         <label>Zona waktu</label>
                         <select name="timezone" class="form-control" data-use-search="true">
                             {loop: $settings.timezones}
-                            <option value="{$key}" {if: $settings.timezone == $key}selected{/if}>{$value}</option>
+                            <option value="{?=isset_or($key)?}" {if: $settings.timezone == $key}selected{/if}>{?=isset_or($value)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -111,7 +115,7 @@
                         <label>IGD</label>
                         <select name="igd" class="form-control" data-use-search="true">
                             {loop: $settings.poliklinik}
-                            <option value="{$value.kd_poli}" {if: $settings.igd == $value.kd_poli}selected{/if}>{$value.nm_poli}</option>
+                            <option value="{?=isset_or($value.kd_poli)?}" {if: $settings.igd == $value.kd_poli}selected{/if}>{?=isset_or($value.nm_poli)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -121,7 +125,7 @@
                         <label>Laboratorium</label>
                         <select name="laboratorium" class="form-control" data-use-search="true">
                             {loop: $settings.poliklinik}
-                            <option value="{$value.kd_poli}" {if: $settings.laboratorium == $value.kd_poli}selected{/if}>{$value.nm_poli}</option>
+                            <option value="{?=isset_or($value.kd_poli)?}" {if: $settings.laboratorium == $value.kd_poli}selected{/if}>{?=isset_or($value.nm_poli)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -129,7 +133,7 @@
                         <label>Penanggung Jawab Laboratorium</label>
                         <select name="pj_laboratorium" class="form-control" data-use-search="true">
                             {loop: $settings.dokter}
-                            <option value="{$value.kd_dokter}" {if: $settings.pj_laboratorium == $value.kd_dokter}selected{/if}>{$value.nm_dokter}</option>
+                            <option value="{?=isset_or($value.kd_dokter)?}" {if: $settings.pj_laboratorium == $value.kd_dokter}selected{/if}>{?=isset_or($value.nm_dokter)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -139,7 +143,7 @@
                         <label>Radiologi</label>
                         <select name="radiologi" class="form-control" data-use-search="true">
                             {loop: $settings.poliklinik}
-                            <option value="{$value.kd_poli}" {if: $settings.radiologi == $value.kd_poli}selected{/if}>{$value.nm_poli}</option>
+                            <option value="{?=isset_or($value.kd_poli)?}" {if: $settings.radiologi == $value.kd_poli}selected{/if}>{?=isset_or($value.nm_poli)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -147,7 +151,7 @@
                         <label>Penanggung Jawab Radiologi</label>
                         <select name="pj_radiologi" class="form-control" data-use-search="true">
                             {loop: $settings.dokter}
-                            <option value="{$value.kd_dokter}" {if: $settings.pj_radiologi == $value.kd_dokter}selected{/if}>{$value.nm_dokter}</option>
+                            <option value="{?=isset_or($value.kd_dokter)?}" {if: $settings.pj_radiologi == $value.kd_dokter}selected{/if}>{?=isset_or($value.nm_dokter)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -161,7 +165,7 @@
                                 <input type="radio" name="dokter_ralan_per_dokter" value="true" {if: $settings.dokter_ralan_per_dokter == 'true'}checked{/if} /> Per Dokter
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="dokter_ralan_per_dokter" value="false" {if: $settings.dokter_ralan_per_dokter == 'false'}checked{/if} /> Per Klinik
+                               <input type="radio" name="dokter_ralan_per_dokter" value="false" {if: $settings.dokter_ralan_per_dokter == 'false' || empty($settings.dokter_ralan_per_dokter)}checked{/if} /> Per Klinik
                              </label>
                          </div>
                     </div>
@@ -172,7 +176,7 @@
                                 <input type="radio" name="responsivevoice" value="true" {if: $settings.responsivevoice == 'true'}checked{/if} /> Aktif
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="responsivevoice" value="false" {if: $settings.responsivevoice == 'false'}checked{/if} /> Tidak Aktif
+                                <input type="radio" name="responsivevoice" value="false" {if: $settings.responsivevoice == 'false' || empty($settings.responsivevoice)}checked{/if} /> Tidak Aktif
                              </label>
                          </div>
                     </div>
@@ -182,7 +186,7 @@
                         <label>Aktifkan Cek Status Bayar</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="cekstatusbayar" value="false" {if: $settings.cekstatusbayar == 'false'}checked{/if} /> Tidak
+                               <input type="radio" name="cekstatusbayar" value="false" {if: $settings.cekstatusbayar == 'false' || empty($settings.cekstatusbayar)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="cekstatusbayar" value="true" {if: $settings.cekstatusbayar == 'true'}checked{/if} /> Ya
@@ -193,7 +197,7 @@
                         <label>Aktifkan Cek Limit Kuota</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="ceklimit" value="false" {if: $settings.ceklimit == 'false'}checked{/if} /> Tidak
+                               <input type="radio" name="ceklimit" value="false" {if: $settings.ceklimit == 'false' || empty($settings.ceklimit)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="ceklimit" value="true" {if: $settings.ceklimit == 'true'}checked{/if} /> Ya
@@ -206,7 +210,7 @@
                         <label>Aktifkan Notifikasi Presensi</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="notif_presensi" value="false" {if: $settings.notif_presensi == 'false'}checked{/if} /> Tidak
+                               <input type="radio" name="notif_presensi" value="false" {if: $settings.notif_presensi == 'false' || empty($settings.notif_presensi)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="notif_presensi" value="true" {if: $settings.notif_presensi == 'true'}checked{/if} /> Ya
@@ -218,7 +222,7 @@
                         <label>Tambilkan Obat di Billing</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="billing_obat" value="false" {if: $settings.billing_obat == 'false'}checked{/if} /> Tidak
+                               <input type="radio" name="billing_obat" value="false" {if: $settings.billing_obat == 'false' || empty($settings.billing_obat)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="billing_obat" value="true" {if: $settings.billing_obat == 'true'}checked{/if} /> Ya
@@ -226,10 +230,21 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label>Aktifkan Billing Parsial/Split Bill</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="billing_parsial" value="false" {if: $settings.billing_parsial == 'false'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="billing_parsial" value="true" {if: $settings.billing_parsial == 'true' || empty($settings.billing_parsial)}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label>Aktifkan Websocket</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="websocket" value="tidak" {if: $settings.websocket == 'tidak'}checked{/if} /> Tidak
+                               <input type="radio" name="websocket" value="tidak" {if: $settings.websocket == 'tidak' || empty($settings.websocket)}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
                                <input type="radio" name="websocket" value="ya" {if: $settings.websocket == 'ya'}checked{/if} /> Ya
@@ -238,40 +253,40 @@
                     </div>
                     <div class="form-group">
                         <label>URL Websocket Proxy</label>
-                        <input type="text" name="websocket_proxy" class="form-control" value="{$settings.websocket_proxy}" />
+                        <input type="text" name="websocket_proxy" class="form-control" value="{?=isset_or($settings.websocket_proxy)?}" />
                     </div>
                     <div class="form-group">
                         <label>Set Nomor RM Terakhir</label>
-                        <input type="text" name="set_no_rkm_medis" class="form-control" value="{$set_no_rkm_medis.no_rkm_medis}" />
+                        <input type="text" name="set_no_rkm_medis" class="form-control" value="{?=isset_or($set_no_rkm_medis.no_rkm_medis)?}" />
                     </div>
                     <div class="form-group">
                         <label>Prefix Surat Keterangan</label>
-                        <input type="text" name="prefix_surat" class="form-control" value="{$settings.prefix_surat}" />
+                        <input type="text" name="prefix_surat" class="form-control" value="{?=isset_or($settings.prefix_surat)?}" />
                     </div>
                     <div class="form-group">
                         <label>Set Nomor Surat Terakhir</label>
-                        <input type="text" name="set_nomor_surat" class="form-control" value="{$set_nomor_surat.nomor_surat}" />
+                        <input type="text" name="set_nomor_surat" class="form-control" value="{?=isset_or($settings.set_nomor_surat)?}" />
                     </div>
                     {if: $settings.bridging_sep}
                     <div class="form-group">
                         <label>Kode PPK BPJS</label>
-                        <input type="text" name="ppk_bpjs" class="form-control" value="{$settings.ppk_bpjs}" />
+                        <input type="text" name="ppk_bpjs" class="form-control" value="{?=isset_or($settings.ppk_bpjs)?}" />
                     </div>
                     <div class="form-group">
                         <label>URL API BPJS</label>
-                        <input type="text" name="BpjsApiUrl" class="form-control" value="{$settings.BpjsApiUrl}" />
+                        <input type="text" name="BpjsApiUrl" class="form-control" value="{?=isset_or($settings.BpjsApiUrl)?}" />
                     </div>
                     <div class="form-group">
                         <label>Cons ID BPJS</label>
-                        <input type="text" name="BpjsConsID" class="form-control" value="{$settings.BpjsConsID}" />
+                        <input type="text" name="BpjsConsID" class="form-control" value="{?=isset_or($settings.BpjsConsID)?}" />
                     </div>
                     <div class="form-group">
                         <label>Secret Key BPJS</label>
-                        <input type="text" name="BpjsSecretKey" class="form-control" value="{$settings.BpjsSecretKey}" />
+                        <input type="text" name="BpjsSecretKey" class="form-control" value="{?=isset_or($settings.BpjsSecretKey)?}" />
                     </div>
                     <div class="form-group">
                         <label>User Key BPJS</label>
-                        <input type="text" name="BpjsUserKey" class="form-control" value="{$settings.BpjsUserKey}" />
+                        <input type="text" name="BpjsUserKey" class="form-control" value="{?=isset_or($settings.BpjsUserKey)?}" />
                     </div>
                     {/if}
                     {if: $settings.module_pasien}
@@ -293,7 +308,7 @@
                                 <input type="radio" name="input_kasir" value="ya" {if: $settings.input_kasir == 'ya'}checked{/if} /> Ya
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="input_kasir" value="tidak" {if: $settings.input_kasir == 'tidak'}checked{/if} /> Tidak
+                                <input type="radio" name="input_kasir" value="tidak" {if: $settings.input_kasir == 'tidak' || empty($settings.input_kasir)}checked{/if} /> Tidak
                              </label>
                          </div>
                     </div>
@@ -305,27 +320,47 @@
                                 <input type="radio" name="keamanan" value="ya" {if: $settings.keamanan == 'ya'}checked{/if} /> Ya
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="keamanan" value="tidak" {if: $settings.keamanan == 'tidak'}checked{/if} /> Tidak
+                                <input type="radio" name="keamanan" value="tidak" {if: $settings.keamanan == 'tidak' || empty($settings.keamanan)}checked{/if} /> Tidak
                              </label>
-                         </div>
-                    </div>
+                     </div>
                     <div class="form-group">
-                         <label>Footer</label>
-                         <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />
-                    </div>
-                    <!--
-                    <div class="form-group">
-                         <label>Editor</label>
+                         <label>Aktifkan Kadaluarsa Password (30 hari)</label>
                          <div class="radio">
                              <label class="radio-inline">
-                                <input type="radio" name="editor" value="wysiwyg" {if: $settings.editor == 'wysiwyg'}checked{/if} /> WYSIWYG
+                                <input type="radio" name="password_expire" value="ya" {if: $settings.password_expire == 'ya'}checked{/if} /> Ya
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="editor" value="html" {if: $settings.editor == 'html'}checked{/if} /> HTML
+                                <input type="radio" name="password_expire" value="tidak" {if: $settings.password_expire == 'tidak' || empty($settings.password_expire)}checked{/if} /> Tidak
                              </label>
                          </div>
                     </div>
-                    -->
+                     </div>
+                    <div class="form-group">
+                         <label>Aktifkan OTP Login (WhatsApp)</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="login_otp" value="ya" {if: $settings.login_otp == 'ya'}checked{/if} /> Ya
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="login_otp" value="tidak" {if: $settings.login_otp == 'tidak' || empty($settings.login_otp)}checked{/if} /> Tidak
+                             </label>
+                         </div>
+                    </div>
+                   <div class="form-group">
+                       <label>Aktifkan Log Query</label>
+                       <div class="radio">
+                           <label class="radio-inline">
+                              <input type="radio" name="log_query" value="ya" {if: $settings.log_query == 'ya'}checked{/if} /> Ya
+                           </label>
+                           <label class="radio-inline">
+                              <input type="radio" name="log_query" value="tidak" {if: $settings.log_query == 'tidak' || empty($settings.log_query)}checked{/if} /> Tidak
+                           </label>
+                       </div>
+                  </div>
+                   <div class="form-group">
+                         <label>Footer</label>
+                         <input type="text" name="footer" class="form-control" value="{?=isset_or($settings.footer)?}" required />
+                    </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>
@@ -350,7 +385,7 @@
                         </span>
                         {/if}
                         <h1>
-                            {$settings.license.name}
+                            {?=isset_or($settings.license.name)?}
                         </h1>
                         <small class="clearfix">{?=domain()?}</small>
                         {if: $settings.license.type == \Systems\Lib\License::UNREGISTERED}
@@ -370,19 +405,19 @@
                 <div class="panel-body">
                     <dl class="dl-horizontal no-margin">
                         <dt>Versi</dt>
-                        <dd>{$settings.version}</dd>
+                        <dd>{?=isset_or($settings.version)?}</dd>
                         <dt>Status</dt>
                         <dd>
-                            {$settings.license.name}
+                            {?=isset_or($settings.license.name)?}
                             <a href="#license-modal" data-toggle="modal" class="small">(Sunting)</a>
                         </dd>
                     </dl>
                     <hr />
                     <dl class="dl-horizontal no-margin">
                         <dt>Versi PHP</dt>
-                        <dd>{$settings.system.php}</dd>
+                        <dd>{?=isset_or($settings.system.php)?}</dd>
                         <dt>Versi MySQL</dt>
-                        <dd>{$settings.system.mysql}</dd>
+                        <dd>{?=isset_or($settings.system.mysql)?}</dd>
                     </dl>
                     <hr />
                 </div>
@@ -456,11 +491,24 @@
   });
 
   var path='{?=url()?}/assets/img/';
-  var img_array=new Array('','ataaka.png','bootstrap.png','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','mlite.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
+  var img_array=new Array('','ataaka.png','atilamedika.png','bootstrap.png','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','mlite.png','paper.png','readable.png','sandstone.png','sketchy.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
 
   function change_theme(obj,id){
    var i=obj.selectedIndex;
    if (i<1){ return; }
    document.getElementById(id).src=path+img_array[i];
   }
+
+  $('form[action*="saveGeneral"]').on('submit', function() {
+    var base64EncodedFields = [];
+    $(this).find('input[type=text]').each(function() {
+      if (this.name) {
+        base64EncodedFields.push(this.name);
+      }
+      try {
+        this.value = btoa(unescape(encodeURIComponent(this.value)));
+      } catch(e) {}
+    });
+    $(this).find('input[name="_b64_fields"]').val(JSON.stringify(base64EncodedFields));
+  });
 </script>

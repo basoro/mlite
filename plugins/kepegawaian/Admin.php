@@ -6,6 +6,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    public $assign;
     public function navigation()
     {
         return [
@@ -21,7 +22,7 @@ class Admin extends AdminModule
         ['name' => 'Data Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'index']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
         ['name' => 'Add Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'group', 'desc' => 'Tambah Data Pegawai'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getIndex($page = 1)
@@ -29,7 +30,7 @@ class Admin extends AdminModule
 
         $this->_addHeaderFiles();
 
-        $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->toArray();
+        $rows = $this->db('pegawai')->toArray();
 
         $this->assign['list'] = [];
         if (count($rows)) {
@@ -44,7 +45,7 @@ class Admin extends AdminModule
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
 
-        return $this->draw('index.html', ['pegawai' => $this->assign]);
+        return $this->draw('index.html', ['pegawai' => htmlspecialchars_array($this->assign)]);
 
     }
 
@@ -109,7 +110,7 @@ class Admin extends AdminModule
 
         $this->assign['fotoURL'] = url(MODULES.'/kepegawaian/img/default.png');
 
-        return $this->draw('form.html', ['pegawai' => $this->assign]);
+        return $this->draw('form.html', ['pegawai' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getEdit($id)
@@ -136,7 +137,7 @@ class Admin extends AdminModule
 
             $this->assign['fotoURL'] = WEBAPPS_URL.'/penggajian/'.$row['photo'];
 
-            return $this->draw('form.html', ['pegawai' => $this->assign]);
+            return $this->draw('form.html', ['pegawai' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'kepegawaian', 'index']));
         }
@@ -158,7 +159,7 @@ class Admin extends AdminModule
               $this->assign['fotoURL'] = WEBAPPS_URL.'/penggajian/'.$row['photo'];
             }
 
-            return $this->draw('view.html', ['kepegawaian' => $this->assign]);
+            return $this->draw('view.html', ['kepegawaian' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'kepegawaian', 'index']));
         }
@@ -208,8 +209,24 @@ class Admin extends AdminModule
             }
 
             if (!$id) {    // new
+                if (isset($_POST['nik']) && $_POST['nik'] !== '') {
+                    $existsNik = $this->db('pegawai')->where('nik', $_POST['nik'])->oneArray();
+                    if (!empty($existsNik)) {
+                        $this->notify('failure', 'NIP sudah ada');
+                        redirect($location, $_POST);
+                    }
+                }
+
                 $query = $this->db('pegawai')->save($_POST);
             } else {        // edit
+                if (isset($_POST['nik']) && $_POST['nik'] !== '') {
+                    $existsNik = $this->db('pegawai')->where('nik', $_POST['nik'])->where('id', '!=', $id)->oneArray();
+                    if (!empty($existsNik)) {
+                        $this->notify('failure', 'NIK sudah ada');
+                        redirect($location, $_POST);
+                    }
+                }
+
                 $query = $this->db('pegawai')->where('id', $id)->save($_POST);
             }
 
@@ -235,28 +252,40 @@ class Admin extends AdminModule
 
     public function getPrint()
     {
-      $pegawai = $this->db('pegawai')->toArray();
+        $pegawai = $this->db('pegawai')->toArray();
 
-      echo $this->draw('cetak.pegawai.html', [
-        'pegawai' => $pegawai
-      ]);
+        $html = $this->draw('cetak.pegawai.html', ['pegawai' => $pegawai]);
 
-    $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'orientation' => 'P'
-      ]);
-  
-      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
-      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
-            
-      $url = url(ADMIN.'/tmp/cetak.pegawai.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
-  
-      // Output a PDF file directly to the browser
-      $mpdf->Output();
-      exit();    
+        /* ===============================
+        * OUTPUT HTML (PREVIEW)
+        * =============================== */
+        echo $html;
+
+        /* ===============================
+        * GENERATE PDF
+        * =============================== */
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'orientation' => 'L'
+        ]);
+
+        $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+        $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+
+        $mpdf->WriteHTML(
+            $this->core->setPrintCss(),
+            \Mpdf\HTMLParserMode::HEADER_CSS
+        );
+
+        $mpdf->WriteHTML(
+            $html,
+            \Mpdf\HTMLParserMode::HTML_BODY
+        );
+
+        // Output PDF ke browser
+        $mpdf->Output();
+
+        exit;
     }
 
     public function getCSS()

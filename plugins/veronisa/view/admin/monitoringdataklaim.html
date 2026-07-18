@@ -1,0 +1,383 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-heading">
+          <h4 class="panel-title">Monitoring Data Klaim</h4>
+        </div>
+        <div class="panel-body">
+          <form role="form" id="monitoringDataKlaimForm">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="baseUrl">Base URL</label>
+                  <select class="form-control" id="baseUrl">
+                    <option value="dev">Development</option>
+                    <option value="production">Production</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="bulan">Bulan</label>
+                  <select class="form-control" id="bulan" required>
+                    <option value="">Pilih Bulan</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="tahun">Tahun</label>
+                  <input type="number" class="form-control" id="tahun" min="2020" max="2030" required>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="jenisObat">Jenis Obat</label>
+                  <select class="form-control" id="jenisObat">
+                    <option value="0">Semua</option>
+                    <option value="1">Obat PRB</option>
+                    <option value="2">Obat Kronis Blm Stabil</option>
+                    <option value="3">Obat Kemoterapi</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="status">Status</label>
+                  <select class="form-control" id="status">
+                    <option value="0">Belum diverifikasi</option>
+                    <option value="1">Sudah Verifikasi</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-9">
+                <div class="form-group">
+                  <label>&nbsp;</label><br>
+                  <button type="submit" class="btn btn-primary">Cari Data Klaim</button>
+                  <button type="button" class="btn btn-default" onclick="clearMonitoringDataKlaimForm()">Reset</button>
+                </div>
+              </div>
+            </div>
+          </form>
+                    
+          <!-- Table Container (Hidden by default) -->
+          <div id="tableContainer" style="display: none; margin-top: 20px;">
+            <!-- Rekap Section -->
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                <h4 class="panel-title">Rekap Data Klaim</h4>
+              </div>
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="info-box">
+                      <span class="info-box-icon bg-blue"><i class="fa fa-file-text"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Jumlah Data</span>
+                        <span class="info-box-number" id="jumlahData">0</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="info-box">
+                      <span class="info-box-icon bg-yellow"><i class="fa fa-money"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Total Biaya Pengajuan</span>
+                        <span class="info-box-number" id="totalBiayaPengajuan">Rp 0</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="info-box">
+                      <span class="info-box-icon bg-green"><i class="fa fa-check"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Total Biaya Setuju</span>
+                        <span class="info-box-number" id="totalBiayaSetuju">Rp 0</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Detail Table -->
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">Detail Data Klaim</h4>
+              </div>
+              <div class="panel-body">
+                <div class="table-responsive">
+                  <table class="table table-striped table-bordered" id="dataKlaimTable">
+                    <thead>
+                      <tr>
+                        <th>No SEP Apotek</th>
+                        <th>No SEP Asal</th>
+                        <th>No Kartu</th>
+                        <th>Nama Peserta</th>
+                        <th>No Resep</th>
+                        <th>Jenis Obat</th>
+                        <th>Tgl Pelayanan</th>
+                        <th>Biaya Pengajuan</th>
+                        <th>Biaya Setuju</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dataKlaimTableBody">
+                      <!-- Data will be populated here -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Response Area -->
+          <div id="responseArea" style="margin-top: 20px;"></div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Set current year as default
+    $('#tahun').val(new Date().getFullYear());
+    
+    // Handle form submission
+    $('#monitoringDataKlaimForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        var formData = {
+            base_url: $('#baseUrl').val(),
+            bulan: $('#bulan').val(),
+            tahun: $('#tahun').val(),
+            jenis_obat: $('#jenisObat').val(),
+            status: $('#status').val()
+        };
+        
+        // Validate required fields
+        if (!formData.bulan || !formData.tahun) {
+            alert('Bulan dan Tahun harus diisi!');
+            return;
+        }
+        
+        // Show loading
+        $('#responseArea').html('<div class="alert alert-info"><i class="fa fa-spinner fa-spin"></i> Sedang memproses...</div>');
+        $('#tableContainer').hide();
+        
+        // Make AJAX request
+        $.ajax({
+            url: '{?=url([ADMIN, "veronisa", "monitoringdataklaim"])?}',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                displayResponse(response);
+                
+                // If response code is 200, show table
+                if (response.metaData && response.metaData.code === '200') {
+                    displayResponseTable(response.response);
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#responseArea').html('<div class="alert alert-danger">Error: ' + error + '</div>');
+                $('#tableContainer').hide();
+            }
+        });
+    });
+    
+    // Handle base URL change
+    $('#baseUrl').on('change', function() {
+        var selectedValue = $(this).val();
+        if (selectedValue === 'production') {
+            if (!confirm('Anda akan menggunakan URL Production. Pastikan konfigurasi sudah benar. Lanjutkan?')) {
+                $(this).val('dev');
+            }
+        }
+    });
+});
+
+function displayResponse(response) {
+    var html = '<div class="panel panel-default">';
+    html += '<div class="panel-heading"><h4>Response</h4></div>';
+    html += '<div class="panel-body">';
+    html += '<pre>' + JSON.stringify(response, null, 2) + '</pre>';
+    html += '</div></div>';
+    
+    $('#responseArea').html(html);
+}
+
+function displayResponseTable(responseData) {
+    if (!responseData) {
+        $('#tableContainer').hide();
+        return;
+    }
+    
+    // Update rekap info
+    $('#jumlahData').text(responseData.jumlahdata || '0');
+    $('#totalBiayaPengajuan').text(formatRupiah(responseData.totalbiayapengajuan || '0'));
+    $('#totalBiayaSetuju').text(formatRupiah(responseData.totalbiayasetuju || '0'));
+    
+    // Clear and populate table
+    var tableBody = $('#dataKlaimTableBody');
+    tableBody.empty();
+    
+    if (responseData.listsep && responseData.listsep.length > 0) {
+        responseData.listsep.forEach(function(item) {
+            var row = '<tr>';
+            row += '<td>' + (item.nosepapotek || '') + '</td>';
+            row += '<td>' + (item.nosepaasal || '') + '</td>';
+            row += '<td>' + (item.nokapst || '') + '</td>';
+            row += '<td>' + (item.nmpst || '') + '</td>';
+            row += '<td>' + (item.noresep || '') + '</td>';
+            row += '<td>' + (item.nmjnsobat || '') + '</td>';
+            row += '<td>' + (item.tglpelayanan || '') + '</td>';
+            row += '<td>' + formatRupiah(item.biayapengajuan || '0') + '</td>';
+            row += '<td>' + formatRupiah(item.biayasetujui || '0') + '</td>';
+            row += '</tr>';
+            tableBody.append(row);
+        });
+    } else {
+        tableBody.append('<tr><td colspan="9" class="text-center">Tidak ada data</td></tr>');
+    }
+    
+    $('#tableContainer').show();
+}
+
+function formatRupiah(amount) {
+    var number = parseInt(amount) || 0;
+    return 'Rp ' + number.toLocaleString('id-ID');
+}
+
+function displayErrorResponse(response) {
+    $('#tableContainer').hide();
+    
+    var html = '<div class="panel panel-danger">';
+    html += '<div class="panel-heading">';
+    html += '<h4 class="panel-title"><i class="fa fa-exclamation-triangle"></i> Error Response</h4>';
+    html += '</div>';
+    html += '<div class="panel-body">';
+    
+    if (response.metaData) {
+        html += '<div class="alert alert-danger">';
+        html += '<strong>Error Code:</strong> ' + (response.metaData.code || 'Unknown') + '<br>';
+        html += '<strong>Message:</strong> ' + (response.metaData.message || 'No message') + '<br>';
+        
+        if (response.response) {
+            html += '<strong>Response:</strong> ' + response.response + '<br>';
+        }
+        
+        if (response.raw_response) {
+            html += '<strong>Raw Response:</strong> ' + response.raw_response + '<br>';
+        }
+        
+        // Add specific handling for code 5000 (decrypt/decompress issues)
+        if (response.metaData.code === '5000') {
+            html += '<hr>';
+            html += '<div class="alert alert-warning">';
+            html += '<strong><i class="fa fa-info-circle"></i> Kemungkinan Penyebab:</strong><br>';
+            html += '• Masalah dekripsi atau dekompresi data dari server BPJS<br>';
+            html += '• Konfigurasi autentikasi tidak sesuai<br>';
+            html += '• Format request tidak valid<br>';
+            html += '• Server BPJS sedang mengalami gangguan';
+            html += '</div>';
+        }
+        
+        html += '</div>';
+    }
+    
+    // Show full response for debugging
+    html += '<div class="panel panel-default" style="margin-top: 15px;">';
+    html += '<div class="panel-heading"><h5>Full Response (Debug)</h5></div>';
+    html += '<div class="panel-body">';
+    html += '<pre>' + JSON.stringify(response, null, 2) + '</pre>';
+    html += '</div></div>';
+    
+    html += '</div></div>';
+    
+    $('#responseArea').html(html);
+}
+
+function clearMonitoringDataKlaimForm() {
+    $('#monitoringDataKlaimForm')[0].reset();
+    $('#tahun').val(new Date().getFullYear());
+    $('#responseArea').empty();
+    $('#tableContainer').hide();
+}
+</script>
+
+<style>
+.info-box {
+    display: block;
+    min-height: 90px;
+    background: #fff;
+    width: 100%;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    border-radius: 2px;
+    margin-bottom: 15px;
+}
+
+.info-box-icon {
+    border-top-left-radius: 2px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 2px;
+    display: block;
+    float: left;
+    height: 90px;
+    width: 90px;
+    text-align: center;
+    font-size: 45px;
+    line-height: 90px;
+    background: rgba(0,0,0,0.2);
+}
+
+.info-box-icon > i {
+    color: #fff;
+}
+
+.info-box-content {
+    padding: 5px 10px;
+    margin-left: 90px;
+}
+
+.info-box-text {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.info-box-number {
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.bg-blue {
+    background-color: #3c8dbc !important;
+}
+
+.bg-yellow {
+    background-color: #f39c12 !important;
+}
+
+.bg-green {
+    background-color: #00a65a !important;
+}
+</style>

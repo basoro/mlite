@@ -6,6 +6,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    public $assign = [];
     public function navigation()
     {
         return [
@@ -23,7 +24,7 @@ class Admin extends AdminModule
         ['name' => 'Pemanggil', 'url' => url([ADMIN, 'anjungan', 'pemanggil']), 'icon' => 'bullhorn', 'desc' => 'Pemanggil Antrian'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'anjungan', 'settings']), 'icon' => 'gear', 'desc' => 'Pengaturan Anjungan'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getIndex()
@@ -209,16 +210,24 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'anjungan', 'index']));
+        }
         $this->assign['title'] = 'Pengaturan Modul Anjungan';
         $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
         $this->assign['penjab'] = $this->_getPenjab($this->settings->get('anjungan.carabayar'));
 
         $this->assign['anjungan'] = htmlspecialchars_array($this->settings('anjungan'));
-        return $this->draw('settings.html', ['settings' => $this->assign]);
+        return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'anjungan', 'index']));
+        }
         $_POST['anjungan']['display_poli'] = implode(',', $_POST['anjungan']['display_poli']);
         $_POST['anjungan']['carabayar'] = implode(',', $_POST['anjungan']['carabayar']);
         foreach ($_POST['anjungan'] as $key => $val) {

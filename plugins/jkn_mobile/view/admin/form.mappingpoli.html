@@ -20,7 +20,7 @@
         	                <label>Nama Poli RS</label>
                           	<select name="kd_poli_rs" class="form-control">
                               {loop: $row.poliklinik}
-                              <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                              <option value="{?=isset_or($value.kd_poli)?}">{?=isset_or($value.nm_poli)?}</option>
                               {/loop}
                           	</select>
         	            </div>

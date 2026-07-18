@@ -1,24 +1,71 @@
-<table class="table" width="100%">
+<table class="table table-hover">
   <thead>
     <tr>
       <th>Nomor Rawat</th>
       <th>Keluhan</th>
       <th>Hubungan</th>
       <th>Dokter</th>
-
+      <th width="10%">Aksi</th>
     </tr>
   </thead>
   <tbody>
     {if: $penilaian_medis_ralan}
+    {loop: $penilaian_medis_ralan}
     <tr>
-      <td>{$penilaian_medis_ralan.no_rawat}</td>
-      <td>{$penilaian_medis_ralan.keluhan_utama}</td>
-      <td>{$penilaian_medis_ralan.hubungan}</td>
-      <td>{$penilaian_medis_ralan.nm_dokter}</td>
+      <td>{?=$value.no_rawat?}</td>
+      <td>{?=$value.keluhan_utama?}</td>
+      <td>{?=$value.hubungan?}</td>
+      <td>{?=$value.nm_dokter?}</td>
+      <td>
+        <button type="button" class="btn btn-success btn-xs edit_medis_ralan" 
+          data-no_rawat="{?=$value.no_rawat?}" 
+          data-kd_dokter="{?=$value.kd_dokter?}" 
+          data-tanggal="{?=$value.tanggal?}" 
+          data-anamnesis="{?=$value.anamnesis?}" 
+          data-hubungan="{?=$value.hubungan?}" 
+          data-keluhan_utama="{?=$value.keluhan_utama?}" 
+          data-rps="{?=$value.rps?}" 
+          data-rpd="{?=$value.rpd?}" 
+          data-rpk="{?=$value.rpk?}" 
+          data-rpo="{?=$value.rpo?}" 
+          data-alergi="{?=$value.alergi?}" 
+          data-keadaan="{?=$value.keadaan?}" 
+          data-gcs="{?=$value.gcs?}" 
+          data-kesadaran="{?=$value.kesadaran?}" 
+          data-td="{?=$value.td?}" 
+          data-nadi="{?=$value.nadi?}" 
+          data-rr="{?=$value.rr?}" 
+          data-suhu="{?=$value.suhu?}" 
+          data-spo="{?=$value.spo?}" 
+          data-bb="{?=$value.bb?}" 
+          data-tb="{?=$value.tb?}" 
+          data-kepala="{?=$value.kepala?}" 
+          data-gigi="{?=$value.gigi?}" 
+          data-tht="{?=$value.tht?}" 
+          data-thoraks="{?=$value.thoraks?}" 
+          data-abdomen="{?=$value.abdomen?}" 
+          data-genital="{?=$value.genital?}" 
+          data-ekstremitas="{?=$value.ekstremitas?}" 
+          data-kulit="{?=$value.kulit?}" 
+          data-ket_fisik="{?=$value.ket_fisik?}" 
+          data-ket_lokalis="{?=$value.ket_lokalis?}" 
+          data-penunjang="{?=$value.penunjang?}" 
+          data-diagnosis="{?=$value.diagnosis?}" 
+          data-tata="{?=$value.tata?}" 
+          data-konsulrujuk="{?=$value.konsulrujuk?}">
+          <i class="fa fa-edit"></i> Edit
+        </button>
+        <button type="button" class="btn btn-danger btn-xs hapus_medis_ralan" 
+          data-no_rawat="{?=$value.no_rawat?}" 
+          data-tanggal="{?=$value.tanggal?}">
+          <i class="fa fa-trash"></i> Hapus
+        </button>
+      </td>
     </tr>
+    {/loop}
     {else}
     <tr>
-      <td colspan="5">Tidak ada data</td>
+      <td colspan="5" class="text-center">Tidak ada data</td>
     </tr>
     {/if}
   </tbody>

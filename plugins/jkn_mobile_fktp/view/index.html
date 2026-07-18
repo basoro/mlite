@@ -344,9 +344,9 @@ Response :
                         <tbody>
                             {loop: $referensi_poli}
                             <tr>
-                                <td>{$value.kd_poli_rs}</td>
-                                <td>{$value.kd_poli_pcare}</td>
-                                <td>{$value.nm_poli_pcare}</td>
+                                <td>{?=isset_or($value.kd_poli_rs)?}</td>
+                                <td>{?=isset_or($value.kd_poli_pcare)?}</td>
+                                <td>{?=isset_or($value.nm_poli_pcare)?}</td>
                             </tr>
                             {/loop}
                         </tbody>

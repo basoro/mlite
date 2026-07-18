@@ -3,6 +3,7 @@
     white-space: nowrap;
   }
 </style>
+{if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
 <form action="{?=url(ADMIN.'/operasi/savebookingoperasi')?}" method="POST">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -33,7 +34,7 @@
                         <label>Dokter</label>
                         <select name="kd_dokter" id="kd_dokter" class="form-control" data-use-search="true">
                           {loop: $dokter}
-                            <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                            <option value="{?=isset_or($value.kd_dokter)?}">{?=isset_or($value.nm_dokter)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -41,7 +42,7 @@
                         <label>Ruang OK</label>
                         <select name="kd_ruang_ok" id="kd_ruang_ok" class="form-control" data-use-search="true">
                           {loop: $ruang_ok}
-                            <option value="{$value.kd_ruang_ok}">{$value.nm_ruang_ok}</option>
+                            <option value="{?=isset_or($value.kd_ruang_ok)?}">{?=isset_or($value.nm_ruang_ok)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -51,7 +52,7 @@
                         <label>Paket Operasi</label>
                         <select name="kode_paket" id="kode_paket" class="form-control" data-use-search="true">
                           {loop: $paket_operasi}
-                            <option value="{$value.kode_paket}">{$value.nm_perawatan}</option>
+                            <option value="{?=isset_or($value.kode_paket)?}">{?=isset_or($value.nm_perawatan)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -71,7 +72,7 @@
                         <label>Status</label>
                         <select name="status" id="status" class="form-control" data-use-search="true">
                           {loop: $status}
-                            <option value="{$value}">{$value}</option>
+                            <option value="{?=isset_or($value)?}">{?=isset_or($value)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -85,6 +86,7 @@
         </div>
     </div>
 </form>
+{/if}
 <div class="row">
   <div class="col-md-12">
     <div class="table-responsive no-margin" id="bookingoperasi">
@@ -106,27 +108,27 @@
         <tbody>
           {loop: $bookingoperasi}
           <tr class="bookingoperasi"
-          data-no_rkm_medis="{$value.no_rkm_medis}"
-          data-nm_pasien="{$value.nm_pasien}"
-          data-no_rawat="{$value.no_rawat}"
-          data-kode_paket="{$value.kode_paket}"
-          data-tanggal="{$value.tanggal}"
-          data-jam_mulai="{$value.jam_mulai}"
-          data-jam_selesai="{$value.jam_selesai}"
-          data-status="{$value.status}"
-          data-kd_dokter="{$value.kd_dokter}"
-          data-kd_ruang_ok="{$value.kd_ruang_ok}"
+          data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}"
+          data-nm_pasien="{?=isset_or($value.nm_pasien)?}"
+          data-no_rawat="{?=isset_or($value.no_rawat)?}"
+          data-kode_paket="{?=isset_or($value.kode_paket)?}"
+          data-tanggal="{?=isset_or($value.tanggal)?}"
+          data-jam_mulai="{?=isset_or($value.jam_mulai)?}"
+          data-jam_selesai="{?=isset_or($value.jam_selesai)?}"
+          data-status="{?=isset_or($value.status)?}"
+          data-kd_dokter="{?=isset_or($value.kd_dokter)?}"
+          data-kd_ruang_ok="{?=isset_or($value.kd_ruang_ok)?}"
           >
-            <td>{$value.no_rawat}</td>
-            <td>{$value.no_rkm_medis}</td>
-            <td>{$value.nm_pasien}</td>
-            <td>{$value.kode_paket}</td>
-            <td>{$value.tanggal}</td>
-            <td>{$value.jam_mulai}</td>
-            <td>{$value.jam_selesai}</td>
-            <td>{$value.status}</td>
-            <td>{$value.nm_dokter}</td>
-            <td>{$value.nm_ruang_ok}</td>
+            <td>{?=isset_or($value.no_rawat)?}</td>
+            <td>{?=isset_or($value.no_rkm_medis)?}</td>
+            <td>{?=isset_or($value.nm_pasien)?}</td>
+            <td>{?=isset_or($value.kode_paket)?}</td>
+            <td>{?=isset_or($value.tanggal)?}</td>
+            <td>{?=isset_or($value.jam_mulai)?}</td>
+            <td>{?=isset_or($value.jam_selesai)?}</td>
+            <td>{?=isset_or($value.status)?}</td>
+            <td>{?=isset_or($value.nm_dokter)?}</td>
+            <td>{?=isset_or($value.nm_ruang_ok)?}</td>
           </tr>
           {/loop}
         </tbody>

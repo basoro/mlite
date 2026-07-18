@@ -1,0 +1,74 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$pacs.title}</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th width="200">No Rawat</th>
+                        <td>{$pacs.study.no_rawat}</td>
+                    </tr>
+                    <tr>
+                        <th>Nomor RM</th>
+                        <td>{$pacs.study.no_rkm_medis}</td>
+                    </tr>
+                    <tr>
+                        <th>Nama Pasien</th>
+                        <td>{$pacs.study.nm_pasien}</td>
+                    </tr>
+                    <tr>
+                        <th>Study UID</th>
+                        <td>{$pacs.study.study_instance_uid}</td>
+                    </tr>
+                    <tr>
+                        <th>Modality</th>
+                        <td>{$pacs.study.modality}</td>
+                    </tr>
+                    <tr>
+                        <th>Study Date</th>
+                        <td>{$pacs.study.study_date}</td>
+                    </tr>
+                </table>
+                <h4>Daftar Series & Instances (Files)</h4>
+                {if: count($pacs.series) == 0}
+                <div class="alert alert-warning">Belum ada data series untuk study ini.</div>
+                {else}
+                {loop: $pacs.series as $s}
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <b>Series UID:</b> {$s.series_instance_uid}
+                        <em>({$s.series_description})</em>
+                    </div>
+                    <ul class="list-group">
+                        {if: count($s.instances) == 0}
+                        <li class="list-group-item text-danger">Instance kosong</li>
+                        {else}
+                        {loop: $s.instances as $i}
+                        <li class="list-group-item">
+                            <a href="{?=url([ADMIN, 'mini_pacs', 'send', $i.id])?}"
+                                class="btn btn-warning btn-xs pull-right"
+                                onclick="return confirm('Kirim DICOM ini ke Server PACS Eksternal?')"><i
+                                    class="fa fa-paper-plane"></i> Kirim (C-STORE)</a>
+                            <strong>SOP Instance UID:</strong> {$i.sop_instance_uid}
+                            <div class="text-muted"><small><em>Path: {$i.file_path}</em></small></div>
+                            {if: file_exists(UPLOADS.'/pacs/'.$i.sop_instance_uid.'_thumb.jpg')}
+                            <div style="margin-top: 10px;">
+                                <img src="{?=url('uploads/pacs/'.$i.sop_instance_uid.'_thumb.jpg')?}"
+                                    style="width: 150px; height: 150px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px;">
+                            </div>
+                            {/if}
+                        </li>
+                        {/loop}
+                        {/if}
+                    </ul>
+                </div>
+                {/loop}
+                {/if}
+                <hr>
+                <a class="btn btn-default" href="{?=url([ADMIN, 'mini_pacs', 'manage'])?}">Kembali ke Daftar PACS</a>
+            </div>
+        </div>
+    </div>
+</article>

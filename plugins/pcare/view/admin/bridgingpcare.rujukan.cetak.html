@@ -53,8 +53,8 @@
 				<tr>
 					<td width="550px"><img src="{?=url()?}/plugins/pcare/images/bpjslogo.png" width="250px"></td>
 					<td>
-						Kedeputian Wilayah {$settings.wilayah}<br>
-						Kantor Cabang {$settings.cabang}
+						Kedeputian Wilayah {?=isset_or($settings.wilayah)?}<br>
+						Kantor Cabang {?=isset_or($settings.cabang)?}
 					</td>
 				</tr>
 				<tr>
@@ -67,16 +67,16 @@
 						<table width="900px" style="border: 1px solid #000000; margin: 10px;">
 							<tr>
 								<td width="140px">No. Rujukan</td>
-								<td>: {$bridging_pcare.nomor_kunjungan}</td>
-								<td rowspan="3" align="right"><img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={$bridging_pcare.nomor_kunjungan}" width="350px" height="40px"></td>
+								<td>: {?=isset_or($bridging_pcare.nomor_kunjungan)?}</td>
+								<td rowspan="3" align="right"><img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={?=isset_or($bridging_pcare.nomor_kunjungan)?}" width="350px" height="40px"></td>
 							</tr>
 							<tr>
 								<td width="140px">FKTP</td>
-								<td>: {$settings.nama_fktp} ({$settings.kode_fktp})</td>
+								<td>: {?=isset_or($settings.nama_fktp)?} ({?=isset_or($settings.kode_fktp)?})</td>
 							</tr>
 							<tr>
 								<td width="140px">Kabupaten / Kota</td>
-								<td>: {$settings.kabupatenkota} ({$settings.kode_kabupatenkota})</td>
+								<td>: {?=isset_or($settings.kabupatenkota)?} ({?=isset_or($settings.kode_kabupatenkota)?})</td>
 							</tr>
 						</table>
 					</td>
@@ -86,11 +86,11 @@
 						<table width="900px" style="border: 0px solid #000000; margin: 10px;">
 							<tr>
 								<td width="160px">Kepada Yth. TS Dokter</td>
-								<td>: {$bridging_pcare.nama_spesialis}</td>
+								<td>: {?=isset_or($bridging_pcare.nama_spesialis)?}</td>
 							</tr>
 							<tr>
 								<td width="160px">Di</td>
-								<td>: {$bridging_pcare.nama_ppk}</td>
+								<td>: {?=isset_or($bridging_pcare.nama_ppk)?}</td>
 							</tr>
 						</table>
 					</td>
@@ -103,31 +103,31 @@
 							</tr>
 							<tr>
 								<td width="160px">Nama</td>
-								<td width="350px">: {$bridging_pcare.nm_pasien}</td>
+								<td width="350px">: {?=isset_or($bridging_pcare.nm_pasien)?}</td>
 								<td>Umur :</td>
-								<td>{$umur}</td>
+								<td>{?=isset_or($umur)?}</td>
 								<td>:</td>
-								<td>{$bridging_pcare.tgl_lahir}</td>
+								<td>{?=isset_or($bridging_pcare.tgl_lahir)?}</td>
 							</tr>
 							<tr>
 								<td width="160px">Nomor Kartu BPJS</td>
-								<td>: {$bridging_pcare.nomor_jaminan}</td>
+								<td>: {?=isset_or($bridging_pcare.nomor_jaminan)?}</td>
 								<td>Status: </td>
 								<td><b>[&nbsp;&nbsp;&nbsp;]</b> Utama/Tanggungan</td>
 								<td></td>
-								<td><b>[{$bridging_pcare.jk}]</b> (L/P)</td>
+								<td><b>[{?=isset_or($bridging_pcare.jk)?}]</b> (L/P)</td>
 							</tr>
 							<tr>
 								<td width="160px">Diagnosa</td>
-								<td colspan="5">: {$bridging_pcare.nama_diagnosa1} ({$bridging_pcare.kode_diagnosa1})</td>
+								<td colspan="5">: {?=isset_or($bridging_pcare.nama_diagnosa1)?} ({?=isset_or($bridging_pcare.kode_diagnosa1)?})</td>
 							</tr>
 							<tr>
 								<td width="160px">Catatan</td>
-								<td colspan="5">: {$bridging_pcare.catatan}</td>
+								<td colspan="5">: {?=isset_or($bridging_pcare.catatan)?}</td>
 							</tr>
 							<tr>
 								<td width="160px" valign="top">Telah diberikan</td>
-								<td colspan="5" height="100px" valign="top">: {$bridging_pcare.terapi}</td>
+								<td colspan="5" height="100px" valign="top">: {?=isset_or($bridging_pcare.terapi)?}</td>
 							</tr>
 							<tr>
 								<td colspan="6">Atas bantuannya, diucapkan terima kasih</td>

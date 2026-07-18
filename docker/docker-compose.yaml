@@ -5,43 +5,69 @@ services:
       context: .
       dockerfile: nginx.Dockerfile
     image: nginx:alpine
-    ports:
-      - 8085:80
+    # ports:
+    #   - ${APP_PORT}:80 # gunakan jika ingin mengakses nginx dari luar container
     networks:
       - internal
     volumes:
-      - .:/var/www/html/
+      - ../:/var/www/html/
+      - php_backups:/var/www/html/backups 
+      - php_uploads:/var/www/html/uploads
+      - php_systems_data:/var/www/html/systems/data
       - ./logs/nginx:/var/log/nginx/
     depends_on:
       - php      
   
   php:
-    image: php:8.1-fpm-alpine
+    image: php:8.3-fpm-alpine
     user: root
     build:
       context: .
       dockerfile: php.Dockerfile
     networks:
       - internal
+    environment:
+      - DBDRIVER=${DB_DRIVER}
+      - MYSQLHOST=${DB_HOST}
+      - MYSQLPORT=${DB_PORT}
+      - MYSQLUSER=${DB_USERNAME}
+      - MYSQLPASSWORD=${DB_PASSWORD}
+      - MYSQLDATABASE=${DB_DATABASE}
     volumes:
-      - .:/var/www/html/
-    depends_on:
-      - mysql
+      - ../:/var/www/html/
+      - php_backups:/var/www/html/backups 
+      - php_uploads:/var/www/html/uploads 
+      - php_systems_data:/var/www/html/systems/data 
+    command: sh -c "composer install && mkdir -p /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && chmod -R 777 /var/www/html/backups /var/www/html/uploads /var/www/html/systems/data /var/www/html/tmp /var/www/html/admin/tmp && php-fpm"
   
   mysql:
-    image: mysql:5.7.22 
+    image: mysql:8.0
+    command: --sql-mode=""
     restart: always 
+    profiles:
+      - mysql_enabled
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword123 
-      MYSQL_DATABASE: mlite_db 
-    ports:
-      - 3308:3306
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    # ports:
+    #   - ${DB_EXTERNAL_PORT}:3306 #gunakan jika ingin mengakses mysql dari luar container
     expose:
-      - 3308
+      - 3306
+    networks:
+      - internal
     volumes:
-      - ./mysql:/var/lib/mysql  
-      - ./db:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql  
+      - ../mlite_db.sql:/docker-entrypoint-initdb.d/init.sql
 
 networks:
   internal:
     driver: bridge
+
+volumes:
+  php_backups:
+  php_uploads:
+  php_systems_data:
+  php_plugins:
+  mysql_data:

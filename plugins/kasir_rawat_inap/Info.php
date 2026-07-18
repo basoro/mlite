@@ -4,8 +4,9 @@ return [
     'name'          =>  'Kasir Rawat Inap',
     'description'   =>  'Modul kasir rawat inap untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'keuangan', 
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'money',
     'install'       =>  function () use ($core) {
     },

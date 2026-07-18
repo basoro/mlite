@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{$title} - {$settings.nama_instansi}</title>
-    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <title>{?=isset_or($title)?} - {?=isset_or($settings.nama_instansi)?}</title>
+    <link rel="icon" href="{?=isset_or($opensimrs.path)?}/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
-    <link href="{?=url()?}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/font-awesome.css?v={?=isset_or($opensimrs.version)?}" rel="stylesheet">
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
     <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
     <script src="{?=url(THEMES)?}/js/theme.js"></script>
@@ -31,7 +31,7 @@
 </head>
 <body>
 <div class="container-fluid">
-<h1 class="display-3 text-center text-white m-3">Antrian Operasi {$settings.nama_instansi}</h1>
+<h1 class="display-3 text-center text-white m-3">Antrian Operasi {?=isset_or($settings.nama_instansi)?}</h1>
 <table class="table table-bordered table-striped lead text-primary">
   <thead>
       <tr>
@@ -46,12 +46,12 @@
     <tbody>
       {loop: $display}
       <tr>
-        <td><a href="{$value.editURL}">{$value.kodebooking}</a></td>
-        <td>{$value.nm_pasien}</td>
-        <td>{$value.tanggaloperasi}</td>
-        <td>{$value.jenistindakan}</td>
-        <td>{$value.kodepoli} - {$value.namapoli}</td>
-        <td>{$value.status_terlaksana}</td>
+        <td><a href="{?=isset_or($value.editURL)?}">{?=isset_or($value.kodebooking)?}</a></td>
+        <td>{?=isset_or($value.nm_pasien)?}</td>
+        <td>{?=isset_or($value.tanggaloperasi)?}</td>
+        <td>{?=isset_or($value.jenistindakan)?}</td>
+        <td>{?=isset_or($value.kodepoli)?} - {?=isset_or($value.namapoli)?}</td>
+        <td>{?=isset_or($value.status_terlaksana)?}</td>
       </tr>
       {/loop}
     </tbody>

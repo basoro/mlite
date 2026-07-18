@@ -15,14 +15,14 @@
       <tbody>
         {if: $notifikasi.list}
         {loop: $notifikasi.list}
-        <tr class="edit" data-id="{$value.id}">
-          <td>{$value.id}</td>
-          <td>{$value.tanggal}</td>
-          <td>{$value.no_rkm_medis}</td>
-          <td>{$value.nm_pasien}</td>
-          <td>{$value.judul}</td>
-          <td>{$value.pesan}</td>
-          <td>{$value.status}</td>
+        <tr class="edit" data-id="{?=isset_or($value.id)?}">
+          <td>{?=isset_or($value.id)?}</td>
+          <td>{?=isset_or($value.tanggal)?}</td>
+          <td>{?=isset_or($value.no_rkm_medis)?}</td>
+          <td>{?=isset_or($value.nm_pasien)?}</td>
+          <td>{?=isset_or($value.judul)?}</td>
+          <td>{?=isset_or($value.pesan)?}</td>
+          <td>{?=isset_or($value.status)?}</td>
         </tr>
         {/loop}
         {else}
@@ -47,7 +47,7 @@
         {else}
         <li class="disabled"><a href="#">&larr;</a></li>
         {/if}
-        <li class="disabled"><a href="#">Hal : {$notifikasi.halaman} dari {$notifikasi.jml_halaman} Hal</a></li>
+        <li class="disabled"><a href="#">Hal : {?=isset_or($notifikasi.halaman)?} dari {?=isset_or($notifikasi.jml_halaman)?} Hal</a></li>
         {if: $notifikasi.halaman < $notifikasi.jml_halaman}
         <li class="halaman" data-hal="{?=$notifikasi.halaman + 1?}"><a href="#">&rarr;</a></li>
         {else}
@@ -56,7 +56,7 @@
         {if: $notifikasi.halaman == $notifikasi.jml_halaman}
         <li class="disabled"><a href="#">&raquo;</a></li>
         {else}
-        <li class="halaman" data-hal="{$notifikasi.jml_halaman}"><a href="#">&raquo;</a></li>
+        <li class="halaman" data-hal="{?=isset_or($notifikasi.jml_halaman)?}"><a href="#">&raquo;</a></li>
         {/if}
       {else}
         {if: $notifikasi.halaman == 1}
@@ -69,7 +69,7 @@
         {else}
         <li class="disabled"><a href="#">&larr;</a></li>
         {/if}
-        <li class="disabled"><a href="#">Hal : {$notifikasi.halaman} dari {$notifikasi.jml_halaman} Hal</a></li>
+        <li class="disabled"><a href="#">Hal : {?=isset_or($notifikasi.halaman)?} dari {?=isset_or($notifikasi.jml_halaman)?} Hal</a></li>
         {if: $notifikasi.halaman < $notifikasi.jml_halaman}
         <li class="halaman" data-hal="{?=$notifikasi.halaman + 1?}"><a href="#">&rarr;</a></li>
         {else}
@@ -78,7 +78,7 @@
         {if: $notifikasi.halaman == $notifikasi.jml_halaman}
         <li class="disabled"><a href="#">&raquo;</a></li>
         {else}
-        <li class="halaman" data-hal="{$notifikasi.jml_halaman}"><a href="#">&raquo;</a></li>
+        <li class="halaman" data-hal="{?=isset_or($notifikasi.jml_halaman)?}"><a href="#">&raquo;</a></li>
         {/if}
       {/if}
       </ul>

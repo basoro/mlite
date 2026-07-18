@@ -1,0 +1,590 @@
+<div id="triase_igd">
+  <div class="row">
+    <div class="col-sm-12">
+      <form class="form-horizontal" method="post" id="form_triase_igd">
+        <input type="hidden" name="no_rawat" value="{$triase_igd.no_rawat}">
+        <input type="hidden" name="no_rkm_medis" value="{$triase_igd.no_rkm_medis}">
+        <input type="hidden" name="id_triase" value="{$triase_igd.id_triase}">
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">No. Rawat</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" value="{$triase_igd.no_rawat}" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">No. RM</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" value="{$triase_igd.no_rkm_medis}" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Nama Pasien</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" value="{$triase_igd.nm_pasien}" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Tgl. Registrasi</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" value="{$triase_igd.tgl_registrasi}" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Tanggal Triase <span class="text-danger">*</span></label>
+              <div class="col-sm-8">
+                <input type="datetime-local" class="form-control" name="tgl_triase" value="{$triase_igd.tgl_triase}" required>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Petugas <span class="text-danger">*</span></label>
+              <div class="col-sm-8">
+                <select class="form-control" name="petugas_id" required>
+                  <option value="">-- Pilih Petugas --</option>
+                  {loop: $petugas}
+                  <option value="{$value.nip}" {if: $triase_igd.petugas_id == $value.nip}selected{/if}>{$value.nama}</option>
+                  {/loop}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Kesadaran <span class="text-danger">*</span></label>
+              <div class="col-sm-8">
+                <select class="form-control" name="kesadaran_triase" required>
+                  <option value="">-- Pilih Kesadaran --</option>
+                  <option value="Compos Mentis" {if: $triase_igd.kesadaran == 'Compos Mentis'}selected{/if}>Compos Mentis</option>
+                  <option value="Apatis" {if: $triase_igd.kesadaran == 'Apatis'}selected{/if}>Apatis</option>
+                  <option value="Somnolen" {if: $triase_igd.kesadaran == 'Somnolen'}selected{/if}>Somnolen</option>
+                  <option value="Sopor" {if: $triase_igd.kesadaran == 'Sopor'}selected{/if}>Sopor</option>
+                  <option value="Koma" {if: $triase_igd.kesadaran == 'Koma'}selected{/if}>Koma</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Airway <span class="text-danger">*</span></label>
+              <div class="col-sm-8">
+                <select class="form-control" name="airway" required>
+                  <option value="">-- Pilih Airway --</option>
+                  <option value="Bebas" {if: $triase_igd.airway == 'Bebas'}selected{/if}>Bebas</option>
+                  <option value="Sumbatan Parsial" {if: $triase_igd.airway == 'Sumbatan Parsial'}selected{/if}>Sumbatan Parsial</option>
+                  <option value="Sumbatan Total" {if: $triase_igd.airway == 'Sumbatan Total'}selected{/if}>Sumbatan Total</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Breathing <span class="text-danger">*</span></label>
+              <div class="col-sm-8">
+                <select class="form-control" name="breathing" required>
+                  <option value="">-- Pilih Breathing --</option>
+                  <option value="Spontan" {if: $triase_igd.breathing == 'Spontan'}selected{/if}>Spontan</option>
+                  <option value="Tak Spontan" {if: $triase_igd.breathing == 'Tak Spontan'}selected{/if}>Tak Spontan</option>
+                  <option value="Distres Nafas" {if: $triase_igd.breathing == 'Distres Nafas'}selected{/if}>Distres Nafas</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Circulation <span class="text-danger">*</span></label>
+              <div class="col-sm-8">
+                <select class="form-control" name="circulation" required>
+                  <option value="">-- Pilih Circulation --</option>
+                  <option value="Baik" {if: $triase_igd.circulation == 'Baik'}selected{/if}>Baik</option>
+                  <option value="Syok" {if: $triase_igd.circulation == 'Syok'}selected{/if}>Syok</option>
+                  <option value="Perdarahan" {if: $triase_igd.circulation == 'Perdarahan'}selected{/if}>Perdarahan</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">Tekanan Darah</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" name="tekanan_darah" value="{$triase_igd.tekanan_darah}" placeholder="120/80">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">Nadi (/mnt)</label>
+              <div class="col-sm-6">
+                <input type="number" class="form-control" name="nadi" value="{$triase_igd.nadi}" min="0" max="300">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">Respirasi (/mnt)</label>
+              <div class="col-sm-6">
+                <input type="number" class="form-control" name="respirasi" value="{$triase_igd.respirasi}" min="0" max="100">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">Suhu (°C)</label>
+              <div class="col-sm-6">
+                <input type="number" class="form-control" name="suhu" value="{$triase_igd.suhu}" step="0.1" min="30" max="45">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">SpO2 (%)</label>
+              <div class="col-sm-6">
+                <input type="number" class="form-control" name="spo2" value="{$triase_igd.spo2}" min="0" max="100">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">GCS Eye (E)</label>
+              <div class="col-sm-6">
+                <select class="form-control" name="gcs_e">
+                  <option value="">-- Pilih --</option>
+                  <option value="1" {if: $triase_igd.gcs_e == '1'}selected{/if}>1 - Tidak ada respon</option>
+                  <option value="2" {if: $triase_igd.gcs_e == '2'}selected{/if}>2 - Nyeri</option>
+                  <option value="3" {if: $triase_igd.gcs_e == '3'}selected{/if}>3 - Suara</option>
+                  <option value="4" {if: $triase_igd.gcs_e == '4'}selected{/if}>4 - Spontan</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">GCS Verbal (V)</label>
+              <div class="col-sm-6">
+                <select class="form-control" name="gcs_v">
+                  <option value="">-- Pilih --</option>
+                  <option value="1" {if: $triase_igd.gcs_v == '1'}selected{/if}>1 - Tidak ada respon</option>
+                  <option value="2" {if: $triase_igd.gcs_v == '2'}selected{/if}>2 - Suara tidak jelas</option>
+                  <option value="3" {if: $triase_igd.gcs_v == '3'}selected{/if}>3 - Kata tidak tepat</option>
+                  <option value="4" {if: $triase_igd.gcs_v == '4'}selected{/if}>4 - Bingung</option>
+                  <option value="5" {if: $triase_igd.gcs_v == '5'}selected{/if}>5 - Orientasi baik</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">GCS Motorik (M)</label>
+              <div class="col-sm-6">
+                <select class="form-control" name="gcs_m">
+                  <option value="">-- Pilih --</option>
+                  <option value="1" {if: $triase_igd.gcs_m == '1'}selected{/if}>1 - Tidak ada respon</option>
+                  <option value="2" {if: $triase_igd.gcs_m == '2'}selected{/if}>2 - Ekstensi</option>
+                  <option value="3" {if: $triase_igd.gcs_m == '3'}selected{/if}>3 - Fleksi abnormal</option>
+                  <option value="4" {if: $triase_igd.gcs_m == '4'}selected{/if}>4 - Fleksi normal</option>
+                  <option value="5" {if: $triase_igd.gcs_m == '5'}selected{/if}>5 - Lokalisasi nyeri</option>
+                  <option value="6" {if: $triase_igd.gcs_m == '6'}selected{/if}>6 - Mengikuti perintah</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">Total GCS</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="total_gcs" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+                  <label class="col-sm-4 control-label">Kategori <span class="text-danger">*</span></label>
+                  <div class="col-sm-8">
+                    <select class="form-control" name="kategori" required>
+                      <option value="">-- Pilih Kategori --</option>
+                      <option value="Merah" {if: $triase_igd.kategori == 'Merah'}selected{/if} style="background-color: #d9534f; color: white;">Merah - Resusitasi (Immediate)</option>
+                      <option value="Kuning" {if: $triase_igd.kategori == 'Kuning'}selected{/if} style="background-color: #f0ad4e; color: white;">Kuning - Urgent</option>
+                      <option value="Hijau" {if: $triase_igd.kategori == 'Hijau'}selected{/if} style="background-color: #5cb85c; color: white;">Hijau - Less Urgent</option>
+                      <option value="Hitam" {if: $triase_igd.kategori == 'Hitam'}selected{/if} style="background-color: #333; color: white;">Hitam - Non Urgent</option>
+                    </select>
+                    <small class="help-block text-info">
+                      <i class="fa fa-info-circle"></i> Kategori akan dihitung otomatis berdasarkan tanda vital dan GCS.
+                    </small>
+                  </div>
+                </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="col-sm-4 control-label">Skala Triase</label>
+              <div class="col-sm-8">
+                <select class="form-control" name="skala_triase">
+                  <option value="">-- Pilih Skala --</option>
+                  <option value="1" {if: $triase_igd.skala_triase == '1'}selected{/if}>1 - Resusitasi</option>
+                  <option value="2" {if: $triase_igd.skala_triase == '2'}selected{/if}>2 - Emergensi</option>
+                  <option value="3" {if: $triase_igd.skala_triase == '3'}selected{/if}>3 - Urgent</option>
+                  <option value="4" {if: $triase_igd.skala_triase == '4'}selected{/if}>4 - Less Urgent</option>
+                  <option value="5" {if: $triase_igd.skala_triase == '5'}selected{/if}>5 - Non Urgent</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Keluhan Utama</label>
+              <div class="col-sm-10">
+                <textarea class="form-control" name="keluhan_utama" rows="3" placeholder="Masukkan keluhan utama pasien...">{$triase_igd.keluhan_utama}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Diagnosa Awal</label>
+              <div class="col-sm-10">
+                <textarea class="form-control" name="diagnosa_awal" rows="3" placeholder="Masukkan diagnosa awal...">{$triase_igd.diagnosa_awal}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tombol Aksi -->
+        <div class="form-group">
+          <div class="col-sm-12 text-right">
+            <button type="button" class="btn btn-default" id="btn_kembali_triase">Kembali</button>
+            <button type="submit" class="btn btn-primary" id="btn_simpan_triase">Simpan Triase</button>
+            {if: $triase_igd.id_triase != ''}
+            <button type="button" class="btn btn-info" id="btn_view_triase" data-no_rawat="{$triase_igd.no_rawat}" data-id_triase="{$triase_igd.id_triase}">View Triase</button>
+            {/if}
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal untuk View Triase -->
+<div class="modal fade" id="modal_view_triase" tabindex="-1" role="dialog" aria-labelledby="modalViewTriaseLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="modalViewTriaseLabel">Data Triase IGD</h4>
+      </div>
+      <div class="modal-body" id="triase_view_content">
+        <!-- Konten triase view akan dimuat di sini -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" id="btn_print_triase">
+          <i class="fa fa-print"></i> Cetak
+        </button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* CSS Classes untuk kategori triase */
+.triase-merah {
+  background-color: #d9534f !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+.triase-kuning {
+  background-color: #f0ad4e !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+.triase-hijau {
+  background-color: #5cb85c !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+.triase-hitam {
+  background-color: #333 !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* Auto-calculated indicator untuk skala triase */
+.auto-calculated {
+  border: 2px solid #007bff;
+  background-color: #e7f3ff;
+}
+</style>
+
+<script>
+// Hitung total GCS otomatis dan auto-calculate kategori triase
+$(document).ready(function() {
+  function hitungGCS() {
+    var gcs_e = parseInt($('select[name="gcs_e"]').val()) || 0;
+    var gcs_v = parseInt($('select[name="gcs_v"]').val()) || 0;
+    var gcs_m = parseInt($('select[name="gcs_m"]').val()) || 0;
+    var total = gcs_e + gcs_v + gcs_m;
+    $('#total_gcs').val(total > 0 ? total : '');
+    
+    // Trigger auto-calculate kategori setelah GCS berubah
+    calculateTriaseCategory();
+  }
+  
+  // Fungsi untuk menghitung kategori triase otomatis
+  function calculateTriaseCategory() {
+    // Ambil nilai input
+    var airway = $('select[name="airway"]').val();
+    var breathing = $('select[name="breathing"]').val();
+    var circulation = $('select[name="circulation"]').val();
+    var kesadaran = $('select[name="kesadaran_triase"]').val();
+    
+    // Tanda vital
+    var tekanan_darah = $('input[name="tekanan_darah"]').val();
+    var nadi = parseInt($('input[name="nadi"]').val()) || 0;
+    var respirasi = parseInt($('input[name="respirasi"]').val()) || 0;
+    var spo2 = parseInt($('input[name="spo2"]').val()) || 0;
+    
+    // GCS total
+    var gcs_total = parseInt($('#total_gcs').val()) || 0;
+    
+    // Parse tekanan darah sistolik
+    var td_sistolik = 0;
+    if(tekanan_darah && tekanan_darah.includes('/')) {
+      td_sistolik = parseInt(tekanan_darah.split('/')[0]) || 0;
+    }
+    
+    var kategori = '';
+    var skala_triase = '';
+    var bg_color = '';
+    
+    // Debug log untuk troubleshooting
+    console.log('Debug Triase - TD:', td_sistolik, 'RR:', respirasi, 'Nadi:', nadi, 'GCS:', gcs_total, 'Airway:', airway, 'Breathing:', breathing, 'Circulation:', circulation);
+    
+    // Cek apakah field vital sudah diisi (minimal ada beberapa data)
+    var hasVitalData = (td_sistolik > 0 || nadi > 0 || respirasi > 0 || gcs_total > 0);
+    
+    if(!hasVitalData) {
+      console.log('Tidak ada data vital yang cukup untuk auto-calculate');
+      return; // Jangan auto-calculate jika data vital kosong
+    }
+    
+    // PRIORITAS 1: Cek kondisi HIJAU dulu (kondisi normal/stabil)
+    if((respirasi >= 12 && respirasi <= 20) &&
+       (nadi >= 60 && nadi <= 100) &&
+       (gcs_total >= 14 && gcs_total <= 15) &&
+       (td_sistolik >= 100 && td_sistolik <= 160) &&
+       (airway === 'Bebas' || airway === '') &&
+       (breathing === 'Spontan' || breathing === '') &&
+       (circulation === 'Baik' || circulation === '')) {
+      
+      kategori = 'Hijau';
+      bg_color = '#5cb85c';
+      
+      // Tentukan skala berdasarkan kompleksitas kasus
+      if(kesadaran === 'Compos Mentis' && airway === 'Bebas' && breathing === 'Spontan' && circulation === 'Baik') {
+        skala_triase = '5'; // Non-urgensi
+      } else {
+        skala_triase = '4'; // Kasus ringan
+      }
+      
+      console.log('Kategori HIJAU - Kondisi normal/stabil');
+    }
+    // PRIORITAS 2: Cek kondisi MERAH (Emergensi/Prioritas 1) - hanya untuk kondisi benar-benar kritis
+    else if(airway === 'Sumbatan Total' || 
+            breathing === 'Tak Spontan' || 
+            breathing === 'Distres Nafas' || 
+            circulation === 'Syok' || 
+            circulation === 'Perdarahan' ||
+            (respirasi > 0 && (respirasi < 10 || respirasi > 30)) ||
+            (spo2 > 0 && spo2 < 90) ||
+            (td_sistolik > 0 && td_sistolik < 90) ||
+            (nadi > 0 && nadi > 130) ||
+            (gcs_total > 0 && gcs_total <= 8)) {
+      
+      kategori = 'Merah';
+      bg_color = '#d9534f';
+      
+      // Tentukan skala berdasarkan kondisi spesifik
+      if((gcs_total > 0 && gcs_total <= 8) || breathing === 'Tak Spontan' || airway === 'Sumbatan Total') {
+        skala_triase = '1'; // Resusitasi segera
+      } else {
+        skala_triase = '2'; // Emergensi tinggi
+      }
+      
+      console.log('Kategori MERAH - Kondisi kritis');
+    }
+    // PRIORITAS 3: Cek kondisi KUNING (Urgensi/Prioritas 2)
+    else if((td_sistolik >= 90 && td_sistolik <= 100) ||
+            (respirasi >= 21 && respirasi <= 30) ||
+            (nadi >= 111 && nadi <= 130) ||
+            (gcs_total >= 9 && gcs_total <= 13)) {
+      
+      kategori = 'Kuning';
+      skala_triase = '3'; // Urgensi sedang
+      bg_color = '#f0ad4e';
+      
+      console.log('Kategori KUNING - Urgensi sedang');
+    }
+    // PRIORITAS 4: Cek kondisi HITAM (Tidak ada tanda vital)
+    else if(nadi === 0 && respirasi === 0 && gcs_total === 0 && td_sistolik === 0) {
+      kategori = 'Hitam';
+      skala_triase = ''; // Tidak ada skala untuk hitam
+      bg_color = '#333';
+      
+      console.log('Kategori HITAM - Tidak ada tanda vital');
+    }
+    // Default: jika tidak memenuhi kriteria apapun, default ke Hijau
+    else {
+      kategori = 'Hijau'; // Default ke hijau untuk kasus yang tidak jelas
+      skala_triase = '4';
+      bg_color = '#5cb85c';
+      
+      console.log('Kategori HIJAU - Default untuk kasus tidak jelas');
+    }
+    
+    // Update field kategori dan skala
+     if(kategori) {
+       $('select[name="kategori"]').val(kategori);
+       $('select[name="skala_triase"]').val(skala_triase);
+       
+       // Update kategori styling menggunakan fungsi baru
+       updateKategoriStyling(kategori);
+       
+       // Add auto-calculated class untuk skala
+       $('select[name="skala_triase"]').removeClass('auto-calculated').addClass('auto-calculated');
+       
+       console.log('Auto-calculated: Kategori=' + kategori + ', Skala=' + skala_triase);
+     }
+  }
+  
+  // Fungsi untuk mengatur styling kategori
+  function updateKategoriStyling(kategori) {
+    // Remove existing triase classes
+    $('select[name="kategori"]').removeClass('triase-merah triase-kuning triase-hijau triase-hitam');
+    
+    // Add appropriate triase class based on kategori
+    if(kategori) {
+      var cssClass = 'triase-' + kategori.toLowerCase();
+      $('select[name="kategori"]').addClass(cssClass);
+      console.log('Kategori styling updated: ' + cssClass);
+    }
+  }
+  
+  // Event listeners untuk auto-calculate
+  $('select[name="gcs_e"], select[name="gcs_v"], select[name="gcs_m"]').change(hitungGCS);
+  $('select[name="airway"], select[name="breathing"], select[name="circulation"], select[name="kesadaran_triase"]').change(calculateTriaseCategory);
+  $('input[name="tekanan_darah"], input[name="nadi"], input[name="respirasi"], input[name="spo2"]').on('input blur', calculateTriaseCategory);
+  
+  // Event listener untuk manual selection kategori
+  $('select[name="kategori"]').change(function() {
+    var selectedKategori = $(this).val();
+    updateKategoriStyling(selectedKategori);
+  });
+  
+  // Manual selection tetap tersedia melalui dropdown biasa
+  
+  // Hitung GCS dan kategori saat load jika ada data
+  hitungGCS();
+  calculateTriaseCategory();
+  
+  // Handler untuk tombol View Triase
+  $('#btn_view_triase').click(function() {
+    var no_rawat = $(this).data('no_rawat');
+    var id_triase = $(this).data('id_triase');
+    
+    if(!no_rawat || !id_triase) {
+      alert('Data triase tidak ditemukan!');
+      return;
+    }
+    
+    // Show loading
+    $('#triase_view_content').html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Memuat data...</div>');
+    $('#modal_view_triase').modal('show');
+    
+    // AJAX call untuk mendapatkan data triase view
+    $.post('{?=url([ADMIN,"igd","triaseigdview"])?}', {
+      no_rawat: no_rawat,
+      id_triase: id_triase
+    }, function(data) {
+      $('#triase_view_content').html(data);
+    }).fail(function() {
+      $('#triase_view_content').html('<div class="alert alert-danger">Gagal memuat data triase!</div>');
+    });
+  });
+  
+  // Handler untuk tombol Print
+  $('#btn_print_triase').click(function() {
+    var printContent = $('#triase_view_content').html();
+    if(!printContent || printContent.includes('fa-spinner')) {
+      alert('Data belum dimuat atau sedang loading!');
+      return;
+    }
+    
+    var printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Data Triase IGD</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          .modal-header, .modal-footer, .btn, .close { display: none !important; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; }
+          .triase-merah { background-color: #d9534f !important; color: white !important; }
+          .triase-kuning { background-color: #f0ad4e !important; color: white !important; }
+          .triase-hijau { background-color: #5cb85c !important; color: white !important; }
+          .triase-hitam { background-color: #333 !important; color: white !important; }
+          @media print {
+            body { margin: 0; }
+            .no-print { display: none !important; }
+          }
+        </style>
+      </head>
+      <body>
+        <h2>Data Triase IGD</h2>
+        ${printContent}
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  });
+});
+</script>

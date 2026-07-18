@@ -72,22 +72,22 @@ h5 {
                     <ul class="list-group">
                         <li class="list-group-item">
                             <div class="bg-white">
-                                <img src="{?=url()?}/plugins/pasien/img/{$pasien.jk}.png" class="img-fluid" width="70%" alt="Responsive image" />
+                                <img src="{?=url()?}/plugins/pasien/img/{?=isset_or($pasien.jk)?}.png" class="img-fluid" width="70%" alt="Responsive image" />
                                 <div class="p-3 border-bottom">
-                                    <h4 class="font-weight-bold text-dark">Nama: {$pasien.nm_pasien}</h4>
-                                    <h4 class="font-weight-bold text-dark">Nomor RM: {$pasien.no_rkm_medis}</h4>
-                                    <h4 class="font-weight-bold text-dark">Umur: {$pasien.umur}</h4>
-                                    <p class="mb-0 text-muted">{$pasien.alamat}</p>
+                                    <h4 class="font-weight-bold text-dark">Nama: {?=isset_or($pasien.nm_pasien)?}</h4>
+                                    <h4 class="font-weight-bold text-dark">Nomor RM: {?=isset_or($pasien.no_rkm_medis)?}</h4>
+                                    <h4 class="font-weight-bold text-dark">Umur: {?=isset_or($pasien.umur)?}</h4>
+                                    <p class="mb-0 text-muted">{?=isset_or($pasien.alamat)?}</p>
                                 </div>
                             </div>        
                         </li>
                         {loop: $reg_periksa} 
                         <li class="list-group-item">
                             <a href="{?=url([ADMIN,'pasien','folder',$value.no_rkm_medis,convertNoRawat($value.no_rawat)])?}">
-                                Tanggal: {$value.tgl_registrasi}<br>
-                                No. Rawat: {$value.no_rawat}<br>
-                                Poliklinik: {$value.nm_poli}<br>
-                                Dokter: {$value.nm_dokter}
+                                Tanggal: {?=isset_or($value.tgl_registrasi)?}<br>
+                                No. Rawat: {?=isset_or($value.no_rawat)?}<br>
+                                Poliklinik: {?=isset_or($value.nm_poli)?}<br>
+                                Dokter: {?=isset_or($value.nm_dokter)?}
                             </a>
                         </li>
                         {/loop}
@@ -101,7 +101,7 @@ h5 {
                         <li class="breadcrumb-item">
                             <a href="{?=url([ADMIN,'pasien','folder',parseUrl()[2]])?}">{?=parseUrl()[2]?}</a>
                         </li>
-                        {if: isset_or(parseUrl()[3]) !=''}
+                        {if: isset_or(parseUrl()[3]) != ''}
                         <li class="breadcrumb-item active">{?=revertNoRawat(parseUrl()[3])?}</li>
                         {/if}
                     </ol>
@@ -122,7 +122,7 @@ h5 {
                                             <div class="col-sm-9">
                                             <select name="kode" id="kode" class="form-control">
                                                 {loop: $master_berkas_digital}
-                                                <option value="{$value.kode}">{$value.nama}</option>
+                                                <option value="{?=isset_or($value.kode)?}">{?=isset_or($value.nama)?}</option>
                                                 {/loop}
                                             </select>
                                             </div>
@@ -145,12 +145,12 @@ h5 {
                         <div class="col-md-4 col-lg-2 col-xl-2">
                             <div class="file-man-box">
                                 {if: $this->core->getUserInfo('role') == 'admin'}
-                                <a href="" class="file-close hapus_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-times-circle"></i></a>
+                                <a href="" class="file-close hapus_berkas_digital" data-lokasi_file="{?=isset_or($value.lokasi_file)?}"><i class="fa fa-times-circle"></i></a>
                                 {/if}
-                                <div class="file-img-box"><a href="{?=url('uploads/berkasrawat/')?}/{$value.lokasi_file}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-download"></i></a>
+                                <div class="file-img-box"><a href="{?=WEBAPPS_URL.'/berkasrawat/'.$value.lokasi_file?}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{?=isset_or($value.lokasi_file)?}"><i class="fa fa-download"></i></a>
                                 <div class="file-man-title">
-                                    <h5 class="mb-0 text-overflow">{$value.no_rawat}</h5>
-                                    <p class="mb-0"><small>{$value.nama}</small></p>
+                                    <h5 class="mb-0 text-overflow">{?=isset_or($value.no_rawat)?}</h5>
+                                    <p class="mb-0"><small>{?=isset_or($value.nama)?}</small></p>
                                 </div>
                             </div>
                         </div>
@@ -160,12 +160,12 @@ h5 {
                         <div class="col-md-4 col-lg-2 col-xl-2">
                             <div class="file-man-box">
                                 {if: $this->core->getUserInfo('role') == 'admin'}
-                                <a href="" class="file-close hapus_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-times-circle"></i></a>
+                                <a href="" class="file-close hapus_berkas_digital" data-lokasi_file="{?=isset_or($value.lokasi_file)?}"><i class="fa fa-times-circle"></i></a>
                                 {/if}
-                                <div class="file-img-box"><a href="{?=url('uploads/berkasrawat/')?}/{$value.lokasi_file}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{$value.lokasi_file}"><i class="fa fa-download"></i></a>
+                                <div class="file-img-box"><a href="{?=WEBAPPS_URL.'/berkasrawat/'.$value.lokasi_file?}" target="_blank"><img src="{?=url()?}/assets/svg/{?=explode('.',$value.lokasi_file)[1]?}.svg" alt="icon"></a></div><a href="#" class="file-download download_berkas_digital" data-lokasi_file="{?=isset_or($value.lokasi_file)?}"><i class="fa fa-download"></i></a>
                                 <div class="file-man-title">
-                                    <h5 class="mb-0 text-overflow">{$value.no_rawat}</h5>
-                                    <p class="mb-0"><small>{$value.nama}</small></p>
+                                    <h5 class="mb-0 text-overflow">{?=isset_or($value.no_rawat)?}</h5>
+                                    <p class="mb-0"><small>{?=isset_or($value.nama)?}</small></p>
                                 </div>
                             </div>
                         </div>

@@ -7,7 +7,7 @@
     <div class="col-md-12">
       <div class="form-group">
           <label>Nomor Rawat</label>
-          <input type="text" name="no_rawat_resume" class="form-control" placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" readonly />
+          <input type="text" name="no_rawat_resume" class="form-control" placeholder="Nomor Rawat" required value="{?=isset_or($reg_periksa.no_rawat)?}" readonly />
       </div>
     </div>
     <div class="col-md-12">
@@ -135,12 +135,12 @@
           {if: $resume_pasien}
           {loop: $resume_pasien}
           <tr>
-            <td>{$value.no_rawat}</td>
-            <td>{$value.keluhan_utama}</td>
-            <td>{$value.diagnosa_utama}</td>
-            <td>{$value.prosedur_utama}</td>
-            <td>{$value.keadaan}</td>
-            <td>{$value.nm_dokter}</td>
+            <td>{?=isset_or($value.no_rawat)?}</td>
+            <td>{?=isset_or($value.keluhan_utama)?}</td>
+            <td>{?=isset_or($value.diagnosa_utama)?}</td>
+            <td>{?=isset_or($value.prosedur_utama)?}</td>
+            <td>{?=isset_or($value.keadaan)?}</td>
+            <td>{?=isset_or($value.nm_dokter)?}</td>
           </tr>
           {/loop}
           {else}

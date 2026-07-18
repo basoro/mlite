@@ -92,25 +92,25 @@
           {if: $komponendarah}
           {loop: $komponendarah}
           <tr class="utd_komponen_darah"
-          data-kode="{$value.kode}"
-          data-nama="{$value.nama}"
-          data-lama="{$value.lama}"
-          data-jasa_sarana="{$value.jasa_sarana}"
-          data-paket_bhp="{$value.paket_bhp}"
-          data-kso="{$value.kso}"
-          data-manajemen="{$value.manajemen}"
-          data-total="{$value.total}"
-          data-pembatalan="{$value.pembatalan}"
+          data-kode="{?=isset_or($value.kode)?}"
+          data-nama="{?=isset_or($value.nama)?}"
+          data-lama="{?=isset_or($value.lama)?}"
+          data-jasa_sarana="{?=isset_or($value.jasa_sarana)?}"
+          data-paket_bhp="{?=isset_or($value.paket_bhp)?}"
+          data-kso="{?=isset_or($value.kso)?}"
+          data-manajemen="{?=isset_or($value.manajemen)?}"
+          data-total="{?=isset_or($value.total)?}"
+          data-pembatalan="{?=isset_or($value.pembatalan)?}"
           >
-            <td>{$value.kode}</td>
-            <td>{$value.nama}</td>
-            <td>{$value.lama}</td>
-            <td>{$value.jasa_sarana}</td>
-            <td>{$value.paket_bhp}</td>
-            <td>{$value.kso}</td>
-            <td>{$value.manajemen}</td>
-            <td>{$value.total}</td>
-            <td>{$value.pembatalan}</td>
+            <td>{?=isset_or($value.kode)?}</td>
+            <td>{?=isset_or($value.nama)?}</td>
+            <td>{?=isset_or($value.lama)?}</td>
+            <td>{?=isset_or($value.jasa_sarana)?}</td>
+            <td>{?=isset_or($value.paket_bhp)?}</td>
+            <td>{?=isset_or($value.kso)?}</td>
+            <td>{?=isset_or($value.manajemen)?}</td>
+            <td>{?=isset_or($value.total)?}</td>
+            <td>{?=isset_or($value.pembatalan)?}</td>
           </tr>
           {/loop}
           {/if}

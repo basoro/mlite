@@ -1,13 +1,14 @@
 <?php
 
 return [
-  'name'          =>  'Satu Sehat',
-  'description'   =>  'Modul Satu Sehat Kemkes',
-  'author'        =>  'Basoro',
-  'version'       =>  '1.0',
-  'compatibility' =>  '5.*.*',
-  'icon'          =>  'heartbeat',
-  'install'       =>  function () use ($core) {
+  'name' => 'Satu Sehat',
+  'description' => 'Modul Satu Sehat Kemkes',
+  'author' => 'Basoro',
+  'category' => 'bridging',
+  'version' => '1.0',
+  'compatibility' => '6.*.*',
+  'icon' => 'heartbeat',
+  'install' => function () use ($core) {
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'organizationid', '')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'clientid', '')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'secretkey', '')");
@@ -21,9 +22,15 @@ return [
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'longitude', '')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'latitude', '')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'zonawaktu', 'WIB')");
-    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'billing', 'mlite')");
+    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'farmasi', '')");
+    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'laboratorium', '')");
+    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'radiologi', '')");
+    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'praktisiapotek', '')");
+    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'praktisilab', '')");
+    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'praktisirad', '')");
+    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'imaging', 'mini_pacs')");
   },
-  'uninstall'     =>  function () use ($core) {
+  'uninstall' => function () use ($core) {
     $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'satu_sehat'");
   }
 ];

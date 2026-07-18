@@ -11,6 +11,6 @@
     </div>
   </form>
   {if: $mlite.notify}
-  <div id="notify" class="alert-{$mlite.notify.type} animated shake">{$mlite.notify.text}</div>
+  <div id="notify" class="alert-{?=isset_or($mlite.notify.type)?} animated shake">{?=isset_or($mlite.notify.text)?}</div>
   {/if}
 </div>

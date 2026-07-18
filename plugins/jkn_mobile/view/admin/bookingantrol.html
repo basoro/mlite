@@ -19,10 +19,10 @@
                     <tbody>
                       {loop: $row}
                       <tr>
-                        <td>{$value.tanggal_periksa}</td>
-                        <td>{$value.nomor_kartu}</td>
-                        <td>{$value.nomor_referensi}</td>
-                        <td>{$value.kodebooking}</td>
+                        <td>{?=isset_or($value.tanggal_periksa)?}</td>
+                        <td>{?=isset_or($value.nomor_kartu)?}</td>
+                        <td>{?=isset_or($value.nomor_referensi)?}</td>
+                        <td>{?=isset_or($value.kodebooking)?}</td>
                         <td class="text-right">
                           <a href="{?=url([ADMIN, 'jkn_mobile', 'modalantrol', $value.kodebooking])?}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#riwayatModal">
                             <i class="fa fa-close"></i> <span class="hidden-xs">Batal</span>

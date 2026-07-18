@@ -52,6 +52,17 @@ class Site extends SiteModule
       $assign['website'] = $this->settings('website');
       $assign['setting'] = $this->settings('settings');
 
+
+      $assign['news'] = $this->db('mlite_news')
+            ->leftJoin('mlite_users', 'mlite_users.id = mlite_news.user_id')
+            ->where('status', 2)
+            ->where('published_at', '<=', time())
+            ->desc('published_at')
+            ->limit('3')
+            ->select(['mlite_news.id', 'mlite_news.title', 'mlite_news.cover_photo', 'mlite_news.slug', 'mlite_news.intro', 'mlite_news.content', 'mlite_users.username', 'mlite_users.fullname'])
+            ->toArray();
+
+
       $this->setTemplate("homepage.html");
       $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc']]);
       $this->tpl->set('website', $assign);
@@ -61,10 +72,15 @@ class Site extends SiteModule
     {
         unset($_POST['save']);
         if(isset($_POST['daftar'])) {
-            $max = $this->db('booking_periksa')
-                ->select(['no_booking' => 'ifnull(MAX(CONVERT(RIGHT(no_booking,4),signed)),0)+1'])
-                ->where('tanggal', $_POST['tanggal'])
-                ->oneArray();
+
+            $max['no_booking'] = $this->db('booking_periksa')
+                ->nextRightNumber(
+                    'no_booking',     // kolom
+                    4,                // panjang digit
+                    'tanggal',        // where column
+                    $_POST['tanggal'] // where value
+                );
+
             $no_urut = "BP".str_replace('-','',$_POST['tanggal']).''.sprintf("%04s", $max['no_booking']);
             $query = $this->db('booking_periksa')->save([
                 'no_booking' => $no_urut,
@@ -181,12 +197,26 @@ class Site extends SiteModule
                 $assign['published_at'] = str_replace($keys, $vals, strtolower($assign['published_at']));
 
                 $this->setTemplate("post.html");
-                $this->tpl->set('page', ['title' => $assign['title'], 'desc' => trim(mb_strimwidth(htmlspecialchars(strip_tags(preg_replace('/\{(.*?)\}/', null, $assign['content']))), 0, 155, "...", "utf-8"))]);
+                $this->tpl->set('page', ['title' => $assign['title'], 'desc' => trim(mb_strimwidth(htmlspecialchars(strip_tags(preg_replace('/\{(.*?)\}/', '', $assign['content']))), 0, 155, "...", "utf-8"))]);
                 $this->tpl->set('post', $assign);
                 $this->tpl->set('website', [
                     'title' => $this->settings('website.title'),
                     'desc' => $this->settings('website.desc')
                 ]);
+                
+                $assign = [
+                  'title' => $this->settings('website.title'),
+                  'desc' => $this->settings('website.desc'),
+                  'posts' => []
+                ];
+          
+                $assign['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+                $assign['website'] = $this->settings('website');
+                $assign['setting'] = $this->settings('settings');
+        
+                $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc']]);
+                $this->tpl->set('website', $assign);                
+                
             } else {
                 return $this->core->module->pages->get404();
             }
@@ -196,7 +226,7 @@ class Site extends SiteModule
         $this->core->append('<meta property="og:url" content="'.url(['news', 'post', $row['slug']]).'">', 'header');
         $this->core->append('<meta property="og:type" content="article">', 'header');
         $this->core->append('<meta property="og:title" content="'.$row['title'].'">', 'header');
-        $this->core->append('<meta property="og:description" content="'.trim(mb_strimwidth(htmlspecialchars(strip_tags(preg_replace('/\{(.*?)\}/', null, $assign['content']))), 0, 155, "...", "utf-8")).'">', 'header');
+        $this->core->append('<meta property="og:description" content="'.trim(mb_strimwidth(htmlspecialchars(strip_tags(preg_replace('/\{(.*?)\}/', '', $row['content']))), 0, 155, "...", "utf-8")).'">', 'header');
         if (!empty($row['cover_photo'])) {
             $this->core->append('<meta property="og:image" content="'.url(UPLOADS.'/website/news/'.$row['cover_photo']).'?'.$row['published_at'].'">', 'header');
         }
@@ -281,6 +311,21 @@ class Site extends SiteModule
 
         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc']]);
         $this->tpl->set('news', $assign);
+        
+        $assign = [
+          'title' => $this->settings('website.title'),
+          'desc' => $this->settings('website.desc'),
+          'posts' => []
+        ];
+  
+        $assign['notify'] = $this->core->getNotify();
+        $assign['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+        $assign['website'] = $this->settings('website');
+        $assign['setting'] = $this->settings('settings');
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc']]);
+        $this->tpl->set('website', $assign);
+        
 
         $this->core->append('<link rel="alternate" type="application/rss+xml" title="RSS" href="'.url(['news', 'feed']).'">', 'header');
         $this->core->append($this->draw('disqus.html', ['isNews' => true]), 'footer');

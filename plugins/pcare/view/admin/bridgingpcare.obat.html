@@ -11,7 +11,7 @@
 <div class="modal-body">
   <div class="form-group">
     <label for="poli">Nomor Kunjungan</label>
-    <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="{$bridging_pcare.nomor_kunjungan}">
+    <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="{?=isset_or($bridging_pcare.nomor_kunjungan)?}">
   </div>
   <div class="form-group">
     <label for="poli">Obat</label>
@@ -50,12 +50,12 @@
         {if: $data_obat}
         {loop: $data_obat.list}
         <tr>
-            <td>{$value.kdObatSK}</td>
-            <td>{$value.kdObatSK}</td>
-            <td>{$value.obat.kdObat}</td>
-            <td>{$value.obat.nmObat}</td>
-            <td>{$value.signa1} x {$value.signa2}</td>
-            <td>{$value.jmlObat}</td>
+            <td>{?=isset_or($value.kdObatSK)?}</td>
+            <td>{?=isset_or($value.kdObatSK)?}</td>
+            <td>{?=isset_or($value.obat.kdObat)?}</td>
+            <td>{?=isset_or($value.obat.nmObat)?}</td>
+            <td>{?=isset_or($value.signa1)?} x {?=isset_or($value.signa2)?}</td>
+            <td>{?=isset_or($value.jmlObat)?}</td>
         </tr>
         {/loop}
         {/if}

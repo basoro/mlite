@@ -8,7 +8,7 @@
             <div class="panel-body">
                 <form method="post">
                     <div class="clearfix">
-                        <h3 class="pull-left" style="margin-top:5px;">Jumlah: {$news.postCount}</h3>
+                        <h3 class="pull-left" style="margin-top:5px;">Jumlah: {?=isset_or($news.postCount)?}</h3>
                         <button type="submit" title="Hapus" name="delete" class="btn btn-danger pull-right" data-confirm="akin ingin menghapus artikel terpilih?" disabled><i class="fa fa-trash"></i> Hapus (<span>0</span>)</button>
                     </div>
                     <div class="table-responsive">
@@ -28,22 +28,22 @@
                                 {if: !empty($news.posts)}
                                 {loop: $news.posts}
                                 <tr>
-                                    <td><input type="checkbox" name="post-list[]" class="list-item" value="{$value.id}" /></td>
-                                    <td><a href="{$value.editURL}">{$value.title}</a></td>
+                                    <td><input type="checkbox" name="post-list[]" class="list-item" value="{?=isset_or($value.id)?}" /></td>
+                                    <td><a href="{?=isset_or($value.editURL)?}">{?=isset_or($value.title)?}</a></td>
                                     <td>
                                         {if: $value.status >= 2}
-                                        <i class="fa fa-circle text-success" data-toggle="tooltip" data-placement="right" title="{$value.type}"></i>
+                                        <i class="fa fa-circle text-success" data-toggle="tooltip" data-placement="right" title="{?=isset_or($value.type)?}"></i>
                                         {elseif: $value.status == 1}
-                                        <i class="fa fa-circle text-warning" data-toggle="tooltip" data-placement="right" title="{$value.type}"></i>
+                                        <i class="fa fa-circle text-warning" data-toggle="tooltip" data-placement="right" title="{?=isset_or($value.type)?}"></i>
                                         {else}
-                                        <i class="fa fa-circle text-danger" data-toggle="tooltip" data-placement="right" title="{$value.type}"></i>
+                                        <i class="fa fa-circle text-danger" data-toggle="tooltip" data-placement="right" title="{?=isset_or($value.type)?}"></i>
                                         {/if}
                                     </td>
-                                    <td>{$value.user}</td>
-                                    <td>{$value.comments}</td>
-                                    <td>{$value.published_at}</td>
+                                    <td>{?=isset_or($value.user)?}</td>
+                                    <td>{?=isset_or($value.comments)?}</td>
+                                    <td>{?=isset_or($value.published_at)?}</td>
                                     <td class="text-right">
-                                        <a href="{$value.viewURL}" target="_blank" class="btn btn-primary btn-xs">
+                                        <a href="{?=isset_or($value.viewURL)?}" target="_blank" class="btn btn-primary btn-xs">
                                             <i class="fa fa-search"></i> <span class="hidden-xs">Lihat</span>
                                         </a>
                                     </td>
@@ -56,7 +56,7 @@
                         </table>
                     </div>
                 </form>
-                {$news.pagination}
+                {?=isset_or($news.pagination)?}
             </div>
         </div>
     </div>

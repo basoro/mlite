@@ -1,0 +1,238 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3">
+      <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-heading">
+          <h4 class="panel-title">JKN Mobile (RS)</h4>
+        </div>
+        <div class="panel-body" style="padding: 0; max-height: 80vh; overflow-y: auto;">
+          <ul class="nav nav-pills nav-stacked" style="margin: 0;" id="menuList">
+            <li><a href="#" onclick="loadForm('token')"><span class="glyphicon glyphicon-lock"></span> Get Token</a></li>
+            <li><a href="#" onclick="loadForm('status_antrean')"><span class="glyphicon glyphicon-info-sign"></span> Status Antrean</a></li>
+            <li><a href="#" onclick="loadForm('ambil_antrean')"><span class="glyphicon glyphicon-plus"></span> Ambil Antrean</a></li>
+            <li><a href="#" onclick="loadForm('sisa_antrean')"><span class="glyphicon glyphicon-list"></span> Sisa Antrean</a></li>
+            <li><a href="#" onclick="loadForm('batal_antrean')"><span class="glyphicon glyphicon-remove"></span> Batal Antrean</a></li>
+            <li><a href="#" onclick="loadForm('checkin')"><span class="glyphicon glyphicon-ok"></span> Check In Pasien</a></li>
+            <li><a href="#" onclick="loadForm('info_pasien_baru')"><span class="glyphicon glyphicon-user"></span> Info Pasien Baru</a></li>
+            <li><a href="#" onclick="loadForm('jadwal_operasi')"><span class="glyphicon glyphicon-calendar"></span> Jadwal Operasi</a></li>
+            <li><a href="#" onclick="loadForm('booking_operasi')"><span class="glyphicon glyphicon-time"></span> Booking Operasi</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Area -->
+    <div class="col-md-9">
+      <div class="panel panel-default" style="margin-top: 20px;">
+        <div class="panel-heading">
+            <h4 class="panel-title" id="formTitle">API Tester JKN Mobile</h4>
+        </div>
+        <div class="panel-body">
+            <div id="formContainer">
+                <div class="well">
+                    <h4>Selamat datang di API Tester JKN Mobile</h4>
+                    <p>Gunakan menu di sebelah kiri untuk memilih fitur yang ingin diuji. Pastikan konfigurasi BPJS sudah benar.</p>
+                </div>
+            </div>
+            <div id="responseContainer" style="display:none; margin-top: 20px;">
+                <label>Response:</label>
+                <pre id="responseOutput" style="background: #2d2d2d; color: #ccc; padding: 15px; border-radius: 4px; overflow: auto;"></pre>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    var endpoints = {
+        'token': {
+            title: 'Get Token',
+            method: 'POST',
+            url: 'jknmobile/token',
+            body: {
+                "username": "jkn",
+                "password": "mobile"
+            }
+        },
+        'status_antrean': {
+            title: 'Status Antrean',
+            method: 'POST',
+            url: 'jknmobile/antrian/status',
+            body: {
+                "kodepoli": "JAN",
+                "tanggalperiksa": "{?=date('Y-m-d')?}"
+            }
+        },
+        'ambil_antrean': {
+            title: 'Ambil Antrean',
+            method: 'POST',
+            url: 'jknmobile/antrian/ambil',
+            body: {
+                "nomorkartu": "",
+                "nik": "3212345678987654",
+                "nohp": "085635228888",
+                "kodepoli": "ANA",
+                "norm": "123345",
+                "tanggalperiksa": "{?=date('Y-m-d')?}",
+                "kodedokter": 12345,
+                "jampraktek": "08:00-16:00",
+                "jeniskunjungan": 1,
+                "nomorreferensi": "0001R0040116A000001"
+            }
+        },
+        'sisa_antrean': {
+            title: 'Sisa Antrean',
+            method: 'POST',
+            url: 'jknmobile/antrian/sisa',
+            body: {
+                "kodepoli": "JAN",
+                "tanggalperiksa": "{?=date('Y-m-d')?}"
+            }
+        },
+        'batal_antrean': {
+            title: 'Batal Antrean',
+            method: 'POST',
+            url: 'jknmobile/antrian/batal',
+            body: {
+                "kodebooking": "",
+                "keterangan": "Batal sendiri"
+            }
+        },
+        'checkin': {
+            title: 'Check In Pasien',
+            method: 'POST',
+            url: 'jknmobile/antrian/checkin',
+            body: {
+                "kodebooking": "",
+                "waktu": "{?=time()*1000?}"
+            }
+        },
+        'info_pasien_baru': {
+            title: 'Info Pasien Baru',
+            method: 'POST',
+            url: 'jknmobile/pasien/baru',
+            body: {
+                "nomorkartu": "",
+                "nik": "",
+                "notelp": "",
+                "norm": ""
+            }
+        },
+        'jadwal_operasi': {
+            title: 'Jadwal Operasi',
+            method: 'POST',
+            url: 'jknmobile/operasi/rs',
+            body: {
+                "tanggalawal": "{?=date('Y-m-d')?}",
+                "tanggalakhir": "{?=date('Y-m-d', strtotime('+7 days'))?}"
+            }
+        },
+        'booking_operasi': {
+            title: 'Booking Operasi',
+            method: 'POST',
+            url: 'jknmobile/operasi/pasien',
+            body: {
+                "nopeserta": ""
+            }
+        }
+    };
+
+    function loadForm(key) {
+        var config = endpoints[key];
+        if (!config) return;
+
+        $('#formTitle').text(config.title);
+        $('#responseContainer').hide();
+        $('#responseOutput').text('');
+
+        var html = '<form id="wsForm" onsubmit="submitForm(event, \'' + key + '\')">';
+        
+        html += '<div class="form-group"><label>URL Endpoint</label>';
+        html += '<div class="input-group"><span class="input-group-addon">' + config.method + '</span>';
+        html += '<input type="text" class="form-control" value="' + mlite.url + '/' + config.url + '" disabled></div></div>';
+
+        // Headers Section
+        html += '<h5>Headers</h5>';
+        html += '<div class="row">';
+        html += '<div class="col-md-4"><div class="form-group"><label>Header Username Key</label><input type="text" class="form-control" id="header_username_key" value="{?=isset_or($header_username, "X-Username")?}"></div></div>';
+        html += '<div class="col-md-4"><div class="form-group"><label>Header Password Key</label><input type="text" class="form-control" id="header_password_key" value="{?=isset_or($header_password, "X-Password")?}"></div></div>';
+        html += '<div class="col-md-4"><div class="form-group"><label>Header Token Key</label><input type="text" class="form-control" id="header_token_key" value="{?=isset_or($header_token, "X-Token")?}"></div></div>';
+        html += '</div>';
+        html += '<div class="row">';
+        html += '<div class="col-md-4"><div class="form-group"><label>Header Username Value</label><input type="text" class="form-control" id="header_username_val" value="{?=isset_or($x_username)?}"></div></div>';
+        html += '<div class="col-md-4"><div class="form-group"><label>Header Password Value</label><input type="text" class="form-control" id="header_password_val" value="{?=isset_or($x_password)?}"></div></div>';
+        html += '<div class="col-md-4"><div class="form-group"><label>Header Token Value</label><input type="text" class="form-control" id="header_token_val" value=""></div></div>';
+        html += '</div>';
+
+        if (config.body) {
+            html += '<h5>JSON Body</h5>';
+            html += '<div class="form-group">';
+            html += '<textarea class="form-control" id="jsonBody" rows="10">' + JSON.stringify(config.body, null, 2) + '</textarea>';
+            html += '</div>';
+        }
+
+        html += '<button type="submit" class="btn btn-primary">Kirim Request</button>';
+        html += '</form>';
+
+        $('#formContainer').html(html);
+    }
+
+    function submitForm(e, key) {
+        e.preventDefault();
+        var config = endpoints[key];
+        var url = mlite.url + '/' + config.url;
+        var method = config.method;
+        var data = null;
+
+        if (config.body) {
+            try {
+                data = JSON.parse($('#jsonBody').val());
+            } catch (err) {
+                alert('Invalid JSON Body');
+                return;
+            }
+        }
+
+        $('#responseContainer').show();
+        $('#responseOutput').text('Loading...');
+
+        var headers = {};
+        var uKey = $('#header_username_key').val();
+        var uVal = $('#header_username_val').val();
+        var pKey = $('#header_password_key').val();
+        var pVal = $('#header_password_val').val();
+        var tKey = $('#header_token_key').val();
+        var tVal = $('#header_token_val').val();
+
+        if (uKey && uVal) headers[uKey] = uVal;
+        if (pKey && pVal) headers[pKey] = pVal;
+        if (tKey && tVal) headers[tKey] = tVal;
+
+        $.ajax({
+            url: url,
+            method: method,
+            headers: headers,
+            data: config.method === 'POST' ? JSON.stringify(data) : data,
+            contentType: config.method === 'POST' ? 'application/json' : 'application/x-www-form-urlencoded',
+            success: function(response) {
+                try {
+                    var json = typeof response === 'object' ? response : JSON.parse(response);
+                    $('#responseOutput').text(JSON.stringify(json, null, 2));
+                } catch (e) {
+                    $('#responseOutput').text(response);
+                }
+            },
+            error: function(xhr, status, error) {
+                var responseText = xhr.responseText;
+                try {
+                    var json = JSON.parse(responseText);
+                    $('#responseOutput').text(JSON.stringify(json, null, 2));
+                } catch (e) {
+                    $('#responseOutput').text(responseText || 'Error: ' + error);
+                }
+            }
+        });
+    }
+</script>

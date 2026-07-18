@@ -25,7 +25,7 @@
           	                <label>Nama Poli RS</label>
                             	<select name="kd_poli_rs" class="form-control">
                                 {loop: $poliklinik}
-                                <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                                <option value="{?=isset_or($value.kd_poli)?}">{?=isset_or($value.nm_poli)?}</option>
                                 {/loop}
                             	</select>
           	            </div>
@@ -60,9 +60,9 @@
                     <tbody>
                       {loop: $row}
                       <tr>
-                        <td>{$value.kd_poli_rs}</td>
-                        <td>{$value.kd_poli_bpjs}</td>
-                        <td>{$value.nm_poli_bpjs}</td>
+                        <td>{?=isset_or($value.kd_poli_rs)?}</td>
+                        <td>{?=isset_or($value.kd_poli_bpjs)?}</td>
+                        <td>{?=isset_or($value.nm_poli_bpjs)?}</td>
                         <td class="text-right">
                           <a href="{?=url([ADMIN, 'vclaim', 'poliklinik_delete', $value.kd_poli_rs])?}" class="btn btn-xs btn-danger" data-confirm="Anda yakin akan menghapus poliklinik ini?">
                             <i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>

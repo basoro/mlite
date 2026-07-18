@@ -19,19 +19,19 @@
       </thead>
       <tbody>
         {loop: $rawat_jalan.list}
-        <tr class="layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">
-          <td style="white-space: nowrap;">{$value.no_rkm_medis}</td>
-          <td style="white-space: nowrap;">{$value.nm_pasien}</td>
-          <td style="white-space: nowrap;">{$value.no_rawat}</td>
-          <td style="white-space: nowrap;">{$value.no_reg}</td>
-          <td style="white-space: nowrap;">{$value.nm_poli}</td>
-          <td style="white-space: nowrap;">{$value.nm_dokter}</td>
-          <td style="white-space: nowrap;">{$value.png_jawab}</td>
-          <td style="white-space: nowrap;">{$value.no_peserta}</td>
-          <td style="white-space: nowrap;">{$value.tgl_registrasi} {$value.jam_reg}</td>
-          <td style="white-space: nowrap;">{$value.stts}</td>
-          <td style="white-space: nowrap;">{$value.status_lanjut}</td>
-          <td style="white-space: nowrap;">{$value.status_bayar}</td>
+        <tr class="layanan_obat" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}" data-nm_pasien="{?=isset_or($value.nm_pasien)?}">
+          <td style="white-space: nowrap;">{?=isset_or($value.no_rkm_medis)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.nm_pasien)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.no_rawat)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.no_reg)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.nm_poli)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.nm_dokter)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.png_jawab)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.no_peserta)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.tgl_registrasi)?} {?=isset_or($value.jam_reg)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.stts)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.status_lanjut)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.status_bayar)?}</td>
         </tr>
         {/loop}
       </tbody>

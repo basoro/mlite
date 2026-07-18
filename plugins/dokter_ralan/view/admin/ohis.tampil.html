@@ -13,12 +13,12 @@
   <tbody>
     {loop: $ohis}
       <tr>
-        <td>{$value.tgl_input}</td>
-        <td>{$value.debris}</td>
-        <td>{$value.calculus}</td>
-        <td>{$value.nilai}</td>
-        <td>{$value.kriteria}</td>
-        <td><a href="#" class="btn btn-xs btn-danger deleteohis" data-tgl_input="{$value.tgl_input}"><span class="fa fa-trash"></span><span class="hidden-xs">Hapus</span></a></td>
+        <td>{?=isset_or($value.tgl_input)?}</td>
+        <td>{?=isset_or($value.debris)?}</td>
+        <td>{?=isset_or($value.calculus)?}</td>
+        <td>{?=isset_or($value.nilai)?}</td>
+        <td>{?=isset_or($value.kriteria)?}</td>
+        <td><a href="#" class="btn btn-xs btn-danger deleteohis" data-tgl_input="{?=isset_or($value.tgl_input)?}"><span class="fa fa-trash"></span><span class="hidden-xs">Hapus</span></a></td>
       </tr>
     {/loop}
   </tbody>

@@ -70,7 +70,7 @@ function printContent(el){
                   SURAT RUJUK BALIK (PRB)
                 </div>
                 <div style="font-size:21px;text-align:center;">
-                  {$settings.nama_instansi}
+                  {?=isset_or($settings.nama_instansi)?}
                 </div>
               </td>
             </tr>
@@ -94,7 +94,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.no_srb}
+                {?=isset_or($data_sep.no_srb)?}
               </td>
             </tr>
           </table>
@@ -110,7 +110,7 @@ function printContent(el){
               <td width="225">
               </td>
               <td width="160">
-                Tanggal {$data_sep.tgl_srb}
+                Tanggal {?=isset_or($data_sep.tgl_srb)?}
               </td>
             </tr>
           </table>
@@ -127,7 +127,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.no_kartu}
+                {?=isset_or($data_sep.no_kartu)?}
               </td>
             </tr>
           </table>
@@ -144,7 +144,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.nama_pasien} ({$data_sep.jkel})
+                {?=isset_or($data_sep.nama_pasien)?} ({?=isset_or($data_sep.jkel)?})
               </td>
             </tr>
           </table>
@@ -161,7 +161,7 @@ function printContent(el){
                 :
               </td>
               <td width="450">
-                {$data_sep.tanggal_lahir}
+                {?=isset_or($data_sep.tanggal_lahir)?}
               </td>
               <td width="90">
                 R/.
@@ -182,11 +182,11 @@ function printContent(el){
                 :
               </td>
               <td width="450">
-                {$data_sep.nmdiagnosaawal}
+                {?=isset_or($data_sep.nmdiagnosaawal)?}
               </td>
               <td width="260">
                 {loop: $obat_srb}
-                {$value.signa1}x{$value.signa2}&nbsp;&nbsp;{$value.nm_obat} &nbsp;&nbsp;&nbsp;&nbsp;{$value.jumlah}
+                {?=isset_or($value.signa1)?}x{?=isset_or($value.signa2)?}&nbsp;&nbsp;{?=isset_or($value.nm_obat)?} &nbsp;&nbsp;&nbsp;&nbsp;{?=isset_or($value.jumlah)?}
                 {/loop}
               </td>
             </tr>
@@ -204,7 +204,7 @@ function printContent(el){
                 :
               </td>
               <td width="450">
-                {$data_sep.namaprogram}
+                {?=isset_or($data_sep.namaprogram)?}
               </td>
             </tr>
           </table>
@@ -221,7 +221,7 @@ function printContent(el){
                 :
               </td>
               <td width="450">
-                {$data_sep.keterangan}
+                {?=isset_or($data_sep.keterangan)?}
               </td>
             </tr>
           </table>
@@ -252,7 +252,7 @@ function printContent(el){
               <td width="120">
               </td>
               <td>
-                {$data_sep.saran}
+                {?=isset_or($data_sep.saran)?}
               </td>
               <td>
               </td>
@@ -461,7 +461,7 @@ function printContent(el){
     <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
     <script>
       jQuery('#qrcodeSEP').qrcode({
-        text	: "No.SEP: {$data_sep.no_sep}",
+        text	: "No.SEP: {?=isset_or($data_sep.no_sep)?}",
         width : 80,
         height: 80
       });

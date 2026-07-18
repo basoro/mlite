@@ -18,14 +18,14 @@
 						<tbody>
 							{loop: $users}
 							<tr>
-								<td><a href="{$value.editURL}">{$value.username}</a></td>
-								<td>{$value.fullname}</td>
-                <td>{$value.password}</td>
+								<td><a href="{?=isset_or($value.editURL)?}">{?=isset_or($value.username)?}</a></td>
+								<td>{?=isset_or($value.fullname)?}</td>
+                <td>{?=isset_or($value.password)?}</td>
 								<td class="text-right">
-									<a href="{$value.editURL}" class="btn btn-xs btn-success">
+									<a href="{?=isset_or($value.editURL)?}" class="btn btn-xs btn-success">
 										<i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span>
 									</a>
-									<a href="{$value.delURL}" class="btn btn-xs btn-danger" data-confirm="Anda yakin akan menghapus user ini?">
+									<a href="{?=isset_or($value.delURL)?}" class="btn btn-xs btn-danger" data-confirm="Anda yakin akan menghapus user ini?">
 										<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
 									</a>
 								</td>

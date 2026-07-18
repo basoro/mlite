@@ -16,7 +16,7 @@
 
         function SimpanFoto()
         {
-          var no_rkm_medis = '{$no_rkm_medis}';
+          var no_rkm_medis = '{?=isset_or($no_rkm_medis)?}';
           var shutter = new Audio();
           shutter.autoplay = false;
           shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/pasien/audio/shutter.ogg' : '{?=url()?}/plugins/pasien/audio/shutter.mp3';

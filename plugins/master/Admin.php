@@ -45,6 +45,14 @@ use Plugins\Master\Src\StatusKerja;
 use Plugins\Master\Src\StatusWP;
 use Plugins\Master\Src\MetodeRacik;
 use Plugins\Master\Src\RuangOk;
+use Plugins\Master\Src\Penyakit;
+use Plugins\Master\Src\Icd9;
+use Plugins\Master\Src\PersonalPasien;
+use Plugins\Master\Src\LoincLab;
+use Plugins\Master\Src\LoincRad;
+use Plugins\Master\Src\Kfa;
+use Plugins\Master\Src\Snomed;
+use Plugins\Master\Src\MliteNotifications;
 
 class Admin extends AdminModule
 {
@@ -91,12 +99,20 @@ class Admin extends AdminModule
   protected $statuswp;
   protected $metoderacik;
   protected $ruangok;
+  protected $penyakit;
+  protected $icd9;
+  protected $personalpasien;
+  protected $snomed;
+  protected $loinclab;
+  protected $loincrad;
+  protected $kfa;
+  protected $mlitenotifications;
 
     public function init()
     {
         $this->dokter = new Dokter();
         $this->petugas = new Petugas();
-        $this->poliklinik = new Poliklinik();
+        $this->poliklinik = new Poliklinik($this->core);
         $this->bangsal = new Bangsal();
         $this->kamar = new Kamar();
         $this->databarang = new DataBarang();
@@ -136,6 +152,14 @@ class Admin extends AdminModule
         $this->statuswp = new StatusWP();
         $this->metoderacik = new MetodeRacik();
         $this->ruangok = new RuangOk();
+        $this->penyakit = new Penyakit();
+        $this->icd9 = new Icd9();
+        $this->personalpasien = new PersonalPasien();
+        $this->snomed = new Snomed();
+        $this->loinclab = new LoincLab();
+        $this->loincrad = new LoincRad();
+        $this->kfa = new Kfa();
+        $this->mlitenotifications = new MliteNotifications();
     }
 
     public function navigation()
@@ -166,6 +190,12 @@ class Admin extends AdminModule
             'Jenis Barang' => 'jenis',
             'Kategori Barang' => 'kategoribarang',
             'Kategori Penyakit' => 'kategoripenyakit',
+            'ICD 10' => 'penyakit',
+            'ICD 9' => 'icd9',
+            'SNOMED CT' => 'snomed',
+            'LOINC Lab' => 'loinclab',
+            'LOINC Radiologi' => 'loincrad',
+            'KFA' => 'kfa',
             'Kategori Perawatan' => 'kategoriperawatan',
             'Kode Satuan' => 'kodesatuan',
             'Master Aturan Pakai' => 'masteraturanpakai',
@@ -185,6 +215,255 @@ class Admin extends AdminModule
             'Metode Racik' => 'metoderacik',
             'Ruang OK' => 'ruangok',
         ];
+    }
+
+    public function apiList($table)
+    {
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'master')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $allowed_tables = $this->_getAllowedTables();
+        
+        if (!in_array($table, $allowed_tables)) {
+             return ['status' => 'error', 'message' => 'Table not allowed or not found'];
+        }
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $per_page = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $offset = ($page - 1) * $per_page;
+        
+        // Count Query
+        $q_count = $this->db($table);
+        if ($table == 'gudangbarang') {
+            $q_count->join('databarang', 'databarang.kode_brng = gudangbarang.kode_brng');
+            $q_count->join('bangsal', 'bangsal.kd_bangsal = gudangbarang.kd_bangsal');
+        }
+
+        if (!empty($_GET['s'])) {
+            if ($table == 'gudangbarang') {
+                $q_count->like('gudangbarang.kode_brng', '%'.$_GET['s'].'%')
+                    ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
+                    ->orLike('gudangbarang.no_batch', '%'.$_GET['s'].'%')
+                    ->orLike('gudangbarang.no_faktur', '%'.$_GET['s'].'%')
+                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
+            } elseif (!empty($_GET['col'])) {
+                $q_count->like($_GET['col'], '%'.$_GET['s'].'%');
+            }
+        }
+
+        if ($table == 'riwayat_barang_medis') {
+            $q_count->join('databarang', 'databarang.kode_brng = riwayat_barang_medis.kode_brng');
+            $q_count->join('bangsal', 'bangsal.kd_bangsal = riwayat_barang_medis.kd_bangsal');
+            if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+                $q_count->where('riwayat_barang_medis.tanggal', '>=', $_GET['tgl_awal']);
+                $q_count->where('riwayat_barang_medis.tanggal', '<=', $_GET['tgl_akhir']);
+            }
+        }
+
+        if ($table == 'diagnosa_pasien') {
+            $q_count->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit');
+            $q_count->join('reg_periksa', 'reg_periksa.no_rawat = diagnosa_pasien.no_rawat');
+            if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+                $q_count->where('reg_periksa.tgl_registrasi', '>=', $_GET['tgl_awal']);
+                $q_count->where('reg_periksa.tgl_registrasi', '<=', $_GET['tgl_akhir']);
+            }
+        }
+
+
+        if (!empty($_GET['s'])) {
+            if ($table == 'riwayat_barang_medis') {
+                $q_count->like('riwayat_barang_medis.kode_brng', '%'.$_GET['s'].'%')
+                    ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
+                    ->orLike('riwayat_barang_medis.no_batch', '%'.$_GET['s'].'%')
+                    ->orLike('riwayat_barang_medis.no_faktur', '%'.$_GET['s'].'%') 
+                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
+            } elseif (!empty($_GET['col'])) {
+                $q_count->like($_GET['col'], '%'.$_GET['s'].'%');
+            }
+        }
+
+        if (isset($_GET['status'])) {
+            $q_count->where('status', $_GET['status']);
+        }
+        $totalRecords = $q_count->count();
+
+        // Data Query
+        $q_data = $this->db($table);
+        if ($table == 'gudangbarang') {
+            $q_data->select('gudangbarang.*, databarang.nama_brng, databarang.kode_sat, databarang.kapasitas, databarang.h_beli, bangsal.nm_bangsal');
+            $q_data->join('databarang', 'databarang.kode_brng = gudangbarang.kode_brng');
+            $q_data->join('bangsal', 'bangsal.kd_bangsal = gudangbarang.kd_bangsal');
+        }
+
+        if (!empty($_GET['s'])) {
+            if ($table == 'gudangbarang') {
+                $q_data->like('gudangbarang.kode_brng', '%'.$_GET['s'].'%')
+                    ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
+                    ->orLike('gudangbarang.no_batch', '%'.$_GET['s'].'%')
+                    ->orLike('gudangbarang.no_faktur', '%'.$_GET['s'].'%')
+                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
+            } elseif (!empty($_GET['col'])) {
+                $q_data->like($_GET['col'], '%'.$_GET['s'].'%');
+            }
+        }
+
+        if ($table == 'riwayat_barang_medis') {
+            $q_data->select('riwayat_barang_medis.*, databarang.nama_brng, databarang.h_beli, bangsal.nm_bangsal');
+            $q_data->join('databarang', 'databarang.kode_brng = riwayat_barang_medis.kode_brng');
+            $q_data->join('bangsal', 'bangsal.kd_bangsal = riwayat_barang_medis.kd_bangsal');
+            if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+                $q_data->where('riwayat_barang_medis.tanggal', '>=', $_GET['tgl_awal']);
+                $q_data->where('riwayat_barang_medis.tanggal', '<=', $_GET['tgl_akhir']);
+            }
+        }
+
+        if ($table == 'diagnosa_pasien') {
+            $q_data->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit');
+            $q_data->join('reg_periksa', 'reg_periksa.no_rawat = diagnosa_pasien.no_rawat');
+            
+            if (isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])) {
+                $q_data->select('diagnosa_pasien.kd_penyakit, penyakit.nm_penyakit, COUNT(diagnosa_pasien.kd_penyakit) as jumlah');
+                $q_data->where('reg_periksa.tgl_registrasi', '>=', $_GET['tgl_awal']);
+                $q_data->where('reg_periksa.tgl_registrasi', '<=', $_GET['tgl_akhir']);
+                $q_data->group('diagnosa_pasien.kd_penyakit');
+                $q_data->desc('jumlah');
+            } else {
+                $q_data->select('diagnosa_pasien.*, penyakit.nm_penyakit');
+            }
+        }
+
+
+        if (!empty($_GET['s'])) {
+            if ($table == 'riwayat_barang_medis') {
+                $q_data->like('riwayat_barang_medis.kode_brng', '%'.$_GET['s'].'%')
+                    ->orLike('databarang.nama_brng', '%'.$_GET['s'].'%')
+                    ->orLike('riwayat_barang_medis.no_batch', '%'.$_GET['s'].'%')
+                    ->orLike('riwayat_barang_medis.no_faktur', '%'.$_GET['s'].'%')
+                    ->orLike('bangsal.nm_bangsal', '%'.$_GET['s'].'%');
+            } elseif (!empty($_GET['col'])) {
+                $q_data->like($_GET['col'], '%'.$_GET['s'].'%');
+            }
+        }
+
+        if (isset($_GET['status'])) {
+            $q_data->where('status', $_GET['status']);
+        }
+        $rows = $q_data->offset($offset)->limit($per_page)->toArray();
+
+        return [
+            "status" => "success",
+            "data" => $rows,
+            "meta" => [
+                "page" => $page,
+                "per_page" => $per_page,
+                "total" => $totalRecords
+            ]
+        ];
+    }
+
+    public function apiSave($table)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_create', 'master') && !$this->core->checkPermission($username, 'can_update', 'master')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $property = $this->getTableProperty($table);
+        if (!$property) {
+             return ['status' => 'error', 'message' => 'Table not allowed or not found'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+        
+        // Populate $_POST for the model to use
+        foreach ($input as $key => $value) {
+            $_POST[$key] = $value;
+        }
+
+        try {
+            $result = $this->{$property}->postSave();
+            if ($result) {
+                return ['status' => 'success', 'message' => 'Data saved successfully'];
+            } else {
+                return ['status' => 'error', 'message' => 'Failed to save data'];
+            }
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+        }
+    }
+
+    public function apiDelete($table)
+    {
+        $username = $this->core->checkAuth('DELETE');
+        if (!$this->core->checkPermission($username, 'can_delete', 'master')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $property = $this->getTableProperty($table);
+        if (!$property) {
+             return ['status' => 'error', 'message' => 'Table not allowed or not found'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_REQUEST;
+
+        // Populate $_POST for the model to use
+        foreach ($input as $key => $value) {
+            $_POST[$key] = $value;
+        }
+
+        try {
+            $result = $this->{$property}->postHapus();
+            if ($result) {
+                return ['status' => 'success', 'message' => 'Data deleted successfully'];
+            } else {
+                return ['status' => 'error', 'message' => 'Failed to delete data'];
+            }
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $message = preg_replace('/`[^`]+`\./', '', $message);
+            return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+        }
+    }
+
+    private function _getAllowedTables()
+    {
+        if (DBDRIVER == 'sqlite') {
+            $allowed_tables = $this->db()->pdo()->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")->fetchAll(\PDO::FETCH_COLUMN);
+        } else {
+            $allowed_tables = $this->db()->pdo()->query("SHOW TABLES")->fetchAll(\PDO::FETCH_COLUMN);
+        }
+        return array_filter($allowed_tables, fn($t) => $t !== 'mlite_api_key');
+    }
+
+    private function getTableProperty($table)
+    {
+        // Special mappings
+        $map = [
+            'cacat_fisik' => 'cacat',
+            'suku_bangsa' => 'suku',
+            'perusahaan_pasien' => 'perusahaan',
+            'jns_perawatan_inap' => 'jnsperawataninap',
+            'jns_perawatan_lab' => 'jnsperawatanlab',
+            'jns_perawatan_radiologi' => 'jnsperawatanradiologi'
+        ];
+
+        if (isset($map[$table])) {
+            $prop = $map[$table];
+        } else {
+            $prop = str_replace('_', '', $table);
+        }
+
+        if (property_exists($this, $prop)) {
+            return $prop;
+        }
+        
+        return false;
     }
 
     public function getManage()
@@ -214,6 +493,8 @@ class Admin extends AdminModule
         ['name' => 'Jenis Barang', 'url' => url([ADMIN, 'master', 'jenis']), 'icon' => 'cubes', 'desc' => 'Master jenis barang'],
         ['name' => 'Kategori Barang', 'url' => url([ADMIN, 'master', 'kategoribarang']), 'icon' => 'cubes', 'desc' => 'Master kategori barang'],
         ['name' => 'Kategori Penyakit', 'url' => url([ADMIN, 'master', 'kategoripenyakit']), 'icon' => 'cubes', 'desc' => 'Master kategori penyakit'],
+        ['name' => 'ICD 10', 'url' => url([ADMIN, 'master', 'penyakit']), 'icon' => 'cubes', 'desc' => 'Master ICD 10 penyakit'],
+        ['name' => 'ICD 9', 'url' => url([ADMIN, 'master', 'icd9']), 'icon' => 'cubes', 'desc' => 'Master ICD 9'],
         ['name' => 'Kategori Perawatan', 'url' => url([ADMIN, 'master', 'kategoriperawatan']), 'icon' => 'cubes', 'desc' => 'Master kategori perawatan'],
         ['name' => 'Kode Satuan', 'url' => url([ADMIN, 'master', 'kodesatuan']), 'icon' => 'cubes', 'desc' => 'Master kode satuan'],
         ['name' => 'Master Aturan Pakai', 'url' => url([ADMIN, 'master', 'masteraturanpakai']), 'icon' => 'cubes', 'desc' => 'Master aturan pakai'],
@@ -232,8 +513,12 @@ class Admin extends AdminModule
         ['name' => 'Status Wajib Pajak', 'url' => url([ADMIN, 'master', 'statuswp']), 'icon' => 'cubes', 'desc' => 'Master status wajib pajak'],
         ['name' => 'Metode Racik', 'url' => url([ADMIN, 'master', 'metoderacik']), 'icon' => 'cubes', 'desc' => 'Master metode racik'],
         ['name' => 'Ruang OK', 'url' => url([ADMIN, 'master', 'ruangok']), 'icon' => 'cubes', 'desc' => 'Master ruang OK'],
+        ['name' => 'SNOMED CT', 'url' => url([ADMIN, 'master', 'snomed']), 'icon' => 'cubes', 'desc' => 'Master SNOMED CT'],
+        ['name' => 'LOINC Lab', 'url' => url([ADMIN, 'master', 'loinclab']), 'icon' => 'cubes', 'desc' => 'Master LOINC Lab'],
+        ['name' => 'LOINC Radiologi', 'url' => url([ADMIN, 'master', 'loincrad']), 'icon' => 'cubes', 'desc' => 'Master LOINC Radiologi'],
+        ['name' => 'KFA', 'url' => url([ADMIN, 'master', 'kfa']), 'icon' => 'cubes', 'desc' => 'Master KFA'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     /* Start Dokter Section */
@@ -331,13 +616,12 @@ class Admin extends AdminModule
     /* Start Poliklinik Section */
     public function getPoliklinik()
     {
-      $this->_addHeaderFiles();
-      $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
-      $return = $this->poliklinik->getIndex();
-      return $this->draw('poliklinik.html', [
-        'poliklinik' => $return
-      ]);
-
+        $this->_addHeaderFiles();
+        $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
+        $return = $this->poliklinik->getIndex();
+        return $this->draw('poliklinik.html', [
+          'poliklinik' => $return
+        ]);
     }
 
     public function anyPoliklinikForm()
@@ -369,9 +653,44 @@ class Admin extends AdminModule
     public function getPoliklinikJS()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/master/js/admin/poliklinik.js');
+        $settings = $this->settings('settings');
+        echo $this->draw(MODULES.'/master/js/admin/poliklinik.js', ['settings' => $settings]);
         exit();
     }
+
+    public function postPoliklinikData()
+    {
+      echo $this->poliklinik->postData();
+    }
+
+    public function postPoliklinikAksi()
+    {
+      echo $this->poliklinik->postAksi();
+    }
+
+    public function getPoliklinikDetail($kd_poli)
+    {
+      $detail = $this->db('poliklinik')->where('kd_poli', $kd_poli)->toArray();
+      $settings =  $this->settings('settings');
+      echo $this->draw('poliklinik.detail.html', ['detail' => $detail, 'settings' => $settings]);
+      exit();
+    }
+    
+    public function getPoliklinikChart($type = '', $column = '')
+    {
+      $data = $this->poliklinik->getChart($type, $column);
+      echo $this->draw('poliklinik.chart.html', $data);
+      exit();
+
+    }
+    
+    public function getPoliklinikCSS()
+    {
+        header('Content-type: text/css');
+        echo $this->draw(MODULES.'/master/css/admin/poliklinik.css');
+        exit();
+    }
+
     /* End Poliklinik Section */
 
     /* Start Bangsal Section */
@@ -495,13 +814,13 @@ class Admin extends AdminModule
     {
       $query = $this->databarang->postSave();
       
-      if($query->errorInfo()['0'] == '00000') {
+      if($query) {
         $data['status'] = 'success';
-        echo json_encode($data);
+        echo json_encode(htmlspecialchars_array($data));
       } else {
         $data['status'] = 'error';
         $data['msg'] = $query->errorInfo()['2'];
-        echo json_encode($data);
+        echo json_encode(htmlspecialchars_array($data));
       }
 
       exit();
@@ -698,11 +1017,11 @@ class Admin extends AdminModule
       $query = $this->db('template_laboratorium')->where('id_template', $_POST['id_template'])->delete();
       if($query == 1) {
         $data['status'] = 'success';
-        echo json_encode($data);
+        echo json_encode(htmlspecialchars_array($data));
       } else {
         $data['status'] = 'error';
-        $data['msg'] = $query->errorInfo()['2'];
-        echo json_encode($data);
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        echo json_encode(htmlspecialchars_array($data));
       }
       exit();
     }
@@ -863,40 +1182,60 @@ class Admin extends AdminModule
 
     public function getImportPropinsi()
     {
-      $fileName = 'https://basoro.id/downloads/provinces.csv';
-      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+        $filename = 'https://basoro.id/downloads/provinces.csv';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv<br>';
 
-      $csvData = file_get_contents($fileName);
-      if($csvData) {
-        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
-      } else {
-        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        $csvData = file_get_contents($filename);
+        if (!$csvData) {
+            echo '['.date('d-m-Y H:i:s').'][error] File tidak ditemukan<br>';
+            exit();
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan<br>';
+
+        $lines = array_filter(explode(PHP_EOL, $csvData));
+        $value_query = [];
+
+        foreach ($lines as $line) {
+            $delimiter = str_contains($line, ';') ? ';' : ',';
+            $data = str_getcsv($line, $delimiter, '"', '\\');
+
+            if (empty($data[0])) continue;
+
+            $kode = trim($data[0]);
+            $nama = trim($data[1] ?? '');
+
+            // escape aman
+            $kode = addslashes($kode);
+            $nama = addslashes($nama);
+
+            $value_query[] = "('$kode','$nama')";
+        }
+
+        if (!$value_query) {
+            echo '['.date('d-m-Y H:i:s').'][error] Data CSV kosong<br>';
+            exit();
+        }
+
+        $str = implode(',', $value_query);
+        echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data<br>';
+
+        $sql = "
+            REPLACE INTO propinsi (kd_prop, nm_prop)
+            VALUES $str
+        ";
+
+        $result = $this->core->db()->pdo()->exec($sql);
+
+        if ($result === false) {
+            echo '['.date('d-m-Y H:i:s').'][error] Gagal import<br>';
+            exit();
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai<br>';
         exit();
-      }
-
-      $lines = explode(PHP_EOL, $csvData);
-      $array = array();
-      foreach ($lines as $line) {
-          $array[] = str_getcsv($line);
-      }
-
-      foreach ($array as $data){   
-        $kode = $data[0];
-        $nama = isset_or($data[1], '');
-        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
-      }
-      $str = implode(",", $value_query);
-      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-      $result = $this->core->db()->pdo()->exec("INSERT INTO propinsi (kd_prop, nm_prop) VALUES $str ON DUPLICATE KEY UPDATE kd_prop=VALUES(kd_prop)");
-      if($result) {
-        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
-      } else {
-        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
-        exit();
-      }
-      
-      exit();
     }
+
 
     /* End Propinsi Section */    
 
@@ -946,10 +1285,10 @@ class Admin extends AdminModule
 
     public function getImportKabupaten()
     {
-      $fileName = 'https://basoro.id/downloads/regencies.csv';
+      $filename = 'https://basoro.id/downloads/regencies.csv';
       echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
 
-      $csvData = file_get_contents($fileName);
+      $csvData = file_get_contents($filename);
       if($csvData) {
         echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
       } else {
@@ -960,7 +1299,8 @@ class Admin extends AdminModule
       $lines = explode(PHP_EOL, $csvData);
       $array = array();
       foreach ($lines as $line) {
-          $array[] = str_getcsv($line);
+          $delimiter = str_contains($line, ';') ? ';' : ',';
+          $array[] = str_getcsv($line, $delimiter, '"', '\\');
       }
 
       foreach ($array as $data){   
@@ -970,7 +1310,7 @@ class Admin extends AdminModule
       }
       $str = implode(",", $value_query);
       echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-      $result = $this->core->db()->pdo()->exec("INSERT INTO kabupaten (kd_kab, nm_kab) VALUES $str ON DUPLICATE KEY UPDATE kd_kab=VALUES(kd_kab)");
+      $result = $this->core->db()->pdo()->exec("REPLACE INTO kabupaten (kd_kab, nm_kab) VALUES $str");
       if($result) {
         echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
       } else {
@@ -1029,41 +1369,60 @@ class Admin extends AdminModule
 
     public function getImportKecamatan()
     {
-      $fileName = 'https://basoro.id/downloads/districts.csv';
-      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+        $filename = 'https://basoro.id/downloads/districts.csv';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv<br>';
 
-      $csvData = file_get_contents($fileName);
-      if($csvData) {
-        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
-      } else {
-        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        $csvData = file_get_contents($filename);
+        if (!$csvData) {
+            echo '['.date('d-m-Y H:i:s').'][error] File tidak ditemukan<br>';
+            exit();
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan<br>';
+        echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data...<br>';
+
+        $pdo = $this->core->db()->pdo();
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        $lines = explode(PHP_EOL, $csvData);
+
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare("
+            REPLACE INTO kecamatan (kd_kec, nm_kec)
+            VALUES (?, ?)
+        ");
+
+        $total = 0;
+
+        foreach ($lines as $line) {
+
+            if (empty(trim($line))) continue;
+
+            $delimiter = str_contains($line, ';') ? ';' : ',';
+            $data = str_getcsv($line, $delimiter, '"', '\\');
+
+            if (count($data) < 3) continue;
+
+            $kode = trim($data[0]);
+            $nama = trim($data[2]);
+
+            if ($kode === '' || $nama === '') continue;
+            if (!is_numeric($kode)) continue;
+
+            try {
+                $stmt->execute([$kode, $nama]);
+                $total++;
+            } catch (\Exception $e) {
+                echo '['.date('d-m-Y H:i:s').'][error] '.$e->getMessage().'<br>';
+            }
+        }
+
+        $pdo->commit();
+
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai. Total: '.$total.' data<br>';
         exit();
-      }
-
-      $lines = explode(PHP_EOL, $csvData);
-      $array = array();
-      foreach ($lines as $line) {
-          $array[] = str_getcsv($line);
-      }
-
-      foreach ($array as $data){   
-        $kode = $data[0];
-        $nama = $data[2];
-        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
-      }
-      $str = implode(",", $value_query);
-      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-      $result = $this->core->db()->pdo()->exec("INSERT INTO kecamatan (kd_kec, nm_kec) VALUES $str ON DUPLICATE KEY UPDATE kd_kec=VALUES(kd_kec)");
-      if($result) {
-        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
-      } else {
-        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
-        exit();
-      }
-
-      exit();
     }
-
     /* End Kecamatan Section */    
 
     /* Start Kelurahan Section */
@@ -1112,41 +1471,59 @@ class Admin extends AdminModule
 
     public function getImportKelurahan()
     {
-      $fileName = 'https://basoro.id/downloads/villages.csv';
-      echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv'."<br>";
+        $filename = 'https://basoro.id/downloads/villages.csv';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor file csv<br>';
 
-      $csvData = file_get_contents($fileName);
-      if($csvData) {
-        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan'."<br>";
-      } else {
-        echo '['.date('d-m-Y H:i:s').'][error] File '.$filename.' tidak ditemukan'."<br>";
+        $csvData = file_get_contents($filename);
+        if (!$csvData) {
+            echo '['.date('d-m-Y H:i:s').'][error] File tidak ditemukan<br>';
+            exit();
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Berkas ditemukan<br>';
+        echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data...<br>';
+
+        $pdo = $this->core->db()->pdo();
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        $lines = explode(PHP_EOL, $csvData);
+
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare("
+            REPLACE INTO kelurahan (kd_kel, nm_kel)
+            VALUES (?, ?)
+        ");
+
+        $total = 0;
+
+        foreach ($lines as $line) {
+
+            if (empty(trim($line))) continue;
+
+            $delimiter = str_contains($line, ';') ? ';' : ',';
+            $data = str_getcsv($line, $delimiter, '"', '\\');
+
+            if (!isset($data[0], $data[2])) continue;
+
+            $kode = trim($data[0]);
+            $nama = trim($data[2]);
+
+            if ($kode === '' || $nama === '') continue;
+
+            try {
+                $stmt->execute([$kode, $nama]);
+                $total++;
+            } catch (\Exception $e) {
+                echo '['.date('d-m-Y H:i:s').'][error] '.$e->getMessage().'<br>';
+            }
+        }
+
+        $pdo->commit();
+
+        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai. Total: '.$total.' data<br>';
         exit();
-      }
-
-      $lines = explode(PHP_EOL, $csvData);
-      $array = array();
-      foreach ($lines as $line) {
-          $array[] = str_getcsv($line);
-      }
-
-      foreach ($array as $data){   
-        $kode = $data[0];
-        $nama = $data[2];
-        $value_query[] = "('".$kode."','".str_replace("'","\'",$nama)."')";
-      }
-      $str = implode(",", $value_query);
-      echo '['.date('d-m-Y H:i:s').'][info] Memasukkan data'."<br>";
-      $result = $this->core->db()->pdo()->exec("INSERT INTO kelurahan (kd_kel, nm_kel) VALUES $str ON DUPLICATE KEY UPDATE kd_kel=VALUES(kd_kel)");
-      if($result) {
-        echo '['.date('d-m-Y H:i:s').'][info] Impor selesai'."<br>";
-      } else {
-        echo '['.date('d-m-Y H:i:s').'][error] kesalahan selama import : <pre>'.json_encode($str, JSON_PRETTY_PRINT).''."</pre><br>";
-        exit();
-      }
-
-      exit();
     }
-
     /* End Kelurahan Section */   
 
     /* Start Cacat Fisik Section */
@@ -2363,6 +2740,780 @@ class Admin extends AdminModule
         exit();
     }
     /* End Ruang OK Section */
+
+    /* Start Penyakit Section */
+    public function getPenyakit()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'penyakitjs']), 'footer');
+      $return = $this->penyakit->getIndex();
+      return $this->draw('penyakit.html', [
+        'penyakit' => $return
+      ]);
+
+    }
+
+    public function anyPenyakitForm()
+    {
+        $return = $this->penyakit->anyForm();
+        echo $this->draw('penyakit.form.html', ['penyakit' => $return]);
+        exit();
+    }
+
+    public function anyPenyakitDisplay()
+    {
+        $return = $this->penyakit->anyDisplay();
+        echo $this->draw('penyakit.display.html', ['penyakit' => $return]);
+        exit();
+    }
+
+    public function postPenyakitSave()
+    {
+      $this->penyakit->postSave();
+      exit();
+    }
+
+    public function postPenyakitHapus()
+    {
+      $this->penyakit->postHapus();
+      exit();
+    }
+
+    public function getImportICD10()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://basoro.id/downloads/mlite_inacbg_codes.csv';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor ICD-10 dari ' . $url . '<br>';
+
+        $csvData = file_get_contents($url);
+        if (!$csvData) {
+            echo '['.date('d-m-Y H:i:s').'][error] Gagal mendownload file CSV.<br>';
+            exit();
+        }
+
+        $lines = explode(PHP_EOL, $csvData);
+        $pdo = $this->core->db()->pdo();
+        
+        $count = 0;
+        $batchSize = 1000;
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare("REPLACE INTO penyakit 
+            (kd_penyakit, nm_penyakit, ciri_ciri, keterangan, kd_ktg, status) 
+            VALUES (?, ?, '', '', '-', 'Tidak Menular')");
+
+        foreach ($lines as $line) {
+            if (empty(trim($line))) continue;
+            $data = str_getcsv($line);
+            
+            // Index 4 is the system type
+            if (isset($data[4]) && strpos($data[4], 'ICD_10') !== false) {
+                $kode = trim($data[1] ?? '');
+                $nama = trim($data[3] ?? '');
+
+                if ($kode === '') continue;
+
+                $stmt->execute([$kode, $nama]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data ICD-10...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+        }
+
+        if ($pdo->inTransaction()) {
+            $pdo->commit();
+        }
+        echo '['.date('d-m-Y H:i:s').'][info] Impor ICD-10 selesai! Total: ' . $count . ' data.<br>';
+        exit();
+    }
+
+    public function getPenyakitJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/penyakit.js');
+        exit();
+    }
+    /* End Penyakit Section */
+
+    /* Start ICD 9 Section */
+    public function getIcd9()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'icd9js']), 'footer');
+      $return = $this->icd9->getIndex();
+      return $this->draw('icd9.html', [
+        'icd9' => $return
+      ]);
+
+    }
+
+    public function anyIcd9Form()
+    {
+        $return = $this->icd9->anyForm();
+        echo $this->draw('icd9.form.html', ['icd9' => $return]);
+        exit();
+    }
+
+    public function anyIcd9Display()
+    {
+        $return = $this->icd9->anyDisplay();
+        echo $this->draw('icd9.display.html', ['icd9' => $return]);
+        exit();
+    }
+
+    public function postIcd9Save()
+    {
+      $this->icd9->postSave();
+      exit();
+    }
+
+    public function postIcd9Hapus()
+    {
+      $this->icd9->postHapus();
+      exit();
+    }
+
+    public function getImportICD9()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://basoro.id/downloads/mlite_inacbg_codes.csv';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor ICD-9 dari ' . $url . '<br>';
+
+        $csvData = file_get_contents($url);
+        if (!$csvData) {
+            echo '['.date('d-m-Y H:i:s').'][error] Gagal mendownload file CSV.<br>';
+            exit();
+        }
+
+        $lines = explode(PHP_EOL, $csvData);
+        $pdo = $this->core->db()->pdo();
+        
+        $count = 0;
+        $batchSize = 1000;
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare("REPLACE INTO icd9 
+            (kode, deskripsi_panjang, deskripsi_pendek) 
+            VALUES (?, ?, '')");
+
+        foreach ($lines as $line) {
+            if (empty(trim($line))) continue;
+            $data = str_getcsv($line);
+            
+            // Index 4 is the system type
+            if (isset($data[4]) && strpos($data[4], 'ICD_9') !== false) {
+                $kode = trim($data[1] ?? '');
+                $nama = trim($data[3] ?? '');
+
+                if ($kode === '') continue;
+
+                $stmt->execute([$kode, $nama]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data ICD-9...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+        }
+
+        if ($pdo->inTransaction()) {
+            $pdo->commit();
+        }
+        echo '['.date('d-m-Y H:i:s').'][info] Impor ICD-9 selesai! Total: ' . $count . ' data.<br>';
+        exit();
+    }
+
+    public function getIcd9JS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/icd9.js');
+        exit();
+    }
+    /* End ICD 9 Section */
+
+    /* Start SNOMED Section */
+    public function getSnomed()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'snomedjs']), 'footer');
+      $return = $this->snomed->getIndex();
+      return $this->draw('snomed.html', [
+        'snomed' => $return
+      ]);
+    }
+
+    public function anySnomedForm()
+    {
+        $return = $this->snomed->anyForm();
+        echo $this->draw('snomed.form.html', ['snomed' => $return]);
+        exit();
+    }
+
+    public function anySnomedDisplay()
+    {
+        $return = $this->snomed->anyDisplay();
+        echo $this->draw('snomed.display.html', ['snomed' => $return]);
+        exit();
+    }
+
+    public function postSnomedSave()
+    {
+      $this->snomed->postSave();
+      exit();
+    }
+
+    public function postSnomedHapus()
+    {
+      $this->snomed->postHapus();
+      exit();
+    }
+
+    public function getSnomedJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/snomed.js');
+        exit();
+    }
+
+    public function getImportSnomed()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://apimed.mlite.id/snomed.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor SNOMED CT dari ' . $url . '<br>';
+
+        $tempFile = sys_get_temp_dir() . '/snomed_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 600);
+            curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
+            }
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024 / 1024, 2) . ' MB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024 / 1024, 2) . ' MB).<br>';
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            $count = 0;
+            $batchSize = 1000;
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO mlite_snomed (kode, istilah) VALUES (?, ?)");
+
+            foreach ($items as $item) {
+                $kode = trim($item['c'] ?? '');
+                $istilah = trim($item['t'] ?? '');
+
+                if ($kode === '' || $istilah === '') continue;
+
+                $stmt->execute([$kode, $istilah]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+            
+            unlink($tempFile);
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
+        }
+        exit();
+    }
+    /* End LOINC Lab Section */
+
+    /* Start LOINC Rad Section */
+    public function getLoincRad()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'loincradjs']), 'footer');
+      $return = $this->loincrad->getIndex();
+      return $this->draw('loincrad.html', [
+        'loincrad' => $return
+      ]);
+    }
+
+    public function anyLoincRadForm()
+    {
+        $return = $this->loincrad->anyForm();
+        echo $this->draw('loincrad.form.html', ['loincrad' => $return]);
+        exit();
+    }
+
+    public function anyLoincRadDisplay()
+    {
+        $return = $this->loincrad->anyDisplay();
+        echo $this->draw('loincrad.display.html', ['loincrad' => $return]);
+        exit();
+    }
+
+    public function postLoincRadSave()
+    {
+      $this->loincrad->postSave();
+      exit();
+    }
+
+    public function postLoincRadHapus()
+    {
+      $this->loincrad->postHapus();
+      exit();
+    }
+
+    public function getLoincRadJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/loincrad.js');
+        exit();
+    }
+
+    public function getImportLoincRad()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://apimed.mlite.id/loinc_rad.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor LOINC Radiologi dari ' . $url . '<br>';
+
+        $tempFile = sys_get_temp_dir() . '/loinc_rad_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+            curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
+            }
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            $count = 0;
+            $batchSize = 1000;
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO mlite_loinc_radiologi 
+                (No, Kategori, NamaPemeriksaan, PermintaanHasil, Code, Display, Component, Property, Timing, System, Scale, Method, UnitOfMeasure, CodeSystem, BodySiteCode, BodySiteDisplay, BodySiteCodeSystem) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            foreach ($items as $item) {
+                $no = $item['No'] ?? null;
+                $kategori = $item['Kategori'] ?? '';
+                $nama_pemeriksaan = $item['Nama_Pemeriksaan'] ?? '';
+                $permintaan_hasil = $item['Permintaan_Hasil'] ?? '';
+                $code = trim($item['Code'] ?? '');
+                $display = $item['Display'] ?? '';
+                $component = $item['Component'] ?? '';
+                $property = $item['Property'] ?? '';
+                $timing = $item['Timing'] ?? '';
+                $system = $item['System'] ?? '';
+                $scale = $item['Scale'] ?? '';
+                $method = $item['Method'] ?? '';
+                $unit_measure = $item['Unit_Of_Measure'] ?? '';
+                $code_system = $item['Code_System'] ?? '';
+                $body_site_code = $item['Body_Site_Code'] ?? '';
+                $body_site_display = $item['Body_Site_Display'] ?? '';
+                $body_site_code_system = $item['Body_Site_Code_System'] ?? '';
+
+                if ($code === '') continue;
+
+                $stmt->execute([
+                    $no, $kategori, $nama_pemeriksaan, $permintaan_hasil, 
+                    $code, $display, $component, $property, $timing, $system, $scale, $method, $unit_measure, $code_system,
+                    $body_site_code, $body_site_display, $body_site_code_system
+                ]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+            
+            unlink($tempFile);
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
+        }
+        exit();
+    }
+    /* End LOINC Rad Section */
+
+    /* Start KFA Section */
+    public function getKfa()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'kfajs']), 'footer');
+      $return = $this->kfa->getIndex();
+      return $this->draw('kfa.html', [
+        'kfa' => $return
+      ]);
+    }
+
+    public function anyKfaForm()
+    {
+        $return = $this->kfa->anyForm();
+        echo $this->draw('kfa.form.html', ['kfa' => $return]);
+        exit();
+    }
+
+    public function anyKfaDisplay()
+    {
+        $return = $this->kfa->anyDisplay();
+        echo $this->draw('kfa.display.html', ['kfa' => $return]);
+        exit();
+    }
+
+    public function postKfaSave()
+    {
+      $this->kfa->postSave();
+      exit();
+    }
+
+    public function postKfaHapus()
+    {
+      $this->kfa->postHapus();
+      exit();
+    }
+
+    public function getKfaJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/kfa.js');
+        exit();
+    }
+
+    public function getImportKfa()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://apimed.mlite.id/kfa.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor KFA dari ' . $url . '<br>';
+
+        $tempFile = sys_get_temp_dir() . '/kfa_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+            curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
+            }
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            $count = 0;
+            $batchSize = 1000;
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO mlite_kfa 
+                (kode_kfa, nama_kfa, kode_bahan, nama_bahan, numerator, satuan_num, denominator, satuan_den, nama_satuan_den, kode_sediaan, nama_sediaan, type) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            foreach ($items as $item) {
+                $item = (array) $item;
+                $kode_kfa = trim((string) ($item['kode_kfa'] ?? $item['Kode_KFA'] ?? ''));
+                $nama_kfa = (string) ($item['nama_kfa'] ?? $item['Display_Name'] ?? '');
+                $kode_bahan = (string) ($item['kode_bahan'] ?? $item['Bahan_Baku_Aktif_Kode_KFA'] ?? '');
+                $nama_bahan = (string) ($item['nama_bahan'] ?? $item['Bahan_Baku_Aktif_Display_Name'] ?? '');
+                $numerator = (string) ($item['numerator'] ?? $item['Bahan_Baku_Aktif_Numerator'] ?? '');
+                $satuan_num = (string) ($item['satuan_num'] ?? $item['Bahan_Baku_Aktif_Satuan_Numerator'] ?? '');
+                $denominator = (string) ($item['denominator'] ?? $item['Bahan_Baku_Aktif_Denominator.1'] ?? $item['Bahan_Baku_Aktif_Denominator'] ?? '');
+                $satuan_den = (string) ($item['satuan_den'] ?? $item['Bahan_Baku_Aktif_Satuan_Denominator'] ?? '');
+                $nama_satuan_den = (string) ($item['nama_satuan_den'] ?? $item['Bahan_Baku_Aktif_Nama_Satuan_Denominator'] ?? '');
+                $kode_sediaan = (string) ($item['kode_sediaan'] ?? $item['Bentuk_Sediaan_Kode'] ?? '');
+                $nama_sediaan = (string) ($item['nama_sediaan'] ?? $item['Bentuk_Sediaan_Display_Name'] ?? '');
+                $type = (string) ($item['type'] ?? 'obat');
+
+                if ($kode_kfa === '') continue;
+
+                $stmt->execute([
+                    $kode_kfa, $nama_kfa, $kode_bahan, $nama_bahan, $numerator, $satuan_num, $denominator, $satuan_den, $nama_satuan_den, $kode_sediaan, $nama_sediaan, $type
+                ]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            if ($count === 0) {
+                echo '['.date('d-m-Y H:i:s').'][warning] Total 0. Struktur field JSON KFA mungkin berbeda dari yang dipakai importer.<br>';
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
+        }
+        exit();
+    }
+    /* End KFA Section */
+    /* End SNOMED Section */
+
+    /* Start LOINC Lab Section */
+    public function getLoincLab()
+    {
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'master', 'loinclabjs']), 'footer');
+      $return = $this->loinclab->getIndex();
+      return $this->draw('loinclab.html', [
+        'loinclab' => $return
+      ]);
+    }
+
+    public function anyLoincLabForm()
+    {
+        $return = $this->loinclab->anyForm();
+        echo $this->draw('loinclab.form.html', ['loinclab' => $return]);
+        exit();
+    }
+
+    public function anyLoincLabDisplay()
+    {
+        $return = $this->loinclab->anyDisplay();
+        echo $this->draw('loinclab.display.html', ['loinclab' => $return]);
+        exit();
+    }
+
+    public function postLoincLabSave()
+    {
+      $this->loinclab->postSave();
+      exit();
+    }
+
+    public function postLoincLabHapus()
+    {
+      $this->loinclab->postHapus();
+      exit();
+    }
+
+    public function getLoincLabJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/loinclab.js');
+        exit();
+    }
+
+    public function getImportLoincLab()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
+        $url = 'https://apimed.mlite.id/loinc_lab.json';
+        echo '['.date('d-m-Y H:i:s').'][info] --- Mengimpor LOINC Lab dari ' . $url . '<br>';
+
+        $tempFile = sys_get_temp_dir() . '/loinc_lab_temp.json';
+        
+        if (!file_exists($tempFile) || (time() - filemtime($tempFile) > 86400) || filesize($tempFile) == 0) {
+            echo '['.date('d-m-Y H:i:s').'][info] Mendownload file... (ini mungkin butuh waktu)<br>';
+            $fp = fopen($tempFile, 'w+');
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+            curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                echo '['.date('d-m-Y H:i:s').'][error] Download error: ' . curl_error($ch) . '<br>';
+            }
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (filesize($tempFile) == 0) {
+                echo '['.date('d-m-Y H:i:s').'][error] File yang didownload kosong.<br>';
+                unlink($tempFile);
+                exit();
+            }
+
+            echo '['.date('d-m-Y H:i:s').'][info] File didownload (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        } else {
+            echo '['.date('d-m-Y H:i:s').'][info] Menggunakan file cache lokal (' . round(filesize($tempFile) / 1024, 2) . ' KB).<br>';
+        }
+
+        echo '['.date('d-m-Y H:i:s').'][info] Memulai proses import seamless...<br>';
+
+        try {
+            $items = \JsonMachine\Items::fromFile($tempFile, ['decoder' => new \JsonMachine\JsonDecoder\ExtJsonDecoder(true)]);
+            $pdo = $this->core->db()->pdo();
+            
+            $count = 0;
+            $batchSize = 1000;
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("REPLACE INTO mlite_loinc_lab 
+                (No, Kategori, NamaPemeriksaan, PermintaanHasil, Spesimen, TipeHasilPemeriksaan, Satuan, MetodeAnalisis, Code, Display, Component, Property, Timing, System, Scale, Method, UnitOfMeasure, CodeSystem) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            foreach ($items as $item) {
+                $no = $item['No'] ?? null;
+                $kategori = $item['Kategori'] ?? '';
+                $nama_pemeriksaan = $item['Nama_Pemeriksaan'] ?? '';
+                $permintaan_hasil = $item['Permintaan_Hasil'] ?? '';
+                $spesimen = $item['Spesimen'] ?? '';
+                $tipe_hasil = $item['Tipe_Hasil_Pemeriksaan'] ?? '';
+                $satuan = $item['Satuan'] ?? '';
+                $metode_analisis = $item['Metode_Analisis'] ?? '';
+                $code = trim($item['Code'] ?? '');
+                $display = $item['Display'] ?? '';
+                $component = $item['Component'] ?? '';
+                $property = $item['Property'] ?? '';
+                $timing = $item['Timing'] ?? '';
+                $system = $item['System'] ?? '';
+                $scale = $item['Scale'] ?? '';
+                $method = $item['Method'] ?? '';
+                $unit_measure = $item['Unit_Of_Measure'] ?? '';
+                $code_system = $item['Code_System'] ?? '';
+
+                if ($code === '') continue;
+
+                $stmt->execute([
+                    $no, $kategori, $nama_pemeriksaan, $permintaan_hasil, $spesimen, $tipe_hasil, $satuan, $metode_analisis,
+                    $code, $display, $component, $property, $timing, $system, $scale, $method, $unit_measure, $code_system
+                ]);
+                $count++;
+
+                if ($count % $batchSize === 0) {
+                    $pdo->commit();
+                    $pdo->beginTransaction();
+                    echo '['.date('d-m-Y H:i:s').'][info] Berhasil mengimpor ' . $count . ' data...<br>';
+                    if (ob_get_level() > 0) ob_flush();
+                    flush();
+                }
+            }
+
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
+            echo '['.date('d-m-Y H:i:s').'][info] Impor selesai! Total: ' . $count . ' data.<br>';
+            
+            unlink($tempFile);
+
+        } catch (\Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo '['.date('d-m-Y H:i:s').'][error] Terjadi kesalahan: ' . $e->getMessage() . '<br>';
+        }
+        exit();
+    }
 
     public function getCSS()
     {

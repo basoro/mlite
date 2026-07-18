@@ -2,7 +2,7 @@
     <div class="col-sm-4">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{$theme.name}</h3>
+                <h3 class="panel-title">{?=isset_or($theme.name)?}</h3>
             </div>
             <div class="panel-body">
                 <div class="theme-preview">
@@ -13,11 +13,11 @@
                 <table class="table">
                     <tr>
                         <th>Pembuat</th>
-                        <td>{$theme.author} <a href="mailto:{$theme.email}">{$theme.email}</a></td>
+                        <td>{?=isset_or($theme.author)?} <a href="mailto:{?=isset_or($theme.email)?}">{?=isset_or($theme.email)?}</a></td>
                     </tr>
                     <tr>
                         <th>Versi</th>
-                        <td>{$theme.version}</td>
+                        <td>{?=isset_or($theme.version)?}</td>
                     </tr>
                 </table>
                 {if: $settings.theme == $theme.dir}
@@ -41,7 +41,7 @@
                     <div class="form-group">
             			<select name="file" class="form-control" onchange="window.location.href=this.value;" data-use-search="true">
             				{loop: $theme.files}
-            					<option value="{?= url(ADMIN.'/settings/theme/'.$theme['dir'].'/'.$key) ?}" {$value.attr}>{$value.short}</option>
+            					<option value="{?= url(ADMIN.'/settings/theme/'.$theme['dir'].'/'.$key) ?}" {?=isset_or($value.attr)?}>{?=isset_or($value.short)?}</option>
             				{/loop}
             			</select>
             			<input type="hidden" name="t" value="{$_SESSION['token']}">
@@ -50,8 +50,8 @@
 
                 <form name="editor" action="{$_SERVER['REQUEST_URI']}" method="POST">
                     <div class="form-group">
-                        <textarea name="content" rows="20" class="form-control" id="editor">{$theme.content}</textarea>
-                        <script>$("#editor").markItUp(markItUp_html).highlight({whiteSpace: 'pre', lang: '{$theme.lang}'});</script>
+                        <textarea name="content" rows="20" class="form-control" id="editor">{?=isset_or($theme.content)?}</textarea>
+                        <script>$("#editor").markItUp(markItUp_html).highlight({whiteSpace: 'pre', lang: '{?=isset_or($theme.lang)?}'});</script>
                     </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" {if: FILE_LOCK}disabled{/if}/>
                 </form>

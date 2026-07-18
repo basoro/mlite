@@ -1,4 +1,3 @@
-<br><br><br>
 <h3>Data Pasien</h3>
 <table class="table" style="margin-top:2cm;" width="100%">
     <thead>
@@ -14,12 +13,12 @@
     <tbody>
         {loop: $cetak}
         <tr>
-        <td>{$value.temp1}</td>
-        <td>{$value.temp2}</td>
-        <td>{$value.temp3}</td>
+        <td>{?=isset_or($value.temp1)?}</td>
+        <td>{?=isset_or($value.temp2)?}</td>
+        <td>{?=isset_or($value.temp3)?}</td>
         <td>{if: $value.temp4 == 'L'}Laki-Laki{else}Perempuan{/if}</td>
-        <td>{$value.temp8}</td>
-        <td>{$value.temp6}</td>
+        <td>{?=isset_or($value.temp8)?}</td>
+        <td>{?=isset_or($value.temp6)?}</td>
         </tr>
         {/loop}
     </tbody>

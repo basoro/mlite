@@ -29,14 +29,14 @@
 							{loop: $modules}
                                 {loop: $value}
                                 <tr>
-                                    <td class="text-center"><i class="fa fa-{$value.icon} fa-2x"></i></td>
+                                    <td class="text-center"><a href="{?=isset_or($value.url)?}"><i class="fa fa-{?=isset_or($value.icon)?} fa-2x"></i></a></td>
                                     <td>
-                                        <a href="{$value.detailsUrl}" data-toggle="modal" data-target="#moduleModal">
-                                            <strong>{$value.name}</strong>
+                                        <a href="{?=isset_or($value.detailsUrl)?}" data-toggle="modal" data-target="#moduleModal">
+                                            <strong>{?=isset_or($value.name)?}</strong>
                                         </a>
                                         <p>{$value.description|cut:54}</p>
                                     </td>
-                                    <td>{$value.version}</td>
+                                    <td>{?=isset_or($value.version)?}</td>
                                     <td>
                                         {if: !$value.compatible}
                                             <span class="label label-danger">Lawas</span>
@@ -45,18 +45,18 @@
                                         {/if}
                                     </td>
                                     <td class="text-right">
-                                        <a href="{$value.detailsUrl}" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#moduleModal">
+                                        <a href="{?=isset_or($value.detailsUrl)?}" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#moduleModal">
                                             <i class="fa fa-search"></i> <span class="hidden-xs">Detil</span>
                                         </a>
                                         {if: $value.installed}
-                                            <a href="{$value.uninstallUrl}" class="btn btn-danger btn-xs {if: $value.basic}disabled{/if}" data-confirm="Yakin ingin menonaktifkan modul ini?">
+                                            <a href="{?=isset_or($value.uninstallUrl)?}" class="btn btn-danger btn-xs {if: $value.basic}disabled{/if}" data-confirm="Yakin ingin menonaktifkan modul ini?">
                                                 <i class="fa fa-times"></i> <span class="hidden-xs">Matikan</span>
                                             </a>
                                         {else}
-                                            <a href="{$value.installUrl}" class="btn btn-success btn-xs {if: !$value.compatible}disabled{/if}">
+                                            <a href="{?=isset_or($value.installUrl)?}" class="btn btn-success btn-xs {if: !$value.compatible}disabled{/if}">
                                                 <i class="fa fa-check"></i> <span class="hidden-xs">Aktifkan</span>
                                             </a>
-                                            <a href="{$value.removeUrl}" class="btn btn-danger btn-xs {if: $value.basic}disabled{/if}" data-confirm="Yakin ingin menghapus modul terpilih?">
+                                            <a href="{?=isset_or($value.removeUrl)?}" class="btn btn-danger btn-xs {if: $value.basic}disabled{/if}" data-confirm="Yakin ingin menghapus modul terpilih?">
                                                 <i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
                                             </a>
                                         {/if}

@@ -7,6 +7,17 @@ use Systems\Lib\PcareService;
 
 class Admin extends AdminModule
 {
+    public $assign = [];
+    private $usernamePcare;
+    private $passwordPcare;
+    private $kdAplikasi;
+    private $consumerID;
+    private $consumerSecret;
+    private $consumerUserKey;
+    private $consumerUserKeyAntrol;
+    private $api_url;
+    private $api_url_antrol;
+    private $api_url_icare;
 
     public function init()
     {
@@ -20,7 +31,7 @@ class Admin extends AdminModule
       $this->api_url = $this->settings->get('pcare.PCareApiUrl');
       $this->api_url_antrol = 'https://apijkn.bpjs-kesehatan.go.id/antreanfktp/';
       $this->api_url_icare = 'https://apijkn.bpjs-kesehatan.go.id/wsIHS/api/pcare/validate';
-      if (strpos($this->api_url, 'dev') !== false) { 
+      if (!empty($this->api_url) && strpos($this->api_url, 'dev') !== false) { 
         $this->api_url_antrol = 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanfktp_dev/';
         $this->api_url_icare = 'https://apijkn-dev.bpjs-kesehatan.go.id/ihs_dev/api/pcare/validate';
       }  
@@ -45,7 +56,7 @@ class Admin extends AdminModule
         ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_fktp', 'mappingdokter']), 'icon' => 'cube', 'desc' => 'Mapping dokter pcare'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile_fktp', 'settings']), 'icon' => 'cube', 'desc' => 'Pengaturan antrian pcare'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getIndex()
@@ -55,20 +66,54 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'jkn_mobile_fktp', 'index']));
+        }
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile FKTP';
-        $this->assign['propinsi'] = $this->db('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile_fktp.kdprop'))->oneArray();
-        $this->assign['kabupaten'] = $this->db('kabupaten')->where('kd_kab', $this->settings->get('jkn_mobile_fktp.kdkab'))->oneArray();
-        $this->assign['kecamatan'] = $this->db('kecamatan')->where('kd_kec', $this->settings->get('jkn_mobile_fktp.kdkec'))->oneArray();
-        $this->assign['kelurahan'] = $this->db('kelurahan')->where('kd_kel', $this->settings->get('jkn_mobile_fktp.kdkel'))->oneArray();
+        
+        // Tambahkan nilai default untuk semua key jkn_mobile_fktp
+        $defaultSettings = [
+            'username' => '',
+            'password' => '',
+            'header' => 'X-Token',
+            'header_username' => 'X-Username',
+            'header_password' => 'X-Password',
+            'kd_pj' => '',
+            'hari' => '3',
+            'display' => '',
+            'kdprop' => '',
+            'kdkab' => '',
+            'kdkec' => '',
+            'kdkel' => ''
+        ];
+        
+        // Ambil settings dari database
+        $dbSettings = $this->settings('jkn_mobile_fktp');
+        if (!is_array($dbSettings)) {
+            $dbSettings = [];
+        }
+        
+        // Gabungkan default settings dengan database settings
+        $mergedSettings = array_merge($defaultSettings, $dbSettings);
+        
+        $kdprop = $mergedSettings['kdprop'];
+        $this->assign['propinsi'] = $kdprop ? $this->db('propinsi')->where('kd_prop', $kdprop)->oneArray() : [];
+        $kdkab = $mergedSettings['kdkab'];
+        $this->assign['kabupaten'] = $kdkab ? $this->db('kabupaten')->where('kd_kab', $kdkab)->oneArray() : [];
+        $kdkec = $mergedSettings['kdkec'];
+        $this->assign['kecamatan'] = $kdkec ? $this->db('kecamatan')->where('kd_kec', $kdkec)->oneArray() : [];
+        $kdkel = $mergedSettings['kdkel'];
+        $this->assign['kelurahan'] = $kdkel ? $this->db('kelurahan')->where('kd_kel', $kdkel)->oneArray() : [];
         $this->assign['suku_bangsa'] = $this->db('suku_bangsa')->toArray();
         $this->assign['bahasa_pasien'] = $this->db('bahasa_pasien')->toArray();
         $this->assign['cacat_fisik'] = $this->db('cacat_fisik')->toArray();
         $this->assign['perusahaan_pasien'] = $this->db('perusahaan_pasien')->toArray();
         $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
-        $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_fktp.display'));
-        $this->assign['jkn_mobile_fktp'] = htmlspecialchars_array($this->settings('jkn_mobile_fktp'));
-        return $this->draw('settings.html', ['settings' => $this->assign]);
+        $this->assign['poliklinik'] = $this->_getPoliklinik($mergedSettings['display']);
+        $this->assign['jkn_mobile_fktp'] = htmlspecialchars_array($mergedSettings);
+        return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     private function _getPoliklinik($kd_poli = null)
@@ -99,7 +144,15 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
-        $_POST['jkn_mobile_fktp']['display'] = implode(',', $_POST['jkn_mobile_fktp']['display']);
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'jkn_mobile_fktp', 'index']));
+        }
+        if (isset($_POST['jkn_mobile_fktp']['display'])) {
+            $_POST['jkn_mobile_fktp']['display'] = implode(',', $_POST['jkn_mobile_fktp']['display']);
+        } else {
+            $_POST['jkn_mobile_fktp']['display'] = '';
+        }
         foreach ($_POST['jkn_mobile_fktp'] as $key => $val) {
             $this->settings('jkn_mobile_fktp', $key, $val);
         }
@@ -174,7 +227,7 @@ class Admin extends AdminModule
 
         echo $this->draw('mappingpoli.display.html', [
           'mappingpoli' => $mappingpoli,
-          'halaman' => $halaman,
+          'halaman' => htmlspecialchars($halaman, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman
         ]);
@@ -187,14 +240,19 @@ class Admin extends AdminModule
       $poliklinik = $this->db('poliklinik')->toArray();
       if (isset($_POST['kd_poli_rs'])){
         $mappingpoli = $this->db('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->oneArray();
-        echo $this->draw('mappingpoli.form.html', ['poliklinik' => $poliklinik, 'mappingpoli' => $mappingpoli]);
+        if ($mappingpoli) {
+            $mappingpoli['kd_poli_rs'] = htmlspecialchars($mappingpoli['kd_poli_rs'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $mappingpoli['kd_poli_pcare'] = htmlspecialchars($mappingpoli['kd_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $mappingpoli['nm_poli_pcare'] = htmlspecialchars($mappingpoli['nm_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
+        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poliklinik), 'mappingpoli' => $mappingpoli]);
       } else {
         $mappingpoli = [
           'kd_poli_rs' => '',
           'kd_poli_pcare' => '',
           'nm_poli_pcare' => ''
         ];
-        echo $this->draw('mappingpoli.form.html', ['poliklinik' => $poliklinik, 'mappingpoli' => $mappingpoli]);
+        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poliklinik), 'mappingpoli' => $mappingpoli]);
       }
       exit();
     }
@@ -299,7 +357,7 @@ class Admin extends AdminModule
 
         echo $this->draw('mappingdokter.display.html', [
           'mappingdokter' => $mappingdokter,
-          'halaman' => $halaman,
+          'halaman' => htmlspecialchars($halaman, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman
         ]);
@@ -312,14 +370,19 @@ class Admin extends AdminModule
       $dokter = $this->db('dokter')->toArray();
       if (isset($_POST['kd_dokter'])){
         $mappingdokter = $this->db('maping_dokter_pcare')->where('kd_dokter', $_POST['kd_dokter'])->oneArray();
-        echo $this->draw('mappingdokter.form.html', ['dokter' => $dokter, 'mappingdokter' => $mappingdokter]);
+        if ($mappingdokter) {
+            $mappingdokter['kd_dokter'] = htmlspecialchars($mappingdokter['kd_dokter'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $mappingdokter['kd_dokter_pcare'] = htmlspecialchars($mappingdokter['kd_dokter_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $mappingdokter['nm_dokter_pcare'] = htmlspecialchars($mappingdokter['nm_dokter_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
+        echo $this->draw('mappingdokter.form.html', ['dokter' => htmlspecialchars_array($dokter), 'mappingdokter' => $mappingdokter]);
       } else {
         $mappingdokter = [
           'kd_dokter' => '',
           'kd_dokter_pcare' => '',
           'nm_dokter_pcare' => ''
         ];
-        echo $this->draw('mappingdokter.form.html', ['dokter' => $dokter, 'mappingdokter' => $mappingdokter]);
+        echo $this->draw('mappingdokter.form.html', ['dokter' => htmlspecialchars_array($dokter), 'mappingdokter' => $mappingdokter]);
       }
       exit();
     }
@@ -403,7 +466,7 @@ class Admin extends AdminModule
         $hari=$day[$tentukan_hari];
 
         $jadwal = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();        
-        $jampraktek = date('H:i', strtotime($jadwal['jam_mulai'])).'-'.date('H:i', strtotime($jadwal['jam_selesai']));
+        $jampraktek = isset($jadwal['jam_mulai']) && isset($jadwal['jam_selesai']) ? date('H:i', strtotime($jadwal['jam_mulai'])).'-'.date('H:i', strtotime($jadwal['jam_selesai'])) : '07:00-23:00';
 
         $data = [
           'nomorkartu' => $noKartu,
@@ -431,7 +494,7 @@ class Admin extends AdminModule
         $url = $this->api_url_antrol.'antrean/add';
         $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKeyAntrol, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
         $json = json_decode($output, true);
-        // echo json_encode($json);
+        // echo json_encode(htmlspecialchars_array($json));
   
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
@@ -440,20 +503,29 @@ class Admin extends AdminModule
         if (!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
         }
+        
         if ($json != null) {
-            echo '{
-                "metaData": {
-                  "code": "' . $code . '",
-                  "message": "' . $message . '"
-                },
-                "response": ' . $decompress . '}';
+          $output = [
+              "metaData" => [
+                  "code" => (string)$code,
+                  "message" => $message
+              ],
+              "response" => $decompress
+          ];
+      
+          header('Content-Type: application/json');
+          echo json_encode(htmlspecialchars_array($output), JSON_UNESCAPED_UNICODE);
         } else {
-            echo '{
-                "metaData": {
-                  "code": "5000",
-                  "message": "ERROR"
-                },
-                "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          $output = [
+              "metaData" => [
+                  "code" => "5000",
+                  "message" => "ERROR"
+              ],
+              "response" => "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."
+          ];
+      
+          header('Content-Type: application/json');
+          echo json_encode(htmlspecialchars_array($output), JSON_UNESCAPED_UNICODE);
         }
   
         exit();
@@ -490,7 +562,7 @@ class Admin extends AdminModule
         $url = $this->api_url_antrol.'antrean/panggil';
         $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
         $json = json_decode($output, true);
-        // echo json_encode($json);
+        // echo json_encode(htmlspecialchars_array($json));
   
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
@@ -547,7 +619,7 @@ class Admin extends AdminModule
         $url = $this->api_url_antrol.'antrean/batal';
         $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
         $json = json_decode($output, true);
-        // echo json_encode($json);
+        // echo json_encode(htmlspecialchars_array($json));
   
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
@@ -684,7 +756,7 @@ class Admin extends AdminModule
 
           }
 
-          echo json_encode($datatable);
+          echo json_encode(htmlspecialchars_array($datatable));
 
           break;
 

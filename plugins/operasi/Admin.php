@@ -6,6 +6,8 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    // Property declarations to fix PHP 8.3 deprecation warnings
+    public $assign;
 
     public function navigation()
     {
@@ -28,7 +30,7 @@ class Admin extends AdminModule
         ['name' => 'Obat Operasi', 'url' => url([ADMIN, 'operasi', 'obatoperasi']), 'icon' => 'cubes', 'desc' => 'Data obat operasi'],
         ['name' => 'Laporan Operasi', 'url' => url([ADMIN, 'operasi', 'laporanoperasi']), 'icon' => 'cubes', 'desc' => 'Data laporan operasi'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function anyPasienOperasi()
@@ -45,7 +47,7 @@ class Admin extends AdminModule
       $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
       $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
       $this->_Display($tgl_masuk, $tgl_masuk_akhir);
-      return $this->draw('pasienoperasi.html', ['operasi' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
+      return $this->draw('pasienoperasi.html', ['operasi' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim), 'master_berkas_digital' => htmlspecialchars_array($master_berkas_digital)]);
     }
 
     public function anyDisplay()
@@ -62,7 +64,7 @@ class Admin extends AdminModule
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
         $this->_Display($tgl_masuk, $tgl_masuk_akhir);
-        echo $this->draw('display.html', ['operasi' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
+        echo $this->draw('display.html', ['operasi' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim), 'master_berkas_digital' => htmlspecialchars_array($master_berkas_digital)]);
         exit();
     }
 
@@ -77,7 +79,10 @@ class Admin extends AdminModule
         $this->assign['no_rawat'] = '';
 
         $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
+        $user_role = $this->core->getUserInfo('role', null, true);
+        $username = $this->core->getUserInfo('username', null, true);
 
+        $params = [];
         $sql = "SELECT
             operasi.*,
             reg_periksa.*,
@@ -93,12 +98,20 @@ class Admin extends AdminModule
           AND
             reg_periksa.no_rkm_medis=pasien.no_rkm_medis
           AND
-            operasi.tgl_operasi BETWEEN '$tgl_masuk' AND '$tgl_masuk_akhir'
+            operasi.tgl_operasi BETWEEN ? AND ?
           AND
             reg_periksa.kd_pj=penjab.kd_pj";
+        $params[] = $tgl_masuk;
+        $params[] = $tgl_masuk_akhir;
+
+        // Add condition for medical role users
+        if ($user_role == 'medis') {
+            $sql .= " AND operasi.operator1 = ?";
+            $params[] = $username;
+        }
 
         $stmt = $this->db()->pdo()->prepare($sql);
-        $stmt->execute();
+        $stmt->execute($params);
         $rows = $stmt->fetchAll();
 
         $this->assign['list'] = [];
@@ -148,10 +161,11 @@ class Admin extends AdminModule
       $this->assign['petugas'] = $this->db('petugas')->toArray();
       $this->assign['no_rawat'] = '';
       if (isset($_POST['no_rawat'])){
+        $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $this->assign['operasi'] = $this->db('operasi')
           ->join('reg_periksa', 'reg_periksa.no_rawat=operasi.no_rawat')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-          ->where('operasi.no_rawat', $_POST['no_rawat'])
+          ->where('operasi.no_rawat', $no_rawat)
           ->oneArray();
         echo $this->draw('form.html', [
           'operasi' => $this->assign
@@ -311,8 +325,9 @@ class Admin extends AdminModule
 
     public function anyPasien()
     {
-      $cari = $_POST['cari'];
-      if(isset($_POST['cari'])) {
+      $cari = htmlspecialchars($_POST['cari'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      $pasien = [];
+      if(!empty($cari)) {
         $sql = "SELECT
             reg_periksa.no_rkm_medis,
             reg_periksa.no_rawat,
@@ -323,15 +338,15 @@ class Admin extends AdminModule
           WHERE
             reg_periksa.no_rkm_medis=pasien.no_rkm_medis
           AND
-            reg_periksa.no_rawat = '$cari'
+            reg_periksa.no_rawat = ?
           LIMIT 10";
 
         $stmt = $this->db()->pdo()->prepare($sql);
-        $stmt->execute();
+        $stmt->execute([$cari]);
         $pasien = $stmt->fetchAll();
 
       }
-      echo $this->draw('pasien.html', ['pasien' => $pasien]);
+      echo $this->draw('pasien.html', ['pasien' => htmlspecialchars_array($pasien)]);
       exit();
     }
 
@@ -352,7 +367,7 @@ class Admin extends AdminModule
 
       echo $this->draw('rincian.html', [
         'beri_obat_operasi' => $beri_obat_operasi,
-        'no_rawat' => $_POST['no_rawat']
+        'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
       exit();
     }
@@ -360,10 +375,10 @@ class Admin extends AdminModule
     public function anyObat()
     {
       $obat = $this->db('obatbhp_ok')
-        ->like('nm_obat', '%'.$_POST['obat'].'%')
+        ->like('nm_obat', '%'.htmlspecialchars($_POST['obat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
-      echo $this->draw('obat.html', ['obat' => $obat]);
+      echo $this->draw('obat.html', ['obat' => htmlspecialchars_array($obat)]);
       exit();
     }
 
@@ -415,7 +430,7 @@ class Admin extends AdminModule
         $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']));
         $booking_operasi[] = $row;
       }
-      return $this->draw('bookingoperasi.html', ['bookingoperasi' => $booking_operasi, 'status' => $status, 'dokter' => $dokter, 'ruang_ok' => $ruang_ok, 'paket_operasi' => $paket_operasi]);
+      return $this->draw('bookingoperasi.html', ['bookingoperasi' => $booking_operasi, 'status' => $status, 'dokter' => htmlspecialchars_array($dokter), 'ruang_ok' => $ruang_ok, 'paket_operasi' => $paket_operasi]);
     }
 
     public function postSaveBookingOperasi()
@@ -497,7 +512,7 @@ class Admin extends AdminModule
       $obatoperasi = $this->db('obatbhp_ok')
         ->join('kodesatuan', 'kodesatuan.kode_sat=obatbhp_ok.kode_sat')
         ->toArray();
-      return $this->draw('obatoperasi.html', ['obatoperasi' => $obatoperasi, 'satuan' => $satuan]);
+      return $this->draw('obatoperasi.html', ['obatoperasi' => htmlspecialchars_array($obatoperasi), 'satuan' => $satuan]);
     }
 
     public function postSaveObatOperasi()

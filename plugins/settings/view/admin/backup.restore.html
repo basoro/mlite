@@ -7,7 +7,7 @@
             <div class="panel-body">
                 <pre style="height: 400px;">
 {loop: $databases}
-    {$value.TABLE_NAME}<br>
+    {?=isset_or($value.TABLE_NAME)?}<br>
 {/loop}
     ===============================
     Total : {?=count($databases)?} tabel

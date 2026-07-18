@@ -24,7 +24,7 @@
                         <label>Data Barang</label>
                         <select name="kode_barang" id="kode_barang" class="form-control" data-use-search="true">
                             {loop: $inventaris_barang}
-                            <option value="{$value.kode_barang}">{$value.nama_barang}</option>
+                            <option value="{?=isset_or($value.kode_barang)?}">{?=isset_or($value.nama_barang)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -62,7 +62,7 @@
                         <label>Ruangan</label>
                         <select name="id_ruang" id="id_ruang" class="form-control" data-use-search="true">
                             {loop: $inventaris_ruang}
-                            <option value="{$value.id_ruang}">{$value.nama_ruang}</option>
+                            <option value="{?=isset_or($value.id_ruang)?}">{?=isset_or($value.nama_ruang)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -107,27 +107,27 @@
         <tbody>
           {loop: $inventaris}
           <tr class="inventaris"
-          data-no_inventaris="{$value.no_inventaris}"
-          data-kode_barang="{$value.kode_barang}"
-          data-asal_barang="{$value.asal_barang}"
-          data-tgl_pengadaan="{$value.tgl_pengadaan}"
-          data-harga="{$value.harga}"
-          data-status_barang="{$value.status_barang}"
-          data-id_ruang="{$value.id_ruang}"
-          data-no_rak="{$value.no_rak}"
-          data-no_box="{$value.no_box}"
+          data-no_inventaris="{?=isset_or($value.no_inventaris)?}"
+          data-kode_barang="{?=isset_or($value.kode_barang)?}"
+          data-asal_barang="{?=isset_or($value.asal_barang)?}"
+          data-tgl_pengadaan="{?=isset_or($value.tgl_pengadaan)?}"
+          data-harga="{?=isset_or($value.harga)?}"
+          data-status_barang="{?=isset_or($value.status_barang)?}"
+          data-id_ruang="{?=isset_or($value.id_ruang)?}"
+          data-no_rak="{?=isset_or($value.no_rak)?}"
+          data-no_box="{?=isset_or($value.no_box)?}"
           >
-            <td>{$value.no_inventaris}</td>
-            <td>{$value.kode_barang}</td>
-            <td>{$value.nama_barang}</td>
-            <td>{$value.asal_barang}</td>
-            <td>{$value.tgl_pengadaan}</td>
-            <td>{$value.harga}</td>
-            <td>{$value.status_barang}</td>
-            <td>{$value.id_ruang}</td>
-            <td>{$value.nama_ruang}</td>
-            <td>{$value.no_rak}</td>
-            <td>{$value.no_box}</td>
+            <td>{?=isset_or($value.no_inventaris)?}</td>
+            <td>{?=isset_or($value.kode_barang)?}</td>
+            <td>{?=isset_or($value.nama_barang)?}</td>
+            <td>{?=isset_or($value.asal_barang)?}</td>
+            <td>{?=isset_or($value.tgl_pengadaan)?}</td>
+            <td>{?=isset_or($value.harga)?}</td>
+            <td>{?=isset_or($value.status_barang)?}</td>
+            <td>{?=isset_or($value.id_ruang)?}</td>
+            <td>{?=isset_or($value.nama_ruang)?}</td>
+            <td>{?=isset_or($value.no_rak)?}</td>
+            <td>{?=isset_or($value.no_box)?}</td>
           </tr>
           {/loop}
         </tbody>

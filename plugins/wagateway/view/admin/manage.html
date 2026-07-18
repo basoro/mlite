@@ -6,7 +6,7 @@
     <br>
   </div>
 </div>
-<h4 class="text-center">#Device {$waapiphonenumber}</h4>
+<h4 class="text-center">#Device {?=isset_or($waapiphonenumber)?}</h4>
 <div class="row" style="margin-bottom:20px;">
   <div class="col-md-12">
     <div class="text-center">
@@ -48,14 +48,14 @@
             {loop: $sub_modules}
             <li class="module">
                 <div class="panel panel-default">
-                    <a href="{$value.url}" class="panel-body text-center">
+                    <a href="{?=isset_or($value.url)?}" class="panel-body text-center">
                         <div class="panel-thumb">
-                            <i class="fa fa-{$value.icon}"></i>
+                            <i class="fa fa-{?=isset_or($value.icon)?}"></i>
                             <div class="desc">
-                                {$value.desc}
+                                {?=isset_or($value.desc)?}
                             </div>
                         </div>
-                        <h4><b>{$value.name}</b></h4>
+                        <h4><b>{?=isset_or($value.name)?}</b></h4>
                     </a>
                 </div>
             </li>
@@ -66,10 +66,10 @@
 <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
 <script>
 let socket;
-socket = io('{if: $waapiserver == "https://mlite.id"}https://wa.mlite.id{else}{$waapiserver}{/if}', {
+socket = io('{if: $waapiserver == "https://mlite.id"}https://wa.mlite.id{else}{?=isset_or($waapiserver)?}{/if}', {
     transports: ['websocket', 'polling', 'flashsocket']
 });
-socket.emit('StartConnection','{$waapiphonenumber}')
+socket.emit('StartConnection','{?=isset_or($waapiphonenumber)?}')
 socket.on('QrGenerated', (url) => {
     $('.imageee').html(` <img src="${url}" height="300px" alt="">`)
     let count = 0;
@@ -96,7 +96,7 @@ socket.on('Authenticated',data => {
                                         <span class="" role="status" aria-hidden="true"></span>
                                        Connected
                                     </button>`)
-                                    $('.logoutbutton').html(` <button class="btn btn-danger" class="logout"  id="logout"  onclick="logout({$waapiphonenumber})">
+                                    $('.logoutbutton').html(` <button class="btn btn-danger" class="logout"  id="logout"  onclick="logout({?=isset_or($waapiphonenumber)?})">
                                        Logout
                                    </button>`)
 })

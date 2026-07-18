@@ -62,11 +62,11 @@
         <tbody>
           {loop: $inventaris_ruang}
           <tr class="inventarisruang"
-          data-id_ruang="{$value.id_ruang}"
-          data-nama_ruang="{$value.nama_ruang}"
+          data-id_ruang="{?=isset_or($value.id_ruang)?}"
+          data-nama_ruang="{?=isset_or($value.nama_ruang)?}"
           >
-            <td>{$value.id_ruang}</td>
-            <td>{$value.nama_ruang}</td>
+            <td>{?=isset_or($value.id_ruang)?}</td>
+            <td>{?=isset_or($value.nama_ruang)?}</td>
           </tr>
           {/loop}
         </tbody>

@@ -13,60 +13,60 @@
     <form action="{?=url(ADMIN.'/pcare/saveSettings')?}" method="POST">
       <div class="panel panel-default">
           <div class="panel-heading">
-              <h3 class="panel-title">{$settings.title}</h3>
+              <h3 class="panel-title">{?=isset_or($settings.title)?}</h3>
           </div>
       	  <div class="panel-body">
               <div class="form-group">
                   <label>Username PCare</label>
-                  <input type="text" name="pcare[usernamePcare]" class="form-control" value="{$settings.pcare.usernamePcare}" />
+                  <input type="text" name="pcare[usernamePcare]" class="form-control" value="{?=isset_or($settings.pcare.usernamePcare)?}" />
               </div>
               <div class="form-group">
                   <label>Password PCare</label>
-                  <input type="text" name="pcare[passwordPcare]" class="form-control" value="{$settings.pcare.passwordPcare}" />
+                  <input type="text" name="pcare[passwordPcare]" class="form-control" value="{?=isset_or($settings.pcare.passwordPcare)?}" />
               </div>
               <div class="form-group">
                   <label>PCare Cons ID</label>
-                  <input type="text" name="pcare[consumerID]" class="form-control" value="{$settings.pcare.consumerID}" />
+                  <input type="text" name="pcare[consumerID]" class="form-control" value="{?=isset_or($settings.pcare.consumerID)?}" />
               </div>
               <div class="form-group">
                   <label>PCare Secret Key</label>
-                  <input type="text" name="pcare[consumerSecret]" class="form-control" value="{$settings.pcare.consumerSecret}" />
+                  <input type="text" name="pcare[consumerSecret]" class="form-control" value="{?=isset_or($settings.pcare.consumerSecret)?}" />
               </div>
               <div class="form-group">
                   <label>PCare User Key</label>
-                  <input type="text" name="pcare[consumerUserKey]" class="form-control" value="{$settings.pcare.consumerUserKey}" />
+                  <input type="text" name="pcare[consumerUserKey]" class="form-control" value="{?=isset_or($settings.pcare.consumerUserKey)?}" />
               </div>
               <div class="form-group">
                   <label>PCare User Key Antrol</label>
-                  <input type="text" name="pcare[consumerUserKeyAntrol]" class="form-control" value="{$settings.pcare.consumerUserKeyAntrol}" />
+                  <input type="text" name="pcare[consumerUserKeyAntrol]" class="form-control" value="{?=isset_or($settings.pcare.consumerUserKeyAntrol)?}" />
               </div>
               <div class="form-group">
                   <label>PCare API Url</label>
-                  <input type="text" name="pcare[PCareApiUrl]" class="form-control" value="{$settings.pcare.PCareApiUrl}" />
+                  <input type="text" name="pcare[PCareApiUrl]" class="form-control" value="{?=isset_or($settings.pcare.PCareApiUrl)?}" />
               </div>
               <div class="form-group">
                   <label>Kode FKTP</label>
-                  <input type="text" name="pcare[kode_fktp]" class="form-control" value="{$settings.pcare.kode_fktp}" />
+                  <input type="text" name="pcare[kode_fktp]" class="form-control" value="{?=isset_or($settings.pcare.kode_fktp)?}" />
               </div>
               <div class="form-group">
                   <label>Nama FKTP</label>
-                  <input type="text" name="pcare[nama_fktp]" class="form-control" value="{$settings.pcare.nama_fktp}" />
+                  <input type="text" name="pcare[nama_fktp]" class="form-control" value="{?=isset_or($settings.pcare.nama_fktp)?}" />
               </div>
               <div class="form-group">
                   <label>Kode Kabupaten/Kota</label>
-                  <input type="text" name="pcare[kode_kabupatenkota]" class="form-control" value="{$settings.pcare.kode_kabupatenkota}" />
+                  <input type="text" name="pcare[kode_kabupatenkota]" class="form-control" value="{?=isset_or($settings.pcare.kode_kabupatenkota)?}" />
               </div>
               <div class="form-group">
                   <label>Nama Kabupaten/Kota</label>
-                  <input type="text" name="pcare[kabupatenkota]" class="form-control" value="{$settings.pcare.kabupatenkota}" />
+                  <input type="text" name="pcare[kabupatenkota]" class="form-control" value="{?=isset_or($settings.pcare.kabupatenkota)?}" />
               </div>
               <div class="form-group">
                   <label>Kantor Wilayah</label>
-                  <input type="text" name="pcare[wilayah]" class="form-control" value="{$settings.pcare.wilayah}" />
+                  <input type="text" name="pcare[wilayah]" class="form-control" value="{?=isset_or($settings.pcare.wilayah)?}" />
               </div>
               <div class="form-group">
                   <label>Kantor Cabang</label>
-                  <input type="text" name="pcare[cabang]" class="form-control" value="{$settings.pcare.cabang}" />
+                  <input type="text" name="pcare[cabang]" class="form-control" value="{?=isset_or($settings.pcare.cabang)?}" />
               </div>
               <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
           </div>

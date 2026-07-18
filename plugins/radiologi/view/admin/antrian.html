@@ -37,13 +37,13 @@
 		<center>
 			<table style="font-size: 8pt;" rules='rows'>
 				<tr>
-					<td align="center"><strong style="font-size: 12pt;" > {$settings.nama_instansi} </strong></td>
+					<td align="center"><strong style="font-size: 12pt;" > {?=isset_or($settings.nama_instansi)?} </strong></td>
 				</tr>
 				<tr style="border-bottom: 1px solid #ddd;">
 					<td  align = "center" >
 						<span style="font-size: 7pt;">
-							<div>{$settings.alamat}</div>
-							{$settings.nomor_telepon} - {$settings.email}
+							<div>{?=isset_or($settings.alamat)?}</div>
+							{?=isset_or($settings.nomor_telepon)?} - {?=isset_or($settings.email)?}
 						</span>
 					</td>
 				</tr>
@@ -57,39 +57,39 @@
 					<td align="center" style="font-size:54px;padding-top:15px;">
 						<div class="panel panel-default" style="width:130px;">
 							<div class="pane-body">
-								{$rawat_jalan.no_reg}
+								{?=isset_or($rawat_jalan.no_reg)?}
 							</div>
 						</div>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<span class="pull-left">ID Daftar</span><span class="pull-right">{$rawat_jalan.no_rawat}</span>
+						<span class="pull-left">ID Daftar</span><span class="pull-right">{?=isset_or($rawat_jalan.no_rawat)?}</span>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<span class="pull-left">Nama</span><span class="pull-right">{$rawat_jalan.nm_pasien}</span>
+						<span class="pull-left">Nama</span><span class="pull-right">{?=isset_or($rawat_jalan.nm_pasien)?}</span>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<span class="pull-left">Nomor RM</span><span class="pull-right">{$rawat_jalan.no_rkm_medis}</span>
+						<span class="pull-left">Nomor RM</span><span class="pull-right">{?=isset_or($rawat_jalan.no_rkm_medis)?}</span>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<span class="pull-left">Poliklinik</span><span class="pull-right">{$rawat_jalan.nm_poli}</span>
+						<span class="pull-left">Poliklinik</span><span class="pull-right">{?=isset_or($rawat_jalan.nm_poli)?}</span>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<span class="pull-left">Dokter</span><span class="pull-right">{$rawat_jalan.nm_dokter}</span>
+						<span class="pull-left">Dokter</span><span class="pull-right">{?=isset_or($rawat_jalan.nm_dokter)?}</span>
 					</td>
 				</tr>
 				<tr>
 					<td style="padding-bottom:20px;">
-						<span class="pull-left">Penjamin</span><span class="pull-right">{$rawat_jalan.png_jawab}</span>
+						<span class="pull-left">Penjamin</span><span class="pull-right">{?=isset_or($rawat_jalan.png_jawab)?}</span>
 					</td>
 				</tr>
 				<tr style="border-top: 1px solid #ddd;">

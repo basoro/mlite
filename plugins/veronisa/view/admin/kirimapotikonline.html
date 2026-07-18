@@ -1,0 +1,543 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Kirim Data ke Apotek Online BPJS</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h5 class="panel-title">Data Pasien</h5>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-4">
+              <strong>No. Rawat:</strong> {?=isset_or($veronisa.no_rawat)?}
+            </div>
+            <div class="col-md-4">
+              <strong>No. Kartu:</strong> {?=$veronisa['sep_data']['no_kartu'] ?? '-'?}
+            </div>
+            <div class="col-md-4">
+              <strong>Nama Pasien:</strong> {?=$veronisa['sep_data']['nama_peserta'] ?? '-'?}
+            </div>
+          </div>
+          <div class="row" style="margin-top: 10px;">
+            <div class="col-md-4">
+              <strong>No. SEP:</strong> {?=$veronisa['sep_data']['no_sep'] ?? '-'?}
+            </div>
+            <div class="col-md-4">
+              <strong>Tgl. SEP:</strong> {?=$veronisa['sep_data']['tgl_sep'] ?? $veronisa['sep_data']['tglsep']?}
+            </div>
+            <div class="col-md-4">
+              <strong>Poli:</strong> {?=$veronisa['sep_data']['poli'] ?? $veronisa['sep_data']['nmpolitujuan']?}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <form id="kirimApotikForm" method="POST">
+    <input type="hidden" name="no_rawat" value="{?=isset_or($veronisa.no_rawat)?}">
+    <input type="hidden" name="KdDokter" value="{?=$veronisa['sep_data']['kode_dokter'] ?? ''?}" class="form-control" value="0" placeholder="Kode Dokter">
+    <input type="hidden" name="IDUSERSJP" value="{?=$veronisa['sep_data']['user_simpan'] ?? ''?}" class="form-control" required placeholder="Contoh: USR-01">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h5 class="panel-title">Informasi Resep</h5>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tanggal SJP <span class="text-danger">*</span></label>
+              <input type="datetime-local" name="TGLSJP" class="form-control" required value="{?=date('Y-m-d\TH:i:s')?}">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Referensi Asal SJP <span class="text-danger">*</span></label>
+              <input type="text" name="REFASALSJP" value="{?=$veronisa['sep_data']['no_sep'] ?? ''?}" class="form-control" required placeholder="Contoh: 1202R0010318V000092">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Poli RSP <span class="text-danger">*</span></label>
+              <select name="POLIRSP" class="form-control" required>
+                <option value="">Pilih Poli</option>
+                <option value="IPD" {if: isset($veronisa['sep_data']['jns_pelayanan']) && $veronisa['sep_data']['jns_pelayanan'] == 'RJTL'} selected {/if}>IPD (Rawat Jalam)</option>
+                <option value="OPD" {if: isset($veronisa['sep_data']['jns_pelayanan']) && $veronisa['sep_data']['jns_pelayanan'] == 'RITL'} selected {/if}>OPD (Rawat Inap)</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Jenis Obat <span class="text-danger">*</span></label>
+              <select name="KDJNSOBAT" class="form-control" required>
+                <option value="">Pilih Jenis Obat</option>
+                <option value="1" {if: isset($veronisa['sep_data']['flag_prb']) && $veronisa['sep_data']['flag_prb'] == '1'} selected {/if}>1. Obat PRB</option>
+                <option value="2">2. Obat Kronis Belum Stabil</option>
+                <option value="3">3. Obat Kemoterapi</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>No. Resep <span class="text-danger">*</span></label>
+              <input type="text" name="NORESEP" value="{?=$veronisa['obat_data'][0]['no_resep'] ?? ''?}" class="form-control" required placeholder="Contoh: 12346">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Iterasi</label>
+              <select name="iterasi" class="form-control">
+                <option value="0">0. Non Iterasi</option>
+                <option value="1">1. Iterasi</option>
+                <option value="2">2. Iterasi</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Tanggal Resep <span class="text-danger">*</span></label>
+              <input type="datetime-local" name="TGLRSP" class="form-control" required value="{?=$veronisa['obat_data'][0]['tgl_peresepan'] ?? ''?} {?=$veronisa['obat_data'][0]['jam_peresepan'] ?? ''?}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Tanggal Pelayanan Resep <span class="text-danger">*</span></label>
+              <input type="datetime-local" name="TGLPELRSP" class="form-control" required value="{?=$veronisa['obat_data'][0]['tgl_perawatan'] ?? ''?} {?=$veronisa['obat_data'][0]['jam'] ?? ''?}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>      
+
+<!-- Panel untuk Obat Non-Racikan -->
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h5 class="panel-title">Daftar Obat Non-Racikan</h5>
+    <div class="clearfix"></div>
+  </div>
+  <div class="panel-body">
+    {if: isset($veronisa['obat_data']) && count($veronisa['obat_data']) > 0}
+    {loop: $veronisa['obat_data']}
+    {if: cv($value)['jenis_resep'] == 'non_racikan'}
+    <div class="panel panel-default obat-item" style="margin-bottom: 15px;">
+      <div class="panel-heading">
+        <h6 class="panel-title">Obat Non-Racikan #{?=$key+1?}</h6>
+      </div>
+      <div class="panel-body">
+        <!-- Hidden fields for obat data -->
+        <input type="hidden" name="obat[{?=$key?}][type]" value="non_racikan">
+        <input type="hidden" name="obat[{?=$key?}][NOSJP]" value="{?=$veronisa['sep_data']['no_sep'] ?? ''?}">
+        <input type="hidden" name="obat[{?=$key?}][NORESEP]" value="{?=cv($value)['no_resep'] ?? ''?}">
+        <input type="hidden" name="obat[{?=$key?}][CatKhsObt]" value="">
+        
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Kode Obat <span class="text-danger">*</span></label>
+              <input type="text" name="obat[{?=$key?}][KDOBT]" class="form-control" required placeholder="Contoh: 012131" value="{?=cv($value)['kd_obat_bpjs'] ?? ''?}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Nama Obat <span class="text-danger">*</span></label>
+              <input type="text" name="obat[{?=$key?}][NMOBAT]" class="form-control" required placeholder="Nama Obat" value="{?=cv($value)['nama_obat_bpjs'] ?? cv($value)['nama_item'] ?? ''?}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Jumlah Obat <span class="text-danger">*</span></label>
+              <input type="number" name="obat[{?=$key?}][JMLOBT]" class="form-control" required min="1" value="{?=cv($value)['jml'] ?? '1'?}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Signa 1 <span class="text-danger">*</span></label>
+              <input type="number" name="obat[{?=$key?}][SIGNA1OBT]" class="form-control signa1-input" required min="1" value="1" data-aturan="{?=cv($value)['aturan_pakai'] ?? ''?}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Signa 2 <span class="text-danger">*</span></label>
+              <input type="number" name="obat[{?=$key?}][SIGNA2OBT]" class="form-control signa2-input" required min="1" value="1" data-aturan="{?=cv($value)['aturan_pakai'] ?? ''?}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>JHO <span class="text-danger">*</span></label>
+              <input type="number" name="obat[{?=$key?}][JHO]" class="form-control jho-input" required min="1" value="1" data-jml="{?=cv($value)['jml'] ?? '1'?}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {/if}
+    {/loop}
+    {else}
+    <div class="alert alert-warning">
+      <i class="fa fa-exclamation-triangle"></i> Tidak ada data obat non-racikan yang tersedia.
+    </div>
+    {/if}
+  </div>
+</div>
+
+<!-- Panel untuk Obat Racikan -->
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h5 class="panel-title">Daftar Obat Racikan</h5>
+    <div class="clearfix"></div>
+  </div>
+  <div class="panel-body">
+    {if: isset($veronisa['obat_data']) && count($veronisa['obat_data']) > 0}
+    {loop: $veronisa['obat_data']}
+    {if: cv($value)['jenis_resep'] == 'racikan'}
+    <div class="panel panel-default obat-item" style="margin-bottom: 15px;">
+      <div class="panel-heading">
+        <h6 class="panel-title">Racikan #{?=cv($value)['no_racik'] ?? $key+1?} - {?=cv($value)['nama_racik'] ?? 'Racikan'?}</h6>
+      </div>
+      <div class="panel-body">
+        <!-- Hidden fields for racikan data -->
+        <input type="hidden" name="racikan[{?=$key?}][type]" value="racikan">
+        <input type="hidden" name="racikan[{?=$key?}][NOSJP]" value="{?=$veronisa['sep_data']['no_sep'] ?? ''?}">
+        <input type="hidden" name="racikan[{?=$key?}][NORESEP]" value="{?=cv($value)['no_resep'] ?? ''?}">
+        <input type="hidden" name="racikan[{?=$key?}][no_racik]" value="{?=cv($value)['no_racik'] ?? ''?}">
+        <input type="hidden" name="racikan[{?=$key?}][kd_racik]" value="{?=cv($value)['kd_racik'] ?? ''?}">
+        <input type="hidden" name="racikan[{?=$key?}][SIGNA1RACIKAN]" value="{?=explode(' x ', cv($value)['aturan_pakai'] ?? '')[0] ?? ''?}">
+        <input type="hidden" name="racikan[{?=$key?}][SIGNA2RACIKAN]" value="{?=explode(' x ', cv($value)['aturan_pakai'] ?? '')[1] ?? ''?}">
+        <input type="hidden" name="racikan[{?=$key?}][JHORACIKAN]" value="{?=cv($value)['jml_dr'] ?? '1'?}">
+        
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Jenis Racikan <span class="text-danger">*</span></label>
+              <input type="text" name="racikan[{?=$key?}][JNSROBT]" class="form-control" required placeholder="Nama Racikan" value="{?=cv($value)['nm_racik'] ?? ''?}">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Jumlah Item</label>
+              <input type="number" name="racikan[{?=$key?}][JMLOBAT]" class="form-control" readonly value="{?=count(json_decode(cv($value)['detail_racikan'] ?? '[]', true)) ?? '0'?}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Jumlah Racikan <span class="text-danger">*</span></label>
+              <input type="number" name="racikan[{?=$key?}][JMLRACIKAN]" class="form-control" required min="1" value="{?=cv($value)['jml_dr'] ?? '1'?}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>No. Racikan</label>
+              <input type="text" name="racikan[{?=$key?}][NO_RACIK]" class="form-control" readonly value="{?=cv($value)['no_racik'] ?? ''?}">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label>Aturan Pakai <span class="text-danger">*</span></label>
+              <textarea name="racikan[{?=$key?}][ATURAN_PAKAI]" class="form-control" rows="2" required placeholder="Aturan pakai racikan">{?=cv($value)['aturan_pakai'] ?? ''?}</textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Signa 1 <span class="text-danger">*</span></label>
+              <input type="number" name="racikan[{?=$key?}][SIGNA1RACIKAN]" class="form-control signa1-racikan" required min="1" value="{?=explode(' x ', cv($value)['aturan_pakai'] ?? '1')[0] ?? '1'?}" data-aturan="{?=cv($value)['aturan_pakai'] ?? ''?}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Signa 2 <span class="text-danger">*</span></label>
+              <input type="number" name="racikan[{?=$key?}][SIGNA2RACIKAN]" class="form-control signa2-racikan" required min="1" value="{?=explode(' x ', cv($value)['aturan_pakai'] ?? '1')[1] ?? '1'?}" data-aturan="{?=cv($value)['aturan_pakai'] ?? ''?}">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>JHO Racikan <span class="text-danger">*</span></label>
+              <input type="number" name="racikan[{?=$key?}][JHORACIKAN]" class="form-control jho-racikan" required min="1" value="1" data-jml="{?=cv($value)['jml_dr'] ?? '1'?}">
+            </div>
+          </div>
+        </div>        
+        <!-- Detail Racikan Items -->
+        {if: cv($value)['detail_racikan']}
+        {if: !empty(json_decode(cv($value)['detail_racikan'], true))}
+        <!-- Hidden inputs for detail racikan data -->
+        {loop: json_decode(cv($value)['detail_racikan'], true) as $detail_key => $detail_value}
+        <input type="hidden" name="racikan[{?=$key?}][detail][{?=$detail_key?}][kode_brng]" value="{?=cv($detail_value)['kode_brng'] ?? ''?}">
+        <input type="hidden" name="racikan[{?=$key?}][detail][{?=$detail_key?}][nama_brng]" value="{?=cv($detail_value)['nama_brng'] ?? ''?}">
+        <input type="hidden" name="racikan[{?=$key?}][detail][{?=$detail_key?}][jml]" value="{?=cv($detail_value)['jml'] ?? '0'?}">
+        <input type="hidden" name="racikan[{?=$key?}][detail][{?=$detail_key?}][kd_obat_bpjs]" value="{?=cv($detail_value)['kd_obat_bpjs'] ?? ''?}">
+        <input type="hidden" name="racikan[{?=$key?}][detail][{?=$detail_key?}][nama_obat_bpjs]" value="{?=cv($detail_value)['nama_obat_bpjs'] ?? ''?}">
+        {/loop}
+        
+        <div class="row">
+          <div class="col-md-12">
+            <h6><strong>Detail Obat dalam Racikan:</strong></h6>
+            <div class="table-responsive">
+              <table class="table table-bordered table-condensed">
+                <thead>
+                  <tr>
+                    <th>Kode Obat</th>
+                    <th>Nama Obat</th>
+                    <th>Jumlah</th>
+                    <th>Kode BPJS</th>
+                    <th>Nama Obat BPJS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loop: json_decode(cv($value)['detail_racikan'], true)}
+                  <tr>
+                    <td>{?=cv($value)['kode_brng'] ?? '-'?}</td>
+                    <td>{?=cv($value)['nama_brng'] ?? cv($value)['nama_obat_bpjs'] ?? '-'?}</td>
+                    <td>{?=cv($value)['jml'] ?? '0'?}</td>
+                    <td>{?=cv($value)['kd_obat_bpjs'] ?? '-'?}</td>
+                    <td>{?=cv($value)['nama_obat_bpjs'] ?? '-'?}</td>
+                  </tr>
+                  {/loop}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        {/if}
+        {/if}
+        
+      </div>
+    </div>
+    {/if}
+    {/loop}
+    {else}
+    <div class="alert alert-warning">
+      <i class="fa fa-exclamation-triangle"></i> Tidak ada data obat racikan yang tersedia.
+    </div>
+    {/if}
+  </div>
+</div>    
+    <!-- Form Actions -->
+    <div class="form-group" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fa fa-paper-plane"></i> Kirim ke Apotek Online
+      </button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">
+        <i class="fa fa-times"></i> Batal
+      </button>
+    </div>
+  </form>
+
+<script>
+// Function to parse aturan string like "3 x 1" into SIGNA1 and SIGNA2
+function parseAturan(aturanString) {
+  if (!aturanString) return { signa1: 1, signa2: 1 };
+  
+  // Match patterns like "3 x 1", "3x1", "3 X 1", etc.
+  const match = aturanString.match(/(\d+)\s*[xX]\s*(\d+)/i);
+  
+  if (match) {
+    return {
+      signa1: parseInt(match[1]) || 1,
+      signa2: parseInt(match[2]) || 1
+    };
+  }
+  
+  // If no pattern matches, try to extract first number as signa1
+  const numberMatch = aturanString.match(/(\d+)/);
+  if (numberMatch) {
+    return {
+      signa1: parseInt(numberMatch[1]) || 1,
+      signa2: 1
+    };
+  }
+  
+  return { signa1: 1, signa2: 1 };
+}
+
+// Function to calculate JHO value
+function calculateJHO(jmlObat, signa1) {
+  const jml = parseInt(jmlObat) || 1;
+  const signa = parseInt(signa1) || 1;
+  return Math.floor(jml / signa);
+}
+
+// Initialize signa values and JHO when modal is shown
+$('#kirimApotikModal').on('shown.bs.modal', function() {
+  const signa1Inputs = document.querySelectorAll('.signa1-input');
+  const signa2Inputs = document.querySelectorAll('.signa2-input');
+  const jhoInputs = document.querySelectorAll('.jho-input');
+  
+  signa1Inputs.forEach(function(input) {
+    const aturan = input.getAttribute('data-aturan');
+    const parsed = parseAturan(aturan);
+    input.value = parsed.signa1;
+  });
+  
+  signa2Inputs.forEach(function(input) {
+    const aturan = input.getAttribute('data-aturan');
+    const parsed = parseAturan(aturan);
+    input.value = parsed.signa2;
+  });
+  
+  // Calculate initial JHO values
+  jhoInputs.forEach(function(jhoInput) {
+    const jmlObat = jhoInput.getAttribute('data-jml');
+    const signa1Input = jhoInput.closest('.panel-body').querySelector('.signa1-input');
+    const signa1Value = signa1Input ? signa1Input.value : 1;
+    jhoInput.value = calculateJHO(jmlObat, signa1Value);
+  });
+  
+  // Add event listeners to SIGNA1 inputs to update JHO when changed
+  signa1Inputs.forEach(function(signa1Input) {
+    signa1Input.addEventListener('input', function() {
+      const jhoInput = this.closest('.panel-body').querySelector('.jho-input');
+      if (jhoInput) {
+        const jmlObat = jhoInput.getAttribute('data-jml');
+        jhoInput.value = calculateJHO(jmlObat, this.value);
+      }
+    });
+  });
+});
+
+// Form submission
+document.getElementById('kirimApotikForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Mengirim...';
+
+  const formData = new FormData(this);
+  
+  // === Restructure FormData to match required JSON format ===
+  const restructuredData = new FormData();
+  const obatArray = [];
+  const racikanArray = [];
+  
+  // Process FormData and separate obat and racikan
+  for (let [key, value] of formData.entries()) {
+    if (key.startsWith('obat[')) {
+      // Parse obat non-racikan array structure
+      const matches = key.match(/obat\[(\d+)\]\[(.+)\]/);
+      if (matches) {
+        const index = parseInt(matches[1]);
+        const field = matches[2];
+        
+        if (!obatArray[index]) {
+          obatArray[index] = {
+            type: 'non_racikan'
+          };
+        }
+        obatArray[index][field] = value;
+      }
+    } else if (key.startsWith('racikan[')) {
+      // Parse racikan array structure
+      const matches = key.match(/racikan\[(\d+)\]\[(.+)\]/);
+      if (matches) {
+        const index = parseInt(matches[1]);
+        const field = matches[2];
+        
+        if (!racikanArray[index]) {
+          racikanArray[index] = {
+            type: 'racikan'
+          };
+        }
+        racikanArray[index][field] = value;
+      }
+    } else {
+      // Add non-array fields directly
+      restructuredData.append(key, value);
+    }
+  }
+  
+  // Filter out empty items and add to restructured FormData
+  const filteredObat = obatArray.filter(item => item !== null && item !== undefined);
+  const filteredRacikan = racikanArray.filter(item => {
+    if (item === null || item === undefined) return false;
+    
+    // Check if racikan has meaningful data beyond type field only
+    const excludeFields = ['type'];
+    const hasDetailData = Object.keys(item).some(key => 
+      !excludeFields.includes(key) && 
+      item[key] && 
+      item[key].toString().trim() !== ''
+    );
+    
+    return hasDetailData;
+  });
+  
+  // Add obat array to FormData
+  filteredObat.forEach((obat, index) => {
+    Object.keys(obat).forEach(key => {
+      restructuredData.append(`obat[${index}][${key}]`, obat[key]);
+    });
+  });
+  
+  // Add racikan array to FormData with completely flattened structure
+  filteredRacikan.forEach((racikan, index) => {
+    // Create flattened racikan object
+    const flattenedRacikan = { ...racikan };
+    
+    // Remove detail array and flatten it into the main object
+    if (racikan.detail && Array.isArray(racikan.detail)) {
+      delete flattenedRacikan.detail;
+      
+      // Add flattened detail fields directly to the racikan object
+      racikan.detail.forEach((detailItem, detailIndex) => {
+        Object.keys(detailItem).forEach(detailKey => {
+          flattenedRacikan[`detail][${detailIndex}][${detailKey}`] = detailItem[detailKey];
+        });
+      });
+    }
+    
+    // Add all fields to FormData
+    Object.keys(flattenedRacikan).forEach(key => {
+      restructuredData.append(`racikan[${index}][${key}]`, flattenedRacikan[key]);
+    });
+  });
+  
+
+
+  fetch('{?=url([ADMIN, "veronisa", "kirimapotikonline"])?}', {
+    method: 'POST',
+    body: restructuredData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      let pesan = `✅ Resep berhasil dikirim:\n`;
+      pesan += `Kode: ${data.resep_response.metaData.code}\n`;
+      pesan += `Pesan: ${data.resep_response.metaData.message}\n\n`;
+
+      if (Array.isArray(data.obat_responses)) {
+        data.obat_responses.forEach((obat, index) => {
+          pesan += `🔹 Obat ${index + 1}:\n`;
+          pesan += `Kode: ${obat.metaData.code}\n`;
+          pesan += `Pesan: ${obat.metaData.message}\n\n`;
+        });
+      }
+
+      alert(pesan);
+      $('#kirimApotikModal').modal('hide');
+      location.reload();
+    } else {
+      alert('❌ Gagal mengirim data:\n' + (data.message || 'Terjadi kesalahan'));
+    }
+  })
+  .catch(error => {
+    alert('Terjadi kesalahan saat mengirim data ke server.');
+  })
+  .finally(() => {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa fa-paper-plane"></i> Kirim ke Apotek Online';
+  });
+});
+
+</script>

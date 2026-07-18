@@ -1,0 +1,59 @@
+<div id="form">
+  <div class="row col-md-6 m-r-md">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Kode Penyakit</label>
+            <div class="col-sm-9">
+              <input type="text" id="kd_penyakit" name="kd_penyakit" class="form-control" value="{$penyakit.form.kd_penyakit}" {if: !empty($penyakit.form.kd_penyakit)}disabled{/if}>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Nama Penyakit</label>
+            <div class="col-sm-9">
+              <input type="text" name="nm_penyakit" class="form-control" value="{$penyakit.form.nm_penyakit}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Ciri-ciri</label>
+            <div class="col-sm-9">
+              <textarea name="ciri_ciri" class="form-control" rows="3">{$penyakit.form.ciri_ciri}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Keterangan</label>
+            <div class="col-sm-9">
+              <input type="text" name="keterangan" class="form-control" value="{$penyakit.form.keterangan}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Kategori Penyakit</label>
+            <div class="col-sm-9">
+              <select name="kd_ktg" class="form-control">
+                <option value="">-- Pilih Kategori --</option>
+                {loop: $penyakit.kategori_penyakit}
+                <option value="{$value.kd_ktg}" {if: $value.kd_ktg == $penyakit.form.kd_ktg}selected{/if}>{$value.kd_ktg} - {$value.nm_kategori}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Status</label>
+            <div class="col-sm-9">
+              <select name="status" class="form-control">
+                <option value="Menular" {if: $penyakit.form.status == 'Menular'}selected{/if}>Menular</option>
+                <option value="Tidak Menular" {if: $penyakit.form.status == 'Tidak Menular'}selected{/if}>Tidak Menular</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-b-xl clearfix">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+</div>

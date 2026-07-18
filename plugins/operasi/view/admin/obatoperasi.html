@@ -3,6 +3,7 @@
     white-space: nowrap;
   }
 </style>
+{if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
 <form action="{?=url(ADMIN.'/operasi/saveobatoperasi')?}" method="POST">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -23,7 +24,7 @@
                         <label>Satuan</label>
                         <select name="kode_sat" id="kode_sat" class="form-control" data-use-search="true">
                           {loop: $satuan}
-                            <option value="{$value.kode_sat}">{$value.satuan}</option>
+                            <option value="{?=isset_or($value.kode_sat)?}">{?=isset_or($value.satuan)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -41,6 +42,7 @@
         </div>
     </div>
 </form>
+{/if}
 <div class="row">
   <div class="col-md-12">
     <div class="table-responsive no-margin" id="obatoperasi">
@@ -56,15 +58,15 @@
         <tbody>
           {loop: $obatoperasi}
           <tr class="obatoperasi"
-          data-kd_obat="{$value.kd_obat}"
-          data-nm_obat="{$value.nm_obat}"
-          data-kode_sat="{$value.kode_sat}"
-          data-hargasatuan="{$value.hargasatuan}"
+          data-kd_obat="{?=isset_or($value.kd_obat)?}"
+          data-nm_obat="{?=isset_or($value.nm_obat)?}"
+          data-kode_sat="{?=isset_or($value.kode_sat)?}"
+          data-hargasatuan="{?=isset_or($value.hargasatuan)?}"
           >
-            <td>{$value.kd_obat}</td>
-            <td>{$value.nm_obat}</td>
-            <td>{$value.kode_sat}</td>
-            <td>{$value.hargasatuan}</td>
+            <td>{?=isset_or($value.kd_obat)?}</td>
+            <td>{?=isset_or($value.nm_obat)?}</td>
+            <td>{?=isset_or($value.kode_sat)?}</td>
+            <td>{?=isset_or($value.hargasatuan)?}</td>
           </tr>
           {/loop}
         </tbody>

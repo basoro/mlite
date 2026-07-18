@@ -14,7 +14,7 @@
                       <label>Akun Rekening</label>
                       <select name="kd_rek" id="kd_rek" class="form-control" data-use-search="true">
                         {loop: $akunrekening}
-                          <option value="{$value.kd_rek}">{$value.kd_rek} - {$value.nm_rek}</option>
+                          <option value="{?=isset_or($value.kd_rek)?}">{?=isset_or($value.kd_rek)?} - {?=isset_or($value.nm_rek)?}</option>
                         {/loop}
                       </select>
                   </div>
@@ -32,6 +32,16 @@
     </div>
     <div class="col-md-6">
       <div id="display">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <form action="" method="get" class="form-inline" style="margin:0;">
+              <label style="margin-right:6px;">Tahun</label>
+              <input type="number" name="tahun" class="form-control input-sm" style="width:120px;" value="{?=isset_or($tahun_filter)?}" min="2000" max="2100">
+              <input type="submit" class="btn btn-primary btn-sm" value="Tampilkan">
+              <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+            </form>
+          </div>
+        </div>
         <div class="table-responsive no-margin" id="rekeningtahun">
           <table class="table table-striped table-bordered no-padding">
             <thead>
@@ -44,9 +54,9 @@
             <tbody>
               {if: $rekeningtahun}
               {loop: $rekeningtahun}
-              <tr class="rekeningtahun" data-tahun="{$value.thn}" data-kd_rek="{$value.kd_rek}" data-saldo_awal="{$value.saldo_awal}">
-                <td>{$value.thn}</td>
-                <td>{$value.kd_rek} - {$value.nm_rek}</td>
+              <tr class="rekeningtahun" data-tahun="{?=isset_or($value.thn)?}" data-kd_rek="{?=isset_or($value.kd_rek)?}" data-saldo_awal="{?=isset_or($value.saldo_awal)?}">
+                <td>{?=isset_or($value.thn)?}</td>
+                <td>{?=isset_or($value.kd_rek)?} - {?=isset_or($value.nm_rek)?}</td>
                 <td><span class="pull-right">{?= number_format($value.saldo_awal,2,',','.')?}</span></td>
               </tr>
               {/loop}

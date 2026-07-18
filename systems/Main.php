@@ -24,7 +24,11 @@ abstract class Main
     public function __construct()
     {
         $this->setSession();
-        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
+        $dsn = "mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."";
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $dsn = "sqlite:".DBNAME;
+        }
+        QueryWrapper::connect($dsn, DBUSER, DBPASS);
 
         if (!is_dir(WEBAPPS_PATH)) {
             mkdir(WEBAPPS_PATH, 0777);
@@ -90,8 +94,12 @@ abstract class Main
             mkdir(UPLOADS."/radiologi", 0777);
         }
         
-        copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
-        copy(THEMES.'/admin/img/wallpaper.jpg', UPLOADS.'/settings/wallpaper.jpg');
+        if (!file_exists(UPLOADS.'/settings/logo.png')) {
+            copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
+        }
+        if (!file_exists(UPLOADS.'/settings/wallpaper.jpg')) {
+            copy(THEMES.'/admin/img/wallpaper.jpg', UPLOADS.'/settings/wallpaper.jpg');
+        }
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -123,25 +131,28 @@ abstract class Main
 
     private function setSession()
     {
-        ini_set('session.use_only_cookies', 1);
-        session_name('mlite');
-        session_set_cookie_params(0, (mlite_dir() === '/' ? '/' : mlite_dir().'/'));
-        session_start();
-    }
-
-    public function setNotify($type, $text, $args = null)
-    {
-        $variables = [];
-        $numargs = func_num_args();
-        $arguments = func_get_args();
-
-        if ($numargs > 1) {
-            for ($i = 1; $i < $numargs; $i++) {
-                $variables[] = $arguments[$i];
-            }
-            $text = call_user_func_array('sprintf', $variables);
-            $_SESSION[$arguments[0]] = $text;
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            ini_set('session.use_only_cookies', 1);
+            session_name('mlite');
+            session_set_cookie_params(0, (mlite_dir() === '/' ? '/' : mlite_dir().'/'));
+            session_start();
         }
+    }    
+
+    /**
+     * Set notification message with sprintf formatting
+     * Compatible with PHP 8+ variadic parameters
+     * 
+     * @param string $type Notification type
+     * @param string $text Message text with sprintf placeholders
+     * @param mixed ...$args Arguments for sprintf formatting
+     */
+    public function setNotify(string $type, string $text, ...$args): void
+    {
+        if (!empty($args)) {
+            $text = sprintf($text, ...$args);
+        }
+        $_SESSION[$type] = $text;
     }
 
     public function getNotify()
@@ -225,8 +236,8 @@ abstract class Main
 
             return true;
         } elseif (isset($_COOKIE['mlite_remember'])) {
-            $token = explode(":", $_COOKIE['mlite_remember']);
-            if (count($token) == 2) {
+            $token = explode(':', $_COOKIE['mlite_remember'], 2);
+            if (count($token) === 2 && ctype_digit($token[0]) && $token[1] !== '') {
                 $row = $this->db('mlite_users')->leftJoin('mlite_remember_me', 'mlite_remember_me.user_id = mlite_users.id')->where('mlite_users.id', $token[0])->where('mlite_remember_me.token', $token[1])->select(['mlite_users.*', 'mlite_remember_me.expiry', 'token_id' => 'mlite_remember_me.id'])->oneArray();
 
                 if ($row) {
@@ -256,31 +267,150 @@ abstract class Main
                     }
                 }
             }
-            setcookie('mlite_remember', null, -1, '/');
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+            setcookie('mlite_remember', '', [
+                'expires' => time() - 3600,
+                'path' => '/',
+                'secure' => $isHttps,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
         }
 
         return false;
     }
 
-    public function getUserInfo($field, $id = null, $refresh = false)
+    /**
+     * Get user information by field
+     * Compatible with PHP 8+ with proper null handling
+     * 
+     * @param string $field Field name to retrieve
+     * @param int|null $id User ID (defaults to current session user)
+     * @param bool $refresh Whether to refresh cache
+     * @return mixed|null Field value or null if not found
+     */
+    public function getUserInfo(string $field, ?int $id = null, bool $refresh = false)
     {
         if (!$id) {
             $id = isset_or($_SESSION['mlite_user'], 0);
         }
 
         if (empty(self::$userCache) || $refresh) {
-            self::$userCache = $this->db('mlite_users')->where('id', $id)->oneArray();
+            $userData = $this->db('mlite_users')->where('id', $id)->oneArray();
+            self::$userCache = is_array($userData) ? $userData : [];
         }
 
-        return self::$userCache[$field];
+        // Keep backward compatibility for legacy role checks (string comparison).
+        if ($field === 'role') {
+            $rawRole = self::$userCache['role'] ?? null;
+            if ($this->userHasRole($rawRole, 'admin')) {
+                return 'admin';
+            }
+
+            if (is_string($rawRole) && strpos($rawRole, ',') !== false) {
+                $roles = array_map('trim', explode(',', $rawRole));
+                return $roles[0] ?? '';
+            }
+        }
+
+        // Safe field access with null coalescing
+        return self::$userCache[$field] ?? null;
     }
 
     public function getEnum($table_name, $column_name) {
-      $result = $this->db()->pdo()->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");
-      $result->execute();
-      $result = $result->fetch();
-      $result = explode("','",preg_replace("/(enum|set)\('(.+?)'\)/","\\2", $result[1]));
-      return $result;
+      $driver = $this->db()->pdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+      if ($driver === 'sqlite') {
+          $parseEnumValues = function ($enumDefinition) {
+              $enumDefinition = trim((string) $enumDefinition);
+              if ($enumDefinition === '') {
+                  return [];
+              }
+
+              if (preg_match_all("/'([^']*)'/", $enumDefinition, $matches) && !empty($matches[1])) {
+                  return $matches[1];
+              }
+
+              $parts = array_map('trim', explode(',', $enumDefinition));
+              $parts = array_map(function ($value) {
+                  return trim($value, " \t\n\r\0\x0B'\"");
+              }, $parts);
+
+              return array_values(array_filter($parts, function ($value) {
+                  return $value !== '';
+              }));
+          };
+
+          // SQLite kadang menyimpan enum sebagai type: enum('A','B').
+          $safeTableName = str_replace('"', '""', $table_name);
+          $stmtPragma = $this->db()->pdo()->query('PRAGMA table_info("' . $safeTableName . '")');
+          if ($stmtPragma) {
+              $columns = $stmtPragma->fetchAll(\PDO::FETCH_ASSOC);
+              foreach ($columns as $column) {
+                  if (($column['name'] ?? '') !== $column_name) {
+                      continue;
+                  }
+
+                  $columnType = (string) ($column['type'] ?? '');
+                  if (preg_match("/(?:enum|set)\s*\((.+)\)/i", $columnType, $typeMatch)) {
+                      $enumValues = $parseEnumValues($typeMatch[1]);
+                      if (!empty($enumValues)) {
+                          return $enumValues;
+                      }
+                  }
+              }
+          }
+
+          // Jika tidak ada di type, coba parse langsung dari SQL CREATE TABLE.
+          $sqlMaster = "SELECT sql FROM sqlite_master WHERE type='table' AND name='$table_name'";
+          $stmtMaster = $this->db()->pdo()->prepare($sqlMaster);
+          $stmtMaster->execute();
+          $tableDef = $stmtMaster->fetchColumn();
+
+          if (is_string($tableDef) && preg_match('/`?' . preg_quote($column_name, '/') . '`?\s+(?:enum|set)\s*\(([^)]+)\)/i', $tableDef, $enumMatch)) {
+              $enumValues = $parseEnumValues($enumMatch[1]);
+              if (!empty($enumValues)) {
+                  return $enumValues;
+              }
+          }
+          
+          if (preg_match("/CHECK\s*\(\s*`?$column_name`?\s+IN\s*\(([^)]+)\)\s*\)/i", $tableDef, $matches)) {
+              $enumValues = $parseEnumValues($matches[1]);
+              if (!empty($enumValues)) {
+                  return $enumValues;
+              }
+          }
+          
+          // Fallback for common enums if not found in CHECK constraint
+          if ($table_name === 'jadwal' && $column_name === 'hari_kerja') {
+              return ['AKHAD', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
+          }
+          if ($table_name === 'operasi' && $column_name === 'kategori') {
+              return ['-', 'Khusus', 'Besar', 'Sedang', 'Kecil', 'Elektive', 'Emergency'];
+          }
+          if ($table_name === 'laporan_operasi' && $column_name === 'permintaan_pa') {
+              return ['Ya', 'Tidak'];
+          }
+          if ($table_name === 'booking_operasi' && $column_name === 'status') {
+              return ['Menunggu', 'Proses Operasi', 'Selesai'];
+          }
+          if ($table_name === 'paket_operasi' && $column_name === 'kategori') {
+              return ['Kebidanan', 'Operasi'];
+          }
+          if ($table_name === 'paket_operasi' && $column_name === 'kelas') {
+              return ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas Utama', 'Kelas VIP', 'Kelas VVIP'];
+          }
+
+          return [];
+      } else {
+          $result = $this->db()->pdo()->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");
+          $result->execute();
+          $result = $result->fetch();
+          if ($result) {
+              return explode("','",preg_replace("/(enum|set)\('(.+?)'\)/","\\2", $result['Type']));
+          }
+          return [];
+      }
     }
 
     public function getDokterInfo($field, $kd_dokter)
@@ -316,31 +446,31 @@ abstract class Main
     public function getPegawaiInfo($field, $nik)
     {
         $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
-        return $row[$field];
+        return isset_or($row[$field], '');
     }
 
     public function getPasienInfo($field, $no_rkm_medis)
     {
         $row = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
-        return $row[$field];
+        return isset($row[$field]) ? $row[$field] : '';
     }
 
     public function getRegPeriksaInfo($field, $no_rawat)
     {
         $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
-        return $row[$field];
+        return isset($row[$field]) ? $row[$field] : '';
     }
 
     public function getKamarInapInfo($field, $no_rawat)
     {
         $row = $this->db('kamar_inap')->where('no_rawat', $no_rawat)->oneArray();
-        return $row[$field];
+        return isset($row[$field]) ? $row[$field] : '';
     }
 
     public function getDepartemenInfo($dep_id)
     {
         $row = $this->db('departemen')->where('dep_id', $dep_id)->oneArray();
-        return $row['nama'];
+        return isset($row['nama']) ? $row['nama'] : '';
     }
 
     public function setNoRM()
@@ -353,57 +483,62 @@ abstract class Main
 
     public function setNoRawat($date)
     {
-        $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
-        $last_no_rawat->execute();
-        $last_no_rawat = $last_no_rawat->fetch();
-        if(empty($last_no_rawat[0])) {
-          $last_no_rawat[0] = '000000';
-        }
-        $next_no_rawat = sprintf('%06s', ($last_no_rawat[0] + 1));
-        $next_no_rawat = str_replace("-","/",$date).'/'.$next_no_rawat;
+        $urut = $this->db('reg_periksa')
+            ->where('tgl_registrasi', $date)
+            ->nextRightNumber('no_rawat', 6);
+
+        $next_no_rawat =
+            str_replace('-', '/', $date) .
+            '/' .
+            sprintf('%06d', $urut);
 
         return $next_no_rawat;
     }
 
     public function setNoReg($kd_dokter, $kd_poli = null)
     {
-        $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
-        if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-          $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
+        $q = $this->db('reg_periksa')
+            ->where('kd_poli', $kd_poli)
+            ->where('tgl_registrasi', date('Y-m-d'));
+
+        if ($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+            $q->where('kd_dokter', $kd_dokter);
         }
-        if(empty($max_id['no_reg'])) {
-          $max_id['no_reg'] = '000';
-        }
-        $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
+
+        $urut = $q->nextRightNumber('no_reg', 3);
+
+        $_next_no_reg = sprintf('%03d', $urut);
 
         return $_next_no_reg;
     }
 
     public function setNoBooking($kd_dokter, $date, $kd_poli = null)
     {
-        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE kd_poli = '$kd_poli' AND tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
-        if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-          $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        $q = $this->db('booking_registrasi')
+            ->where('tanggal_periksa', $date);
+
+        if ($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+            $q->where('kd_dokter', $kd_dokter);
+        } else {
+            $q->where('kd_poli', $kd_poli)
+            ->where('kd_dokter', $kd_dokter);
         }
-        $last_no_reg->execute();
-        $last_no_reg = $last_no_reg->fetch();
-        if(empty($last_no_reg[0])) {
-          $last_no_reg[0] = '000';
-        }
-        $next_no_reg = sprintf('%03s', ($last_no_reg[0] + 1));
+
+        $urut = $q->nextRightNumber('no_reg', 3);
+
+        $next_no_reg = sprintf('%03d', $urut);
 
         return $next_no_reg;
     }
 
     public function setNoResep($date)
     {
-        $last_no_resep = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date' OR tgl_perawatan =  '$date'");
-        $last_no_resep->execute();
-        $last_no_resep = $last_no_resep->fetch();
-        if(empty($last_no_resep[0])) {
-          $last_no_resep[0] = '0000';
-        }
-        $next_no_resep = sprintf('%04s', ($last_no_resep[0] + 1));
+        $urut = $this->db('resep_obat')
+            ->where('tgl_peresepan', $date)
+            ->orWhere('tgl_perawatan', $date)
+            ->nextRightNumber('no_resep', 4);
+
+        $next_no_resep = sprintf('%04d', $urut);
         $next_no_resep = date('Ymd', strtotime($date)).''.$next_no_resep;
 
         return $next_no_resep;
@@ -412,14 +547,11 @@ abstract class Main
     public function setNoOrderLab()
     {
         $date = date('Y-m-d');
-        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
-        $last_no_order->execute();
-        $last_no_order = $last_no_order->fetch();
-        if(empty($last_no_order[0])) {
-          $last_no_order[0] = '0000';
-        }
-        $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
-        $next_no_order = 'PL'.date('Ymd').''.$next_no_order;
+        $urut = $this->db('permintaan_lab')
+            ->where('tgl_permintaan', $date)
+            ->nextRightNumber('noorder', 4);
+
+        $next_no_order = 'PL' . date('Ymd') . sprintf('%04d', $urut);
 
         return $next_no_order;
     }
@@ -427,14 +559,11 @@ abstract class Main
     public function setNoOrderRad()
     {
         $date = date('Y-m-d');
-        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_rad WHERE tgl_permintaan = '$date'");
-        $last_no_order->execute();
-        $last_no_order = $last_no_order->fetch();
-        if(empty($last_no_order[0])) {
-          $last_no_order[0] = '0000';
-        }
-        $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
-        $next_no_order = 'PR'.date('Ymd').''.$next_no_order;
+        $urut = $this->db('permintaan_rad')
+            ->where('tgl_permintaan', $date)
+            ->nextRightNumber('noorder', 4);
+
+        $next_no_order = 'PR' . date('Ymd') . sprintf('%04d', $urut);
 
         return $next_no_order;
     }
@@ -442,40 +571,38 @@ abstract class Main
     public function setNoSKDP()
     {
         $year = date('Y');
-        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_antrian,6),signed)),0) FROM skdp_bpjs WHERE tahun = '$year'");
-        $last_no->execute();
-        $last_no = $last_no->fetch();
-        if(empty($last_no[0])) {
-          $last_no[0] = '000000';
-        }
-        $next_no = sprintf('%06s', ($last_no[0] + 1));
+
+        $urut = $this->db('skdp_bpjs')
+            ->where('tahun', $year)
+            ->nextRightNumber('no_antrian', 6);
+
+        $next_no = sprintf('%06d', $urut);
         return $next_no;
     }
 
     public function setNoNotaRalan()
     {
-        $date = date('Y-m');
-        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_nota,6),signed)),0) FROM nota_jalan WHERE left(tanggal,7) = '$date'");
-        $last_no->execute();
-        $last_no = $last_no->fetch();
-        if(empty($last_no[0])) {
-          $last_no[0] = '000000';
-        }
-        $next_no = sprintf('%06s', ($last_no[0] + 1));
+        $dateYm = date('Y-m');
+
+        $urut = $this->db('nota_jalan')
+            ->whereRaw('LEFT(tanggal,7) = ?', [$dateYm])
+            ->nextRightNumber('no_nota', 6);
+
+        $next_no = sprintf('%06d', $urut);
         $next_no = date('Y').'/'.date('m').'/RJ/'.$next_no;
+
         return $next_no;
     }
 
     public function setNoJurnal()
     {
         $date = date('Y-m-d');
-        $last_no_jurnal = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM mlite_jurnal WHERE tgl_jurnal = '$date'");
-        $last_no_jurnal->execute();
-        $last_no_jurnal = $last_no_jurnal->fetch();
-        if(empty($last_no_jurnal[0])) {
-          $last_no_jurnal[0] = '000000';
-        }
-        $next_no_jurnal = sprintf('%06s', ($last_no_jurnal[0] + 1));
+
+        $urut = $this->db('mlite_jurnal')
+            ->where('tgl_jurnal', $date)
+            ->nextRightNumber('no_jurnal', 6);
+
+        $next_no_jurnal = sprintf('%06d', $urut);
         $next_no_jurnal = 'JR'.date('Ymd').''.$next_no_jurnal;
 
         return $next_no_jurnal;
@@ -536,6 +663,14 @@ abstract class Main
         * {
           font-family: arial, sans-serif;
         }
+        @page {
+            margin-top: 30mm;
+        }
+    
+        @page :first {
+            margin-top: 5mm;
+            header: page-header;
+        }        
         div, table {
           font-family: arial, sans-serif;
           border-collapse: collapse;
@@ -553,15 +688,270 @@ abstract class Main
         }
         .right {
             float: right;
+        }
         ';  
         return $css;
     }
     
+    public function loadCrudPermissions($module)
+    {
+        $permissions = $this->db('mlite_crud_permissions')->where('user', $this->getUserInfo('username', $_SESSION['mlite_user'], true))->where('module', $module)->oneArray();
+        if(!$permissions) {
+            $permissions = array('can_create' => 'true', 'can_read' => 'true', 'can_update' => 'true', 'can_delete' => 'true');
+        }
+        if($this->userHasRole($this->getUserInfo('role', $_SESSION['mlite_user'], true), 'admin')) {
+            $permissions = array('can_create' => 'true', 'can_read' => 'true', 'can_update' => 'true', 'can_delete' => 'true');
+        }    
+
+        return $permissions;
+    }
+
     public function loadModules()
     {
         if ($this->module == null) {
             $this->module = new Lib\ModulesCollection($this);
         }
+    }
+
+    public function getRegisteredPages()
+    {
+        return $this->router->getRegisteredPages();
+    }
+
+    public function umurDaftar($tgl_lahir) {
+        $birthDate = new \DateTime($tgl_lahir);
+        $today = new \DateTime("today");
+    
+        $umur_daftar = 0;
+        $status_umur = 'Hr';
+    
+        if ($birthDate < $today) {
+            $diff = $today->diff($birthDate);
+            $y = $diff->y;
+            $m = $diff->m;
+            $d = $diff->d;
+    
+            if ($y != 0) {
+                $umur_daftar = $y;
+                $status_umur = "Th";
+            } elseif ($m != 0) {
+                $umur_daftar = $m;
+                $status_umur = "Bl";
+            } else {
+                $umur_daftar = $d;
+                $status_umur = "Hr";
+            }
+        }
+    
+        // Kembalikan sebagai array
+        return [
+            'umur_daftar' => $umur_daftar,
+            'status_umur' => $status_umur
+        ];
+    }
+
+    public function checkAuth($method)
+    {
+        // 1. Try API Key
+        $apiKey = null;
+
+        // Check $_SERVER for common variants
+        if (!empty($_SERVER['HTTP_X_API_KEY'])) {
+            $apiKey = $_SERVER['HTTP_X_API_KEY'];
+        } elseif (!empty($_SERVER['X_API_KEY'])) {
+            $apiKey = $_SERVER['X_API_KEY'];
+        } elseif (!empty($_SERVER['HTTP_API_KEY'])) {
+            $apiKey = $_SERVER['HTTP_API_KEY'];
+        } elseif (!empty($_SERVER['API_KEY'])) {
+            $apiKey = $_SERVER['API_KEY'];
+        }
+
+        // Get headers case-insensitively for fallback and other headers
+        $headers = [];
+        if (function_exists('apache_request_headers')) {
+            $headers = apache_request_headers();
+        } elseif (function_exists('getallheaders')) {
+            $headers = getallheaders();
+        } else {
+            foreach ($_SERVER as $name => $value) {
+                if (substr($name, 0, 5) == 'HTTP_') {
+                    $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+                }
+            }
+        }
+
+        // DEBUG: Log headers for investigation
+        // file_put_contents(BASE_DIR.'/tmp/headers_debug.txt', date('Y-m-d H:i:s') . " Method: $method\n" . print_r($headers, true) . "\nSERVER:\n" . print_r($_SERVER, true) . "\n----------------\n", FILE_APPEND);
+
+        // Fallback: Check all headers case-insensitively for API Key
+        if (!$apiKey) {
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) === 'x-api-key' || strtolower($key) === 'api-key') {
+                    $apiKey = $value;
+                    break;
+                }
+            }
+        }
+        
+        $apiKey = trim((string)$apiKey);
+        
+        if ($apiKey) {
+            $keyRecord = $this->db('mlite_api_key')->where('api_key', $apiKey)->oneArray();
+            if (!$keyRecord) {
+                http_response_code(401);
+                echo json_encode(['status' => 'error', 'message' => 'Invalid API Key']);
+                exit;
+            }
+
+            if (!empty($keyRecord['exp_time']) && $keyRecord['exp_time'] !== '0000-00-00' && strtotime($keyRecord['exp_time']) < time()) {
+                http_response_code(401);
+                echo json_encode(['status' => 'error', 'message' => 'API Key expired']);
+                exit;
+            }
+
+            if (!empty($keyRecord['ip_range']) && $keyRecord['ip_range'] !== '*') {
+                $clientIp = $_SERVER['REMOTE_ADDR'];
+                if (strpos($keyRecord['ip_range'], $clientIp) === false) {
+                     http_response_code(401);
+                     echo json_encode(['status' => 'error', 'message' => 'IP not allowed']);
+                     exit;
+                }
+            }
+
+            $allowedMethods = explode(',', strtoupper($keyRecord['method']));
+            if (!in_array($method, $allowedMethods) && !in_array('ALL', $allowedMethods)) {
+                 http_response_code(403);
+                 echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
+                 exit;
+            }
+
+            // --- Layer 2: API Client Module Access Validation ---
+            // Check if the API Client (User linked to API Key) has access to the requested module
+            $apiClientUser = $this->db('mlite_users')->where('username', $keyRecord['username'])->oneArray();
+            if ($apiClientUser) {
+                $module = parseURL(1); // Get module name from URL
+                if ($module && $module !== 'api') { // Skip for 'api' module itself
+                     $moduleCheck = $this->db('mlite_modules')->where('dir', $module)->oneArray();
+                     if ($moduleCheck) {
+                         $assignedModules = $apiClientUser['access']; // 'all' or comma-separated list
+                         if ($assignedModules !== 'all' && !in_array($module, explode(',', $assignedModules))) {
+                             http_response_code(403);
+                             echo json_encode(['status' => 'error', 'message' => 'API Client denied access to this module']);
+                             exit;
+                         }
+                     }
+                }
+            }
+
+            // Check for User Permissions Credentials (X-Username-Permission & X-Password-Permission)
+            $userPerm = null;
+            $passPerm = null;
+            
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) === 'x-username-permission' || strtolower($key) === 'username-permission') {
+                    $userPerm = $value;
+                }
+                if (strtolower($key) === 'x-password-permission' || strtolower($key) === 'password-permission') {
+                    $passPerm = $value;
+                }
+            }
+            
+            // Also check $_SERVER just in case
+            if(!$userPerm && !empty($_SERVER['HTTP_X_USERNAME_PERMISSION'])) $userPerm = $_SERVER['HTTP_X_USERNAME_PERMISSION'];
+            if(!$passPerm && !empty($_SERVER['HTTP_X_PASSWORD_PERMISSION'])) $passPerm = $_SERVER['HTTP_X_PASSWORD_PERMISSION'];
+
+            // Fallback: Check request parameters (GET/POST) or JSON body
+            if (!$userPerm || !$passPerm) {
+                // Check $_REQUEST
+                if (!$userPerm && !empty($_REQUEST['username_permission'])) $userPerm = $_REQUEST['username_permission'];
+                if (!$passPerm && !empty($_REQUEST['password_permission'])) $passPerm = $_REQUEST['password_permission'];
+                
+                // Check JSON Body (especially for DELETE/PUT where $_POST might be empty)
+                if (!$userPerm || !$passPerm) {
+                    $input = json_decode(file_get_contents('php://input'), true);
+                    if (is_array($input)) {
+                        if (!$userPerm && isset($input['username_permission'])) $userPerm = $input['username_permission'];
+                        if (!$passPerm && isset($input['password_permission'])) $passPerm = $input['password_permission'];
+                    }
+                }
+            }
+
+            if ($userPerm && $passPerm) {
+                $user = $this->db('mlite_users')->where('username', $userPerm)->oneArray();
+                if ($user && password_verify(trim($passPerm), $user['password'])) {
+                    
+                    // --- Layer 3: End-User Module Access Validation ---
+                    // Check if the End-User (logging in via Frontend) has access to the requested module
+                    $module = parseURL(1); // Get module name from URL
+                    if ($module && $module !== 'api') { // Skip for 'api' module itself
+                         $moduleCheck = $this->db('mlite_modules')->where('dir', $module)->oneArray();
+                         if ($moduleCheck) {
+                             $assignedUsers = $this->getUserInfo('access', $user['id']); // Assuming 'access' field stores assigned modules
+                             if ($assignedUsers !== 'all' && !in_array($module, explode(',', $assignedUsers))) {
+                                 http_response_code(403);
+                                 echo json_encode(['status' => 'error', 'message' => 'User access denied for this module']);
+                                 exit;
+                             }
+                         }
+                    }
+
+                    return $user['username'];
+                } else {
+                    http_response_code(401);
+                    echo json_encode(['status' => 'error', 'message' => 'Invalid User Permission Credentials']);
+                    exit;
+                }
+            }
+            
+            return $keyRecord['username'];
+        }
+        
+        // 2. Try Session (Internal)
+        if (isset($_SESSION['mlite_user'])) {
+             return $this->getUserInfo('username');
+        }
+
+        // 3. Unauthorized
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+        exit;
+    }
+
+    public function checkPermission($username, $action, $module)
+    {
+        $user = $this->db('mlite_users')->where('username', $username)->oneArray();
+        if ($user && $this->userHasRole($user['role'] ?? '', 'admin')) {
+            return true;
+        }
+
+        $mlite_crud_permissions = $this->db('mlite_crud_permissions')
+            ->where('module', $module)
+            ->where('user', $username)
+            ->oneArray();
+            
+        if (!$mlite_crud_permissions) {
+            return true; 
+        }
+        
+        return isset($mlite_crud_permissions[$action]) && $mlite_crud_permissions[$action] == 'true';
+    }
+
+    private function userHasRole($roleValue, string $targetRole): bool
+    {
+        $roles = [];
+        if (is_array($roleValue)) {
+            $roles = $roleValue;
+        } elseif (is_string($roleValue) && trim($roleValue) !== '') {
+            $decoded = json_decode($roleValue, true);
+            if (is_array($decoded)) {
+                $roles = $decoded;
+            } else {
+                $roles = explode(',', $roleValue);
+            }
+        }
+
+        $roles = array_map('trim', $roles);
+        return in_array($targetRole, $roles, true);
     }
 
 }

@@ -32,7 +32,7 @@
                             <label>Kode Komponen</label>
                             <select id="kode_komponen" name="kode_komponen" class="form-control" data-use-search="true">
                               {loop: $komponendarah}
-                    					<option value="{$value.kode}">{$value.nama}</option>
+                    					<option value="{?=isset_or($value.kode)?}">{?=isset_or($value.nama)?}</option>
                               {/loop}
                     				</select>
                         </div>
@@ -128,23 +128,23 @@
           {if: $stokdarah}
           {loop: $stokdarah}
           <tr class="utd_stok_darah"
-          data-no_kantong="{$value.no_kantong}"
-          data-kode_komponen="{$value.kode_komponen}"
-          data-golongan_darah="{$value.golongan_darah}"
-          data-resus="{$value.resus}"
-          data-tanggal_aftap="{$value.tanggal_aftap}"
-          data-tanggal_kadaluarsa="{$value.tanggal_kadaluarsa}"
-          data-asal_darah="{$value.asal_darah}"
-          data-status="{$value.status}"
+          data-no_kantong="{?=isset_or($value.no_kantong)?}"
+          data-kode_komponen="{?=isset_or($value.kode_komponen)?}"
+          data-golongan_darah="{?=isset_or($value.golongan_darah)?}"
+          data-resus="{?=isset_or($value.resus)?}"
+          data-tanggal_aftap="{?=isset_or($value.tanggal_aftap)?}"
+          data-tanggal_kadaluarsa="{?=isset_or($value.tanggal_kadaluarsa)?}"
+          data-asal_darah="{?=isset_or($value.asal_darah)?}"
+          data-status="{?=isset_or($value.status)?}"
           >
-            <td>{$value.no_kantong}</td>
-            <td>{$value.kode_komponen}</td>
-            <td>{$value.golongan_darah}</td>
-            <td>{$value.resus}</td>
-            <td>{$value.tanggal_aftap}</td>
-            <td>{$value.tanggal_kadaluarsa}</td>
-            <td>{$value.asal_darah}</td>
-            <td>{$value.status}</td>
+            <td>{?=isset_or($value.no_kantong)?}</td>
+            <td>{?=isset_or($value.kode_komponen)?}</td>
+            <td>{?=isset_or($value.golongan_darah)?}</td>
+            <td>{?=isset_or($value.resus)?}</td>
+            <td>{?=isset_or($value.tanggal_aftap)?}</td>
+            <td>{?=isset_or($value.tanggal_kadaluarsa)?}</td>
+            <td>{?=isset_or($value.asal_darah)?}</td>
+            <td>{?=isset_or($value.status)?}</td>
           </tr>
           {/loop}
           {/if}

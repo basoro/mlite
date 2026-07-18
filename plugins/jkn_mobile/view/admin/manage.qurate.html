@@ -31,7 +31,7 @@
     }
 </style>
 <h4>
-    Antrian Online Tanggal {$stats.tanggal}
+    Antrian Online Tanggal {?=isset_or($stats.tanggal)?}
     <span class="pull-right">
         <form class="" action="" method="">
             <input type="text" name="tgl" class="tanggal" value="" placeholder="Pilih periode">
@@ -51,7 +51,7 @@
                 <div class="stat-title text-grey">SEP Terbit
                 </div>
                 <div class="stat-bold">
-                    <b>{$stats.jml_sep}</b>
+                    <b>{?=isset_or($stats.jml_sep)?}</b>
                 </div>
             </div>
         </div>
@@ -65,7 +65,7 @@
                 <div class="stat-title text-grey">Tambah Antrian
                 </div>
                 <div class="stat-bold">
-                    <b>{$stats.jml_antrol}</b>
+                    <b>{?=isset_or($stats.jml_antrol)?}</b>
                 </div>
             </div>
         </div>
@@ -79,7 +79,7 @@
                 <div class="stat-title text-grey">Quality Rate
                 </div>
                 <div class="stat-bold">
-                    <b>{$stats.qr_manual} %</b>
+                    <b>{?=isset_or($stats.qr_manual)?} %</b>
                 </div>
             </div>
         </div>

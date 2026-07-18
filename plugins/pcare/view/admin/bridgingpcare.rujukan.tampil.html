@@ -40,38 +40,38 @@
   <tbody>
     {loop: $bridging_pcare}
     <tr>
-      <td>{$value.tgl_kunjungan}</td>
-      <td>{$value.nomor_kunjungan} <a href="{?=url([ADMIN,'pcare','bridgingpcarerujukancetak', $value.nomor_kunjungan])?}" class="btn btn-xs btn-info" target="_blank"><i class="fa fa-print"></i></a></td>
-      <td>{$value.no_rawat}</td>
-      <td>{$value.no_rkm_medis}</td>
-      <td>{$value.nm_pasien}</td>
-      <td>{$value.nomor_jaminan}</td>
-      <td>{$value.nama_poli}</td>
-      <td>{$value.subyektif}</td>
-      <td>{$value.kunjungan_sakit}</td>
-      <td>{$value.sistole}</td>
-      <td>{$value.diastole}</td>
-      <td>{$value.berat}</td>
-      <td>{$value.tinggi}</td>
-      <td>{$value.respirasi}</td>
-      <td>{$value.lingkar_perut}</td>
-      <td>{$value.nadi}</td>
-      <td>{$value.terapi}</td>
-      <td>{$value.nomor_urut}</td>
-      <td>{$value.nama_kesadaran}</td>
-      <td>{$value.terapi}</td>
-      <td>{$value.nama_status_pulang}</td>
-      <td>{$value.tgl_pulang}</td>
-      <td>{$value.nama_dokter}</td>
-      <td>{$value.nama_diagnosa1}</td>
-      <td>{$value.nama_diagnosa2}</td>
-      <td>{$value.nama_diagnosa3}</td>
-      <td>{$value.tgl_estimasi_rujuk}</td>
-      <td>{$value.nama_ppk}</td>
-      <td>{$value.nama_spesialis}</td>
-      <td>{$value.nama_subspesialis}</td>
-      <td>{$value.nama_referensikhusus}</td>
-      <td>{$value.nama_faskeskhusus}</td>
+      <td>{?=isset_or($value.tgl_kunjungan)?}</td>
+      <td>{?=isset_or($value.nomor_kunjungan)?} <a href="{?=url([ADMIN,'pcare','bridgingpcarerujukancetak', $value.nomor_kunjungan])?}" class="btn btn-xs btn-info" target="_blank"><i class="fa fa-print"></i></a></td>
+      <td>{?=isset_or($value.no_rawat)?}</td>
+      <td>{?=isset_or($value.no_rkm_medis)?}</td>
+      <td>{?=isset_or($value.nm_pasien)?}</td>
+      <td>{?=isset_or($value.nomor_jaminan)?}</td>
+      <td>{?=isset_or($value.nama_poli)?}</td>
+      <td>{?=isset_or($value.subyektif)?}</td>
+      <td>{?=isset_or($value.kunjungan_sakit)?}</td>
+      <td>{?=isset_or($value.sistole)?}</td>
+      <td>{?=isset_or($value.diastole)?}</td>
+      <td>{?=isset_or($value.berat)?}</td>
+      <td>{?=isset_or($value.tinggi)?}</td>
+      <td>{?=isset_or($value.respirasi)?}</td>
+      <td>{?=isset_or($value.lingkar_perut)?}</td>
+      <td>{?=isset_or($value.nadi)?}</td>
+      <td>{?=isset_or($value.terapi)?}</td>
+      <td>{?=isset_or($value.nomor_urut)?}</td>
+      <td>{?=isset_or($value.nama_kesadaran)?}</td>
+      <td>{?=isset_or($value.terapi)?}</td>
+      <td>{?=isset_or($value.nama_status_pulang)?}</td>
+      <td>{?=isset_or($value.tgl_pulang)?}</td>
+      <td>{?=isset_or($value.nama_dokter)?}</td>
+      <td>{?=isset_or($value.nama_diagnosa1)?}</td>
+      <td>{?=isset_or($value.nama_diagnosa2)?}</td>
+      <td>{?=isset_or($value.nama_diagnosa3)?}</td>
+      <td>{?=isset_or($value.tgl_estimasi_rujuk)?}</td>
+      <td>{?=isset_or($value.nama_ppk)?}</td>
+      <td>{?=isset_or($value.nama_spesialis)?}</td>
+      <td>{?=isset_or($value.nama_subspesialis)?}</td>
+      <td>{?=isset_or($value.nama_referensikhusus)?}</td>
+      <td>{?=isset_or($value.nama_faskeskhusus)?}</td>
     </tr>
     {/loop}
   </tbody>

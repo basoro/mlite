@@ -24,14 +24,14 @@
       {if: $booking_registrasi}
       {loop: $booking_registrasi}
       <tr>
-        <td>{$value.nomor}</td>
-        <td>{$value.tanggal_periksa}</td>
-        <td>{$value.no_reg}</td>
-        <td>{$value.nm_poli}</td>
-        <td>{$value.nm_dokter}</td>
-        <td>{$value.png_jawab}</td>
-        <td>{$value.status}</td>
-        <td><a href="#" class="hapus_kontrol" data-tanggal_periksa="{$value.tanggal_periksa}" data-no_reg="{$value.no_reg}" data-kd_dokter="{$value.kd_dokter}" data-kd_poli="{$value.kd_dokter}">Hapus</a></td>
+        <td>{?=isset_or($value.nomor)?}</td>
+        <td>{?=isset_or($value.tanggal_periksa)?}</td>
+        <td>{?=isset_or($value.no_reg)?}</td>
+        <td>{?=isset_or($value.nm_poli)?}</td>
+        <td>{?=isset_or($value.nm_dokter)?}</td>
+        <td>{?=isset_or($value.png_jawab)?}</td>
+        <td>{?=isset_or($value.status)?}</td>
+        <td><a href="#" class="hapus_kontrol" data-tanggal_periksa="{?=isset_or($value.tanggal_periksa)?}" data-no_reg="{?=isset_or($value.no_reg)?}" data-kd_dokter="{?=isset_or($value.kd_dokter)?}" data-kd_poli="{?=isset_or($value.kd_dokter)?}">Hapus</a></td>
       </tr>
       {/loop}
       {else}

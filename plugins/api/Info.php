@@ -3,8 +3,9 @@ return [
     'name'          =>  'API',
     'description'   =>  'Katalog API mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'database',
     'pages'         =>  ['API mLITE' => 'api'],
     'install'       =>  function () use ($core) {

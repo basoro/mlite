@@ -1,0 +1,107 @@
+<table class="table" width="100%">
+  <thead>
+    <tr>
+      <th>Nomor Rawat</th>
+      <th>Tanggal</th>
+      <th>Informasi</th>
+      <th>Keluhan Utama</th>
+      <th>Vital Signs</th>
+      <th>Status Psiko</th>
+      <th>Nyeri</th>
+      <th>Petugas</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {if: $penilaian_awal_keperawatan_ralan}
+    <tr>
+      <td>{?=isset_or($penilaian_awal_keperawatan_ralan.no_rawat)?}</td>
+      <td>{?=isset_or($penilaian_awal_keperawatan_ralan.tanggal)?}</td>
+      <td>{?=isset_or($penilaian_awal_keperawatan_ralan.informasi)?}</td>
+      <td>{?=isset_or($penilaian_awal_keperawatan_ralan.keluhan_utama)?}</td>
+      <td>
+        TD: {?=isset_or($penilaian_awal_keperawatan_ralan.td)?}<br>
+        Nadi: {?=isset_or($penilaian_awal_keperawatan_ralan.nadi)?}<br>
+        RR: {?=isset_or($penilaian_awal_keperawatan_ralan.rr)?}<br>
+        Suhu: {?=isset_or($penilaian_awal_keperawatan_ralan.suhu)?}<br>
+        GCS: {?=isset_or($penilaian_awal_keperawatan_ralan.gcs)?}
+      </td>
+      <td>{?=isset_or($penilaian_awal_keperawatan_ralan.status_psiko)?}</td>
+      <td>
+        {?=isset_or($penilaian_awal_keperawatan_ralan.nyeri)?}<br>
+        Skala: {?=isset_or($penilaian_awal_keperawatan_ralan.skala_nyeri)?}
+      </td>
+      <td>{?=isset_or($penilaian_awal_keperawatan_ralan.nm_petugas)?}</td>
+      <td>
+        <button type="button" class="btn btn-warning btn-xs edit_assessment" 
+          data-no_rawat="{?=isset_or($penilaian_awal_keperawatan_ralan.no_rawat)?}"
+          data-tanggal="{?=isset_or($penilaian_awal_keperawatan_ralan.tanggal)?}"
+          data-informasi="{?=isset_or($penilaian_awal_keperawatan_ralan.informasi)?}"
+          data-td="{?=isset_or($penilaian_awal_keperawatan_ralan.td)?}"
+          data-nadi="{?=isset_or($penilaian_awal_keperawatan_ralan.nadi)?}"
+          data-rr="{?=isset_or($penilaian_awal_keperawatan_ralan.rr)?}"
+          data-suhu="{?=isset_or($penilaian_awal_keperawatan_ralan.suhu)?}"
+          data-gcs="{?=isset_or($penilaian_awal_keperawatan_ralan.gcs)?}"
+          data-bb="{?=isset_or($penilaian_awal_keperawatan_ralan.bb)?}"
+          data-tb="{?=isset_or($penilaian_awal_keperawatan_ralan.tb)?}"
+          data-bmi="{?=isset_or($penilaian_awal_keperawatan_ralan.bmi)?}"
+          data-keluhan_utama="{?=isset_or($penilaian_awal_keperawatan_ralan.keluhan_utama)?}"
+          data-rpd="{?=isset_or($penilaian_awal_keperawatan_ralan.rpd)?}"
+          data-rpk="{?=isset_or($penilaian_awal_keperawatan_ralan.rpk)?}"
+          data-rpo="{?=isset_or($penilaian_awal_keperawatan_ralan.rpo)?}"
+          data-alergi="{?=isset_or($penilaian_awal_keperawatan_ralan.alergi)?}"
+          data-alat_bantu="{?=isset_or($penilaian_awal_keperawatan_ralan.alat_bantu)?}"
+          data-ket_bantu="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_bantu)?}"
+          data-prothesa="{?=isset_or($penilaian_awal_keperawatan_ralan.prothesa)?}"
+          data-ket_pro="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_pro)?}"
+          data-adl="{?=isset_or($penilaian_awal_keperawatan_ralan.adl)?}"
+          data-status_psiko="{?=isset_or($penilaian_awal_keperawatan_ralan.status_psiko)?}"
+          data-ket_psiko="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_psiko)?}"
+          data-hub_keluarga="{?=isset_or($penilaian_awal_keperawatan_ralan.hub_keluarga)?}"
+          data-tinggal_dengan="{?=isset_or($penilaian_awal_keperawatan_ralan.tinggal_dengan)?}"
+          data-ket_tinggal="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_tinggal)?}"
+          data-ekonomi="{?=isset_or($penilaian_awal_keperawatan_ralan.ekonomi)?}"
+          data-budaya="{?=isset_or($penilaian_awal_keperawatan_ralan.budaya)?}"
+          data-ket_budaya="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_budaya)?}"
+          data-edukasi="{?=isset_or($penilaian_awal_keperawatan_ralan.edukasi)?}"
+          data-ket_edukasi="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_edukasi)?}"
+          data-berjalan_a="{?=isset_or($penilaian_awal_keperawatan_ralan.berjalan_a)?}"
+          data-berjalan_b="{?=isset_or($penilaian_awal_keperawatan_ralan.berjalan_b)?}"
+          data-berjalan_c="{?=isset_or($penilaian_awal_keperawatan_ralan.berjalan_c)?}"
+          data-hasil="{?=isset_or($penilaian_awal_keperawatan_ralan.hasil)?}"
+          data-lapor="{?=isset_or($penilaian_awal_keperawatan_ralan.lapor)?}"
+          data-ket_lapor="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_lapor)?}"
+          data-sg1="{?=isset_or($penilaian_awal_keperawatan_ralan.sg1)?}"
+          data-nilai1="{?=isset_or($penilaian_awal_keperawatan_ralan.nilai1)?}"
+          data-sg2="{?=isset_or($penilaian_awal_keperawatan_ralan.sg2)?}"
+          data-nilai2="{?=isset_or($penilaian_awal_keperawatan_ralan.nilai2)?}"
+          data-total_hasil="{?=isset_or($penilaian_awal_keperawatan_ralan.total_hasil)?}"
+          data-nyeri="{?=isset_or($penilaian_awal_keperawatan_ralan.nyeri)?}"
+          data-provokes="{?=isset_or($penilaian_awal_keperawatan_ralan.provokes)?}"
+          data-ket_provokes="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_provokes)?}"
+          data-quality="{?=isset_or($penilaian_awal_keperawatan_ralan.quality)?}"
+          data-ket_quality="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_quality)?}"
+          data-lokasi="{?=isset_or($penilaian_awal_keperawatan_ralan.lokasi)?}"
+          data-menyebar="{?=isset_or($penilaian_awal_keperawatan_ralan.menyebar)?}"
+          data-skala_nyeri="{?=isset_or($penilaian_awal_keperawatan_ralan.skala_nyeri)?}"
+          data-durasi="{?=isset_or($penilaian_awal_keperawatan_ralan.durasi)?}"
+          data-nyeri_hilang="{?=isset_or($penilaian_awal_keperawatan_ralan.nyeri_hilang)?}"
+          data-ket_nyeri="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_nyeri)?}"
+          data-pada_dokter="{?=isset_or($penilaian_awal_keperawatan_ralan.pada_dokter)?}"
+          data-ket_dokter="{?=isset_or($penilaian_awal_keperawatan_ralan.ket_dokter)?}"
+          data-rencana="{?=isset_or($penilaian_awal_keperawatan_ralan.rencana)?}"
+          data-nip="{?=isset_or($penilaian_awal_keperawatan_ralan.nip)?}">
+          <i class="fa fa-edit"></i> Edit
+        </button>
+        <button type="button" class="btn btn-danger btn-xs hapus_assessment" data-no_rawat="{?=isset_or($penilaian_awal_keperawatan_ralan.no_rawat)?}">
+          <i class="fa fa-trash"></i> Hapus
+        </button>
+      </td>
+    </tr>
+    {else}
+    <tr>
+      <td colspan="9">Tidak ada data</td>
+    </tr>
+    {/if}
+  </tbody>
+</table>

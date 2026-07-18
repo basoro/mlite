@@ -37,7 +37,7 @@
             <label>Poli Tujuan</label>
             <select name="kd_poli" id="sync_kd_poli" class="form-control" data-use-search="true">
                 {loop: $maping_poli_bpjs}
-                <option value="{$value.kd_poli_bpjs}">{$value.nm_poli_bpjs}</option>
+                <option value="{?=isset_or($value.kd_poli_bpjs)?}">{?=isset_or($value.nm_poli_bpjs)?}</option>
                 {/loop}
             </select>
         </div>
@@ -47,7 +47,7 @@
             <label>Dokter Penanggung Jawab</label>
             <select name="kd_dokter" id="sync_kd_dokter" class="form-control">
                 {loop: $maping_dokter_dpjpvclaim}
-                <option value="{$value.kd_dokter_bpjs}">{$value.nm_dokter_bpjs}</option>
+                <option value="{?=isset_or($value.kd_dokter_bpjs)?}">{?=isset_or($value.nm_dokter_bpjs)?}</option>
                 {/loop}
             </select>
         </div>
@@ -77,7 +77,7 @@
   $("#form_sync_sep").on("click","#load_sync_sep", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
-    $("#sync_sep_display").show().load(baseURL + '/vclaim/syncsepdisplay/{$no_kartu}?t=' + mlite.token);
+    $("#sync_sep_display").show().load(baseURL + '/vclaim/syncsepdisplay/{?=isset_or($no_kartu)?}?t=' + mlite.token);
   });
 
   $(document).ready(function() {
@@ -85,7 +85,7 @@
     var no_rawat = $('input:text[name=sep_no_rawat]').val();
     $('input:text[name=sync_no_rawat]').val(no_rawat);
 
-    $("#sync_sep_display").show().load(baseURL + '/vclaim/syncsepdisplay/{$no_kartu}?t=' + mlite.token);
+    $("#sync_sep_display").show().load(baseURL + '/vclaim/syncsepdisplay/{?=isset_or($no_kartu)?}?t=' + mlite.token);
   });
 
   $("#form_sync_sep").on("click","#simpan_sync_sep", function(event){
@@ -111,7 +111,7 @@
       kd_poli: kd_poli
     } ,function(data) {
         alert(data);
-        $("#sync_sep_display").show().load(baseURL + '/vclaim/syncsepdisplay/{$no_kartu}?t=' + mlite.token);
+        $("#sync_sep_display").show().load(baseURL + '/vclaim/syncsepdisplay/{?=isset_or($no_kartu)?}?t=' + mlite.token);
         $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
         "Data SEP telah disimpan!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+

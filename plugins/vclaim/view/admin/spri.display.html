@@ -13,13 +13,13 @@
     <tbody>
       {loop: $spri}
       <tr>
-        <td>{$value.no_rawat}</td>
-        <td>{$value.no_kartu}</td>
-        <td class="pilih_nosurat" data-no_surat="{$value.no_surat}">{$value.no_surat}</td>
-        <td>{$value.tgl_surat}</td>
-        <td>{$value.tgl_rencana}</td>
-        <td>{$value.nm_dokter_bpjs}</td>
-        <td>{$value.nm_poli_bpjs}</td>
+        <td class="pilih_norawat" data-no_surat="{?=isset_or($value.no_surat)?}">{?=isset_or($value.no_rawat)?}</td>
+        <td>{?=isset_or($value.no_kartu)?}</td>
+        <td class="pilih_nosurat" data-no_surat="{?=isset_or($value.no_surat)?}">{?=isset_or($value.no_surat)?}</td>
+        <td>{?=isset_or($value.tgl_surat)?}</td>
+        <td>{?=isset_or($value.tgl_rencana)?}</td>
+        <td>{?=isset_or($value.nm_dokter_bpjs)?}</td>
+        <td>{?=isset_or($value.nm_poli_bpjs)?}</td>
       </tr>
       {/loop}
     </tbody>

@@ -8,7 +8,7 @@ class Site extends SiteModule
 {
 
     protected $mlite;
-    protected $assign;
+    protected array $assign = [];
 
     public function init()
     {
@@ -60,7 +60,8 @@ class Site extends SiteModule
         } else {
             if (isset($_POST['login'])) {
                 if ($this->_login($_POST['username'], $_POST['password'])) {
-                    if (count($arrayURL = parseURL()) > 1) {
+                    $arrayURL = parseURL();
+                    if (count($arrayURL) > 1) {
                         $url = array_merge(['veda'], $arrayURL);
                         redirect(url($url));
                     }
@@ -90,7 +91,6 @@ class Site extends SiteModule
           ]);
           if($simpan_status) {
             $this->db('mlite_vedika_feedback')->save([
-              'id' => NULL,
               'nosep' => $_POST['nosep'],
               'tanggal' => date('Y-m-d'),
               'catatan' => $_POST['catatan'],
@@ -133,8 +133,8 @@ class Site extends SiteModule
         $page = $slug[3];
       }
       // pagination
-      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
-      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN ? AND ?");
+      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%', $start_date, $end_date]);
       $totalRecords = $totalRecords->fetchAll();
 
       $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['veda', 'pengajuan', 'ralan', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
@@ -142,8 +142,8 @@ class Site extends SiteModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date' ORDER BY nosep LIMIT $perpage OFFSET $offset");
-      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN ? AND ? ORDER BY nosep LIMIT ".(int)$perpage." OFFSET ".(int)$offset);
+      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%', $start_date, $end_date]);
       $rows = $query->fetchAll();
       $this->assign['list'] = [];
       if (count($rows)) {
@@ -198,7 +198,6 @@ class Site extends SiteModule
           ]);
           if($simpan_status) {
             $this->db('mlite_vedika_feedback')->save([
-              'id' => NULL,
               'nosep' => $_POST['nosep'],
               'tanggal' => date('Y-m-d'),
               'catatan' => $_POST['catatan'],
@@ -241,8 +240,8 @@ class Site extends SiteModule
         $page = $slug[3];
       }
       // pagination
-      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar BETWEEN '$start_date' AND '$end_date')");
-      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar BETWEEN ? AND ?)");
+      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%', $start_date, $end_date]);
       $totalRecords = $totalRecords->fetchAll();
 
       $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['veda', 'pengajuan', 'ranap', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
@@ -250,8 +249,8 @@ class Site extends SiteModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar BETWEEN '$start_date' AND '$end_date') ORDER BY nosep LIMIT $perpage OFFSET $offset");
-      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar BETWEEN ? AND ?) ORDER BY nosep LIMIT ".(int)$perpage." OFFSET ".(int)$offset);
+      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%', $start_date, $end_date]);
       $rows = $query->fetchAll();
       $this->assign['list'] = [];
       if (count($rows)) {
@@ -311,7 +310,6 @@ class Site extends SiteModule
           ]);
           if($simpan_status) {
             $this->db('mlite_vedika_feedback')->save([
-              'id' => NULL,
               'nosep' => $_POST['nosep'],
               'tanggal' => date('Y-m-d'),
               'catatan' => $_POST['catatan'],
@@ -354,8 +352,8 @@ class Site extends SiteModule
         $page = $slug[2];
       }
       // pagination
-      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
-      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN ? AND ?");
+      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%', $start_date, $end_date]);
       $totalRecords = $totalRecords->fetchAll();
 
       $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['veda', 'perbaikan', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
@@ -363,8 +361,8 @@ class Site extends SiteModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Perbaiki' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date' ORDER BY nosep LIMIT $perpage OFFSET $offset");
-      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Perbaiki' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN ? AND ? ORDER BY nosep LIMIT ".(int)$perpage." OFFSET ".(int)$offset);
+      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%', $start_date, $end_date]);
       $rows = $query->fetchAll();
       $this->assign['list'] = [];
       if (count($rows)) {
@@ -437,13 +435,13 @@ class Site extends SiteModule
         $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
         $row['kd_prosedur'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
 
-        $get_feedback_bpjs = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika_feedback WHERE nosep = '{$row['nosep']}' AND username IN (SELECT username FROM mlite_users_vedika) ORDER BY id DESC LIMIT 1");
-        $get_feedback_bpjs->execute();
+        $get_feedback_bpjs = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika_feedback WHERE nosep = ? AND username IN (SELECT username FROM mlite_users_vedika) ORDER BY id DESC LIMIT 1");
+        $get_feedback_bpjs->execute([$row['nosep']]);
         $get_feedback_bpjs = $get_feedback_bpjs->fetch();
         $row['konfirmasi_bpjs'] = $get_feedback_bpjs['catatan'];
 
-        $get_feedback_rs = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika_feedback WHERE nosep = '{$row['nosep']}' AND username IN (SELECT username FROM mlite_users) ORDER BY id DESC LIMIT 1");
-        $get_feedback_rs->execute();
+        $get_feedback_rs = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika_feedback WHERE nosep = ? AND username IN (SELECT username FROM mlite_users) ORDER BY id DESC LIMIT 1");
+        $get_feedback_rs->execute([$row['nosep']]);
         $get_feedback_rs = $get_feedback_rs->fetch();
         $row['konfirmasi_rs'] = $get_feedback_rs['catatan'];
 
@@ -468,7 +466,6 @@ class Site extends SiteModule
       if ($this->_loginCheck()) {
         if(isset($_POST['setuju'])) {
           $this->db('mlite_vedika')->save([
-            'id' => NULL,
             'tanggal' => date('Y-m-d'),
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'no_rawat' => $_POST['no_rawat'],
@@ -481,7 +478,6 @@ class Site extends SiteModule
 
         if(isset($_POST['perbaiki'])) {
           $this->db('mlite_vedika')->save([
-            'id' => NULL,
             'tanggal' => date('Y-m-d'),
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'no_rawat' => $_POST['no_rawat'],
@@ -512,7 +508,6 @@ class Site extends SiteModule
       if($this->_loginCheck()) {
         if(isset($_POST['setuju'])) {
           $this->db('mlite_vedika')->save([
-            'id' => NULL,
             'tanggal' => date('Y-m-d'),
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'no_rawat' => $_POST['no_rawat'],
@@ -525,7 +520,6 @@ class Site extends SiteModule
 
         if(isset($_POST['perbaiki'])) {
           $this->db('mlite_vedika')->save([
-            'id' => NULL,
             'tanggal' => date('Y-m-d'),
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'no_rawat' => $_POST['no_rawat'],
@@ -564,23 +558,23 @@ class Site extends SiteModule
         $date = $_GET['periode'];
       }
 
-      $PengajuanRalan = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND tgl_registrasi LIKE '{$date}%'");
-      $PengajuanRalan->execute();
+      $PengajuanRalan = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND tgl_registrasi LIKE ?");
+      $PengajuanRalan->execute([$date.'%']);
       $PengajuanRalan = $PengajuanRalan->fetchAll();
       $stat['pengajuan_ralan'] = count($PengajuanRalan);
 
-      $PengajuanRanap = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar LIKE '{$date}%')");
-      $PengajuanRanap->execute();
+      $PengajuanRanap = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar LIKE ?)");
+      $PengajuanRanap->execute([$date.'%']);
       $PengajuanRanap = $PengajuanRanap->fetchAll();
       $stat['pengajuan_ranap'] = count($PengajuanRanap);
 
-      $PerbaikanRalan = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '2' AND tgl_registrasi LIKE '{$date}%'");
-      $PerbaikanRalan->execute();
+      $PerbaikanRalan = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '2' AND tgl_registrasi LIKE ?");
+      $PerbaikanRalan->execute([$date.'%']);
       $PerbaikanRalan = $PerbaikanRalan->fetchAll();
       $stats['PerbaikanRalan'] = count($PerbaikanRalan);
 
-      $PerbaikanRanap = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '1' AND tgl_registrasi LIKE '{$date}%'");
-      $PerbaikanRanap->execute();
+      $PerbaikanRanap = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '1' AND tgl_registrasi LIKE ?");
+      $PerbaikanRanap->execute([$date.'%']);
       $PerbaikanRanap = $PerbaikanRanap->fetchAll();
       $stats['PerbaikanRanap'] = count($PerbaikanRanap);
 
@@ -607,7 +601,7 @@ class Site extends SiteModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.status_lanjut = 'Ralan' LIMIT ".(int)$perpage." OFFSET ".(int)$offset);
       $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $rows = $query->fetchAll();
 
@@ -693,14 +687,10 @@ class Site extends SiteModule
           ->toArray();
 
         $no_rawat = $this->revertNorawat($id);
-        $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
-        $query->execute();
-        $rows = $query->fetchAll();
-        $total=0;
-        foreach ($rows as $key => $value) {
-          $total = $total+$value['7'];
-        }
-        $total = $total;
+
+        $rows = [];
+        $total = '';
+
         $this->tpl->set('total', $total);
 
         $settings = $this->settings('settings');
@@ -712,8 +702,10 @@ class Site extends SiteModule
         if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
           $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
           $print_sep['bpjs_prb'] = $this->db('bpjs_prb')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
-          $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
-          $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
+          $print_sep['batas_rujukan'] = '';
+          if (!empty($print_sep['bridging_sep']['tglrujukan'])) {
+              $print_sep['batas_rujukan'] = date('Y-m-d', strtotime($print_sep['bridging_sep']['tglrujukan'] . ' +85 days'));
+          }
         }
 
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
@@ -754,9 +746,9 @@ class Site extends SiteModule
           ->where('stts', '<>', 'Batal')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
-        $rujukan_internal = $this->db('rujukan_internal_poli')
-          ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
-          ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+        $rujukan_internal = $this->db('mlite_rujukan_internal_poli')
+          ->join('poliklinik', 'poliklinik.kd_poli = mlite_rujukan_internal_poli.kd_poli')
+          ->join('dokter', 'dokter.kd_dokter = mlite_rujukan_internal_poli.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
         $rows_dpjp_ranap = $this->db('dpjp_ranap')
@@ -916,14 +908,7 @@ class Site extends SiteModule
           ->toArray();
 
         $no_rawat = $this->revertNorawat($id);
-        $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
-        $query->execute();
-        $rows = $query->fetchAll();
-        $total=0;
-        foreach ($rows as $key => $value) {
-          $total = $total+$value['7'];
-        }
-        $total = $total;
+        $total = '0';
         $this->tpl->set('total', $total);
 
         $settings = $this->settings('settings');
@@ -935,8 +920,10 @@ class Site extends SiteModule
         if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
           $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
           $print_sep['bpjs_prb'] = $this->db('bpjs_prb')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
-          $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
-          $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
+          $print_sep['batas_rujukan'] = '';
+          if (!empty($print_sep['bridging_sep']['tglrujukan'])) {
+              $print_sep['batas_rujukan'] = date('Y-m-d', strtotime($print_sep['bridging_sep']['tglrujukan'] . ' +85 days'));
+          }
         }
 
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
@@ -960,9 +947,9 @@ class Site extends SiteModule
           ->where('stts', '<>', 'Batal')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
-        $rujukan_internal = $this->db('rujukan_internal_poli')
-          ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
-          ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+        $rujukan_internal = $this->db('mlite_rujukan_internal_poli')
+          ->join('poliklinik', 'poliklinik.kd_poli = mlite_rujukan_internal_poli.kd_poli')
+          ->join('dokter', 'dokter.kd_dokter = mlite_rujukan_internal_poli.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
         $rows_dpjp_ranap = $this->db('dpjp_ranap')
@@ -1140,13 +1127,13 @@ class Site extends SiteModule
 
     public function getDownloadPDF($id)
     {
-      $apikey = 'c811af07-d551-40ec-8e87-9abbf03abe16';
       $value = url().'/veda/createpdf/'.$id; // can aso be a url, starting with http..
 
       $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $this->revertNorawat($id))->oneArray();
 
       // Convert the HTML string to a PDF using those parameters.  Note if you have a very long HTML string use POST rather than get.  See example #5
-      $result = file_get_contents("http://url2pdf.basoro.id/?apikey=" . urlencode($apikey) . "&url=" . urlencode($value));
+      // $result = file_get_contents("http://url2pdf.basoro.id/?apikey=" . urlencode($apikey) . "&url=" . urlencode($value));
+      $result = file_get_contents("http://url2pdf.mlite.id/url-to-pdf?url=" . urlencode($value));
 
       // Save to root folder in website
       //file_put_contents('mypdf-1.pdf', $result);
@@ -1243,13 +1230,6 @@ class Site extends SiteModule
     private function _loginCheck()
     {
         if (isset($_SESSION['vedika_user']) && isset($_SESSION['vedika_token']) && isset($_SESSION['vedika_userAgent']) && isset($_SESSION['vedika_IPaddress'])) {
-
-            if (empty(parseURL(1))) {
-                redirect(url('veda'));
-            } elseif (!isset($_GET['t']) || ($_SESSION['vedika_token'] != @$_GET['t'])) {
-                return false;
-            }
-
             return true;
         }
 

@@ -41,8 +41,8 @@
                     </span>
                     <div class="stat-title text-grey">Rencana Klaim</div>
                     <div class="stat-bold">
-                      Ralan : <b>{$stats.KlaimRalan}</b> ({?=number_format(($stats.rencanaRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
-                      Ranap: <b>{$stats.KlaimRanap}</b> ({?=number_format(($stats.rencanaRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
+                      Ralan : <b>{?=isset_or($stats.KlaimRalan)?}</b> ({?=number_format(($stats.rencanaRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{?=isset_or($stats.KlaimRanap)?}</b> ({?=number_format(($stats.rencanaRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
                     </div>
               </div>
         </div>
@@ -55,8 +55,8 @@
                     </span>
                     <div class="stat-title text-grey">Status Lengkap</div>
                     <div class="stat-bold">
-                      Ralan : <b>{$stats.LengkapRalan}</b> ({?=number_format(($stats.LengkapRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
-                      Ranap: <b>{$stats.LengkapRanap}</b> ({?=number_format(($stats.LengkapRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
+                      Ralan : <b>{?=isset_or($stats.LengkapRalan)?}</b> ({?=number_format(($stats.LengkapRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{?=isset_or($stats.LengkapRanap)?}</b> ({?=number_format(($stats.LengkapRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
                     </div>
               </div>
         </div>
@@ -69,8 +69,8 @@
                     </span>
                     <div class="stat-title text-grey">Status Pengajuan</div>
                     <div class="stat-bold">
-                      Ralan : <b>{$stats.PengajuanRalan}</b> ({?=number_format(($stats.PengajuanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
-                      Ranap: <b>{$stats.PengajuanRanap}</b> ({?=number_format(($stats.PengajuanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
+                      Ralan : <b>{?=isset_or($stats.PengajuanRalan)?}</b> ({?=number_format(($stats.PengajuanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{?=isset_or($stats.PengajuanRanap)?}</b> ({?=number_format(($stats.PengajuanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
                     </div>
               </div>
         </div>
@@ -83,8 +83,8 @@
                     </span>
                     <div class="stat-title text-grey">Status Perbaikan</div>
                     <div class="stat-bold">
-                      Ralan : <b>{$stats.PerbaikanRalan} / <span class="text-danger">{$stats.PerbaikanRalan1}</span></b> ({?=number_format(($stats.PerbaikanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
-                      Ranap: <b>{$stats.PerbaikanRanap} / <span class="text-danger">{$stats.PerbaikanRanap1}</span></b> ({?=number_format(($stats.PerbaikanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
+                      Ralan : <b>{?=isset_or($stats.PerbaikanRalan)?} / <span class="text-danger">{?=isset_or($stats.PerbaikanRalan1)?}</span></b> ({?=number_format(($stats.PerbaikanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{?=isset_or($stats.PerbaikanRanap)?} / <span class="text-danger">{?=isset_or($stats.PerbaikanRanap1)?}</span></b> ({?=number_format(($stats.PerbaikanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
                     </div>
               </div>
         </div>
@@ -110,14 +110,14 @@
             {loop: $sub_modules}
             <li class="module">
                 <div class="panel panel-default">
-                    <a href="{$value.url}" class="panel-body text-center">
+                    <a href="{?=isset_or($value.url)?}" class="panel-body text-center">
                         <div class="panel-thumb">
-                            <i class="fa fa-{$value.icon}"></i>
+                            <i class="fa fa-{?=isset_or($value.icon)?}"></i>
                             <div class="desc">
-                                {$value.desc}
+                                {?=isset_or($value.desc)?}
                             </div>
                         </div>
-                        <h4><b>{$value.name}</b></h4>
+                        <h4><b>{?=isset_or($value.name)?}</b></h4>
                     </a>
                 </div>
             </li>

@@ -53,6 +53,8 @@ class Admin extends Main
 
         $this->assign['pasien_access'] = ($access == 'all') || in_array('pasien', explode(',', $access)) ? true : false;
         $this->assign['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
+        $this->assign['oral_diagnostic_access'] = ($access == 'all') || in_array('oral_diagnostic', explode(',', $access)) ? true : false;
+        $this->assign['module_oral_diagnostic'] = $this->db('mlite_modules')->where('dir', 'oral_diagnostic')->oneArray();
         $this->assign['igd_access'] = ($access == 'all') || in_array('igd', explode(',', $access)) ? true : false;
         $this->assign['module_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $this->assign['rawat_jalan_access'] = ($access == 'all') || in_array('rawat_jalan', explode(',', $access)) ? true : false;
@@ -85,16 +87,18 @@ class Admin extends Main
     public function loadModule($name, $method, $params = [])
     {
         $row = $this->module->{$name};
+        $userAccess = (string) ($this->getUserInfo('access') ?? '');
+        $userAccessList = array_filter(explode(',', $userAccess));
 
         if ($row && ($details = $this->getModuleInfo($name))) {
-            if (($this->getUserInfo('access') == 'all') || in_array($name, explode(',', $this->getUserInfo('access')))) {
+            if (($userAccess === 'all') || in_array($name, $userAccessList, true)) {
                 $anyMethod = 'any'.ucfirst($method);
                 $method = strtolower($_SERVER['REQUEST_METHOD']).ucfirst($method);
 
                 if (method_exists($this->module->{$name}, $method)) {
-                    $details['content'] = call_user_func_array([$this->module->{$name}, $method], array_values($params));
+                    $details['content'] = $this->module->{$name}->{$method}(...array_values($params));
                 } elseif (method_exists($this->module->{$name}, $anyMethod)) {
-                    $details['content'] = call_user_func_array([$this->module->{$name}, $anyMethod], array_values($params));
+                    $details['content'] = $this->module->{$name}->{$anyMethod}(...array_values($params));
                 } else {
                     http_response_code(404);
                     $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");
@@ -105,10 +109,22 @@ class Admin extends Main
 
                 $this->tpl->set('module', $details);
             } else {
-                exit;
+                http_response_code(403);
+                $this->setNotify('failure', "Akses ke modul '{$name}' ditolak.");
+                $this->tpl->set('module', [
+                    'name' => 'Forbidden',
+                    'dir' => $name,
+                    'content' => '<div class="alert alert-danger">Akses modul ditolak.</div>',
+                ]);
             }
         } else {
-            exit;
+            http_response_code(404);
+            $this->setNotify('failure', "Modul '{$name}' tidak ditemukan.");
+            $this->tpl->set('module', [
+                'name' => 'Not Found',
+                'dir' => $name,
+                'content' => '<div class="alert alert-danger">Modul tidak ditemukan.</div>',
+            ]);
         }
     }
 
@@ -123,8 +139,10 @@ class Admin extends Main
           $id = $_SESSION['mlite_user'];
         }
 
-        if ($this->getUserInfo('access', $id, $refresh = false) != 'all') {
-            $modules = array_intersect_key($modules, array_fill_keys(explode(',', $this->getUserInfo('access')), null));
+        $userAccess = (string) ($this->getUserInfo('access', $id, $refresh = false) ?? '');
+        $userAccessList = array_filter(explode(',', $userAccess));
+        if ($userAccess !== 'all') {
+            $modules = array_intersect_key($modules, array_fill_keys($userAccessList, null));
         }
 
         foreach ($modules as $dir => $module) {
@@ -168,6 +186,7 @@ class Admin extends Main
                 $nav[] = [
                     'dir'       => $dir,
                     'name'      => $details['name'],
+                    'category'  => $details['category'], 
                     'icon'      => $details['icon'],
                     'desc'      => $details['description'],
                     'url'       => $moduleURL,
@@ -200,10 +219,19 @@ class Admin extends Main
         return false;
     }
 
-    public function getModuleMethod($name, $method, $params = [])
+    /**
+     * Call module method with parameters
+     * Compatible with PHP 8+ variadic parameters
+     * 
+     * @param string $name Module name
+     * @param string $method Method name
+     * @param array $params Parameters array
+     * @return mixed
+     */
+    public function getModuleMethod(string $name, string $method, array $params = [])
     {
         if (method_exists($this->module->{$name}, $method)) {
-            return call_user_func_array([$this->module->{$name}, $method], array_values($params));
+            return $this->module->{$name}->{$method}(...array_values($params));
         }
 
         $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");
@@ -240,17 +268,124 @@ class Admin extends Main
             // Reset fail attempts for this IP
             $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
+            // Check if OTP Login is enabled
+            if ($this->settings->get('settings.login_otp') === 'ya') {
+                $otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+                $expiresAt = date('Y-m-d H:i:s', time() + (10 * 60));
+                
+                // Save OTP to DB
+                $this->db('mlite_users')->where('id', $row['id'])->save(['otp_code' => $otp, 'otp_expires' => $expiresAt]);
+
+                // Set session variables for OTP pending state
+                $_SESSION['mlite_otp_pending'] = true;
+                $_SESSION['mlite_otp_user_id'] = $row['id'];
+                if ($remember_me) {
+                    $_SESSION['mlite_otp_remember_me'] = true;
+                }
+
+                try {
+                    // Send OTP to WhatsApp mapped from dokter/petugas.no_telp
+                    $number = '';
+                    $uname = trim((string)$row['username']);
+                    $dokter = $this->db('dokter')->where('kd_dokter', $uname)->oneArray();
+                    if (!empty($dokter) && !empty($dokter['no_telp'])) {
+                        $number = $dokter['no_telp'];
+                    } else {
+                        $petugas = $this->db('petugas')->where('nip', $uname)->oneArray();
+                        if (!empty($petugas) && !empty($petugas['no_telp'])) {
+                            $number = $petugas['no_telp'];
+                        }
+                    }
+                    if (!empty($number)) {
+                        $waServer = $this->settings->get('wagateway.server');
+                        $waToken = $this->settings->get('wagateway.token');
+                        $waSender = $this->settings->get('wagateway.phonenumber');
+                        if (!empty($waServer) && !empty($waToken) && !empty($waSender)) {
+                            $ch = curl_init();
+                            curl_setopt($ch, CURLOPT_URL, rtrim($waServer, '/') . '/wagateway/kirimpesan');
+                            curl_setopt($ch, CURLOPT_POST, 1);
+                            $message = 'Kode OTP Anda: ' . $otp . "\nKode ini berlaku 10 menit. JANGAN bagikan kode ini kepada siapapun.";
+                            curl_setopt($ch, CURLOPT_POSTFIELDS, 'type=text&api_key=' . urlencode($waToken) . '&sender=' . urlencode($waSender) . '&number=' . urlencode($number) . '&message=' . urlencode($message));
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_exec($ch);
+                            curl_close($ch);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // Ignore OTP sending errors
+                }
+
+                // Return true, but admin/index.php will catch the OTP pending state
+                return true;
+            }
+
+            // Normal successful login (no OTP login needed)
             $_SESSION['mlite_user']= $row['id'];
             $_SESSION['token']      = bin2hex(openssl_random_pseudo_bytes(6));
             $_SESSION['userAgent']  = $_SERVER['HTTP_USER_AGENT'];
             $_SESSION['IPaddress']  = $_SERVER['REMOTE_ADDR'];
 
+            // Enforce password expiry (30 days) with OTP via WhatsApp
+            try {
+                $expired = false;
+                $expireEnabled = $this->settings->get('settings.password_expire');
+                if ($expireEnabled === 'ya') {
+                    $expired = true;
+                }
+                if (!empty($row['password_changed_at'])) {
+                    $expired = $expired && ((time() - strtotime($row['password_changed_at'])) > (30 * 24 * 60 * 60));
+                }
+                if ($expired) {
+                    $otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+                    $expiresAt = date('Y-m-d H:i:s', time() + (10 * 60));
+                    $this->db('mlite_users')->where('id', $row['id'])->save(['otp_code' => $otp, 'otp_expires' => $expiresAt]);
+                    $_SESSION['mlite_force_change'] = true;
+                    // Send OTP to WhatsApp mapped from pegawai.no_telp using username as NIK
+                    $number = '';
+                    $uname = trim((string)$row['username']);
+                    $dokter = $this->db('dokter')->where('kd_dokter', $uname)->oneArray();
+                    if (!empty($dokter) && !empty($dokter['no_telp'])) {
+                        $number = $dokter['no_telp'];
+                    } else {
+                        $petugas = $this->db('petugas')->where('nip', $uname)->oneArray();
+                        if (!empty($petugas) && !empty($petugas['no_telp'])) {
+                            $number = $petugas['no_telp'];
+                        }
+                    }
+                    if (!empty($number)) {
+                        $waServer = $this->settings->get('wagateway.server');
+                        $waToken = $this->settings->get('wagateway.token');
+                        $waSender = $this->settings->get('wagateway.phonenumber');
+                        if (!empty($waServer) && !empty($waToken) && !empty($waSender)) {
+                            $ch = curl_init();
+                            curl_setopt($ch, CURLOPT_URL, $waServer . '/wagateway/kirimpesan');
+                            curl_setopt($ch, CURLOPT_POST, 1);
+                            $message = 'Kode OTP Anda: ' . $otp . "\nKode ini berlaku 10 menit. Mohon jangan membagikan kode kepada siapapun.";
+                            curl_setopt($ch, CURLOPT_POSTFIELDS, 'type=text&api_key=' . urlencode($waToken) . '&sender=' . urlencode($waSender) . '&number=' . urlencode($number) . '&message=' . urlencode($message));
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_exec($ch);
+                            curl_close($ch);
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Ignore OTP errors, proceed with normal login
+            }
+
             if ($remember_me) {
                 $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
+                $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
 
                 $this->db('mlite_remember_me')->save(['user_id' => $row['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
 
-                setcookie('mlite_remember', $row['id'].':'.$token, time()+60*60*24*365, '/');
+                setcookie('mlite_remember', $row['id'] . ':' . $token, [
+                    'expires' => time() + 60 * 60 * 24 * 365,
+                    'path' => '/',
+                    'secure' => $isHttps,
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]);
             }
             return true;
         } else {
@@ -282,9 +417,19 @@ class Admin extends Main
 
         // Delete remember_me token from database and cookie
         if (isset($_COOKIE['mlite_remember'])) {
-            $token = explode(':', $_COOKIE['mlite_remember']);
-            $this->db('mlite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
-            setcookie('mlite_remember', null, -1, '/');
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+            $token = explode(':', $_COOKIE['mlite_remember'], 2);
+            if (count($token) === 2 && ctype_digit($token[0]) && $token[1] !== '') {
+                $this->db('mlite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
+            }
+            setcookie('mlite_remember', '', [
+                'expires' => time() - 3600,
+                'path' => '/',
+                'secure' => $isHttps,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
         }
 
         session_unset();
@@ -294,7 +439,7 @@ class Admin extends Main
 
     private function registerPage($name, $path)
     {
-        $this->registerPage[] = ['id' => null, 'title' => $name, 'slug' => $path];
+        $this->registerPage[] = ['title' => $name, 'slug' => $path];
     }
 
     private function _getPoliklinik($kd_poli = null)

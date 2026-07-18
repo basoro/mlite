@@ -15,7 +15,7 @@
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Rekam Medis</label>
-        <input type="text" id="id_pasien" name="id_pasien_bridging" class="form-control" value="{$pasien.no_rkm_medis}">
+        <input type="text" id="id_pasien" name="id_pasien_bridging" class="form-control" value="{?=isset_or($pasien.no_rkm_medis)?}">
       </div>
     </div>
     <div class="col col-md-3">
@@ -27,7 +27,7 @@
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Kartu</label>
-        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$pasien.no_peserta}">
+        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{?=isset_or($pasien.no_peserta)?}">
       </div>
     </div>
     <div class="col col-md-3">
@@ -156,16 +156,28 @@
                           <ul class="list-group" id="dokterList" style="z-index:1000;position:absolute;width:100%;"></ul>
                         </div>
                       </div>
-                      <div class="col col-md-12">
+                      <div class="col col-md-6">
                         <div class="form-group">
-                          <label for="poli">Terapi</label>
-                          <textarea name="terapi_bridging" id="terapi_bridging" class="form-control" rows="2" cols="80">{?=isset_or($pemeriksaan.pemeriksaan)?}</textarea>
+                          <label for="poli">Pemeriksaan</label>
+                          <textarea name="anamnesa" id="anamnesa" class="form-control" rows="2" cols="80">{?=isset_or($pemeriksaan.pemeriksaan)?}</textarea>
                         </div>
                       </div>
-                      <div class="col col-md-12">
+                      <div class="col col-md-6">
                         <div class="form-group">
-                          <label for="poli">Anamnesa</label>
-                          <textarea name="anamnesa" id="anamnesa" class="form-control" rows="2" cols="80">{?=isset_or($pemeriksaan.evaluasi)?}</textarea>
+                          <label for="poli">Terapi</label>
+                          <textarea name="terapi_bridging" id="terapi_bridging" class="form-control" rows="2" cols="80">{?=isset_or($pemeriksaan.penilaian)?}</textarea>
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Terapi Obat</label>
+                          <input type="text" name="terapiObat" id="terapiObat" class="form-control" value="tidak ada">
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Terapi Non Obat</label>
+                          <input type="text" name="terapiNonObat" id="terapiNonObat" class="form-control" value="tidak ada">
                         </div>
                       </div>
                       <div class="col col-md-4">
@@ -309,7 +321,7 @@
                       <div class="col col-md-12">
                         <div class="form-group">
                           <label for="poli">Catatan</label>
-                          <textarea name="catatan" id="catatan" class="form-control" rows="2" cols="80">{$pemeriksaan.penilaian}</textarea>
+                          <textarea name="catatan" id="catatan" class="form-control" rows="2" cols="80">{?=isset_or($pemeriksaan.penilaian)?}</textarea>
                         </div>
                       </div>
                       </div>
@@ -399,24 +411,24 @@
           <tbody>
             {loop: $bridging_pcare}
             <tr>
-              <td>{$value.tgl_kunjungan}</td>
-              <td>{$value.no_rawat}</td>
-              <td>{$value.no_rkm_medis}</td>
-              <td>{$value.nm_pasien}</td>
-              <td>{$value.nomor_jaminan}</td>
-              <td>{$value.nama_poli}</td>
-              <td>{$value.subyektif}</td>
+              <td>{?=isset_or($value.tgl_kunjungan)?}</td>
+              <td>{?=isset_or($value.no_rawat)?}</td>
+              <td>{?=isset_or($value.no_rkm_medis)?}</td>
+              <td>{?=isset_or($value.nm_pasien)?}</td>
+              <td>{?=isset_or($value.nomor_jaminan)?}</td>
+              <td>{?=isset_or($value.nama_poli)?}</td>
+              <td>{?=isset_or($value.subyektif)?}</td>
               <td>{?=($value.kunjungan_sakit === 'true') ? 'Kunjungan Sakit' : 'Kunjungan Sehat'?}</td>
-              <td>{$value.sistole}</td>
-              <td>{$value.diastole}</td>
-              <td>{$value.berat}</td>
-              <td>{$value.tinggi}</td>
-              <td>{$value.respirasi}</td>
-              <td>{$value.lingkar_perut}</td>
-              <td>{$value.nadi}</td>
-              <td>{$value.terapi}</td>
-              <td>{$value.nomor_urut}</td>
-              <td>{$value.status_kirim}</td>
+              <td>{?=isset_or($value.sistole)?}</td>
+              <td>{?=isset_or($value.diastole)?}</td>
+              <td>{?=isset_or($value.berat)?}</td>
+              <td>{?=isset_or($value.tinggi)?}</td>
+              <td>{?=isset_or($value.respirasi)?}</td>
+              <td>{?=isset_or($value.lingkar_perut)?}</td>
+              <td>{?=isset_or($value.nadi)?}</td>
+              <td>{?=isset_or($value.terapi)?}</td>
+              <td>{?=isset_or($value.nomor_urut)?}</td>
+              <td>{?=isset_or($value.status_kirim)?}</td>
             </tr>
             {/loop}
           </tbody>
@@ -538,6 +550,10 @@ $(document).ready(function(){
     var getAlergi2 = $('input:text[name=getAlergi2]').val();
     var getAlergi3 = $('input:text[name=getAlergi3]').val();
     var getPrognosa = $('input:text[name=getPrognosa]').val();
+
+    var terapiObat = $('input:text[name=terapiObat]').val();
+    var terapiNonObat = $('input:text[name=terapiNonObat]').val();
+
     var getDiagnosa1 = $('input:text[name=getDiagnosa1]').val();
     var getDiagnosa2 = $('input:text[name=getDiagnosa2]').val();
     var getDiagnosa3 = $('input:text[name=getDiagnosa3]').val();
@@ -595,6 +611,8 @@ $(document).ready(function(){
       getAlergi2: getAlergi2,
       getAlergi3: getAlergi3,
       getPrognosa: getPrognosa,
+      terapiObat: terapiObat, 
+      terapiNonObat: terapiNonObat, 
       getDiagnosa1: getDiagnosa1,
       getDiagnosa2: getDiagnosa2,
       getDiagnosa3: getDiagnosa3,

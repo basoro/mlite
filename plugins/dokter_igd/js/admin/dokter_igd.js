@@ -9,6 +9,21 @@ $('#aturan_pakai').hide();
 $('#daftar_racikan').hide();
 $("#info_tambahan").hide();
 $("#form_kontrol").hide();
+$("#triase_igd").hide();
+
+// Inisialisasi jam_rawat saat halaman dibuka
+$(function(){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var $jr = $('input:text[name=jam_rawat]').last();
+  if ($jr.length) {
+    $jr.focus();
+    if (!$jr.val()) {
+      $.post(baseURL + '/dokter_igd/cekwaktu?t=' + mlite.token, {}, function(data){
+        $jr.val(data);
+      });
+    }
+  }
+});
 
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -153,8 +168,8 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     event.preventDefault();
 
     var no_rawat        = $('input:text[name=no_rawat]').val();
-    var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-    var jam_rawat       = $('input:text[name=jam_rawat]').val();
+    var tgl_perawatan   = $('#soap_tgl_perawatan').val();
+    var jam_rawat       = $('#soap_jam_rawat').val();
     var suhu_tubuh      = $('input:text[name=suhu_tubuh]').val();
     var tensi           = $('input:text[name=tensi]').val();
     var nadi            = $('input:text[name=nadi]').val();
@@ -230,7 +245,174 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       "</div>").show();
     });
   {/if}
+
 });
+
+$("#form_soap").on("click",".resume", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val().replace(/\//g, '');
+
+  var loadURL =  baseURL + '/dokter_igd/resume/' + no_rawat + '?t=' + mlite.token;
+
+  var modal = $('#eresepModal');
+  var modalContent = $('#eresepModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});
+
+// JavaScript handlers untuk Assessment IGD
+$(document).ready(function() {
+  
+  // Handler untuk form assessment
+  $(document).on('submit', '#form_assessment', function(e) {
+    e.preventDefault();
+    
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var formData = $(this).serialize();
+    
+    $.ajax({
+      url: baseURL + '/dokter_igd/medisigd?t=' + mlite.token,
+      type: 'POST',
+      data: formData,
+      dataType: 'json',
+      success: function(response) {
+        if(response.status === 'success') {
+          $('#assessmentModal').modal('hide');
+          alert('Data assessment berhasil disimpan!');
+        } else {
+          alert('Gagal menyimpan data assessment: ' + (response.message || 'Unknown error'));
+        }
+      },
+      error: function(xhr, status, error) {
+        alert('Terjadi kesalahan saat menyimpan data assessment!');
+        console.error('Error:', error);
+      }
+    });
+  });
+  
+  // Handler untuk dropdown anamnesis
+  $(document).on('change', 'select[name="anamnesis"]', function() {
+    var hubunganField = $('input[name="hubungan"]');
+    if($(this).val() === 'Autoanamnesis') {
+      hubunganField.val('Pasien').prop('readonly', true);
+    } else {
+      hubunganField.val('').prop('readonly', false);
+    }
+  });
+  
+  // Handler untuk auto-fill vital signs dari pemeriksaan ralan
+  $(document).on('click', '#auto_fill_vital', function() {
+    var no_rawat = $('input[name="no_rawat"]').val();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    
+    $.ajax({
+      url: baseURL + '/dokter_igd/getvitalsigns?t=' + mlite.token,
+      type: 'POST',
+      data: {no_rawat: no_rawat},
+      dataType: 'json',
+      success: function(data) {
+        if(data) {
+          if(data.td) $('input[name="td"]').val(data.td);
+          if(data.nadi) $('input[name="nadi"]').val(data.nadi);
+          if(data.rr) $('input[name="rr"]').val(data.rr);
+          if(data.suhu) $('input[name="suhu"]').val(data.suhu);
+          if(data.spo) $('input[name="spo"]').val(data.spo);
+          if(data.bb) $('input[name="bb"]').val(data.bb);
+          if(data.tb) $('input[name="tb"]').val(data.tb);
+          if(data.kesadaran) $('select[name="kesadaran"]').val(data.kesadaran);
+          if(data.gcs) $('input[name="gcs"]').val(data.gcs);
+        }
+      },
+      error: function() {
+        console.log('Gagal mengambil data vital signs');
+      }
+    });
+  });
+  
+  // Handler untuk validasi form
+  $(document).on('blur', 'input[name="td"]', function() {
+    var td = $(this).val();
+    if(td && !td.match(/^\d{2,3}\/\d{2,3}$/)) {
+      alert('Format tekanan darah harus seperti: 120/80');
+      $(this).focus();
+    }
+  });
+    
+  // Handler untuk numeric input validation
+  $(document).on('keypress', 'input[name="nadi"], input[name="rr"], input[name="suhu"], input[name="spo"], input[name="bb"], input[name="tb"]', function(e) {
+    // Allow: backspace, delete, tab, escape, enter, decimal point
+    if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (e.keyCode === 65 && e.ctrlKey === true) ||
+        (e.keyCode === 67 && e.ctrlKey === true) ||
+        (e.keyCode === 86 && e.ctrlKey === true) ||
+        (e.keyCode === 88 && e.ctrlKey === true) ||
+        // Allow: home, end, left, right
+        (e.keyCode >= 35 && e.keyCode <= 39)) {
+      return;
+    }
+    // Ensure that it is a number and stop the keypress
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+      e.preventDefault();
+    }
+  });
+  
+  // Handler untuk textarea auto-resize
+  $(document).on('input', 'textarea', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+  });
+  
+  // Handler untuk reset form
+  $(document).on('click', '#reset_assessment', function() {
+    if(confirm('Apakah Anda yakin ingin mereset form ini?')) {
+      $('#form_assessment')[0].reset();
+      // Reset anamnesis hubungan
+      $('input[name="hubungan"]').prop('readonly', false);
+    }
+  });
+  
+});
+
+// Function untuk format tanggal
+function formatTanggal(tanggal) {
+  var date = new Date(tanggal);
+  var day = String(date.getDate()).padStart(2, '0');
+  var month = String(date.getMonth() + 1).padStart(2, '0');
+  var year = date.getFullYear();
+  var hours = String(date.getHours()).padStart(2, '0');
+  var minutes = String(date.getMinutes()).padStart(2, '0');
+  
+  return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes;
+}
+
+// Function untuk validasi form assessment
+function validateAssessmentForm() {
+  var isValid = true;
+  var requiredFields = ['keluhan_utama', 'rps', 'rpk', 'rpo', 'keadaan', 'kesadaran', 'diagnosis'];
+  
+  requiredFields.forEach(function(field) {
+    var element = $('[name="' + field + '"]');
+    if(!element.val() || element.val().trim() === '') {
+      element.addClass('error');
+      isValid = false;
+    } else {
+      element.removeClass('error');
+    }
+  });
+  
+  if(!isValid) {
+    alert('Mohon lengkapi semua field yang wajib diisi!');
+  }
+  
+  return isValid;
+}
+
 
 // ketika tombol hapus ditekan
 $("#soap").on("click",".edit_soap", function(event){
@@ -583,8 +765,8 @@ $("#obat").on("click", ".pilih_obat", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-dasar");
-  var stok = $(this).attr("data-stok");
-  var stokminimal = $(this).attr("data-stokminimal");
+  var stok = parseFloat($(this).attr("data-stok"));
+  var stokminimal = parseFloat($(this).attr("data-stokminimal"));
   var kat = $(this).attr("data-kat");
 
   if(stok < stokminimal) {
@@ -639,7 +821,7 @@ $("#obat_racikan").on("click", ".pilih_obat_racikan", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-dasar");
-  var stok = $(this).attr("data-stok");
+  var stok = parseFloat($(this).attr("data-stok"));
 
   if(stok < 1) {
     alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
@@ -761,6 +943,11 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
       // tampilkan data
       $("#rincian").html(data).show();
     });
+    $.post(baseURL + '/dokter_igd/cekwaktu?t=' + mlite.token, {
+    } ,function(data) {
+      $("#form_rincian #rincian_jam_reg").val(data);
+      $('input:text[name=jam_rawat]').last().val(data).focus();
+    });
     $('input:hidden[name=kd_jenis_prw]').val("");
     $('input:text[name=nm_perawatan]').val("");
     $('input:hidden[name=kat]').val("");
@@ -777,6 +964,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('#keterangan').val("");
     $('input:text[name=kandungan]').val("");
     $('.row_racikan').remove();
+    $('input:text[name=jam_rawat]').last().val("");
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -814,7 +1002,71 @@ $("#rincian").on("click",".hapus_detail", function(event){
           $("#rincian").html(data).show();
         });
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data rincian rawat jalan telah dihapus!"+
+        "Data rincian IGD telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_permintaan_lab", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/dokter_igd/hapuspermintaanlab?t=' + mlite.token;
+  var noorder = $(this).attr("data-noorder");
+  var no_rawat = $(this).attr("data-no_rawat");
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        noorder: noorder,
+        no_rawat: no_rawat
+      } ,function(data) {
+        var url = baseURL + '/dokter_igd/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian IGD telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_permintaan_rad", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/dokter_igd/hapuspermintaanrad?t=' + mlite.token;
+  var noorder = $(this).attr("data-noorder");
+  var no_rawat = $(this).attr("data-no_rawat");
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        noorder: noorder,
+        no_rawat: no_rawat
+      } ,function(data) {
+        var url = baseURL + '/dokter_igd/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian IGD telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
@@ -850,7 +1102,7 @@ $("#rincian").on("click",".hapus_resep_obat", function(event){
           $("#rincian").html(data).show();
         });
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data rincian rawat jalan telah dihapus!"+
+        "Data rincian IGD telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
@@ -884,12 +1136,54 @@ $("#rincian").on("click",".hapus_resep_dokter", function(event){
           $("#rincian").html(data).show();
         });
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data rincian rawat jalan telah dihapus!"+
+        "Data rincian IGD telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
     }
   });
+});
+
+// ketika tombol hapus ditekan
+$("#soap").on("click",".copy_soap", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var suhu_tubuh      = $(this).attr("data-suhu_tubuh");
+  var tensi           = $(this).attr("data-tensi");
+  var nadi            = $(this).attr("data-nadi");
+  var respirasi       = $(this).attr("data-respirasi");
+  var tinggi          = $(this).attr("data-tinggi");
+  var berat           = $(this).attr("data-berat");
+  var gcs             = $(this).attr("data-gcs");
+  var kesadaran       = $(this).attr("data-kesadaran");
+  var alergi          = $(this).attr("data-alergi");
+  var lingkar_perut   = $(this).attr("data-lingkar_perut");
+  var keluhan         = $(this).attr("data-keluhan");
+  var pemeriksaan     = $(this).attr("data-pemeriksaan");
+  var penilaian       = $(this).attr("data-penilaian");
+  var rtl             = $(this).attr("data-rtl");
+  var instruksi       = $(this).attr("data-instruksi");
+  var evaluasi        = $(this).attr("data-evaluasi");
+  var spo2            = $(this).attr("data-spo2");
+
+  $('input:text[name=suhu_tubuh]').val(suhu_tubuh);
+  $('input:text[name=tensi]').val(tensi);
+  $('input:text[name=nadi]').val(nadi);
+  $('input:text[name=respirasi]').val(respirasi);
+  $('input:text[name=tinggi]').val(tinggi);
+  $('input:text[name=berat]').val(berat);
+  $('input:text[name=gcs]').val(gcs);
+  $('input:text[name=kesadaran]').val(kesadaran);
+  $('input:text[name=alergi]').val(alergi);
+  $('input:text[name=lingkar_perut]').val(lingkar_perut);
+  $('textarea[name=keluhan]').val(keluhan);
+  $('textarea[name=pemeriksaan]').val(pemeriksaan);
+  $('textarea[name=penilaian]').val(penilaian);
+  $('textarea[name=rtl]').val(rtl);
+  $('textarea[name=instruksi]').val(instruksi);
+  $('textarea[name=evaluasi]').val(evaluasi);
+  $('input:text[name=spo2]').val(spo2);
+
 });
 
 // ketika tombol hapus ditekan
@@ -919,15 +1213,41 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
   var jam_rawat       = $('input:text[name=jam_reg]').val();
   var kode_brng       = JSON.stringify($('input:hidden[name=kode_brng_copyresep]').serializeArray());
   var jml       = JSON.stringify($('input:text[name=jml_copyresep]').serializeArray());
-  var aturan_pakai       = JSON.stringify($('input:hidden[name=aturan_copyresep]').serializeArray());
+  var aturan_pakai       = JSON.stringify($('input:text[name=aturan_copyresep]').serializeArray());
 
-  $.post(url_save, {no_rawat : no_rawat,
+  // Racikan Data
+  var nama_racik = JSON.stringify($('input:hidden[name=nama_racik_copyresep]').serializeArray());
+  var kd_racik = JSON.stringify($('input:hidden[name=kd_racik_copyresep]').serializeArray());
+  var keterangan = JSON.stringify($('input:hidden[name=keterangan_copyresep]').serializeArray());
+  var no_racik = JSON.stringify($('input:hidden[name=no_racik_copyresep]').serializeArray());
+  var jml_dr = JSON.stringify($('input:text[name=jml_dr_copyresep]').serializeArray());
+  var aturan_pakai_racik = JSON.stringify($('input:text[name=aturan_pakai_copyresep]').serializeArray());
+
+  var data = {
+    no_rawat : no_rawat,
     tgl_perawatan : tgl_perawatan,
     jam_rawat : jam_rawat,
     kode_brng : kode_brng,
     jml : jml,
-    aturan_pakai : aturan_pakai
-  }, function(data) {
+    aturan_pakai : aturan_pakai,
+    nama_racik: nama_racik,
+    kd_racik: kd_racik,
+    keterangan: keterangan,
+    no_racik: no_racik,
+    jml_dr: jml_dr,
+    aturan_pakai_racik: aturan_pakai_racik
+  };
+
+  // Add dynamic racikan details
+  $('input:hidden[name^="no_racik_copyresep"]').each(function() {
+      var nr = $(this).val();
+      data['kode_brng_racikan_' + nr] = JSON.stringify($('input:hidden[name="kode_brng_racikan_copyresep_' + nr + '"]').serializeArray());
+      data['jml_racikan_' + nr] = JSON.stringify($('input:text[name="jml_racikan_copyresep_' + nr + '"]').serializeArray());
+      data['p1_' + nr] = JSON.stringify($('input:hidden[name="p1_copyresep_' + nr + '"]').serializeArray());
+      data['p2_' + nr] = JSON.stringify($('input:hidden[name="p2_copyresep_' + nr + '"]').serializeArray());
+  });
+
+  $.post(url_save, data, function(data) {
     //alert(data);
     //if(data == 'ErrorError') {
     //  alert('Stok tidak mencukupi pada satu atau lebih obat.');
@@ -1041,7 +1361,7 @@ $(document).ready(function () {
         dataType: 'json',
         success: function(data) {
           callback(data.slice(0, 100));
-          console.log(data);
+          // console.log(data);
         },
         error: function() {
           callback();
@@ -1170,12 +1490,116 @@ $("#form_rincian").on("click","#jam_reg", function(event){
     });
 });
 
+// ===== TRIASE IGD HANDLERS =====
+
+// Handler untuk tombol kembali dari triase
+$("#triase_igd").on("click", "#btn_kembali_triase", function(event){
+  event.preventDefault();
+  $("#triase_igd").hide();
+  $("#display").show();
+});
+
+// Handler untuk submit form triase
+$("#triase_igd").on("submit", "#form_triase_igd", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  
+  // Validasi form
+  var required_fields = ['tgl_triase', 'petugas_id', 'kesadaran_triase', 'airway', 'breathing', 'circulation', 'kategori'];
+  var is_valid = true;
+  var error_message = '';
+  
+  required_fields.forEach(function(field) {
+    var field_value = $('input[name="' + field + '"], select[name="' + field + '"]').val();
+    if(!field_value || field_value.trim() === '') {
+      is_valid = false;
+      error_message += 'Field ' + field + ' harus diisi\n';
+      $('input[name="' + field + '"], select[name="' + field + '"]').addClass('has-error');
+    } else {
+      $('input[name="' + field + '"], select[name="' + field + '"]').removeClass('has-error');
+    }
+  });
+  
+  if(!is_valid) {
+    alert('Validasi Error:\n' + error_message);
+    return false;
+  }
+  
+  // Serialize form data
+  var formData = $(this).serialize();
+  
+  var url = baseURL + '/dokter_igd/triaseigdsave?t=' + mlite.token;
+  $.post(url, formData, function(response) {
+    try {
+      var data = JSON.parse(response);
+      if(data.status === 'success') {
+        alert(data.msg);
+        // Refresh form dengan data terbaru
+        var no_rawat = $('input[name="no_rawat"]').val();
+        var no_rkm_medis = $('input[name="no_rkm_medis"]').val();
+        var nm_pasien = $('input[name="nm_pasien"]').val();
+        var tgl_registrasi = $('input[name="tgl_registrasi"]').val();
+        
+        // Reload triase form
+        var reload_url = baseURL + '/dokter_igd/triaseigd?t=' + mlite.token;
+        $.post(reload_url, {
+          no_rawat: no_rawat,
+          no_rkm_medis: no_rkm_medis,
+          nm_pasien: nm_pasien,
+          tgl_registrasi: tgl_registrasi
+        }, function(reload_data) {
+          $("#triase_igd").html(reload_data);
+        });
+      } else {
+        alert('Error: ' + data.msg);
+      }
+    } catch(e) {
+      alert('Error: Gagal memproses response dari server');
+      console.log('Response error:', e);
+      console.log('Raw response:', response);
+    }
+  }).fail(function(xhr, status, error) {
+    alert('Error: Gagal mengirim data ke server\nStatus: ' + status + '\nError: ' + error);
+    console.log('AJAX Error:', xhr.responseText);
+  });
+});
+
+// Handler untuk tombol hapus triase (jika diperlukan)
+$("#triase_igd").on("click", "#btn_hapus_triase", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  
+  if(confirm('Apakah Anda yakin ingin menghapus data triase ini?')) {
+    var no_rawat = $('input[name="no_rawat"]').val();
+    
+    var url = baseURL + '/dokter_igd/triaseigddelete?t=' + mlite.token;
+    $.post(url, {no_rawat: no_rawat}, function(response) {
+      try {
+        var data = JSON.parse(response);
+        if(data.status === 'success') {
+          alert(data.msg);
+          $("#triase_igd").hide();
+          $("#display").show();
+        } else {
+          alert('Error: ' + data.msg);
+        }
+      } catch(e) {
+        alert('Error: Gagal memproses response dari server');
+        console.log('Response error:', e);
+      }
+    }).fail(function(xhr, status, error) {
+      alert('Error: Gagal mengirim data ke server');
+      console.log('AJAX Error:', xhr.responseText);
+    });
+  }
+});
+
 {if: $mlite.websocket == 'ya'}
 
   {if: $mlite.websocket_proxy != ''}
     var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
   {else}
-    var URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+    var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
   {/if}
 
   var ws = new WebSocket(URL_WEBSOCKET);
@@ -1190,7 +1614,7 @@ $("#form_rincian").on("click","#jam_reg", function(event){
         }
       }
     }catch(e){
-      console.log(e);
+      // console.log(e);
     }
   }
   

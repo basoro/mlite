@@ -109,12 +109,12 @@
                 <tbody>
                   {loop: $perbaikan}
                   <tr>
-                    <td>{$value.no_permintaan}</td>
-                    <td>{$value.no_inventaris}</td>
-                    <td>{$value.nik} - {$value.nama}</td>
-                    <td>{$value.tanggal}</td>
-                    <td>{$value.deskripsi_kerusakan}</td>
-                    <td class="text-{if: $value.status_perbaikan == 'Sudah'}primary{else}danger{/if}">{$value.status_perbaikan}</td>
+                    <td>{?=isset_or($value.no_permintaan)?}</td>
+                    <td>{?=isset_or($value.no_inventaris)?}</td>
+                    <td>{?=isset_or($value.nik)?} - {?=isset_or($value.nama)?}</td>
+                    <td>{?=isset_or($value.tanggal)?}</td>
+                    <td>{?=isset_or($value.deskripsi_kerusakan)?}</td>
+                    <td class="text-{if: $value.status_perbaikan == 'Sudah'}primary{else}danger{/if}">{?=isset_or($value.status_perbaikan)?}</td>
                   </tr>
                   {/loop}
                 </tbody>

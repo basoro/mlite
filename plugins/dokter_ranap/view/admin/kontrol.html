@@ -23,13 +23,13 @@
       {if: $booking_registrasi}
       {loop: $booking_registrasi}
       <tr>
-        <td>{$value.nomor}</td>
-        <td>{$value.tanggal_periksa}</td>
-        <td>{$value.no_reg}</td>
-        <td>{$value.nm_poli}</td>
-        <td>{$value.nm_dokter}</td>
-        <td>{$value.png_jawab}</td>
-        <td>{$value.status}</td>
+        <td>{?=isset_or($value.nomor)?}</td>
+        <td>{?=isset_or($value.tanggal_periksa)?}</td>
+        <td>{?=isset_or($value.no_reg)?}</td>
+        <td>{?=isset_or($value.nm_poli)?}</td>
+        <td>{?=isset_or($value.nm_dokter)?}</td>
+        <td>{?=isset_or($value.png_jawab)?}</td>
+        <td>{?=isset_or($value.status)?}</td>
       </tr>
       {/loop}
       {else}

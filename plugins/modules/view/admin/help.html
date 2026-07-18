@@ -1,20 +1,20 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title"><i class="fa fa-{$module.icon}"></i> {$module.name} {$module.version}</h4>
+    <h4 class="modal-title"><i class="fa fa-{?=isset_or($module.icon)?}"></i> {?=isset_or($module.name)?} {?=isset_or($module.version)?}</h4>
 </div>
 <div class="modal-body">
     <div class="table-responsive">
         <table class="table no-bottom-margin">
             <thead>
                 <tr>
-                    <th>Tutorial {$module.name} </th>
+                    <th>Tutorial {?=isset_or($module.name)?} </th>
                 </tr>
             </thead>
             <tbody>
               {if: isset($module.help)}
                 <tr>
                     <td>
-                        {$module.help}
+                        {?=isset_or($module.help)?}
                     </td>
                 </tr>
               {else}

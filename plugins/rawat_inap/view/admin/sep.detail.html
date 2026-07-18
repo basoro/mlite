@@ -23,7 +23,7 @@
                   SURAT ELEGIBILITAS PESERTA
                 </div>
                 <div style="font-size:21px;text-align:center;">
-                  {$sep.nmppkpelayanan}
+                  {?=isset_or($sep.nmppkpelayanan)?}
                 </div>
               </td>
             </tr>
@@ -35,11 +35,11 @@
           <table>
             <tr>
               <td width="400">
-                <b style="font-size:16px;" ><u>{$data_sep.potensi_prb}</u></b>
+                <b style="font-size:16px;" ><u>{?=isset_or($data_sep.potensi_prb)?}</u></b>
               </td>
               <td width="480">
                 <center>
-                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={$sep.no_sep}" alt="" width="200px">
+                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={?=isset_or($sep.no_sep)?}" alt="" width="200px">
                 </center>
               </td>
             </tr>
@@ -57,7 +57,7 @@
                 :
               </td>
               <td>
-                {$sep.no_sep}
+                {?=isset_or($sep.no_sep)?}
               </td>
             </tr>
           </table>
@@ -74,7 +74,7 @@
                 :
               </td>
               <td>
-                {$sep.tglsep}
+                {?=isset_or($sep.tglsep)?}
               </td>
             </tr>
           </table>
@@ -91,7 +91,7 @@
                 :
               </td>
               <td width="350">
-                {$sep.no_kartu} ( MR: {$sep.nomr})
+                {?=isset_or($sep.no_kartu)?} ( MR: {?=isset_or($sep.nomr)?})
               </td>
               <td width="90">
                 Peserta
@@ -100,7 +100,7 @@
                 :
               </td>
               <td>
-                {$sep.peserta}
+                {?=isset_or($sep.peserta)?}
               </td>
             </tr>
           </table>
@@ -117,7 +117,7 @@
                 :
               </td>
               <td width="350">
-                {$sep.nama_pasien}
+                {?=isset_or($sep.nama_pasien)?}
               </td>
               <td width="90">
                 COB
@@ -126,7 +126,7 @@
                 :
               </td>
               <td>
-                {$sep.cob}
+                {?=isset_or($sep.cob)?}
               </td>
             </tr>
           </table>
@@ -143,7 +143,7 @@
                 :
               </td>
               <td width="350">
-                {$sep.tanggal_lahir} Kelamin: {$sep.jkel}
+                {?=isset_or($sep.tanggal_lahir)?} Kelamin: {?=isset_or($sep.jkel)?}
               </td>
               <td width="90">
                 Jns. Rawat
@@ -169,7 +169,7 @@
                 :
               </td>
               <td width="350">
-                {$sep.notelep}
+                {?=isset_or($sep.notelep)?}
               </td>
               <td width="90">
                 Kls. Rawat
@@ -178,7 +178,7 @@
                 :
               </td>
               <td>
-                {$print_sep.kelas_naik}
+                {?=isset_or($print_sep.kelas_naik)?}
               </td>
             </tr>
           </table>
@@ -195,7 +195,7 @@
                 :
               </td>
               <td width="350">
-                {$sep.nmpolitujuan}
+                {?=isset_or($sep.nmpolitujuan)?}
               </td>
               <td width="90">
                 Kls. Hak
@@ -204,7 +204,7 @@
                 :
               </td>
               <td>
-                Kelas {$sep.klsrawat}
+                Kelas {?=isset_or($sep.klsrawat)?}
               </td>
             </tr>
           </table>
@@ -221,7 +221,7 @@
                 :
               </td>
               <td>
-                {$sep.nmdpdjp}
+                {?=isset_or($sep.nmdpdjp)?}
               </td>
             </tr>
           </table>
@@ -238,7 +238,7 @@
                 :
               </td>
               <td>
-                {$sep.nmppkrujukan}
+                {?=isset_or($sep.nmppkrujukan)?}
               </td>
             </tr>
           </table>
@@ -255,7 +255,7 @@
                 :
               </td>
               <td>
-                {$sep.nmdiagnosaawal}
+                {?=isset_or($sep.nmdiagnosaawal)?}
               </td>
             </tr>
           </table>
@@ -272,7 +272,7 @@
                 :
               </td>
               <td width="450" valign="top">
-                {$sep.catatan}
+                {?=isset_or($sep.catatan)?}
               </td>
               <td width="200" halign="center" valign="bottom">
                 Pasien/Keluarga Pasien
@@ -291,11 +291,11 @@
                   *Saya Menyetujui BPJS Kesehatan menggunakan informasi Medis Pasien jika diperlukan.<br>
                   **SEP bukan sebagai bukti penjaminan peserta<br>
                   Cetakan ke 1 {?=date("d/m/Y H:i:s A")?}<br>
-                  Masa berlaku {$sep.tglrujukan} s/d {$print_sep.batas_rujukan}
+                  Masa berlaku {?=isset_or($sep.tglrujukan)?} s/d {?=isset_or($print_sep.batas_rujukan)?}
                 </i>
               </td>
               <td valign="bottom" halign="center" padding="0" margin="0">
-                {$sep.nama_pasien}<br>
+                {?=isset_or($sep.nama_pasien)?}<br>
               </td>
             </tr>
           </table>

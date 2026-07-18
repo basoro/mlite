@@ -6,7 +6,7 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Tanggal Masuk</label>
             <div class="col-sm-9">
-              <input type="text" id="tgl_operasi" name="tgl_operasi" class="form-control tanggal_jam" value="{$operasi.operasi.tgl_operasi}">
+              <input type="text" id="tgl_operasi" name="tgl_operasi" class="form-control tanggal_jam" value="{?=isset_or($operasi.operasi.tgl_operasi)?}">
             </div>
           </div>
           <div class="form-group" id="cari_pasien">
@@ -18,19 +18,19 @@
           <div class="form-group">
             <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor RM</label>
             <div class="col-sm-9">
-              <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor rekam medik" value="{$operasi.operasi.no_rkm_medis}" readonly>
+              <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor rekam medik" value="{?=isset_or($operasi.operasi.no_rkm_medis)?}" readonly>
             </div>
           </div>
           <div class="form-group">
             <label for="nama_pasien" class="col-sm-3 control-label">Nama Pasien</label>
             <div class="col-sm-9">
-              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="{$operasi.operasi.nm_pasien}" readonly>
+              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="{?=isset_or($operasi.operasi.nm_pasien)?}" readonly>
             </div>
           </div>
           <div class="form-group">
             <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor Rawat</label>
             <div class="col-sm-9">
-              <input type="text" name="no_rawat" class="form-control" value="{$operasi.operasi.no_rawat}" readonly>
+              <input type="text" name="no_rawat" class="form-control" value="{?=isset_or($operasi.operasi.no_rawat)?}" readonly>
             </div>
           </div>
           <div class="form-group">
@@ -47,7 +47,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kategori">
                 {loop: $operasi.kategori}
-                <option value="{$value}"{if: isset_or($operasi.operasi.kategori) == $value} selected{/if}>{$value}</option>
+                <option value="{?=isset_or($value)?}"{if: isset_or($operasi.operasi.kategori) == $value} selected{/if}>{?=isset_or($value)?}</option>
                 {/loop}
               </select>
             </div>
@@ -55,7 +55,7 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Anastesi</label>
             <div class="col-sm-9">
-              <input type="text" name="jenis_anasthesi" class="form-control" value="{$operasi.operasi.jenis_anasthesi}">
+              <input type="text" name="jenis_anasthesi" class="form-control" value="{?=isset_or($operasi.operasi.jenis_anasthesi)?}">
             </div>
           </div>
           <div class="form-group">
@@ -63,7 +63,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kode_paket">
                 {loop: $operasi.paket_operasi}
-                <option value="{$value.kode_paket}"{if: isset_or($operasi.operasi.kode_paket) == $value.kode_paket} selected{/if}>{$value.nm_perawatan}</option>
+                <option value="{?=isset_or($value.kode_paket)?}"{if: isset_or($operasi.operasi.kode_paket) == $value.kode_paket} selected{/if}>{?=isset_or($value.nm_perawatan)?}</option>
                 {/loop}
               </select>
             </div>
@@ -83,7 +83,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="operator1">
                 {loop: $operasi.dokter}
-                <option value="{$value.kd_dokter}"{if: $operasi.operasi.operator1 == $value.kd_dokter} selected{/if}>{$value.nm_dokter}</option>
+                <option value="{?=isset_or($value.kd_dokter)?}"{if: $operasi.operasi.operator1 == $value.kd_dokter} selected{/if}>{?=isset_or($value.nm_dokter)?}</option>
                 {/loop}
               </select>
             </div>
@@ -93,7 +93,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="operator2">
                 {loop: $operasi.dokter}
-                <option value="{$value.kd_dokter}"{if: $operasi.operasi.operator2 == $value.kd_dokter} selected{/if}>{$value.nm_dokter}</option>
+                <option value="{?=isset_or($value.kd_dokter)?}"{if: $operasi.operasi.operator2 == $value.kd_dokter} selected{/if}>{?=isset_or($value.nm_dokter)?}</option>
                 {/loop}
               </select>
             </div>
@@ -103,7 +103,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="operator3">
                 {loop: $operasi.dokter}
-                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                <option value="{?=isset_or($value.kd_dokter)?}">{?=isset_or($value.nm_dokter)?}</option>
                 {/loop}
               </select>
             </div>
@@ -113,7 +113,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="asisten_operator1">
                 {loop: $operasi.petugas}
-                <option value="{$value.nip}">{$value.nama}</option>
+                <option value="{?=isset_or($value.nip)?}">{?=isset_or($value.nama)?}</option>
                 {/loop}
               </select>
             </div>
@@ -123,7 +123,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="asisten_operator2">
                 {loop: $operasi.petugas}
-                <option value="{$value.nip}">{$value.nama}</option>
+                <option value="{?=isset_or($value.nip)?}">{?=isset_or($value.nama)?}</option>
                 {/loop}
               </select>
             </div>
@@ -133,7 +133,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="dokter_anak">
                 {loop: $operasi.dokter}
-                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                <option value="{?=isset_or($value.kd_dokter)?}">{?=isset_or($value.nm_dokter)?}</option>
                 {/loop}
               </select>
             </div>
@@ -143,7 +143,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="perawaat_resusitas">
                 {loop: $operasi.petugas}
-                <option value="{$value.nip}">{$value.nama}</option>
+                <option value="{?=isset_or($value.nip)?}">{?=isset_or($value.nama)?}</option>
                 {/loop}
               </select>
             </div>
@@ -153,7 +153,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="dokter_anestesi">
                 {loop: $operasi.dokter}
-                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                <option value="{?=isset_or($value.kd_dokter)?}">{?=isset_or($value.nm_dokter)?}</option>
                 {/loop}
               </select>
             </div>
@@ -163,7 +163,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="asisten_anestesi">
                 {loop: $operasi.petugas}
-                <option value="{$value.nip}">{$value.nama}</option>
+                <option value="{?=isset_or($value.nip)?}">{?=isset_or($value.nama)?}</option>
                 {/loop}
               </select>
             </div>
@@ -173,7 +173,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="bidan">
                 {loop: $operasi.petugas}
-                <option value="{$value.nip}">{$value.nama}</option>
+                <option value="{?=isset_or($value.nip)?}">{?=isset_or($value.nama)?}</option>
                 {/loop}
               </select>
             </div>
@@ -183,7 +183,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="perawat_luar">
                 {loop: $operasi.petugas}
-                <option value="{$value.nip}">{$value.nama}</option>
+                <option value="{?=isset_or($value.nip)?}">{?=isset_or($value.nama)?}</option>
                 {/loop}
               </select>
             </div>

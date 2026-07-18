@@ -33,8 +33,8 @@ class Site extends SiteModule
         $this->route('jknmobile/antrian/statusfarmasi', 'getStatusAntrianFarmasi');
         $this->route('jknmobile/antrian/sisa', 'getSisaAntrian');
         $this->route('jknmobile/antrian/batal', 'getBatalAntrian');
+        $this->route('jknmobile/antrian/checkin', 'getPasienCheckIn');
         $this->route('jknmobile/pasien/baru', 'getPasienBaru');
-        $this->route('jknmobile/pasien/checkin', 'getPasienCheckIn');
         $this->route('jknmobile/operasi/rs', 'getOperasiRS');
         $this->route('jknmobile/operasi/pasien', 'getOperasiPasien');
         $this->route('jknmobile/antrian/add', '_getAntreanAdd');
@@ -96,7 +96,7 @@ class Site extends SiteModule
         $kelas = [];
         $sql = "SELECT kamar.kelas, kamar.kd_bangsal FROM kamar JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal WHERE kamar.statusdata = '1'";
         // $sql .= " AND kamar.kelas = 'Kelas $kelas' AND kamar.kd_bangsal LIKE '%$bangsal%'";
-        $sql .= " GROUP BY kamar.kd_bangsal ";
+        $sql .= " GROUP BY kamar.kd_bangsal, kamar.kelas ";
         $query = $this->db()->pdo()->prepare($sql);
         $query->execute();
         $bedlist = $query->fetchAll();
@@ -120,7 +120,24 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $header = apache_request_headers();
         $response = array();
-        if ($header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username') && $header[$this->settings->get('jkn_mobile.header_password')] == $this->settings->get('jkn_mobile.x_password')) {
+
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+        $passwordHeader = $this->settings->get('jkn_mobile.header_password');
+        $usernameValue = $this->settings->get('jkn_mobile.x_username');
+        $passwordValue = $this->settings->get('jkn_mobile.x_password');
+
+        $usernameMatch = false;
+        $passwordMatch = false;
+
+        if (isset($header[$usernameHeader]) && $header[$usernameHeader] == $usernameValue) {
+            $usernameMatch = true;
+        }
+
+        if (isset($header[$passwordHeader]) && $header[$passwordHeader] == $passwordValue) {
+            $passwordMatch = true;
+        }
+
+        if ($usernameMatch && $passwordMatch) {
             $response = array(
                 'response' => array(
                     'token' => $this->_getToken()
@@ -133,12 +150,12 @@ class Site extends SiteModule
         } else {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Access denied',
+                    'message' => 'Username atau Password Tidak Sesuai',
                     'code' => 201
                 )
             );
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getAmbilAntrian()
@@ -160,15 +177,19 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+        
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
 
             $tanggal=$decode['tanggalperiksa'];
             $tentukan_hari=date('D',strtotime($tanggal));
@@ -195,29 +216,57 @@ class Site extends SiteModule
 
             $data_pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
             $poli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray();
-            $dokter = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $decode['kodedokter'])->oneArray();
+            
+            // Check if kodedokter is present before using it
+            $kodedokter = isset($decode['kodedokter']) ? $decode['kodedokter'] : '';
+            if (!empty($kodedokter)) {
+                $dokter = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $kodedokter)->oneArray();
+            } else {
+                $dokter = null;
+            }
 
             if(strtotime($decode['tanggalperiksa']) == strtotime(date('Y-m-d'))) {
-              $cek_kuota = $this->db()->pdo()->prepare("SELECT jadwal.kuota - (SELECT COUNT(reg_periksa.tgl_registrasi)
+              $sql = "SELECT jadwal.kuota - (SELECT COUNT(reg_periksa.tgl_registrasi)
               FROM reg_periksa WHERE reg_periksa.tgl_registrasi='$decode[tanggalperiksa]'
               AND reg_periksa.kd_dokter=jadwal.kd_dokter) as sisa_kuota, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter, jadwal.kuota
               FROM jadwal INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli INNER JOIN maping_dokter_dpjpvclaim ON maping_dokter_dpjpvclaim.kd_dokter=jadwal.kd_dokter INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter
-              WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]' AND maping_dokter_dpjpvclaim.kd_dokter_bpjs='$decode[kodedokter]' GROUP BY jadwal.kd_dokter HAVING sisa_kuota > 0 ORDER BY sisa_kuota DESC LIMIT 1");
+              WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]'";
+              
+              if (!empty($kodedokter)) {
+                  $sql .= " AND maping_dokter_dpjpvclaim.kd_dokter_bpjs='$kodedokter'";
+              }
+              
+              $sql .= " GROUP BY jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai, jadwal.kuota, poliklinik.nm_poli, dokter.nm_dokter HAVING sisa_kuota > 0 ORDER BY sisa_kuota DESC LIMIT 1";
+              
+              $cek_kuota = $this->db()->pdo()->prepare($sql);
             } else {
-              $cek_kuota = $this->db()->pdo()->prepare("SELECT jadwal.kuota - (SELECT COUNT(booking_registrasi.tanggal_periksa)
+              $sql = "SELECT jadwal.kuota - (SELECT COUNT(booking_registrasi.tanggal_periksa)
               FROM booking_registrasi WHERE booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]'
               AND booking_registrasi.kd_dokter=jadwal.kd_dokter) as sisa_kuota, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter, jadwal.kuota
               FROM jadwal INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli INNER JOIN maping_dokter_dpjpvclaim ON maping_dokter_dpjpvclaim.kd_dokter=jadwal.kd_dokter INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter
-              WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]' AND maping_dokter_dpjpvclaim.kd_dokter_bpjs='$decode[kodedokter]' GROUP BY jadwal.kd_dokter HAVING sisa_kuota > 0 ORDER BY sisa_kuota DESC LIMIT 1");
+              WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]'";
+              
+              if (!empty($kodedokter)) {
+                  $sql .= " AND maping_dokter_dpjpvclaim.kd_dokter_bpjs='$kodedokter'";
+              }
+              
+              $sql .= " GROUP BY jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai, jadwal.kuota, poliklinik.nm_poli, dokter.nm_dokter HAVING sisa_kuota > 0 ORDER BY sisa_kuota DESC LIMIT 1";
+              
+              $cek_kuota = $this->db()->pdo()->prepare($sql);
             }
 
             $cek_kuota->execute();
             $cek_kuota = $cek_kuota->fetch();
-            $jadwal = $this->db('jadwal')
+            
+            $jadwal_q = $this->db('jadwal')
                 ->join('maping_dokter_dpjpvclaim', 'maping_dokter_dpjpvclaim.kd_dokter=jadwal.kd_dokter')
-                ->where('maping_dokter_dpjpvclaim.kd_dokter_bpjs', $decode['kodedokter'])
-                ->where('hari_kerja', $hari)
-                ->oneArray();
+                ->where('hari_kerja', $hari);
+                
+            if (!empty($kodedokter)) {
+                $jadwal_q->where('maping_dokter_dpjpvclaim.kd_dokter_bpjs', $kodedokter);
+            }
+            
+            $jadwal = $jadwal_q->oneArray();
 
             $cek_referensi = $this->db('mlite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
             $cek_referensi_noka = $this->db('mlite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
@@ -255,7 +304,7 @@ class Site extends SiteModule
             if (!empty($decode['tanggalperiksa']) && !preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])) {
                $errors[] = 'Format tanggal periksa tidak sesuai';
             }
-            if(!empty($decode['tanggalperiksa']) && $decode['tanggalperiksa'] == $cek_referensi['tanggal_periksa']) {
+            if(!empty($decode['tanggalperiksa']) && isset($cek_referensi['tanggal_periksa']) && $decode['tanggalperiksa'] == $cek_referensi['tanggal_periksa']) {
                $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$decode['tanggalperiksa'];
             }
             if(empty($decode['kodepoli'])) {
@@ -270,19 +319,18 @@ class Site extends SiteModule
             if(!empty($decode['kodedokter']) && $dokter == 0) {
                $errors[] = 'Kode dokter tidak ditemukan';
             }
-            if(!empty($decode['jeniskunjungan']) && $decode['jeniskunjungan'] < 1 || $decode['jeniskunjungan'] > 4) {
+            if(isset($decode['jeniskunjungan']) && ($decode['jeniskunjungan'] < 1 || $decode['jeniskunjungan'] > 4)) {
                $errors[] = 'Jenis kunjungan tidak ditemukan';
             }
 
             if(!empty($errors)) {
-                foreach($errors as $error) {
-                    $response = array(
-                        'metadata' => array(
-                            'message' => $this->_getErrors($error),
-                            'code' => 201
-                        )
-                    );
-                };
+                $errorMessage = implode(', ', $errors);
+                $response = array(
+                    'metadata' => array(
+                        'message' => $errorMessage,
+                        'code' => 201
+                    )
+                );
                 http_response_code(201);
             } else {
 
@@ -371,7 +419,7 @@ class Site extends SiteModule
                                   'nomor_kartu' => $decode['nomorkartu'],
                                   'nomor_referensi' => $decode['nomorreferensi'],
                                   'kodebooking' => $kodebooking,
-                                  'jenis_kunjungan' => $decode['jeniskunjungan'],
+                                  'jenis_kunjungan' => isset($decode['jeniskunjungan']) ? $decode['jeniskunjungan'] : 1, // Default to 1 (Rujukan FKTP) if missing
                                   'status_kirim' => 'Belum',
                                   'keterangan' => ''
                               ]);
@@ -403,7 +451,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getStatusAntrian()
@@ -433,17 +481,22 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         $kdpoli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray();
-        $kddokter = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $decode['kodedokter'])->oneArray();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+        $kodedokter = isset($decode['kodedokter']) ? $decode['kodedokter'] : '';
+        $kddokter = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $kodedokter)->oneArray();
+        
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+        
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
-            if(!$this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray()){
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
+            if(!$kdpoli){
                 $response = array(
                     'metadata' => array(
                         'message' => 'Poli Tidak Ditemukan',
@@ -451,7 +504,7 @@ class Site extends SiteModule
                     )
                 );
                 http_response_code(201);
-            }else if(!$this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $decode['kodedokter'])->oneArray()){
+            }else if(!empty($kodedokter) && !$kddokter){
                 $response = array(
                     'metadata' => array(
                         'message' => 'Dokter Tidak Ditemukan',
@@ -469,10 +522,8 @@ class Site extends SiteModule
                 http_response_code(201);
             }else if(!$this->db('jadwal')
                 ->join('maping_dokter_dpjpvclaim', 'maping_dokter_dpjpvclaim.kd_dokter=jadwal.kd_dokter')
-                ->where('maping_dokter_dpjpvclaim.kd_dokter_bpjs', $decode['kodedokter'])
+                ->where('maping_dokter_dpjpvclaim.kd_dokter_bpjs', $kodedokter)
                 ->where('hari_kerja', $hari)
-                ->where('jam_mulai', strtok($decode['jampraktek'], '-').':00')
-                ->where('jam_selesai', substr($decode['jampraktek'], strpos($decode['jampraktek'], "-") + 1).':00')
                 ->oneArray()){
                 $response = array(
                     'metadata' => array(
@@ -490,17 +541,31 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $kuota = $this->db()->pdo()->prepare("SELECT jadwal.kuota - (SELECT COUNT(booking_registrasi.tanggal_periksa) FROM booking_registrasi WHERE booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]' AND booking_registrasi.kd_dokter=jadwal.kd_dokter) as sisa_kuota, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter, jadwal.kuota FROM jadwal INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]' GROUP BY jadwal.kd_dokter HAVING sisa_kuota > 0 ORDER BY sisa_kuota DESC LIMIT 1");
+                $kuota = $this->db()->pdo()->prepare("SELECT jadwal.kuota - (SELECT COUNT(booking_registrasi.tanggal_periksa) FROM booking_registrasi WHERE booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]' AND booking_registrasi.kd_dokter=jadwal.kd_dokter) as sisa_kuota, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter, jadwal.kuota FROM jadwal INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]' GROUP BY jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai, jadwal.kuota, poliklinik.nm_poli, dokter.nm_dokter HAVING sisa_kuota > 0 ORDER BY sisa_kuota DESC LIMIT 1");
                 $kuota->execute();
                 $kuota = $kuota->fetch();
 
-                $max_antrian = $this->db()->pdo()->prepare("SELECT booking_registrasi.no_reg FROM booking_registrasi WHERE booking_registrasi.status='Belum' AND booking_registrasi.kd_dokter='$kddokter[kd_dokter]' AND booking_registrasi.kd_poli='$kdpoli[kd_poli_rs]' AND booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]' ORDER BY CONVERT(RIGHT(booking_registrasi.no_reg,3),signed) LIMIT 1 ");
+                $table = ($decode['tanggalperiksa'] == date('Y-m-d'))
+                    ? 'reg_periksa'
+                    : 'booking_registrasi';
 
-                if($decode['tanggalperiksa'] == date('Y-m-d')) {
-                  $max_antrian = $this->db()->pdo()->prepare("SELECT reg_periksa.no_reg FROM reg_periksa WHERE reg_periksa.stts='Belum' AND reg_periksa.kd_dokter='$kddokter[kd_dokter]' AND reg_periksa.kd_poli='$kdpoli[kd_poli_rs]' AND reg_periksa.tgl_registrasi='$decode[tanggalperiksa]' ORDER BY CONVERT(RIGHT(reg_periksa.no_reg,3),signed) LIMIT 1 ");
+                $q = $this->db($table)
+                    ->select(['no_reg'])
+                    ->where('stts', 'Belum')
+                    ->where('kd_dokter', $kddokter['kd_dokter'])
+                    ->where('kd_poli', $kdpoli['kd_poli_rs']);
+
+                if ($table === 'reg_periksa') {
+                    $q->where('tgl_registrasi', $decode['tanggalperiksa']);
+                } else {
+                    $q->where('tanggal_periksa', $decode['tanggalperiksa']);
                 }
-                $max_antrian->execute();
-                $max_antrian = $max_antrian->fetch();
+
+                $max_antrian = $q
+                    ->orderBy('no_reg', 'ASC')
+                    ->limit(1)
+                    ->oneArray();
+
 
                 if(strtotime($decode['tanggalperiksa']) == strtotime(date('Y-m-d'))) {
                   $data = $this->db()->pdo()->prepare("SELECT poliklinik.nm_poli,COUNT(reg_periksa.kd_poli) as total_antrean,dokter.nm_dokter,
@@ -568,7 +633,7 @@ class Site extends SiteModule
                 )
             );
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getAmbilAntrianFarmasi()
@@ -584,15 +649,19 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+        
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -699,7 +768,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getStatusAntrianFarmasi()
@@ -715,15 +784,19 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+        
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -843,7 +916,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getSisaAntrian()
@@ -859,15 +932,19 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -923,9 +1000,15 @@ class Site extends SiteModule
                     }else if($booking_registrasi['status']=='Terdaftar'){
                         $noreg = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])->oneArray();
 
-                        $max_antrian = $this->db()->pdo()->prepare("SELECT reg_periksa.no_reg FROM reg_periksa WHERE reg_periksa.stts='Belum' AND reg_periksa.kd_dokter='$booking_registrasi[kd_dokter]' AND reg_periksa.kd_poli='$booking_registrasi[kd_poli]' AND reg_periksa.tgl_registrasi='$booking_registrasi[tanggal_periksa]' ORDER BY CONVERT(RIGHT(reg_periksa.no_reg,3),signed) LIMIT 1 ");
-                        $max_antrian->execute();
-                        $max_antrian = $max_antrian->fetch();
+                        $max_antrian = $this->db('reg_periksa')
+                            ->select(['no_reg'])
+                            ->where('stts', 'Belum')
+                            ->where('kd_dokter', $booking_registrasi['kd_dokter'])
+                            ->where('kd_poli', $booking_registrasi['kd_poli'])
+                            ->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])
+                            ->orderByRightNumber('no_reg', 3, 'ASC')
+                            ->limit(1)
+                            ->oneArray();
 
                         $data = $this->db()->pdo()->prepare("SELECT reg_periksa.kd_poli,poliklinik.nm_poli,dokter.nm_dokter,
                             reg_periksa.no_reg,COUNT(reg_periksa.no_rawat) as total_antrean,
@@ -943,7 +1026,7 @@ class Site extends SiteModule
                                     'namapoli' => $data['nm_poli'],
                                     'namadokter' => $data['nm_dokter'],
                                     'sisaantrean' => ($data['sisa_antrean']>0?$data['sisa_antrean']:0),
-                                    'antreanpanggil' => "A-".$max_antrian['no_reg'],
+                                    'antreanpanggil' => "A-".$max_antrian['no_reg'] ?? '000',
                                     'waktutunggu' => (($data['sisa_antrean']*10)*1000),
                                     'keterangan' => "Datanglah Minimal 30 Menit, jika no antrian anda terlewat, silakan konfirmasi ke layanan pelanggan, Terima Kasih .."
                                 ),
@@ -974,7 +1057,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getBatalAntrian()
@@ -990,15 +1073,19 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -1105,7 +1192,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getPasienBaru()
@@ -1121,15 +1208,19 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
             if (empty($decode['nomorkartu'])){
                 $response = array(
                     'metadata' => array(
@@ -1527,7 +1618,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getPasienCheckIn()
@@ -1543,15 +1634,19 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
             $tanggal=date("Y-m-d", ($decode['waktu']/1000));
             $jam = date("H:i:s",($decode['waktu']/1000));
             if(empty($decode['kodebooking'])) {
@@ -1733,7 +1828,6 @@ class Site extends SiteModule
                                         if (!$mlite_antrian_loket['postdate']) {
                                             $this->db('mlite_antrian_loket')
                                             ->save([
-                                            'kd' => NULL,
                                             'type' => 'Loket',
                                             'noantrian' => $next_antrian,
                                             'no_rkm_medis' => $booking_registrasi['no_rkm_medis'],
@@ -1869,7 +1963,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getOperasiRS()
@@ -1885,15 +1979,19 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
             $data = array();
             $sql = $this->db()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan,  maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana, pasien.no_peserta AS nopeserta FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND booking_operasi.tanggal BETWEEN '$decode[tanggalawal]' AND '$decode[tanggalakhir]' GROUP BY booking_operasi.no_rawat");
             $sql->execute();
@@ -1968,7 +2066,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function getOperasiPasien()
@@ -1984,15 +2082,19 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
+
+        $tokenHeader = $this->settings->get('jkn_mobile.header_token');
+        $usernameHeader = $this->settings->get('jkn_mobile.header_username');
+
+        if(!isset($header[$tokenHeader]) || $header[$tokenHeader] == false) {
             $response = array(
                 'metadata' => array(
-                    'message' => 'Token expired',
+                    'message' => 'Token expired or missing',
                     'code' => 201
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
+        } else if ($header[$tokenHeader] == $this->_getToken() && isset($header[$usernameHeader]) && $header[$usernameHeader] == $this->settings->get('jkn_mobile.x_username')) {
             $data = array();
             $cek_nopeserta = $this->db('pasien')->where('no_peserta', $decode['nopeserta'])->oneArray();
             $sql = $this->db()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan, maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND pasien.no_peserta = '$decode[nopeserta]'  GROUP BY booking_operasi.no_rawat");
@@ -2067,7 +2169,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         }
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
     }
 
     public function _getJadwal($kodepoli, $tanggal)
@@ -2090,17 +2192,12 @@ class Site extends SiteModule
         if($json != null) {
           echo '{
                   "metaData": {
-                      "code": "'.$code.'",
-                      "message": "'.$message.'"
+                      "code": "'.htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'",
+                      "message": "'.htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'"
                   },
                   "response": '.$decompress.'}';
         } else {
-          echo '{
-                  "metaData": {
-                      "code": "5000",
-                      "message": "ERROR"
-                  },
-                  "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          echo htmlspecialchars($json['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         }
         exit();
     }
@@ -2149,7 +2246,7 @@ class Site extends SiteModule
         $url = $this->bpjsurl.'updatejadwaldokter';
         $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json = json_decode($output, true);
-        echo json_encode($json);
+        echo json_encode(htmlspecialchars_array($json));
         exit();
     }
 
@@ -2324,7 +2421,7 @@ class Site extends SiteModule
             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
             $data = json_decode($output, true);
             echo 'Response:<br>';
-            echo json_encode($data)." ";
+            echo json_encode(htmlspecialchars_array($data))." ";
             echo $data['metadata']['code'];
             if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
 
@@ -2377,12 +2474,12 @@ class Site extends SiteModule
                   'kodebooking' => $kodebooking,
                   'jenis_kunjungan' => $jeniskunjungan,
                   'status_kirim' => 'Sudah',
-                  'keterangan' => $data['metadata']['message']
+                  'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 } else {
                   $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                   'status_kirim' => 'Sudah',
-                  'keterangan' => $data['metadata']['message']
+                  'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 }
               }
@@ -2395,12 +2492,12 @@ class Site extends SiteModule
                   'kodebooking' => $kodebooking,
                   'jenis_kunjungan' => $jeniskunjungan,
                   'status_kirim' => 'Sudah',
-                  'keterangan' => $data['metadata']['message']
+                  'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                 ]);
                 } else {
                   $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                     'status_kirim' => 'Sudah',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 }
               }
@@ -2415,12 +2512,12 @@ class Site extends SiteModule
                     'kodebooking' => $kodebooking,
                     'jenis_kunjungan' => $jeniskunjungan,
                     'status_kirim' => 'Gagal',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 } else {
                   $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                     'status_kirim' => 'Gagal',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 }
               }
@@ -2433,12 +2530,12 @@ class Site extends SiteModule
                     'kodebooking' => $kodebooking,
                     'jenis_kunjungan' => $jeniskunjungan,
                     'status_kirim' => 'Gagal',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 } else {
                   $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                     'status_kirim' => 'Gagal',
-                    'keterangan' => $data['metadata']['message']
+                    'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                   ]);
                 }
               }
@@ -2618,14 +2715,14 @@ class Site extends SiteModule
                 $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                 $data = json_decode($output, true);
                 echo 'Response:<br>';
-                echo json_encode($data)." ";
+                echo json_encode(htmlspecialchars_array($data))." ";
                 echo $data['metadata']['code'];
                 if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
                   if($jenispasien == 'JKN') {
                     
                       $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                           'status_kirim' => 'Sudah',
-                          'keterangan' => $data['metadata']['message']
+                          'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     
                   }
@@ -2643,7 +2740,7 @@ class Site extends SiteModule
                     
                       $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
                           'status_kirim' => 'Gagal',
-                          'keterangan' => $data['metadata']['message']
+                          'keterangan' => htmlspecialchars($data['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     
                   }
@@ -2705,7 +2802,7 @@ class Site extends SiteModule
             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
             echo 'Response:<br>';
-            echo json_encode($json);
+            echo json_encode(htmlspecialchars_array($json));
 
             echo '<br>-------------------------------------<br><br>';
         }
@@ -2774,7 +2871,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -2783,7 +2880,7 @@ class Site extends SiteModule
                         'taskid' => 1,
                         'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -2819,7 +2916,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -2828,7 +2925,7 @@ class Site extends SiteModule
                         'taskid' => 2,
                         'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -2847,7 +2944,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
+                $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
                 if($mutasi_berkas){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
@@ -2864,7 +2961,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -2873,7 +2970,7 @@ class Site extends SiteModule
                         'taskid' => 3,
                         'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -2892,7 +2989,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+                $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
                 if($mutasi_berkas){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
@@ -2909,7 +3006,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -2918,7 +3015,7 @@ class Site extends SiteModule
                         'taskid' => 4,
                         'waktu' => strtotime($mutasi_berkas['diterima']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -2961,7 +3058,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -2970,7 +3067,7 @@ class Site extends SiteModule
                         'taskid' => 5,
                         'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3012,7 +3109,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -3021,7 +3118,7 @@ class Site extends SiteModule
                         'taskid' => 6,
                         'waktu' => strtotime($resep_obat['datajam']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3063,7 +3160,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -3072,7 +3169,7 @@ class Site extends SiteModule
                         'taskid' => 7,
                         'waktu' => strtotime($resep_obat['datajam']) * 1000,
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3106,7 +3203,7 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if(isset($json['metadata']['code']) == 200){
                       $this->db('mlite_antrian_referensi_taskid')
                       ->save([
@@ -3229,7 +3326,7 @@ class Site extends SiteModule
                     }
                     $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                   	echo $q['no_rkm_medis'].'<br>';
-                    $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
+                    $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
                     if($mutasi_berkas){
                             echo 'A ';
                             date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -3261,7 +3358,7 @@ class Site extends SiteModule
                     $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                     }
                     $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                    $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+                    $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
                     if($mutasi_berkas){
                             date_default_timezone_set($this->settings->get('settings.timezone'));
                             $this->db('mlite_antrian_referensi_taskid')
@@ -3392,18 +3489,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3432,18 +3529,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3472,18 +3569,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3512,18 +3609,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3551,18 +3648,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3591,18 +3688,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3629,18 +3726,18 @@ class Site extends SiteModule
                     $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
-                    echo json_encode($json);
+                    echo json_encode(htmlspecialchars_array($json));
                     if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)
                     ->save([
                         'status' => 'Sudah',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     } else {
                         $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)
                     ->save([
                         'status' => 'Gagal',
-                        'keterangan' => $json['metadata']['message']
+                        'keterangan' => htmlspecialchars($json['metadata']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
                     ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -3684,7 +3781,7 @@ class Site extends SiteModule
         $url = $this->bpjsurl.'dashboard/waktutunggu/bulan/'.$slug[3].'/tahun/'.$slug[4].'/waktu/'.$slug[5];
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json = json_decode($output, true);
-        echo json_encode($json);
+        echo json_encode(htmlspecialchars_array($json));
         exit();
     }
 
@@ -3694,7 +3791,7 @@ class Site extends SiteModule
         $url = $this->bpjsurl.'dashboard/waktutunggu/tanggal/'.$slug[3].'/waktu/'.$slug[4];
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json = json_decode($output, true);
-        echo json_encode($json);
+        echo json_encode(htmlspecialchars_array($json));
         exit();
     }
 

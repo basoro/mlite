@@ -44,7 +44,7 @@
               <div class="col-sm-9">
                 <select name="kode" id="kode" class="form-control">
                   {loop: $master_berkas_digital}
-                    <option value="{$value.kode}">{$value.nama}</option>
+                    <option value="{?=isset_or($value.kode)?}">{?=isset_or($value.nama)?}</option>
                   {/loop}
                 </select>
               </div>

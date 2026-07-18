@@ -37,11 +37,16 @@ class Admin extends AdminModule
         ['name' => 'Pembaruan Sistem', 'url' => url([ADMIN, 'settings', 'updates']), 'icon' => 'cubes', 'desc' => 'Pembaruan sistem'],
         ['name' => 'Backup & Restore', 'url' => url([ADMIN, 'settings', 'backuprestore']), 'icon' => 'database', 'desc' => 'Backup dan restore database'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getGeneral()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'settings', 'manage']));
+        }
+
         $this->_addHeaderFiles();
         $settings = $this->settings('settings');
         $settings['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
@@ -61,9 +66,17 @@ class Admin extends AdminModule
         $settings['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
         $settings['themes'] = $this->_getThemes();
         $settings['timezones'] = $this->_getTimezones();
+        
+        $mysql_version = '';
+        if (DBDRIVER == 'sqlite') {
+            $mysql_version = $this->db()->pdo()->query('SELECT sqlite_version()')->fetch()[0];
+        } else {
+            $mysql_version = $this->db()->pdo()->query('SELECT VERSION() as version')->fetch()[0];
+        }
+
         $settings['system'] = [
             'php'           => PHP_VERSION,
-            'mysql'         => $this->db()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
+            'mysql'         => $mysql_version
         ];
 
         $settings['license'] = [];
@@ -90,14 +103,53 @@ class Admin extends AdminModule
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
         $this->tpl->set('url', url([ADMIN, 'settings', 's']));
         $this->tpl->set('set_no_rkm_medis', $this->db('set_no_rkm_medis')->oneArray());
-        $this->tpl->set('set_nomor_surat', $this->db('mlite_set_nomor_surat')->oneArray());
+        $this->tpl->set('set_nomor_surat',  $this->settings->get('settings.set_nomor_surat'));
 
         return $this->draw('general.html');
+    }
+
+    private function isSafeUrl($url) {
+        $parsed = parse_url($url);
+        if (!$parsed || !isset($parsed['scheme']) || strtolower($parsed['scheme']) !== 'https') {
+            return false;
+        }
+        $host = $parsed['host'] ?? '';
+        $ips = gethostbynamel($host);
+        if (!$ips) {
+            return false;
+        }
+        foreach ($ips as $ip) {
+            if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function postSaveGeneral()
     {
         unset($_POST['save']);
+
+        if (!empty($_POST['_b64'])) {
+            unset($_POST['_b64']);
+            $encodedFields = [];
+            if (!empty($_POST['_b64_fields'])) {
+                $decodedFields = json_decode($_POST['_b64_fields'], true);
+                if (is_array($decodedFields)) {
+                    $encodedFields = $decodedFields;
+                }
+            }
+            unset($_POST['_b64_fields']);
+            foreach ($encodedFields as $field) {
+                if (isset($_POST[$field]) && is_string($_POST[$field])) {
+                    $decoded = base64_decode($_POST[$field], true);
+                    if ($decoded !== false) {
+                        $_POST[$field] = $decoded;
+                    }
+                }
+            }
+        }
+
         if (($_logo = isset_or($_FILES['logo']['tmp_name'], false))) {
             $img = new \Systems\Lib\Image;
 
@@ -148,24 +200,32 @@ class Admin extends AdminModule
             $this->db('set_no_rkm_medis')->save(['no_rkm_medis' => $_POST['set_no_rkm_medis']]);
         }
 
-        if($_POST['set_nomor_surat']) {
-            $this->db('mlite_set_nomor_surat')->delete();
-            $this->db('mlite_set_nomor_surat')->save(['nomor_surat' => $_POST['set_nomor_surat']]);
-        }
-        
         if (!$errors) {
 
             $url = "https://mlite.id/datars/save";
-            $curlHandle = curl_init();
-            curl_setopt($curlHandle, CURLOPT_URL, $url);
-            curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$_POST['nama_instansi']."&alamat_instansi=".$_POST['alamat']."&kabupaten=".$_POST['kota']."&propinsi=".$_POST['propinsi']."&kontak=".$_POST['nomor_telepon']."&email=".$_POST['email']);
-            curl_setopt($curlHandle, CURLOPT_HEADER, 0);
-            curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
-            curl_setopt($curlHandle, CURLOPT_POST, 1);
-            curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
-            curl_exec($curlHandle);
-            curl_close($curlHandle);
+            // SSRF protection: validate that the URL is strictly the intended public endpoint
+            if ($url === "https://mlite.id/datars/save" && $this->isSafeUrl($url)) {
+                $curlHandle = curl_init();
+                curl_setopt($curlHandle, CURLOPT_URL, $url);
+                curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+                curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+                curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
+                curl_setopt($curlHandle, CURLOPT_POSTFIELDS, http_build_query([
+                    'nama_instansi'   => $_POST['nama_instansi'],
+                    'alamat_instansi' => $_POST['alamat'],
+                    'kabupaten'       => $_POST['kota'],
+                    'propinsi'        => $_POST['propinsi'],
+                    'kontak'          => $_POST['nomor_telepon'],
+                    'email'           => $_POST['email'],
+                ]));
+                curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+                curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+                curl_setopt($curlHandle, CURLOPT_POST, 1);
+                curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
+                curl_exec($curlHandle);
+                curl_close($curlHandle);
+            }
 
             $this->notify('success', 'Pengaturan berhasil disimpan.');
 
@@ -247,38 +307,215 @@ class Admin extends AdminModule
 
     public function anyUpdates()
     {
+
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'settings', 'manage']));
+        }
+
         $this->tpl->set('allow_curl', intval(function_exists('curl_init')));
         $settings = $this->settings('settings');
 
         if (isset($_POST['check'])) {
-            $url = "https://api.github.com/repos/basoro/mlite/releases/latest";
-            $opts = [
-                'http' => [
-                    'method' => 'GET',
-                    'header' => [
-                            'User-Agent: PHP'
-                    ]
-                ]
-            ];
-            $json = file_get_contents($url, false, stream_context_create($opts));
+            $url  = "https://api.github.com/repos/basoro/mlite/releases/latest";
+
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'mlite');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Accept: application/vnd.github+json'
+            ]);
+
+            $json = curl_exec($ch);
+            $err  = curl_error($ch);
+            curl_close($ch);
+
             $obj = json_decode($json, true);
-    
+
             $this->settings('settings', 'update_check', time());
 
-            if (!is_array($obj)) {
-                $this->tpl->set('error', $obj);
+            if ($err || !is_array($obj)) {
+                $this->tpl->set('error', $json);
             } else {
                 $this->settings('settings', 'update_version', $obj['tag_name']);
                 $this->settings('settings', 'update_changelog', $obj['body']);
                 $this->tpl->set('update_version', $obj['tag_name']);
             }
+        } elseif (isset($_POST['upgrade_local'])) {
+            $upgradeFile = BASE_DIR . '/systems/upgrade.php';
+            if (!is_file($upgradeFile)) {
+                $this->tpl->set('error', "File upgrade tidak ditemukan: systems/upgrade.php");
+                return $this->draw('update.html');
+            }
+
+            $version = $this->settings->get('settings.version');
+            $new_version = include($upgradeFile);
+
+            if ($new_version === true || $new_version === 1) {
+                // upgrade script didn't return a version number
+                $new_version = $version; 
+            }
+
+            $this->settings('settings', 'version', $new_version);
+            $this->settings('settings', 'update_check', time());
+
+            $this->notify('success', 'Upgrade lokal berhasil dijalankan.');
+            redirect(url([ADMIN, 'settings', 'updates']));
+
+        } elseif (isset($_POST['update_nightly'])) {
+            if (!class_exists("ZipArchive")) {
+                $this->tpl->set('error', "ZipArchive is required to update mLITE.");
+            }
+
+            $zipFile = BASE_DIR . '/tmp/latest.zip';
+            $url = "https://github.com/basoro/mlite/archive/refs/heads/master.zip";
+
+            // Pastikan folder tmp ada
+            if (!is_dir(BASE_DIR . '/tmp')) {
+                mkdir(BASE_DIR . '/tmp', 0755, true);
+            }
+
+            $ch = curl_init($url);
+            $fp = fopen($zipFile, 'w+');
+
+            if ($fp === false) {
+                $this->tpl->set('error', "Gagal membuat file zip: $zipFile. Pastikan permissions folder benar.");
+                return $this->draw('update.html');
+            }
+
+            curl_setopt_array($ch, [
+                CURLOPT_FILE            => $fp,
+                CURLOPT_FOLLOWLOCATION  => true,
+                CURLOPT_FAILONERROR     => true,
+                CURLOPT_USERAGENT       => 'mlite-updater',
+                CURLOPT_TIMEOUT         => 300,
+            ]);
+
+            $ok  = curl_exec($ch);
+            $err = curl_error($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            curl_close($ch);
+            fclose($fp);
+
+            if (!$ok || $err || $http_code != 200) {
+                $this->tpl->set('error', "Download gagal: $err (HTTP $http_code)");
+                @unlink($zipFile);
+                return $this->draw('update.html');
+            }
+
+            define("UPGRADABLE", true);
+
+            // Making backup
+            $backup_date = date('YmdHis');
+            $this->rcopy(BASE_DIR.'/systems', BASE_DIR.'/backup/'.$backup_date.'/systems');
+            $this->rcopy(BASE_DIR.'/plugins', BASE_DIR.'/backup/'.$backup_date.'/plugins');
+            $this->rcopy(BASE_DIR.'/assets', BASE_DIR.'/backup/'.$backup_date.'/assets');
+            $this->rcopy(BASE_DIR.'/themes', BASE_DIR.'/backup/'.$backup_date.'/themes');
+            $this->rcopy(BASE_DIR.'/config.php', BASE_DIR.'/backup/'.$backup_date.'/config.php');
+            $this->rcopy(BASE_DIR.'/manifest.json', BASE_DIR.'/backup/'.$backup_date.'/manifest.json');
+
+            // Unzip latest update
+            $zip = new \ZipArchive;
+            if ($zip->open(BASE_DIR.'/tmp/latest.zip') === TRUE) {
+                // Extract to base tmp/update
+                $zip->extractTo(BASE_DIR.'/tmp/update');
+                $zip->close();
+            } else {
+                $this->tpl->set('error', "Gagal membuka file zip.");
+                @unlink(BASE_DIR.'/tmp/latest.zip');
+                return $this->draw('update.html');
+            }
+
+            // Detect extracted update root folder
+            $updateBase = BASE_DIR.'/tmp/update';
+            $extractedRoot = null;
+            
+            // For nightly build from github, it usually extracts to mlite-master
+            if (is_dir($updateBase.'/mlite-master')) {
+                $extractedRoot = $updateBase.'/mlite-master';
+            } else {
+                $dirs = glob($updateBase.'/mlite-*', GLOB_ONLYDIR);
+                if (!empty($dirs)) {
+                    $extractedRoot = $dirs[0];
+                }
+            }
+            
+            if (!$extractedRoot && is_dir($updateBase.'/systems')) {
+                $extractedRoot = $updateBase;
+            }
+
+            if (!$extractedRoot) {
+                $this->tpl->set('error', "Update extraction failed: 'mlite-*' folder not found.");
+                @unlink(BASE_DIR.'/tmp/latest.zip');
+                $this->rrmdir(BASE_DIR.'/tmp/update');
+                return $this->draw('update.html');
+            }
+
+            // Copy files using detected root
+            $this->rcopy($extractedRoot.'/systems', BASE_DIR.'/systems');
+            $this->rcopy($extractedRoot.'/plugins', BASE_DIR.'/plugins');
+            $this->rcopy($extractedRoot.'/assets', BASE_DIR.'/assets');
+            $this->rcopy($extractedRoot.'/themes', BASE_DIR.'/themes');
+
+            // Restore defines
+            $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
+            $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/manifest.json', BASE_DIR.'/manifest.json');
+
+            // Run upgrade script
+            $version = $settings['version'];
+            $upgradeFile = $extractedRoot.'/systems/upgrade.php';
+            $new_version = $version;
+            if (is_file($upgradeFile)) {
+                $new_version = include($upgradeFile);
+            }
+
+            // Delete all unnecessary files
+            unlink(BASE_DIR.'/tmp/latest.zip');
+            $this->rrmdir(BASE_DIR.'/tmp/update');
+
+            $this->settings('settings', 'version', $new_version);
+            $this->settings('settings', 'update_check', time());
+
+            sleep(2);
+            $this->notify('success', 'Update Nightly Build berhasil.');
+            redirect(url([ADMIN, 'settings', 'updates']));
+
         } elseif (isset($_POST['update'])) {
             if (!class_exists("ZipArchive")) {
                 $this->tpl->set('error', "ZipArchive is required to update mLITE.");
             }
 
+            $version = $this->settings->get('settings.update_version');
+            $zipFile = BASE_DIR . '/tmp/latest.zip';
+
             if (!isset($_GET['manual'])) {
-                $this->download('https://github.com/basoro/mlite/archive/refs/tags/'.$this->settings->get('settings.update_version').'.zip', BASE_DIR.'/tmp/latest.zip');
+
+                $url = "https://github.com/basoro/mlite/archive/refs/tags/{$version}.zip";
+
+                $ch = curl_init($url);
+                $fp = fopen($zipFile, 'w+');
+
+                curl_setopt_array($ch, [
+                    CURLOPT_FILE            => $fp,
+                    CURLOPT_FOLLOWLOCATION  => true,
+                    CURLOPT_FAILONERROR     => true,
+                    CURLOPT_USERAGENT       => 'mlite-updater',
+                    CURLOPT_TIMEOUT         => 60,
+                ]);
+
+                $ok  = curl_exec($ch);
+                $err = curl_error($ch);
+
+                curl_close($ch);
+                fclose($fp);
+
+                if (!$ok || $err) {
+                    $this->tpl->set('error', "Download gagal: $err");
+                    @unlink($zipFile);
+                    return $this->draw('update.html');
+                }
+
             } else {
                 $package = glob(BASE_DIR.'/mlite-*.zip');
                 if (!empty($package)) {
@@ -302,13 +539,37 @@ class Admin extends AdminModule
             // Unzip latest update
             $zip = new \ZipArchive;
             $zip->open(BASE_DIR.'/tmp/latest.zip');
+            // Extract to base tmp/update
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
-            // Copy files
-            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/systems', BASE_DIR.'/systems');
-            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/plugins', BASE_DIR.'/plugins');
-            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/assets', BASE_DIR.'/assets');
-            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/themes', BASE_DIR.'/themes');
+            // Detect extracted update root folder
+            $updateBase = BASE_DIR.'/tmp/update';
+            $extractedRoot = null;
+            $tag = $this->settings->get('settings.update_version');
+            if (!empty($tag) && is_dir($updateBase.'/mlite-'.$tag)) {
+                $extractedRoot = $updateBase.'/mlite-'.$tag;
+            } else {
+                $dirs = glob($updateBase.'/mlite-*', GLOB_ONLYDIR);
+                if (!empty($dirs)) {
+                    $extractedRoot = $dirs[0];
+                }
+            }
+            // Fallback: direct extraction without wrapper
+            if (!$extractedRoot && is_dir($updateBase.'/systems')) {
+                $extractedRoot = $updateBase;
+            }
+            if (!$extractedRoot) {
+                $this->tpl->set('error', "Update extraction failed: 'mlite-*' folder not found.");
+                $zip->close();
+                @unlink(BASE_DIR.'/tmp/latest.zip');
+                return $this->draw('update.html');
+            }
+
+            // Copy files using detected root
+            $this->rcopy($extractedRoot.'/systems', BASE_DIR.'/systems');
+            $this->rcopy($extractedRoot.'/plugins', BASE_DIR.'/plugins');
+            $this->rcopy($extractedRoot.'/assets', BASE_DIR.'/assets');
+            $this->rcopy($extractedRoot.'/themes', BASE_DIR.'/themes');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
@@ -316,12 +577,16 @@ class Admin extends AdminModule
 
             // Run upgrade script
             $version = $settings['version'];
-            $new_version = include(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/systems/upgrade.php');
+            $upgradeFile = $extractedRoot.'/systems/upgrade.php';
+            $new_version = $version;
+            if (is_file($upgradeFile)) {
+                $new_version = include($upgradeFile);
+            }
 
             // Close archive and delete all unnecessary files
             $zip->close();
             unlink(BASE_DIR.'/tmp/latest.zip');
-            rrmdir(BASE_DIR.'/tmp/update');
+            $this->rrmdir(BASE_DIR.'/tmp/update');
 
             $this->settings('settings', 'version', $new_version);
             $this->settings('settings', 'update_version', 0);
@@ -448,7 +713,15 @@ class Admin extends AdminModule
             mkdir($dest, $permissions, true);
         }
 
+        // Guard: source must be an existing directory before iterating
+        if (!is_dir($source)) {
+            return false;
+        }
+
         $dir = dir($source);
+        if ($dir === false) {
+            return false;
+        }
         while (false !== $entry = $dir->read()) {
             if ($entry == '.' || $entry == '..') {
                 continue;
@@ -459,6 +732,32 @@ class Admin extends AdminModule
 
         $dir->close();
         return true;
+    }
+
+    private function rrmdir($dir)
+    {
+        if (!file_exists($dir)) {
+            return;
+        }
+        if (is_file($dir) || is_link($dir)) {
+            @unlink($dir);
+            return;
+        }
+        $items = scandir($dir);
+        if ($items === false) {
+            @rmdir($dir);
+            return;
+        }
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') continue;
+            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($path) && !is_link($path)) {
+                $this->rrmdir($path);
+            } else {
+                @unlink($path);
+            }
+        }
+        @rmdir($dir);
     }
 
     private function _verifyLicense()
@@ -564,38 +863,48 @@ class Admin extends AdminModule
 
     public function anyCekDaftar()
     {
-      if(isset($_POST['request_code'])) {
-        $url = "https://mlite.id/datars/aktif";
-        $curlHandle = curl_init();
-        curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"email=".$_POST['email']);
-        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
-        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
-        curl_setopt($curlHandle, CURLOPT_POST, 1);
-        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
-        $response = curl_exec($curlHandle);
-        curl_close($curlHandle);
-        $response = json_decode($response, true);
-        if($response['status'] == 'error') {
-          $this->notify('failure', 'Request kode validasi pendaftaran aplikasi tidak bisa dilakukan. Silahkan simpan dulu pengaturan aplikasi anda. Atau pastikan email request sama dengan email di pengaturan aplikasi.');
-        } else {
-          $this->notify('success', 'Request kode validasi pendaftaran aplikasi sukses. Silahkan cek inbox email / spam folder yang anda daftarkan.');
+        if (isset($_POST['request_code'])) {
+            $url = "https://mlite.id/datars/aktif";
+            // SSRF protection: validate that the URL is strictly the intended public endpoint
+            if ($url === "https://mlite.id/datars/aktif" && $this->isSafeUrl($url)) {
+                $curlHandle = curl_init();
+                curl_setopt($curlHandle, CURLOPT_URL, $url);
+                curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+                curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+                curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
+                curl_setopt($curlHandle, CURLOPT_POSTFIELDS, "email=" . $_POST['email']);
+                curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+                curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($curlHandle, CURLOPT_TIMEOUT, 30);
+                curl_setopt($curlHandle, CURLOPT_POST, 1);
+                curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
+                $response = curl_exec($curlHandle);
+                curl_close($curlHandle);
+                $response = json_decode($response, true);
+                if ($response['status'] == 'error') {
+                    $this->notify('failure', 'Request kode validasi pendaftaran aplikasi tidak bisa dilakukan. Silahkan simpan dulu pengaturan aplikasi anda. Atau pastikan email request sama dengan email di pengaturan aplikasi.');
+                } else {
+                    $this->notify('success', 'Request kode validasi pendaftaran aplikasi sukses. Silahkan cek inbox email / spam folder yang anda daftarkan.');
+                }
+            }
         }
-      }
       return $this->draw('cek.daftar.html');
     }
 
     public function getBackupRestore()
     {
         $database = DBNAME;
-        $get_table = $this->db()->pdo()->prepare("SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='$database'");
+        if (DBDRIVER == 'sqlite') {
+            $get_table = $this->db()->pdo()->prepare("SELECT name AS TABLE_NAME FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+        } else {
+            $get_table = $this->db()->pdo()->prepare("SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='$database'");
+        }
 	    $get_table->execute();
 	    $result = $get_table->fetchAll();
 
         $backup_files = glob('../backups/*.sql.gz');
         // $backup_files = pathinfo($backup_files);
-        return $this->draw('backup.restore.html', ['databases' => $result, 'files' => $backup_files]);
+        return $this->draw('backup.restore.html', ['databases' => htmlspecialchars_array($result), 'files' => $backup_files]);
     }
 
     public function getBackupDatabase()
@@ -640,6 +949,12 @@ class Admin extends AdminModule
     {
         $file_name = $_GET['filename'];
 
+        // Security: Prevent path traversal
+        if (strpos($file_name, '..') !== false || strpos($file_name, '/') !== false) {
+             $this->notify('failure', 'Invalid filename.');
+             exit();
+        }
+
         define("BACKUP_FILE", $file_name); // Script will autodetect if backup file is gzipped based on .gz extension
         // Report all errors
         error_reporting(E_ALL);
@@ -663,8 +978,62 @@ class Admin extends AdminModule
     public function getDeleteDatabase()
     {
         $file_name = $_GET['filename'];
-        unlink('../backups/' . $file_name);
+
+        // Security: Prevent path traversal
+        if (strpos($file_name, '..') !== false || strpos($file_name, '/') !== false) {
+             $this->notify('failure', 'Invalid filename.');
+             exit();
+        }
+
+        if (file_exists('../backups/' . $file_name)) {
+            unlink('../backups/' . $file_name);
+        }
         exit();
+    }
+
+    public function apiSettings()
+    {
+
+        $username = $this->core->checkAuth('GET');
+        if (!$this->core->checkPermission($username, 'can_read', 'settings')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        try {
+            $settings = $this->settings('settings');
+            $settings['themes'] = $this->_getThemes();
+            $settings['timezones'] = $this->_getTimezones();
+            
+            return ['status' => 'success', 'data' => $settings];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function apiSaveSettings()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_write', 'settings')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+
+        try {
+            foreach ($input as $field => $value) {
+                if ($field == 'save') continue;
+                
+                $this->db('mlite_settings')
+                    ->where('module', 'settings')
+                    ->where('field', $field)
+                    ->save(['value' => $value]);
+            }
+            
+            return ['status' => 'success', 'message' => 'Pengaturan berhasil disimpan.'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
     }
 
     private function _addHeaderFiles()

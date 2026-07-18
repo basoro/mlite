@@ -17,17 +17,17 @@
       </thead>
       <tbody>
         {loop: $rawat_inap.list}
-        <tr class="layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">
-          <td style="white-space: nowrap;">{$value.no_rkm_medis}</td>
-          <td style="white-space: nowrap;"><b>{$value.nm_pasien}</b></td>
-          <td style="white-space: nowrap;"><b>{$value.no_rawat}</b></td>
-          <td style="white-space: nowrap;">{$value.nm_bangsal} - {$value.kd_kamar}</td>
+        <tr class="layanan_obat" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}" data-nm_pasien="{?=isset_or($value.nm_pasien)?}">
+          <td style="white-space: nowrap;">{?=isset_or($value.no_rkm_medis)?}</td>
+          <td style="white-space: nowrap;"><b>{?=isset_or($value.nm_pasien)?}</b></td>
+          <td style="white-space: nowrap;"><b>{?=isset_or($value.no_rawat)?}</b></td>
+          <td style="white-space: nowrap;">{?=isset_or($value.nm_bangsal)?} - {?=isset_or($value.kd_kamar)?}</td>
           <td style="white-space: nowrap;">
             <ul class="list-unstyled">
               {if: $value.dokter}
               {loop: $value.dokter as $data_dokter}
               <li>
-                <span class="fa fa-minus-square-o hapus_dpjp" data-no_rawat="{$value.no_rawat}" data-kd_dokter="{$data_dokter.kd_dokter}"></span> {$data_dokter.nm_dokter}
+                <span class="fa fa-minus-square-o hapus_dpjp" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_dokter="{?=isset_or($data_dokter.kd_dokter)?}"></span> {?=isset_or($data_dokter.nm_dokter)?}
               </li>
               {/loop}
               {else}
@@ -35,11 +35,11 @@
               {/if}
             </ul>
           </td>
-          <td style="white-space: nowrap;">{$value.png_jawab}</td>
-          <td style="white-space: nowrap;">{$value.no_peserta}</td>
-          <td style="white-space: nowrap;">{$value.tgl_masuk} {$value.jam_masuk}</td>
-          <td style="white-space: nowrap;">{$value.tgl_keluar} {$value.jam_keluar}</td>
-          <td style="white-space: nowrap;">{$value.stts_pulang}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.png_jawab)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.no_peserta)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.tgl_masuk)?} {?=isset_or($value.jam_masuk)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.tgl_keluar)?} {?=isset_or($value.jam_keluar)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.stts_pulang)?}</td>
         </tr>
         {/loop}
       </tbody>

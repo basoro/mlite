@@ -1,0 +1,204 @@
+<style>
+  body {
+    margin: 0 60px 40px 80px;
+    font-size: 16px;
+    font-family: georgia;
+  }
+  input, textarea {
+    font-size: 16px;
+    font-family: georgia;
+  }
+  @media print {
+    body {
+      margin: 0 35px 30px 50px;
+      font-size: 14px;
+      font-family: georgia;
+    }
+    #saveButton, #printPageButton {
+      display: none;
+    }
+    textarea {
+      border: none;
+      resize: none;
+    }
+  }
+  .field-line {
+    border: 0;
+    background-color: #eee;
+    padding: 5px;
+  }
+  textarea.field-line {
+    width: 100%;
+  }
+  #nomor_surat {
+    padding: 3px;
+    margin-top: 5px;
+  }
+  .signature-qr {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 12px 0 8px;
+  }
+</style>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+<script>
+  function Cetak()
+  {
+      window.print();
+  }
+  function Simpan()
+  {
+    var url = {?=json_encode($save_url)?};
+
+    $.post(
+      url,
+      {
+        nomor_surat: $("#nomor_surat").val(),
+        no_rawat: {?=json_encode($no_rawat)?},
+        no_rkm_medis: {?=json_encode($pasien.no_rkm_medis)?},
+        nm_pasien: {?=json_encode($pasien.nm_pasien)?},
+        tgl_lahir: {?=json_encode($pasien.tgl_lahir)?},
+        umur: {?=json_encode(hitungUmur($pasien.tgl_lahir))?},
+        jk: {?=json_encode($pasien.jk)?},
+        alamat: {?=json_encode($pasien.alamat . ', ' . $pasien.nm_kel . ', ' . $pasien.nm_kec . ', ' . $pasien.nm_kab . ', ' . $pasien.nm_prop)?},
+        indikasi: $("#indikasi").val(),
+        permintaan: $("#permintaan").val(),
+        catatan: $("#catatan").val(),
+        dokter: {?=json_encode($nm_dokter)?},
+        petugas: {?=json_encode($this->core->getUserInfo('username', $_SESSION['mlite_user']))?}
+      },
+      function(data) {
+        if (data.status == 'success') {
+          alert('Sukses');
+          return;
+        }
+
+        if (data.status == 'error') {
+          alert(data.msg);
+        }
+      },
+      'json'
+    ).fail(function () {
+      alert('Gagal menyimpan surat.');
+    });
+  }
+  function auto_grow(element) {
+    element.style.height = "5px";
+    element.style.height = (element.scrollHeight) + "px";
+  }
+  $(function () {
+    $('#indikasi, #permintaan, #catatan').each(function () {
+      auto_grow(this);
+    });
+  });
+</script>
+
+<div style="width:960px;">
+  <table>
+    <thead>
+      <tr>
+        <th>
+          <img src="{?=url()?}/{$settings.logo}" height="100px" style="margin-right: 20px;" alt="">
+        </th>
+        <th colspan="2" width="100%">
+            <p><span style="font-size: 28px;">{$settings.nama_instansi}</span><br>
+            <span style="font-size: 18px;">Alamat: {$settings.alamat} - {$settings.kota} - {$settings.propinsi}</span><br>
+            <span style="font-size: 18px;">Telepon: {$settings.nomor_telepon} - Email: {$settings.email}</span></p>
+        </th>
+      </tr>
+      <tr>
+        <th colspan="3">
+          <hr style="border-bottom: 2px solid #000;padding-top:3px;">
+        </th>
+      </tr>
+    </thead>
+  </table>
+  <center>
+    <h2 style="margin-bottom:0 !important;border-bottom: 2px solid #000;width:420px;">{$judul}</h2>
+    Nomor: <input type="text" class="field-line" id="nomor_surat" value="{?=!empty($surat.nomor_surat) ? $surat.nomor_surat : $nomor_surat?}" readonly><br><br>
+  </center>
+
+  <table style="width:100%;">
+    <tbody>
+      <tr>
+        <td width="200">Nama Pasien</td>
+        <td width="10">:</td>
+        <td>{$pasien.nm_pasien}</td>
+      </tr>
+      <tr>
+        <td width="200">Tanggal Lahir / Umur</td>
+        <td width="10">:</td>
+        <td>{$pasien.tgl_lahir} / {?=hitungUmur($pasien.tgl_lahir)?}</td>
+      </tr>
+      <tr>
+        <td width="200">Jenis Kelamin</td>
+        <td width="10">:</td>
+        <td>{if: $pasien.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+      </tr>
+      <tr>
+        <td width="200">Alamat</td>
+        <td width="10">:</td>
+        <td>{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}</td>
+      </tr>
+      <tr>
+        <td width="200">No. Rawat</td>
+        <td width="10">:</td>
+        <td>{$no_rawat}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table style="width:100%; margin-top:20px;">
+    <tbody>
+      <tr>
+        <td colspan="3">
+          Dengan hormat, mohon pemeriksaan {$jenis_label} untuk pasien tersebut di bawah ini.
+        </td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">Indikasi / Keluhan</td>
+        <td width="10" style="vertical-align: top;">:</td>
+        <td>
+          <textarea id="indikasi" class="field-line" rows="3" oninput="auto_grow(this)">{$surat.anamnesa}</textarea>
+        </td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">Pemeriksaan Diminta</td>
+        <td width="10" style="vertical-align: top;">:</td>
+        <td>
+          <textarea id="permintaan" class="field-line" rows="3" oninput="auto_grow(this)">{$surat.pemeriksaan_fisik}</textarea>
+        </td>
+      </tr>
+      <tr>
+        <td width="200" style="vertical-align: top;">Catatan</td>
+        <td width="10" style="vertical-align: top;">:</td>
+        <td>
+          <textarea id="catatan" class="field-line" rows="3" oninput="auto_grow(this)">{$surat.pemeriksaan_penunjang}</textarea>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table style="width:100%; margin-top:30px;">
+      <tr>
+        <td colspan="2" width="700"></td>
+        <td width="180">
+          {$settings.kota}, {?=date('Y-m-d')?}<br>
+          Salam Sejawat<br>
+          <div id="qrcode_verifikasi" class="signature-qr"></div>
+          {$nm_dokter}
+        </td>
+      </tr>
+  </table>
+</div>
+<script>
+  jQuery('#qrcode_verifikasi').qrcode({
+    text : {?=json_encode($surat_verifikasi_url)?}
+  });
+</script>
+<br><br>
+<button id="saveButton" onclick="Simpan()">&#9635; Simpan</button>
+<button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>

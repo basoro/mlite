@@ -4,8 +4,9 @@ return [
     'name'          =>  'Dokter IGD',
     'description'   =>  'Modul dokter IGD untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'layanan', 
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'user-md',
     'install'       =>  function () use ($core) {
     },

@@ -3,14 +3,14 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{$settings.title}</h3>
+                    <h3 class="panel-title">{?=isset_or($settings.title)?}</h3>
                 </div>
             	  <div class="panel-body">
                     <div class="form-group">
                         <label>Tampilkan Poli</label>
                         <select name="anjungan[display_poli][]" class="form-control" multiple>
                           {loop: $settings.poliklinik}
-                            <option value="{$value.kd_poli}" {$value.attr}>{$value.nm_poli}</option>
+                            <option value="{?=isset_or($value.kd_poli)?}" {?=isset_or($value.attr)?}>{?=isset_or($value.nm_poli)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -18,49 +18,49 @@
                         <label>Cara Bayar</label>
                         <select name="anjungan[carabayar][]" class="form-control" multiple>
                           {loop: $settings.penjab}
-                            <option value="{$value.kd_pj}" {$value.attr}>{$value.png_jawab}</option>
+                            <option value="{?=isset_or($value.kd_pj)?}" {?=isset_or($value.attr)?}>{?=isset_or($value.png_jawab)?}</option>
                           {/loop}
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Antrian Loket</label>
-                        <input type="text" name="anjungan[antrian_loket]" class="form-control" value="{$settings.anjungan.antrian_loket}" />
+                        <input type="text" name="anjungan[antrian_loket]" class="form-control" value="{?=isset_or($settings.anjungan.antrian_loket)?}" />
                     </div>
                     <div class="form-group">
                         <label>Antrian CS</label>
-                        <input type="text" name="anjungan[antrian_cs]" class="form-control" value="{$settings.anjungan.antrian_cs}" />
+                        <input type="text" name="anjungan[antrian_cs]" class="form-control" value="{?=isset_or($settings.anjungan.antrian_cs)?}" />
                     </div>
                     <div class="form-group">
                         <label>Antrian Apotek</label>
-                        <input type="text" name="anjungan[antrian_apotek]" class="form-control" value="{$settings.anjungan.antrian_apotek}" />
+                        <input type="text" name="anjungan[antrian_apotek]" class="form-control" value="{?=isset_or($settings.anjungan.antrian_apotek)?}" />
                     </div>
                     <div class="form-group">
                         <label>Running Text Anjungan</label>
-                        <input type="text" name="anjungan[text_anjungan]" class="form-control" value="{$settings.anjungan.text_anjungan}" />
+                        <input type="text" name="anjungan[text_anjungan]" class="form-control" value="{?=isset_or($settings.anjungan.text_anjungan)?}" />
                     </div>
                     <div class="form-group">
                         <label>Running Text Loket</label>
-                        <input type="text" name="anjungan[text_loket]" class="form-control" value="{$settings.anjungan.text_loket}" />
+                        <input type="text" name="anjungan[text_loket]" class="form-control" value="{?=isset_or($settings.anjungan.text_loket)?}" />
                     </div>
                     <div class="form-group">
                         <label>Running Text Poliklinik</label>
-                        <input type="text" name="anjungan[text_poli]" class="form-control" value="{$settings.anjungan.text_poli}" />
+                        <input type="text" name="anjungan[text_poli]" class="form-control" value="{?=isset_or($settings.anjungan.text_poli)?}" />
                     </div>
                     <div class="form-group">
                         <label>Running Text Laboratorium</label>
-                        <input type="text" name="anjungan[text_laboratorium]" class="form-control" value="{$settings.anjungan.text_laboratorium}" />
+                        <input type="text" name="anjungan[text_laboratorium]" class="form-control" value="{?=isset_or($settings.anjungan.text_laboratorium)?}" />
                     </div>
                     <div class="form-group">
                         <label>Running Text Apotek</label>
-                        <input type="text" name="anjungan[text_apotek]" class="form-control" value="{$settings.anjungan.text_apotek}" />
+                        <input type="text" name="anjungan[text_apotek]" class="form-control" value="{?=isset_or($settings.anjungan.text_apotek)?}" />
                     </div>
                     <div class="form-group">
                         <label>Running Text Farmasi</label>
-                        <input type="text" name="anjungan[text_farmasi]" class="form-control" value="{$settings.anjungan.text_farmasi}" />
+                        <input type="text" name="anjungan[text_farmasi]" class="form-control" value="{?=isset_or($settings.anjungan.text_farmasi)?}" />
                     </div>
                     <div class="form-group">
                         <label>ID Vidio Youtube</label>
-                        <input type="text" name="anjungan[vidio]" class="form-control" value="{$settings.anjungan.vidio}" />
+                        <input type="text" name="anjungan[vidio]" class="form-control" value="{?=isset_or($settings.anjungan.vidio)?}" />
                     </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                     <div class="btn-group pull-right" role="group" aria-label="Basic example">

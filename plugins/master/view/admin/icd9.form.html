@@ -1,0 +1,33 @@
+<div id="form">
+  <div class="row col-md-6 m-r-md">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Kode ICD 9</label>
+            <div class="col-sm-9">
+              <input type="text" id="kode" name="kode" class="form-control" value="{$icd9.form.kode}" {if: !empty($icd9.form.kode)}disabled{/if}>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Deskripsi Panjang</label>
+            <div class="col-sm-9">
+              <textarea name="deskripsi_panjang" class="form-control" rows="3">{$icd9.form.deskripsi_panjang}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Deskripsi Pendek</label>
+            <div class="col-sm-9">
+              <input type="text" name="deskripsi_pendek" class="form-control" value="{$icd9.form.deskripsi_pendek}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-b-xl clearfix">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+</div>

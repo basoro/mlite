@@ -20,7 +20,7 @@
         	                <label>Nama Dokter RS</label>
                           	<select name="kd_dokter" class="form-control">
                               {loop: $row.dokter}
-                              <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                              <option value="{?=isset_or($value.kd_dokter)?}">{?=isset_or($value.nm_dokter)?}</option>
                               {/loop}
                           	</select>
         	            </div>

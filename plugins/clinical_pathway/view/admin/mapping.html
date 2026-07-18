@@ -1,0 +1,108 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Pilih Master CP</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'mapping'])?}" method="GET">
+          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+          <div class="form-group">
+            <label>Clinical Pathway</label>
+            <select name="cp_id" class="form-control" required>
+              <option value="">-- pilih master CP --</option>
+              {loop: $cp_options}
+              <option value="{$value.id}" {if: $cp_id == $value.id}selected{/if}>{$value.kode_cp} - {$value.nama_cp}</option>
+              {/loop}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cari ICD / Diagnosis</label>
+            <input type="text" name="keyword" class="form-control" value="{$keyword}" placeholder="mis. J18 / pneumonia">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Tampilkan Mapping</button>
+        </form>
+      </div>
+    </div>
+
+    {if: $cp_id}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Tambah Mapping ICD</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'savemapping'])?}" method="POST">
+          <input type="hidden" name="clinical_pathway_id" value="{$cp_id}">
+          <div class="form-group">
+            <label>Diagnosis ICD-10</label>
+            <select name="kd_penyakit" class="form-control" required>
+              <option value="">-- pilih diagnosis --</option>
+              {loop: $diagnosis_options}
+              <option value="{$value.kd_penyakit}">{$value.kd_penyakit} - {$value.nm_penyakit}</option>
+              {/loop}
+            </select>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Prioritas</label>
+                <input type="number" name="prioritas" class="form-control" value="1" min="1">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Tipe</label>
+                <select name="tipe" class="form-control">
+                  <option value="Utama">Utama</option>
+                  <option value="Sekunder">Sekunder</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success btn-block">Simpan Mapping</button>
+        </form>
+      </div>
+    </div>
+    {/if}
+  </div>
+
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Mapping ICD {if: isset_or($selected_cp.nama_cp)}- {?=isset_or($selected_cp.nama_cp)?}{/if}</h3>
+      </div>
+      <div class="panel-body">
+        {if: $cp_id}
+        <div class="table-responsive no-margin">
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Prioritas</th>
+                <th>Tipe</th>
+                <th>Kode ICD</th>
+                <th>Diagnosis</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $rows}
+              <tr>
+                <td>{?=isset_or($value.prioritas)?}</td>
+                <td>{?=isset_or($value.tipe)?}</td>
+                <td>{?=isset_or($value.kd_penyakit)?}</td>
+                <td>{?=isset_or($value.nm_penyakit)?}</td>
+                <td>
+                  <a href="{?=url([ADMIN, 'clinical_pathway', 'deletemapping', $value.id])?}&cp_id={$cp_id}" class="btn btn-xs btn-danger" onclick="return confirm('Hapus mapping ini?');">Hapus</a>
+                </td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+        {else}
+        <p class="text-muted">Pilih master CP untuk mengelola mapping ICD.</p>
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>

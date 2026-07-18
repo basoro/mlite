@@ -50,21 +50,21 @@
                     <tbody>
                       {loop: $taskid}
                       <tr>
-                        <td>{$value.no_rkm_medis}</td>
+                        <td>{?=isset_or($value.no_rkm_medis)?}</td>
                         <td>{?=$this->core->getPasienInfo('nm_pasien', $value.no_rkm_medis)?}</td>
-                        <td>{$value.tgl_registrasi}</td>
-                        <td><a href="{?=url([ADMIN,'jkn_mobile','taskidinput', convertNoRawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal">{$value.no_rawat}</a></td>
-                        <td>{$value.nm_poli}</td>
-                        <td>{$value.nm_dokter}</td>
-                        <td>{$value.nomor_referensi}</td>
-                        <td>{$value.task1}</td>
-                        <td>{$value.task2}</td>
-                        <td>{$value.task3}</td>
-                        <td>{$value.task4}</td>
-                        <td>{$value.task5}</td>
-                        <td>{$value.task6}</td>
-                        <td>{$value.task7}</td>
-                        <td>{$value.task99}</td>
+                        <td>{?=isset_or($value.tgl_registrasi)?}</td>
+                        <td><a href="{?=url([ADMIN,'jkn_mobile','taskidinput', convertNoRawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal">{?=isset_or($value.no_rawat)?}</a></td>
+                        <td>{?=isset_or($value.nm_poli)?}</td>
+                        <td>{?=isset_or($value.nm_dokter)?}</td>
+                        <td>{?=isset_or($value.nomor_referensi)?}</td>
+                        <td>{?=isset_or($value.task1)?}</td>
+                        <td>{?=isset_or($value.task2)?}</td>
+                        <td>{?=isset_or($value.task3)?}</td>
+                        <td>{?=isset_or($value.task4)?}</td>
+                        <td>{?=isset_or($value.task5)?}</td>
+                        <td>{?=isset_or($value.task6)?}</td>
+                        <td>{?=isset_or($value.task7)?}</td>
+                        <td>{?=isset_or($value.task99)?}</td>
                       </tr>
                       {/loop}
                     </tbody>

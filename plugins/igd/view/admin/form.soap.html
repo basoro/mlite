@@ -4,11 +4,11 @@
       <div class="panel-body">
           <div class="form-group">
             <label for="tanggal">Tanggal</label>
-            <input type="text" id="tgl_perawatan" name="tgl_perawatan" class="form-control tanggal" value="{?=date('Y-m-d')?}">
+            <input type="text" id="soap_tgl_perawatan" name="tgl_perawatan" class="form-control tanggal" value="{?=date('Y-m-d')?}">
           </div>
           <div class="form-group">
             <label for="jam">Jam</label>
-            <input type="text" id="jam_rawat" name="jam_rawat" class="form-control jam" value="{?=date('H:i:s')?}">
+            <input type="text" id="soap_jam_rawat" name="jam_rawat" class="form-control jam" value="{?=date('H:i:s')?}">
           </div>
           <div class="form-group">
             <label for="id_pendaftaran">Id Rawat</label>
@@ -134,6 +134,10 @@
           <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>
           <button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></button>
           <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+          <span class="pull-right">
+            <a href="#" class="btn btn-info" id="odontogram"><i class="fa fa-bell"></i><span class="hidden-xs"> Odontogram</span></a>
+            <a href="#" class="btn btn-warning assesment"><i class="fa fa-file-text"></i><span class="hidden-xs"> Assesment</span></a>
+          </span>
         </div>
       </div>
     </div>
@@ -224,6 +228,20 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="odontogramModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="assesmentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
   $('input:text[name=kesadaran]').focus(function(){
   //$('input:text[name=kesadaran]').on('input',function(e){
@@ -268,7 +286,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: "{?=url([ADMIN, 'icd_9', 'icd9'])?}",
+                 url: "{?=url([ADMIN, 'igd', 'icd9'])?}",
                  method:"POST",
                  data:{query:query},
                  success:function(data)
@@ -293,7 +311,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: "{?=url([ADMIN, 'icd_10', 'icd10'])?}",
+                 url: "{?=url([ADMIN, 'igd', 'icd10'])?}",
                  method:"POST",
                  data:{query:query},
                  success:function(data)
@@ -323,7 +341,7 @@
     var kode = $('#kode_icd9').text();
     var status = $('input:hidden[name=status]').val();
 
-    var url = baseURL + '/icd_9/saveicd9?t=' + mlite.token;
+    var url = baseURL + '/igd/saveicd9?t=' + mlite.token;
 
     $.post(url,{
       no_rawat: no_rawat,
@@ -332,7 +350,7 @@
       status: status,
       kode: kode
     } ,function(data) {
-      $("#display_icd").show().load(baseURL + '/icd_10/display?no_rawat=' + no_rawat + '&t=' + mlite.token);
+      $("#display_icd").show().load(baseURL + '/igd/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
       //bersih();
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data ICD 9 (Prosedur) pasien telah disimpan!"+
@@ -352,7 +370,7 @@
     var kode = $('#kode_icd10').text();
     var status = $('input:hidden[name=status]').val();
 
-    var url = baseURL + '/icd_10/saveicd10?t=' + mlite.token;
+    var url = baseURL + '/igd/saveicd10?t=' + mlite.token;
 
     $.post(url,{
       no_rawat: no_rawat,
@@ -361,7 +379,7 @@
       status: status,
       kd_penyakit: kode
     } ,function(data) {
-      $("#display_icd").show().load(baseURL + '/icd_10/display?no_rawat=' + no_rawat + '&t=' + mlite.token);
+      $("#display_icd").show().load(baseURL + '/igd/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
       //bersih();
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data ICD 10 (Diagnosa) pasien telah disimpan!"+

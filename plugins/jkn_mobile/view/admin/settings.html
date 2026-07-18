@@ -3,50 +3,50 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{$settings.title}</h3>
+                    <h3 class="panel-title">{?=isset_or($settings.title)?}</h3>
                 </div>
             	  <div class="panel-body">
                     <div class="form-group">
                         <label>Username</label>
-                        <input type="text" name="jkn_mobile[x_username]" class="form-control" value="{$settings.jkn_mobile.x_username}" />
+                        <input type="text" name="jkn_mobile[x_username]" class="form-control" value="{?=isset_or($settings.jkn_mobile.x_username)?}" />
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input type="text" name="jkn_mobile[x_password]" class="form-control" value="{$settings.jkn_mobile.x_password}" />
+                        <input type="text" name="jkn_mobile[x_password]" class="form-control" value="{?=isset_or($settings.jkn_mobile.x_password)?}" />
                     </div>
                     <div class="form-group">
                         <label>Header Token</label>
-                        <input type="text" name="jkn_mobile[header_token]" class="form-control" value="{$settings.jkn_mobile.header_token}" />
+                        <input type="text" name="jkn_mobile[header_token]" class="form-control" value="{?=isset_or($settings.jkn_mobile.header_token)?}" />
                     </div>
                     <div class="form-group">
                         <label>Header Username</label>
-                        <input type="text" name="jkn_mobile[header_username]" class="form-control" value="{$settings.jkn_mobile.header_username}" />
+                        <input type="text" name="jkn_mobile[header_username]" class="form-control" value="{?=isset_or($settings.jkn_mobile.header_username)?}" />
                     </div>
                     <div class="form-group">
                         <label>Header Password</label>
-                        <input type="text" name="jkn_mobile[header_password]" class="form-control" value="{$settings.jkn_mobile.header_password}" />
+                        <input type="text" name="jkn_mobile[header_password]" class="form-control" value="{?=isset_or($settings.jkn_mobile.header_password)?}" />
                     </div>
                     <div class="form-group">
                         <label>BPJS Cons ID</label>
-                        <input type="text" name="jkn_mobile[BpjsConsID]" class="form-control" value="{$settings.jkn_mobile.BpjsConsID}" />
+                        <input type="text" name="jkn_mobile[BpjsConsID]" class="form-control" value="{?=isset_or($settings.jkn_mobile.BpjsConsID)?}" />
                     </div>
                     <div class="form-group">
                         <label>BPJS Secret Key</label>
-                        <input type="text" name="jkn_mobile[BpjsSecretKey]" class="form-control" value="{$settings.jkn_mobile.BpjsSecretKey}" />
+                        <input type="text" name="jkn_mobile[BpjsSecretKey]" class="form-control" value="{?=isset_or($settings.jkn_mobile.BpjsSecretKey)?}" />
                     </div>
                     <div class="form-group">
                         <label>BPJS User Key</label>
-                        <input type="text" name="jkn_mobile[BpjsUserKey]" class="form-control" value="{$settings.jkn_mobile.BpjsUserKey}" />
+                        <input type="text" name="jkn_mobile[BpjsUserKey]" class="form-control" value="{?=isset_or($settings.jkn_mobile.BpjsUserKey)?}" />
                     </div>
                     <div class="form-group">
                         <label>BPJS WS Antrian</label>
-                        <input type="text" name="jkn_mobile[BpjsAntrianUrl]" class="form-control" value="{$settings.jkn_mobile.BpjsAntrianUrl}" />
+                        <input type="text" name="jkn_mobile[BpjsAntrianUrl]" class="form-control" value="{?=isset_or($settings.jkn_mobile.BpjsAntrianUrl)?}" />
                     </div>
                     <div class="form-group">
                         <label>Kode BPJS</label>
                         <select name="jkn_mobile[kd_pj_bpjs]" class="form-control">
                           {loop: $settings.penjab}
-                            <option value="{$value.kd_pj}"{if: $value.kd_pj == $settings.jkn_mobile.kd_pj_bpjs} selected{/if}>{$value.png_jawab}</option>
+                            <option value="{?=isset_or($value.kd_pj)?}"{if: $value.kd_pj == $settings.jkn_mobile.kd_pj_bpjs} selected{/if}>{?=isset_or($value.png_jawab)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -54,7 +54,7 @@
                         <label>Exclude Poli TaskID</label>
                         <select name="jkn_mobile[exclude_taskid][]" class="form-control" multiple>
                           {loop: $settings.exclude_taskid}
-                            <option value="{$value.kd_poli}" {$value.attr}>{$value.nm_poli}</option>
+                            <option value="{?=isset_or($value.kd_poli)?}" {?=isset_or($value.attr)?}>{?=isset_or($value.nm_poli)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -73,7 +73,7 @@
                         <label>Tampilkan Poli</label>
                         <select name="jkn_mobile[display][]" class="form-control" multiple>
                           {loop: $settings.poliklinik}
-                            <option value="{$value.kd_poli}" {$value.attr}>{$value.nm_poli}</option>
+                            <option value="{?=isset_or($value.kd_poli)?}" {?=isset_or($value.attr)?}>{?=isset_or($value.nm_poli)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -82,8 +82,8 @@
         										<div class="form-group">
         	    	                <label>Provinsi</label>
         												<div class="input-group">
-        														<input type="hidden" name="jkn_mobile[kdprop]" value="{$settings.jkn_mobile.kdprop}" id="kd_prop">
-        														<input type="text" value="{$settings.propinsi.nm_prop}" id="namaprop" class="form-control" placeholder="Propinsi">
+        														<input type="hidden" name="jkn_mobile[kdprop]" value="{?=isset_or($settings.jkn_mobile.kdprop)?}" id="kd_prop">
+        														<input type="text" value="{?=isset_or($settings.propinsi.nm_prop)?}" id="namaprop" class="form-control" placeholder="Propinsi">
         														<span class="input-group-addon" data-toggle="modal" data-target="#propinsiModal">
         																<i class="fa fa-paperclip"></i>
         														</span>
@@ -94,8 +94,8 @@
         										<div class="form-group">
         	    	                <label>Kabupaten / Kota</label>
         												<div class="input-group">
-        														<input type="hidden" name="jkn_mobile[kdkab]" value="{$settings.jkn_mobile.kdkab}" id="kd_kab">
-        														<input type="text" value="{$settings.kabupaten.nm_kab}" id="namakab" class="form-control" placeholder="Kabupaten">
+        														<input type="hidden" name="jkn_mobile[kdkab]" value="{?=isset_or($settings.jkn_mobile.kdkab)?}" id="kd_kab">
+        														<input type="text" value="{?=isset_or($settings.kabupaten.nm_kab)?}" id="namakab" class="form-control" placeholder="Kabupaten">
         														<span class="input-group-addon" data-toggle="modal" data-target="#kabupatenModal">
         																<i class="fa fa-paperclip"></i>
         														</span>
@@ -108,8 +108,8 @@
         										<div class="form-group">
         	    	                <label>Kecamatan</label>
         												<div class="input-group">
-        														<input type="hidden" name="jkn_mobile[kdkec]" value="{$settings.jkn_mobile.kdkec}" id="kd_kec">
-        														<input type="text" value="{$settings.kecamatan.nm_kec}" id="namakec" class="form-control" placeholder="Kecamatan">
+        														<input type="hidden" name="jkn_mobile[kdkec]" value="{?=isset_or($settings.jkn_mobile.kdkec)?}" id="kd_kec">
+        														<input type="text" value="{?=isset_or($settings.kecamatan.nm_kec)?}" id="namakec" class="form-control" placeholder="Kecamatan">
         														<span class="input-group-addon" data-toggle="modal" data-target="#kecamatanModal">
         																<i class="fa fa-paperclip"></i>
         														</span>
@@ -120,8 +120,8 @@
                             <div class="form-group">
                                 <label>Kelurahan</label>
                                 <div class="input-group">
-                                    <input type="hidden" name="jkn_mobile[kdkel]" value="{$settings.jkn_mobile.kdkel}" id="kd_kel">
-                                    <input type="text" value="{$settings.kelurahan.nm_kel}" id="namakel" class="form-control" placeholder="Kelurahan">
+                                    <input type="hidden" name="jkn_mobile[kdkel]" value="{?=isset_or($settings.jkn_mobile.kdkel)?}" id="kd_kel">
+                                    <input type="text" value="{?=isset_or($settings.kelurahan.nm_kel)?}" id="namakel" class="form-control" placeholder="Kelurahan">
                                     <span class="input-group-addon" data-toggle="modal" data-target="#kelurahanModal">
                                         <i class="fa fa-paperclip"></i>
                                     </span>
@@ -135,7 +135,7 @@
         	    	                <label>Perusahaan Pasien</label>
                                 <select name="jkn_mobile[perusahaan_pasien]" class="form-control">
           												{loop: $settings.perusahaan_pasien}
-          													<option value="{$value.kode_perusahaan}"{if: $value.kode_perusahaan == $settings.jkn_mobile.perusahaan_pasien} selected{/if}>{$value.nama_perusahaan}</option>
+          													<option value="{?=isset_or($value.kode_perusahaan)?}"{if: $value.kode_perusahaan == $settings.jkn_mobile.perusahaan_pasien} selected{/if}>{?=isset_or($value.nama_perusahaan)?}</option>
           												{/loop}
           											</select>
         	    	            </div>
@@ -145,7 +145,7 @@
         	    	                <label>Suku Bangsa Pasien</label>
                                 <select name="jkn_mobile[suku_bangsa]" class="form-control">
           												{loop: $settings.suku_bangsa}
-          													<option value="{$value.id}"{if: $value.id == $settings.jkn_mobile.suku_bangsa} selected{/if}>{$value.nama_suku_bangsa}</option>
+          													<option value="{?=isset_or($value.id)?}"{if: $value.id == $settings.jkn_mobile.suku_bangsa} selected{/if}>{?=isset_or($value.nama_suku_bangsa)?}</option>
           												{/loop}
           											</select>
         	    	            </div>
@@ -157,7 +157,7 @@
         	    	                <label>Bahasa Pasien</label>
                                 <select name="jkn_mobile[bahasa_pasien]" class="form-control">
           												{loop: $settings.bahasa_pasien}
-          													<option value="{$value.id}"{if: $value.id == $settings.jkn_mobile.bahasa_pasien} selected{/if}>{$value.nama_bahasa}</option>
+          													<option value="{?=isset_or($value.id)?}"{if: $value.id == $settings.jkn_mobile.bahasa_pasien} selected{/if}>{?=isset_or($value.nama_bahasa)?}</option>
           												{/loop}
           											</select>
         	    	            </div>
@@ -167,7 +167,7 @@
                                 <label>Cacat Fisik</label>
                                 <select name="jkn_mobile[cacat_fisik]" class="form-control">
           												{loop: $settings.cacat_fisik}
-          													<option value="{$value.id}"{if: $value.id == $settings.jkn_mobile.cacat_fisik} selected{/if}>{$value.nama_cacat}</option>
+          													<option value="{?=isset_or($value.id)?}"{if: $value.id == $settings.jkn_mobile.cacat_fisik} selected{/if}>{?=isset_or($value.nama_cacat)?}</option>
           												{/loop}
           											</select>
                             </div>

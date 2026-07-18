@@ -47,12 +47,12 @@
 			<table width="740px">
 				<tr style="border:none;">
 					<td width="80px">
-						<img width="70px" src='{?=url()?}/{$settings.logo}' />
+						<img width="70px" src='{?=url()?}/{?=isset_or($settings.logo)?}' />
 					</td>
 					<td>
-						<span style="font-size:24px">{$settings.nama_instansi}</span><br>
-						{$settings.alamat} - {$settings.nomor_telepon} - {$settings.email}<br>
-						{$settings.kota} - {$settings.propinsi}
+						<span style="font-size:24px">{?=isset_or($settings.nama_instansi)?}</span><br>
+						{?=isset_or($settings.alamat)?} - {?=isset_or($settings.nomor_telepon)?} - {?=isset_or($settings.email)?}<br>
+						{?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}
 					</td>
 				</tr>
 			</table>
@@ -62,42 +62,42 @@
 					<td width="150px">Nama Pasien/RM</td>
 					<td>:</td>
 					<td width="600px">
-						{$pasien.nm_pasien}
+						{?=isset_or($pasien.nm_pasien)?}
 					</td>
 				</tr>
 				<tr style="border:none;">
 					<td width="150px">Umur</td>
 					<td>:</td>
 					<td width="600px">
-						{$pasien.umur}
+						{?=isset_or($pasien.umur)?}
 					</td>
 				</tr>
 				<tr style="border:none;">
 					<td width="150px">Poli</td>
 					<td>:</td>
 					<td width="600px">
-						{$pasien.nm_poli}
+						{?=isset_or($pasien.nm_poli)?}
 					</td>
 				</tr>
 				<tr style="border:none;">
 					<td width="150px">Dokter PJ</td>
 					<td>:</td>
 					<td width="600px">
-						{$pj_radiologi}
+						{?=isset_or($pj_radiologi)?}
 					</td>
 				</tr>
 				<tr style="border:none;">
 					<td width="150px">Dokter Pengirim</td>
 					<td>:</td>
 					<td width="600px">
-						{$dokter_perujuk}
+						{?=isset_or($dokter_perujuk)?}
 					</td>
 				</tr>
 				<tr style="border:none;">
 					<td width="150px">Tanggal</td>
 					<td>:</td>
 					<td width="600px">
-						{$pasien.tgl_registrasi}
+						{?=isset_or($pasien.tgl_registrasi)?}
 					</td>
 				</tr>
 			</table>
@@ -114,7 +114,7 @@
 		      {loop: $permintaan_radiologi}
 		        {loop: $value.permintaan_pemeriksaan_radiologi as $data}
 		        <tr>
-		          <td>{$data.nm_perawatan}</td>
+		          <td>{?=isset_or($data.nm_perawatan)?}</td>
 		        </tr>
 		        {/loop}
 		      {/loop}
@@ -129,10 +129,10 @@
 							<br>
 							<br>
 							<center>
-							<img src="{$qrCode}" width="100px"/>
+							<img src="{?=isset_or($qrCode)?}" width="100px"/>
 							</center>
 							<br>
-							{$pj_radiologi}
+							{?=isset_or($pj_radiologi)?}
 					</td>
 				</tr>
 			</table>

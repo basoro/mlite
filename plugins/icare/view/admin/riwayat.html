@@ -12,9 +12,9 @@
 
 	<div class="embed-responsive embed-responsive-16by9">
   {if: $message == '200'}
-	<iframe class="embed-responsive-item" src="{$url}" allowfullscreen></iframe>
+	<iframe class="embed-responsive-item" src="{?=isset_or($url)?}" allowfullscreen></iframe>
   {else}
-    <h3>{$message}</h3>
+    <h3>{?=isset_or($message)?}</h3>
   {/if}
 	</div>
 

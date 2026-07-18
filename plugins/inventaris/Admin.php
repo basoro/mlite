@@ -6,6 +6,7 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    public $assign;
 
   public function navigation()
   {
@@ -51,7 +52,7 @@ class Admin extends AdminModule
       ->where('tgl_pinjam', '<=', $date_end)
       ->toArray();
 
-    return $this->draw('manage.html', ['tgl_awal' => $date_start, 'tgl_akhir' => $date_end, 'aset' => $aset, 'pemeliharaan' => $pemeliharaan, 'perbaikan' => $perbaikan, 'peminjaman' => $peminjaman]);
+    return $this->draw('manage.html', ['tgl_awal' => $date_start, 'tgl_akhir' => $date_end, 'aset' => htmlspecialchars_array($aset), 'pemeliharaan' => htmlspecialchars_array($pemeliharaan), 'perbaikan' => htmlspecialchars_array($perbaikan), 'peminjaman' => htmlspecialchars_array($peminjaman)]);
   }
 
   public function getDataAset()
@@ -103,7 +104,7 @@ class Admin extends AdminModule
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->join('pegawai', 'pegawai.nik=pemeliharaan_inventaris.nip')
       ->toArray();
-    return $this->draw('data.pemeliharaan.html', ['pemeliharaan' => $pemeliharaan]);
+    return $this->draw('data.pemeliharaan.html', ['pemeliharaan' => htmlspecialchars_array($pemeliharaan)]);
   }
 
   public function getPermintaanPerbaikan()
@@ -126,7 +127,7 @@ class Admin extends AdminModule
       $row['hapus'] = url([ADMIN,'inventaris','permintaanperbaikanhapus',$row['no_permintaan']]);
       $perbaikan[] = $row;
     }
-    return $this->draw('data.permintaan.perbaikan.html', ['perbaikan' => $perbaikan]);
+    return $this->draw('data.permintaan.perbaikan.html', ['perbaikan' => htmlspecialchars_array($perbaikan)]);
   }
 
   public function getPermintaanPerbaikanBaru()
@@ -147,7 +148,7 @@ class Admin extends AdminModule
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
-    return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => $this->assign]);
+    return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getPermintaanPerbaikanUbah($no_permintaan)
@@ -161,7 +162,7 @@ class Admin extends AdminModule
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
-    return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => $this->assign]);
+    return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => htmlspecialchars_array($this->assign)]);
   }
 
   public function getPermintaanPerbaikanDetail($no_permintaan)
@@ -176,7 +177,7 @@ class Admin extends AdminModule
       ->oneArray();
     $perbaikan = url([ADMIN,'inventaris','perbaikan', $no_permintaan]);
     $perbaikanhapus = url([ADMIN,'inventaris','perbaikanhapus', $no_permintaan]);
-    return $this->draw('data.permintaan.perbaikan.detail.html', ['permintaan_perbaikan_inventaris' => $permintaan_perbaikan_inventaris, 'perbaikandetail' => $perbaikandetail, 'perbaikan' => $perbaikan, 'perbaikanhapus' => $perbaikanhapus]);
+    return $this->draw('data.permintaan.perbaikan.detail.html', ['permintaan_perbaikan_inventaris' => $permintaan_perbaikan_inventaris, 'perbaikandetail' => htmlspecialchars_array($perbaikandetail), 'perbaikan' => htmlspecialchars_array($perbaikan), 'perbaikanhapus' => htmlspecialchars_array($perbaikanhapus)]);
   }
 
   public function postPermintaanPerbaikanSimpan($no_permintaan = null)
@@ -247,7 +248,7 @@ class Admin extends AdminModule
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
 
-    return $this->draw('form.perbaikan.html', ['perbaikan' => $this->assign]);
+    return $this->draw('form.perbaikan.html', ['perbaikan' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postPerbaikanSimpan($no_permintaan = null)
@@ -328,7 +329,7 @@ class Admin extends AdminModule
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
 
-    return $this->draw('form.pemeliharaan.html', ['pemeliharaan' => $this->assign]);
+    return $this->draw('form.pemeliharaan.html', ['pemeliharaan' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postPemeliharaanSimpan($no_inventaris = null)
@@ -382,14 +383,10 @@ class Admin extends AdminModule
 
   public function setNoInventaris()
   {
-      $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_inventaris,4),signed)),0) FROM inventaris");
-      $last_no_order->execute();
-      $last_no_order = $last_no_order->fetch();
-      if(empty($last_no_order[0])) {
-        $last_no_order[0] = '0000';
-      }
-      $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
-      $next_no_order = 'IN'.date('Ymd').''.$next_no_order;
+      $urut = $this->db('inventaris')
+          ->nextRightNumber('no_inventaris', 4);
+
+      $next_no_order = 'IN' . date('Ymd') . sprintf('%04d', $urut);
 
       return $next_no_order;
   }
@@ -397,14 +394,12 @@ class Admin extends AdminModule
   public function setNoPermintaan()
   {
       $date = date('Y-m-d');
-      $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_permintaan,4),signed)),0) FROM permintaan_perbaikan_inventaris WHERE tanggal LIKE '%$date%'");
-      $last_no_order->execute();
-      $last_no_order = $last_no_order->fetch();
-      if(empty($last_no_order[0])) {
-        $last_no_order[0] = '0000';
-      }
-      $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
-      $next_no_order = 'PI'.date('Ymd').''.$next_no_order;
+
+      $urut = $this->db('permintaan_perbaikan_inventaris')
+          ->where('tanggal', $date)
+          ->nextRightNumber('no_permintaan', 4);
+
+      $next_no_order = 'PI' . date('Ymd') . sprintf('%04d', $urut);
 
       return $next_no_order;
   }

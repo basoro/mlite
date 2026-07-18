@@ -9,99 +9,796 @@ use PHPMailer\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
+  protected array $assign = [];
 
-    public function navigation()
-    {
-        return [
-            'Kelola'   => 'manage',
-        ];
+  protected function isBillingParsialEnabled()
+  {
+    $val = $this->settings->get('settings.billing_parsial');
+    if ($val === null || $val === '') {
+      return true;
+    }
+    return ((string) $val) === 'true';
+  }
+
+  protected function getParsialPaidMap($noRawat, $kelompok, $refModul)
+  {
+    try {
+      $pdo = $this->core->db()->pdo();
+      $stmt = $pdo->prepare("SELECT d.kd_jenis_prw, d.tgl_periksa, d.jam, d.status_periksa, SUM(d.jumlah_alokasi) AS total
+        FROM mlite_billing_pembayaran_detail d
+        INNER JOIN mlite_billing_pembayaran h ON h.id = d.pembayaran_id
+        WHERE h.no_rawat = ? AND d.kelompok = ? AND d.ref_modul = ?
+        GROUP BY d.kd_jenis_prw, d.tgl_periksa, d.jam, d.status_periksa");
+      $stmt->execute([$noRawat, $kelompok, $refModul]);
+      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $map = [];
+      foreach ($rows as $r) {
+        $k = (string) ($r['kd_jenis_prw'] ?? '');
+        $tgl = (string) ($r['tgl_periksa'] ?? '');
+        $jam = (string) ($r['jam'] ?? '');
+        $st = (string) ($r['status_periksa'] ?? '');
+        if ($k === '' || $tgl === '' || $jam === '' || $st === '') {
+          continue;
+        }
+        $map[$k.'|'.$tgl.'|'.$jam.'|'.$st] = (float) ($r['total'] ?? 0);
+      }
+      return $map;
+    } catch (\Exception $e) {
+      return [];
+    }
+  }
+
+  protected function setOrderPaidStatusLab($noRawat, $kdJenisPrw, $status, $tglPeriksa, $jamPeriksa, $isPaid)
+  {
+    try {
+      $noorder = $this->db('permintaan_lab')
+        ->where('no_rawat', $noRawat)
+        ->where('status', strtolower($status))
+        ->where('tgl_permintaan', $tglPeriksa)
+        ->where('jam_permintaan', $jamPeriksa)
+        ->oneArray()['noorder'] ?? '';
+      if ($noorder === '') {
+        return;
+      }
+      $this->db('permintaan_pemeriksaan_lab')
+        ->where('noorder', $noorder)
+        ->where('kd_jenis_prw', $kdJenisPrw)
+        ->save(['stts_bayar' => $isPaid ? 'Sudah Bayar' : 'Belum Bayar']);
+    } catch (\Exception $e) {
+    }
+  }
+
+  protected function getParsialHistory($noRawat)
+  {
+    try {
+      $pdo = $this->core->db()->pdo();
+      $stmt = $pdo->prepare("SELECT h.id, h.tgl_bayar, h.jam_bayar, h.metode, h.jumlah_bayar, h.id_user, h.keterangan
+        FROM mlite_billing_pembayaran h
+        INNER JOIN mlite_billing_pembayaran_detail d ON d.pembayaran_id = h.id
+        WHERE h.no_rawat = ? AND d.kelompok = 'LAB' AND d.ref_modul = 'laboratorium'
+        GROUP BY h.id
+        ORDER BY h.tgl_bayar DESC, h.jam_bayar DESC, h.id DESC");
+      $stmt->execute([(string) $noRawat]);
+      return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\Exception $e) {
+      return [];
+    }
+  }
+
+  public function navigation()
+  {
+    return [
+      'Kelola' => 'manage',
+    ];
+  }
+
+  public function apiList()
+  {
+    $username = $this->core->checkAuth('GET');
+    if (!$this->core->checkPermission($username, 'can_read', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
     }
 
-    public function anyManage($type = "ralan")
-    {
-        $tgl_kunjungan = date('Y-m-d');
-        $tgl_kunjungan_akhir = date('Y-m-d');
-        $status_periksa = '';
-        $status_bayar = '';
-        $status_pulang = '';
+    $draw = $_GET['draw'] ?? 0;
+    $start = $_GET['start'] ?? 0;
+    $length = $_GET['length'] ?? 10;
+    $columnIndex = $_GET['order'][0]['column'] ?? 0;
+    $columnName = $_GET['columns'][$columnIndex]['data'] ?? 'no_rawat';
+    $columnSortOrder = strtolower($_GET['order'][0]['dir'] ?? 'asc');
 
-        if(isset($_POST['periode_rawat_jalan'])) {
-          $tgl_kunjungan = $_POST['periode_rawat_jalan'];
-        }
-        if(isset($_POST['periode_rawat_jalan_akhir'])) {
-          $tgl_kunjungan_akhir = $_POST['periode_rawat_jalan_akhir'];
-        }
-        if(isset($_POST['status_periksa'])) {
-          $status_periksa = $_POST['status_periksa'];
-        }
-        if(isset($_POST['status_bayar'])) {
-          $status_bayar = $_POST['status_bayar'];
-        }
-        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'type' => $type]);
+    $allowedColumns = ['no_reg', 'jam_reg', 'no_rkm_medis', 'kd_poli', 'kd_dokter', 'stts', 'status_bayar', 'kd_pj', 'nm_pasien', 'nm_dokter', 'nm_poli', 'png_jawab', 'no_rawat'];
+    if (!in_array($columnName, $allowedColumns)) {
+      $columnName = 'no_rawat';
+    }
+    if (!in_array($columnSortOrder, ['asc', 'desc'])) {
+      $columnSortOrder = 'asc';
     }
 
-    public function anyDisplay()
-    {
-        $tgl_kunjungan = date('Y-m-d');
-        $tgl_kunjungan_akhir = date('Y-m-d');
-        $status_periksa = '';
-        $status_bayar = '';
-        $status_pulang = '';
-        $type = isset_or($_POST['status']);
+    $searchValue = is_array($_GET['search'] ?? null) ? ($_GET['search']['value'] ?? '') : ($_GET['search'] ?? '');
 
-        if(isset($_POST['periode_rawat_jalan'])) {
-          $tgl_kunjungan = $_POST['periode_rawat_jalan'];
-        }
-        if(isset($_POST['periode_rawat_jalan_akhir'])) {
-          $tgl_kunjungan_akhir = $_POST['periode_rawat_jalan_akhir'];
-        }
-        if(isset($_POST['status_periksa'])) {
-          $status_periksa = $_POST['status_periksa'];
-        }
-        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'type' => $type]);
-        exit();
+    $tgl_kunjungan = $_GET['tgl_awal'] ?? date('Y-m-d');
+    $tgl_kunjungan_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
+    $status_periksa = $_GET['status_periksa'] ?? '';
+    $type = $_GET['type'] ?? 'ralan';
+    $status_bayar = $_GET['status_bayar'] ?? '';
+
+    $params = [];
+    if ($type == 'permintaan') {
+      $sql = "SELECT permintaan_lab.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM permintaan_lab 
+                    JOIN reg_periksa ON permintaan_lab.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON permintaan_lab.dokter_perujuk = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE permintaan_lab.tgl_permintaan BETWEEN ? AND ?";
+      $params[] = $tgl_kunjungan;
+      $params[] = $tgl_kunjungan_akhir;
+
+      if ($status_periksa != '') {
+        $sql .= " AND permintaan_lab.status = ?";
+        $params[] = ucfirst(strtolower($status_periksa));
+      }
+    } elseif ($type == 'ranap') {
+      $sql = "SELECT kamar_inap.*, reg_periksa.*, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM kamar_inap 
+                    JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar 
+                    JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    LEFT JOIN dpjp_ranap ON dpjp_ranap.no_rawat = kamar_inap.no_rawat 
+                    LEFT JOIN dokter ON dokter.kd_dokter = dpjp_ranap.kd_dokter 
+                    LEFT JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli
+                    WHERE 1=1";
+
+      if ($status_periksa == '') {
+        $sql .= " AND kamar_inap.stts_pulang = '-'";
+      }
+      if ($status_periksa == 'belum') {
+        $sql .= " AND kamar_inap.stts_pulang = '-' AND kamar_inap.tgl_masuk BETWEEN ? AND ?";
+        $params[] = $tgl_kunjungan;
+        $params[] = $tgl_kunjungan_akhir;
+      }
+      if ($status_periksa == 'selesai') {
+        $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_masuk BETWEEN ? AND ?";
+        $params[] = $tgl_kunjungan;
+        $params[] = $tgl_kunjungan_akhir;
+      }
+      if ($status_periksa == 'lunas') {
+        $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_keluar BETWEEN ? AND ?";
+        $params[] = $tgl_kunjungan;
+        $params[] = $tgl_kunjungan_akhir;
+      }
+    } else {
+      $sql = "SELECT reg_periksa.*, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM reg_periksa 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE reg_periksa.tgl_registrasi BETWEEN ? AND ?";
+      $params[] = $tgl_kunjungan;
+      $params[] = $tgl_kunjungan_akhir;
+
+      if ($status_periksa == 'belum') {
+        $sql .= " AND reg_periksa.stts = 'Belum'";
+      }
+      if ($status_periksa == 'selesai') {
+        $sql .= " AND reg_periksa.stts = 'Sudah'";
+      }
+      if ($status_periksa == 'lunas') {
+        $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
+      }
     }
 
-    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='', $status_pulang='', $status_bayar ='', $type ='')
-    {
-        $this->_addHeaderFiles();
+    if (!empty($searchValue)) {
+      $sql .= " AND (reg_periksa.no_rawat LIKE ? OR reg_periksa.no_rkm_medis LIKE ? OR pasien.nm_pasien LIKE ? OR dokter.nm_dokter LIKE ?)";
+      $params[] = "%$searchValue%";
+      $params[] = "%$searchValue%";
+      $params[] = "%$searchValue%";
+      $params[] = "%$searchValue%";
+    }
 
-        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
-        $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->db('penjab')->where('status', '1')->toArray();
-        $this->assign['no_rawat'] = '';
-        $this->assign['no_reg']     = '';
-        $this->assign['tgl_registrasi']= date('Y-m-d');
-        $this->assign['jam_reg']= date('H:i:s');
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute($params);
+    $totalRecords = $stmt->rowCount();
 
-        $sql = "SELECT reg_periksa.*,
+    $sql .= " ORDER BY $columnName $columnSortOrder LIMIT $start, $length";
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    foreach ($rows as &$row) {
+      foreach ($row as $key => $value) {
+        if (is_string($value)) {
+          $row[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+        }
+      }
+      if ($type == 'ranap') {
+        $dpjp_ranap = $this->db('dpjp_ranap')
+          ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+          ->where('no_rawat', $row['no_rawat'])
+          ->toArray();
+        $row['dokter'] = htmlspecialchars_array($dpjp_ranap);
+      }
+    }
+    unset($row);
+
+    return [
+      "status" => "success",
+      "data" => $rows,
+      "meta" => [
+        "page" => floor($start / $length) + 1,
+        "per_page" => intval($length),
+        "total" => $totalRecords
+      ]
+    ];
+  }
+
+  public function apiShow($no_rawat = null)
+  {
+    $username = $this->core->checkAuth('GET');
+    if (!$this->core->checkPermission($username, 'can_read', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    if (!$no_rawat) {
+      return ['status' => 'error', 'message' => 'No rawat missing'];
+    }
+    $no_rawat = revertNoRawat($no_rawat);
+    $row = $this->db('reg_periksa')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+      ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+      ->where('no_rawat', $no_rawat)
+      ->oneArray();
+
+    if ($row) {
+      return ['status' => 'success', 'data' => htmlspecialchars_array($row)];
+    } else {
+      return ['status' => 'error', 'message' => 'Not found'];
+    }
+  }
+
+  public function apiSave()
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_create', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input))
+      $input = $_POST;
+
+    if (empty($input['no_rkm_medis'])) {
+      return ['status' => 'error', 'message' => 'Data incomplete'];
+    }
+
+    $input['tgl_registrasi'] = $input['tgl_registrasi'] ?? date('Y-m-d');
+    $input['jam_reg'] = $input['jam_reg'] ?? date('H:i:s');
+    $input['kd_dokter'] = $input['kd_dokter'] ?? $this->settings->get('settings.pj_laboratorium');
+
+    try {
+      if (!$this->db('reg_periksa')->where('no_rawat', $input['no_rawat'])->oneArray()) {
+        $input['status_lanjut'] = 'Ralan';
+        $input['stts'] = 'Belum';
+        $input['status_bayar'] = 'Belum Bayar';
+        $input['p_jawab'] = $input['p_jawab'] ?? '-';
+        $input['almt_pj'] = $input['almt_pj'] ?? '-';
+        $input['hubunganpj'] = $input['hubunganpj'] ?? '-';
+
+        $poliklinik = $this->db('poliklinik')->where('kd_poli', $this->settings('settings', 'laboratorium'))->oneArray();
+        $input['biaya_reg'] = $poliklinik['registrasi'];
+
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $input['no_rkm_medis'])->oneArray();
+
+        $birthDate = new \DateTime($pasien['tgl_lahir']);
+        $today = new \DateTime("today");
+        $umur_daftar = "0";
+        $status_umur = 'Hr';
+        if ($birthDate < $today) {
+          $y = $today->diff($birthDate)->y;
+          $m = $today->diff($birthDate)->m;
+          $d = $today->diff($birthDate)->d;
+          $umur_daftar = $d;
+          $status_umur = "Hr";
+          if ($y != '0') {
+            $umur_daftar = $y;
+            $status_umur = "Th";
+          }
+          if ($y == '0' && $m != '0') {
+            $umur_daftar = $m;
+            $status_umur = "Bl";
+          }
+        }
+
+        $input['umurdaftar'] = $umur_daftar;
+        $input['sttsumur'] = $status_umur;
+        $input['status_poli'] = 'Lama';
+        $input['kd_poli'] = $this->settings('settings', 'laboratorium');
+
+        unset($input['kat']);
+        $this->db('reg_periksa')->save($input);
+        return ['status' => 'created', 'data' => htmlspecialchars_array($input)];
+      } else {
+        $updateData = [];
+        if (isset($input['kd_dokter']))
+          $updateData['kd_dokter'] = $input['kd_dokter'];
+        if (isset($input['kd_pj']))
+          $updateData['kd_pj'] = $input['kd_pj'];
+
+        $this->db('reg_periksa')->where('no_rawat', $input['no_rawat'])->update($updateData);
+        return ['status' => 'updated', 'data' => htmlspecialchars_array($updateData)];
+      }
+    } catch (\PDOException $e) {
+      $message = $e->getMessage();
+      $message = preg_replace('/`[^`]+`\./', '', $message);
+      return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+    }
+  }
+
+  public function apiUpdate($no_rawat = null)
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_update', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    if (!$no_rawat) {
+      return ['status' => 'error', 'message' => 'No rawat missing'];
+    }
+
+    $no_rawat = revertNoRawat($no_rawat);
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input))
+      $input = $_POST;
+
+    try {
+      $this->db('reg_periksa')->where('no_rawat', $no_rawat)->update($input);
+      return ['status' => 'updated', 'data' => htmlspecialchars_array($input)];
+    } catch (\PDOException $e) {
+      $message = $e->getMessage();
+      $message = preg_replace('/`[^`]+`\./', '', $message);
+      return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+    }
+  }
+
+  public function apiDelete($no_rawat = null)
+  {
+    $username = $this->core->checkAuth('DELETE');
+    if (!$this->core->checkPermission($username, 'can_delete', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    if (!$no_rawat) {
+      return ['status' => 'error', 'message' => 'No rawat missing'];
+    }
+    $no_rawat = revertNoRawat($no_rawat);
+
+    if (!$this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray()) {
+      return ['status' => 'error', 'message' => 'No rawat not found'];
+    }
+
+    try {
+      $this->db('reg_periksa')->where('no_rawat', $no_rawat)->delete();
+      return ['status' => 'deleted', 'no_rawat' => $no_rawat];
+    } catch (\PDOException $e) {
+      $message = $e->getMessage();
+      $message = preg_replace('/`[^`]+`\./', '', $message);
+      return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+    }
+  }
+
+  public function apiSaveDetail()
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_create', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input))
+      $input = $_POST;
+
+    if (empty($input['kat']) || empty($input['no_rawat']) || empty($input['kd_jenis_prw'])) {
+      return ['status' => 'error', 'message' => 'Data incomplete'];
+    }
+
+    try {
+      if ($input['kat'] == 'laboratorium') {
+        $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $input['kd_jenis_prw'])->oneArray();
+        for ($i = 0; $i < $input['jml_tindakan']; $i++) {
+          $periksa_lab = $this->db('periksa_lab')
+            ->save([
+              'no_rawat' => $input['no_rawat'],
+              'nip' => $input['nip'] ?? $this->core->getUserInfo('username', null, true),
+              'kd_jenis_prw' => $input['kd_jenis_prw'],
+              'tgl_periksa' => $input['tgl_perawatan'],
+              'jam' => date('H:i:s', strtotime($input['jam_rawat'] . ' +' . $i . '0 seconds')),
+              'dokter_perujuk' => $input['kode_provider'],
+              'bagian_rs' => $jns_perawatan['bagian_rs'],
+              'bhp' => $jns_perawatan['bhp'],
+              'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+              'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+              'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+              'kso' => $jns_perawatan['kso'],
+              'menejemen' => $jns_perawatan['menejemen'],
+              'biaya' => $jns_perawatan['total_byr'],
+              'kd_dokter' => $input['kd_dokter'] ?? $this->settings->get('settings.pj_laboratorium'),
+              'status' => $input['status']
+            ]);
+        }
+        if (isset($periksa_lab) && $periksa_lab) {
+          $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $input['kd_jenis_prw'])->toArray();
+          foreach ($template_laboratorium as $row) {
+            for ($i = 0; $i < $input['jml_tindakan']; $i++) {
+              $this->db('detail_periksa_lab')
+                ->save([
+                  'no_rawat' => $input['no_rawat'],
+                  'kd_jenis_prw' => $input['kd_jenis_prw'],
+                  'tgl_periksa' => $input['tgl_perawatan'],
+                  'jam' => date('H:i:s', strtotime($input['jam_rawat'] . ' +' . $i . '0 seconds')),
+                  'id_template' => $row['id_template'],
+                  'nilai' => '',
+                  'nilai_rujukan' => $row['nilai_rujukan_ld'],
+                  'keterangan' => '',
+                  'bagian_rs' => $row['bagian_rs'],
+                  'bhp' => $row['bhp'],
+                  'bagian_perujuk' => $row['bagian_perujuk'],
+                  'bagian_dokter' => $row['bagian_dokter'],
+                  'bagian_laborat' => $row['bagian_laborat'],
+                  'kso' => $row['kso'],
+                  'menejemen' => $row['menejemen'],
+                  'biaya_item' => $row['biaya_item']
+                ]);
+            }
+          }
+        }
+        return ['status' => 'success', 'message' => 'Detail saved'];
+      } else {
+        return ['status' => 'error', 'message' => 'Category not supported'];
+      }
+    } catch (\PDOException $e) {
+      $message = $e->getMessage();
+      $message = preg_replace('/`[^`]+`\./', '', $message);
+      return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+    }
+  }
+
+  public function apiDeleteDetail()
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_delete', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input))
+      $input = $_POST;
+
+    if (empty($input['no_rawat']) || empty($input['kd_jenis_prw']) || empty($input['tgl_perawatan']) || empty($input['jam_rawat'])) {
+      return ['status' => 'error', 'message' => 'Data incomplete'];
+    }
+
+    try {
+      $this->db('periksa_lab')
+        ->where('no_rawat', $input['no_rawat'])
+        ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+        ->where('tgl_periksa', $input['tgl_perawatan'])
+        ->where('jam', $input['jam_rawat'])
+        ->where('status', 'Ralan')
+        ->delete();
+
+      $this->db('detail_periksa_lab')
+        ->where('no_rawat', $input['no_rawat'])
+        ->where('kd_jenis_prw', $input['kd_jenis_prw'])
+        ->where('tgl_periksa', $input['tgl_perawatan'])
+        ->where('jam', $input['jam_rawat'])
+        ->delete();
+
+      return ['status' => 'success', 'message' => 'Detail deleted'];
+    } catch (\PDOException $e) {
+      $message = $e->getMessage();
+      $message = preg_replace('/`[^`]+`\./', '', $message);
+      return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+    }
+  }
+
+  public function apiSaveValidasi()
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_create', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input))
+      $input = $_POST;
+
+    if (empty($input['no_rawat']) || empty($input['noorder']) || empty($input['tgl_permintaan']) || empty($input['jam_permintaan'])) {
+      return ['status' => 'error', 'message' => 'Data incomplete'];
+    }
+
+    try {
+      $permintaan_lab = $this->db('permintaan_lab')->where('no_rawat', $input['no_rawat'])->where('noorder', $input['noorder'])->oneArray();
+      $this->db('permintaan_lab')->where('no_rawat', $input['no_rawat'])->where('noorder', $input['noorder'])->save(['tgl_sampel' => date('Y-m-d'), 'jam_sampel' => date('H:i:s')]);
+      $permintaan_pemeriksaan_lab = $this->db('permintaan_pemeriksaan_lab')->where('noorder', $input['noorder'])->toArray();
+
+      foreach ($permintaan_pemeriksaan_lab as $row) {
+        $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+        $this->db('periksa_lab')
+          ->save([
+            'no_rawat' => $input['no_rawat'],
+            'nip' => $this->core->getUserInfo('username', null, true),
+            'kd_jenis_prw' => $row['kd_jenis_prw'],
+            'tgl_periksa' => $input['tgl_permintaan'],
+            'jam' => $input['jam_permintaan'],
+            'dokter_perujuk' => $permintaan_lab['dokter_perujuk'],
+            'bagian_rs' => $jns_perawatan['bagian_rs'],
+            'bhp' => $jns_perawatan['bhp'],
+            'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+            'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+            'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+            'kso' => $jns_perawatan['kso'],
+            'menejemen' => $jns_perawatan['menejemen'],
+            'biaya' => $jns_perawatan['total_byr'],
+            'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
+            'status' => $input['status'] ?? 'Ralan',
+            'kategori' => 'PK'
+          ]);
+
+        $permintaan_detail_permintaan_lab = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $input['noorder'])->where('kd_jenis_prw', $row['kd_jenis_prw'])->toArray();
+        foreach ($permintaan_detail_permintaan_lab as $row2) {
+          $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $row2['kd_jenis_prw'])->where('id_template', $row2['id_template'])->oneArray();
+          $this->db('detail_periksa_lab')
+            ->save([
+              'no_rawat' => $input['no_rawat'],
+              'kd_jenis_prw' => $row2['kd_jenis_prw'],
+              'tgl_periksa' => $input['tgl_permintaan'],
+              'jam' => $input['jam_permintaan'],
+              'id_template' => $row2['id_template'],
+              'nilai' => '',
+              'nilai_rujukan' => $template_laboratorium['nilai_rujukan_ld'],
+              'keterangan' => '',
+              'bagian_rs' => $template_laboratorium['bagian_rs'],
+              'bhp' => $template_laboratorium['bhp'],
+              'bagian_perujuk' => $template_laboratorium['bagian_perujuk'],
+              'bagian_dokter' => $template_laboratorium['bagian_dokter'],
+              'bagian_laborat' => $template_laboratorium['bagian_laborat'],
+              'kso' => $template_laboratorium['kso'],
+              'menejemen' => $template_laboratorium['menejemen'],
+              'biaya_item' => $template_laboratorium['biaya_item']
+            ]);
+        }
+      }
+      return ['status' => 'success', 'message' => 'Permintaan validated'];
+    } catch (\PDOException $e) {
+      $message = $e->getMessage();
+      $message = preg_replace('/`[^`]+`\./', '', $message);
+      return ['status' => 'error', 'message' => htmlspecialchars_array($message)];
+    }
+  }
+
+  public function apiShowDetail($status = null, $no_rawat = null, $noorder = null)
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_read', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    if (!$no_rawat) {
+      return ['status' => 'error', 'message' => 'No rawat missing'];
+    }
+    $no_rawat = revertNorawat($no_rawat);
+    $status = trim($status);
+
+    $pasien = $this->db('reg_periksa')
+      ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+      ->where('no_rawat', $no_rawat)
+      ->oneArray();
+
+    $patient_info = [
+      'nm_pasien' => $pasien['nm_pasien'] ?? '',
+      'no_rkm_medis' => $pasien['no_rkm_medis'] ?? ''
+    ];
+
+    try {
+      $query = $this->db('permintaan_lab')
+        ->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder = permintaan_lab.noorder')
+        ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw = permintaan_pemeriksaan_lab.kd_jenis_prw')
+        ->where('permintaan_lab.no_rawat', $no_rawat);
+
+      if ($noorder) {
+        $query->where('permintaan_lab.noorder', $noorder);
+      }
+
+      $permintaan_lab = $query->toArray();
+
+      return [
+        'status' => 'success',
+        'patient' => $patient_info,
+        'data' => [
+          'permintaan_lab' => htmlspecialchars_array($permintaan_lab)
+        ]
+      ];
+    } catch (\PDOException $e) {
+      return ['status' => 'error', 'message' => $e->getMessage()];
+    }
+  }
+
+  public function apiSaveNilai()
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_update', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input))
+      $input = $_POST;
+
+    try {
+      $hasil = $this->db('detail_periksa_lab')
+        ->where('no_rawat', $input['no_rawat'])
+        ->where('tgl_periksa', $input['tgl_periksa'])
+        ->where('jam', $input['jam'])
+        ->where('id_template', $input['id_template'])
+        ->save([
+          'nilai' => $input['value']
+        ]);
+
+      if ($hasil) {
+        $this->db('permintaan_lab')
+          ->where('no_rawat', $input['no_rawat'])
+          ->where('tgl_permintaan', $input['tgl_periksa'])
+          ->where('jam_permintaan', $input['jam'])
+          ->save([
+            'tgl_hasil' => date('Y-m-d'),
+            'jam_hasil' => date('H:i:s')
+          ]);
+        return ['status' => 'success', 'message' => 'Nilai saved'];
+      }
+      return ['status' => 'error', 'message' => 'Failed to save nilai'];
+    } catch (\PDOException $e) {
+      return ['status' => 'error', 'message' => $e->getMessage()];
+    }
+  }
+
+  public function apiSaveKeterangan()
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_update', 'laboratorium')) {
+      return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input))
+      $input = $_POST;
+
+    try {
+      $this->db('detail_periksa_lab')
+        ->where('no_rawat', $input['no_rawat'])
+        ->where('tgl_periksa', $input['tgl_periksa'])
+        ->where('jam', $input['jam'])
+        ->where('id_template', $input['id_template'])
+        ->save([
+          'keterangan' => $input['value']
+        ]);
+      return ['status' => 'success', 'message' => 'Keterangan saved'];
+    } catch (\PDOException $e) {
+      return ['status' => 'error', 'message' => $e->getMessage()];
+    }
+  }
+
+  public function anyManage($type = "ralan")
+  {
+    $tgl_kunjungan = date('Y-m-d');
+    $tgl_kunjungan_akhir = date('Y-m-d');
+    $status_periksa = '';
+    $status_bayar = '';
+    $status_pulang = '';
+
+    if (isset($_POST['periode_rawat_jalan'])) {
+      $tgl_kunjungan = $_POST['periode_rawat_jalan'];
+    }
+    if (isset($_POST['periode_rawat_jalan_akhir'])) {
+      $tgl_kunjungan_akhir = $_POST['periode_rawat_jalan_akhir'];
+    }
+    if (isset($_POST['status_periksa'])) {
+      $status_periksa = $_POST['status_periksa'];
+    }
+    if (isset($_POST['status_bayar'])) {
+      $status_bayar = $_POST['status_bayar'];
+    }
+    $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+    $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
+    return $this->draw('manage.html', ['rawat_jalan' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim), 'type' => $type, 'no_rawat_baru' => '', 'no_reg_baru' => '']);
+  }
+
+  public function anyDisplay()
+  {
+    $tgl_kunjungan = date('Y-m-d');
+    $tgl_kunjungan_akhir = date('Y-m-d');
+    $status_periksa = '';
+    $status_bayar = '';
+    $status_pulang = '';
+    $type = htmlspecialchars(isset_or($_POST['status']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+    if (isset($_POST['periode_rawat_jalan'])) {
+      $tgl_kunjungan = $_POST['periode_rawat_jalan'];
+    }
+    if (isset($_POST['periode_rawat_jalan_akhir'])) {
+      $tgl_kunjungan_akhir = $_POST['periode_rawat_jalan_akhir'];
+    }
+    if (isset($_POST['status_periksa'])) {
+      $status_periksa = $_POST['status_periksa'];
+    }
+    $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+    $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
+    echo $this->draw('display.html', ['rawat_jalan' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim), 'type' => $type, 'no_rawat_baru' => '', 'no_reg_baru' => '']);
+    exit();
+  }
+
+  public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa = '', $status_pulang = '', $status_bayar = '', $type = '')
+  {
+    $this->_addHeaderFiles();
+
+    $this->assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
+    $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
+    $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
+    $this->assign['no_rawat'] = '';
+    $this->assign['no_reg'] = '';
+    $this->assign['tgl_registrasi'] = date('Y-m-d');
+    $this->assign['jam_reg'] = date('H:i:s');
+
+    $params = [];
+    $sql = "SELECT reg_periksa.*,
             pasien.*,
             dokter.*,
             poliklinik.*,
             penjab.*
           FROM reg_periksa, pasien, dokter, poliklinik, penjab
           WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis
-          AND reg_periksa.tgl_registrasi BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'
+          AND reg_periksa.tgl_registrasi BETWEEN ? AND ?
           AND reg_periksa.kd_dokter = dokter.kd_dokter
           AND reg_periksa.kd_poli = poliklinik.kd_poli
           AND reg_periksa.kd_pj = penjab.kd_pj";
+    $params[] = $tgl_kunjungan;
+    $params[] = $tgl_kunjungan_akhir;
 
-        if($status_periksa == 'belum') {
-          $sql .= " AND reg_periksa.stts = 'Belum'";
-        }
-        if($status_periksa == 'selesai') {
-          $sql .= " AND reg_periksa.stts = 'Sudah'";
-        }
-        if($status_periksa == 'lunas') {
-          $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
-        }
+    if ($status_periksa == 'belum') {
+      $sql .= " AND reg_periksa.stts = 'Belum'";
+    }
+    if ($status_periksa == 'selesai') {
+      $sql .= " AND reg_periksa.stts = 'Sudah'";
+    }
+    if ($status_periksa == 'lunas') {
+      $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
+    }
 
-        if($type == 'ranap') {
-          $sql = "SELECT
+    if ($type == 'permintaan') {
+      $sql = "SELECT permintaan_lab.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM permintaan_lab 
+                    JOIN reg_periksa ON permintaan_lab.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON permintaan_lab.dokter_perujuk = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE permintaan_lab.tgl_permintaan BETWEEN ? AND ?";
+      $params[] = $tgl_kunjungan;
+      $params[] = $tgl_kunjungan_akhir;
+
+      if ($status_periksa != '') {
+        $sql .= " AND permintaan_lab.status = ?";
+        $params[] = ucfirst(strtolower($status_periksa));
+      }
+    } elseif ($type == 'ranap') {
+      $sql = "SELECT
               kamar_inap.*,
               reg_periksa.*,
               pasien.*,
@@ -125,477 +822,607 @@ class Admin extends AdminModule
               bangsal.kd_bangsal=kamar.kd_bangsal
             AND
               reg_periksa.kd_pj=penjab.kd_pj";
+      $params = []; // Reset params for new query
 
-          if($status_periksa == '') {
-            $sql .= " AND kamar_inap.stts_pulang = '-'";
-          }
-          if($status_periksa == 'belum') {
-            $sql .= " AND kamar_inap.stts_pulang = '-' AND kamar_inap.tgl_masuk BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
-          }
-          if($status_periksa == 'selesai') {
-            $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_masuk BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
-          }
-          if($status_periksa == 'lunas') {
-            $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_keluar BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
-          }
+      if ($status_periksa == '') {
+        $sql .= " AND kamar_inap.stts_pulang = '-'";
+      }
+      if ($status_periksa == 'belum') {
+        $sql .= " AND kamar_inap.stts_pulang = '-' AND kamar_inap.tgl_masuk BETWEEN ? AND ?";
+        $params[] = $tgl_kunjungan;
+        $params[] = $tgl_kunjungan_akhir;
+      }
+      if ($status_periksa == 'selesai') {
+        $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_masuk BETWEEN ? AND ?";
+        $params[] = $tgl_kunjungan;
+        $params[] = $tgl_kunjungan_akhir;
+      }
+      if ($status_periksa == 'lunas') {
+        $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_keluar BETWEEN ? AND ?";
+        $params[] = $tgl_kunjungan;
+        $params[] = $tgl_kunjungan_akhir;
+      }
 
-        }
-
-        $stmt = $this->db()->pdo()->prepare($sql);
-        $stmt->execute();
-        $rows = $stmt->fetchAll();
-
-        $this->assign['list'] = [];
-        foreach ($rows as $row) {
-          $dpjp_ranap = $this->db('dpjp_ranap')
-            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
-            ->where('no_rawat', $row['no_rawat'])
-            ->toArray();
-          $row['dokter'] = $dpjp_ranap;
-          $this->assign['list'][] = $row;
-        }
-
-        if (isset($_POST['no_rawat'])){
-          $this->assign['reg_periksa'] = $this->db('reg_periksa')
-            ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-            ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
-            ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
-            ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-            ->where('no_rawat', $_POST['no_rawat'])
-            ->oneArray();
-          if($type == 'ranap') {
-            $this->assign['kamar_inap'] = $this->db('kamar_inap')
-              ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
-              ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-              ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
-              ->join('dpjp_ranap', 'dpjp_ranap.no_rawat=kamar_inap.no_rawat')
-              ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
-              ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-              ->where('kamar_inap.no_rawat', $_POST['no_rawat'])
-              ->oneArray();
-          }
-        } else {
-          $this->assign['reg_periksa'] = [
-            'no_rkm_medis' => '',
-            'nm_pasien' => '',
-            'no_reg' => '',
-            'no_rawat' => '',
-            'tgl_registrasi' => '',
-            'jam_reg' => '',
-            'kd_dokter' => '',
-            'no_rm' => '',
-            'kd_poli' => '',
-            'p_jawab' => '',
-            'almt_pj' => '',
-            'hubunganpj' => '',
-            'biaya_reg' => '',
-            'stts' => '',
-            'stts_daftar' => '',
-            'status_lanjut' => '',
-            'kd_pj' => '',
-            'umurdaftar' => '',
-            'sttsumur' => '',
-            'status_bayar' => '',
-            'status_poli' => '',
-            'nm_pasien' => '',
-            'tgl_lahir' => '',
-            'jk' => '',
-            'alamat' => '',
-            'no_tlp' => '',
-            'pekerjaan' => ''
-          ];
-          if($type == 'ranap') {
-            $this->assign['reg_periksa'] = [
-              'tgl_masuk' => date('Y-m-d'),
-              'jam_masuk' => date('H:i:s'),
-              'tgl_keluar' => date('Y-m-d'),
-              'jam_keluar' => date('H:i:s'),
-              'no_rkm_medis' => '',
-              'nm_pasien' => '',
-              'tgl_lahir' => '',
-              'jk' => '',
-              'alamat' => '',
-              'no_tlp' => '',
-              'no_rawat' => '',
-              'no_reg' => '',
-              'kd_dokter' => '',
-              'kd_kamar' => '',
-              'kd_pj' => '',
-              'diagnosa_awal' => '',
-              'diagnosa_akhir' => '',
-              'stts_pulang' => '',
-              'lama' => ''
-            ];
-          }
-        }
     }
 
-    public function anyForm()
-    {
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll();
 
-      $this->assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
-      $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
-      $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
-      $this->assign['no_rawat'] = '';
-      $this->assign['no_reg']     = '';
-      $this->assign['tgl_registrasi']= date('Y-m-d');
-      $this->assign['jam_reg']= date('H:i:s');
-      if (isset($_POST['no_rawat'])){
-        $this->assign['reg_periksa'] = $this->db('reg_periksa')
+    $this->assign['list'] = [];
+    foreach ($rows as $row) {
+      $dpjp_ranap = $this->db('dpjp_ranap')
+        ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+        ->where('no_rawat', $row['no_rawat'])
+        ->toArray();
+      $row['dokter'] = $dpjp_ranap;
+      $this->assign['list'][] = $row;
+    }
+
+    if (isset($_POST['no_rawat'])) {
+      $this->assign['reg_periksa'] = $this->db('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+        ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->oneArray();
+      if ($type == 'permintaan') {
+        $sql = "SELECT permintaan_lab.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM permintaan_lab 
+                    JOIN reg_periksa ON permintaan_lab.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON permintaan_lab.dokter_perujuk = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE permintaan_lab.tgl_permintaan BETWEEN ? AND ?";
+        $params[] = $tgl_kunjungan;
+        $params[] = $tgl_kunjungan_akhir;
+
+        if ($status_periksa != '') {
+          $sql .= " AND permintaan_lab.status = ?";
+          $params[] = ucfirst(strtolower($status_periksa));
+        }
+      } elseif ($type == 'ranap') {
+        $this->assign['kamar_inap'] = $this->db('kamar_inap')
+          ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-          ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
-          ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+          ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+          ->join('dpjp_ranap', 'dpjp_ranap.no_rawat=kamar_inap.no_rawat')
+          ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
           ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('kamar_inap.no_rawat', $_POST['no_rawat'])
           ->oneArray();
-        echo $this->draw('form.html', [
-          'rawat_jalan' => $this->assign
-        ]);
-      } else {
+      }
+    } else {
+      $this->assign['reg_periksa'] = [
+        'no_rkm_medis' => '',
+        'nm_pasien' => '',
+        'no_reg' => '',
+        'no_rawat' => '',
+        'tgl_registrasi' => '',
+        'jam_reg' => '',
+        'kd_dokter' => '',
+        'no_rm' => '',
+        'kd_poli' => '',
+        'p_jawab' => '',
+        'almt_pj' => '',
+        'hubunganpj' => '',
+        'biaya_reg' => '',
+        'stts' => '',
+        'stts_daftar' => '',
+        'status_lanjut' => '',
+        'kd_pj' => '',
+        'umurdaftar' => '',
+        'sttsumur' => '',
+        'status_bayar' => '',
+        'status_poli' => '',
+        'nm_pasien' => '',
+        'tgl_lahir' => '',
+        'jk' => '',
+        'alamat' => '',
+        'no_tlp' => '',
+        'pekerjaan' => ''
+      ];
+      if ($type == 'permintaan') {
+        $sql = "SELECT permintaan_lab.*, reg_periksa.no_rkm_medis, pasien.nm_pasien, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab 
+                    FROM permintaan_lab 
+                    JOIN reg_periksa ON permintaan_lab.no_rawat = reg_periksa.no_rawat 
+                    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+                    JOIN dokter ON permintaan_lab.dokter_perujuk = dokter.kd_dokter 
+                    JOIN poliklinik ON reg_periksa.kd_poli = poliklinik.kd_poli 
+                    JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj 
+                    WHERE permintaan_lab.tgl_permintaan BETWEEN ? AND ?";
+        $params[] = $tgl_kunjungan;
+        $params[] = $tgl_kunjungan_akhir;
+
+        if ($status_periksa != '') {
+          $sql .= " AND permintaan_lab.status = ?";
+          $params[] = ucfirst(strtolower($status_periksa));
+        }
+      } elseif ($type == 'ranap') {
         $this->assign['reg_periksa'] = [
+          'tgl_masuk' => date('Y-m-d'),
+          'jam_masuk' => date('H:i:s'),
+          'tgl_keluar' => date('Y-m-d'),
+          'jam_keluar' => date('H:i:s'),
           'no_rkm_medis' => '',
-          'nm_pasien' => '',
-          'no_reg' => '',
-          'no_rawat' => '',
-          'tgl_registrasi' => '',
-          'jam_reg' => '',
-          'kd_dokter' => '',
-          'no_rm' => '',
-          'kd_poli' => '',
-          'p_jawab' => '',
-          'almt_pj' => '',
-          'hubunganpj' => '',
-          'biaya_reg' => '',
-          'stts' => '',
-          'stts_daftar' => '',
-          'status_lanjut' => '',
-          'kd_pj' => '',
-          'umurdaftar' => '',
-          'sttsumur' => '',
-          'status_bayar' => '',
-          'status_poli' => '',
           'nm_pasien' => '',
           'tgl_lahir' => '',
           'jk' => '',
           'alamat' => '',
           'no_tlp' => '',
-          'pekerjaan' => ''
+          'no_rawat' => '',
+          'no_reg' => '',
+          'kd_dokter' => '',
+          'kd_kamar' => '',
+          'kd_pj' => '',
+          'diagnosa_awal' => '',
+          'diagnosa_akhir' => '',
+          'stts_pulang' => '',
+          'lama' => ''
         ];
-        echo $this->draw('form.html', [
-          'rawat_jalan' => $this->assign
-        ]);
       }
-      exit();
     }
+  }
 
-    public function anyStatusDaftar()
-    {
-      if(isset($_POST['no_rkm_medis'])) {
-        $rawat = $this->db('reg_periksa')
-          ->where('no_rkm_medis', $_POST['no_rkm_medis'])
-          ->where('status_bayar', 'Belum Bayar')
-          ->limit(1)
-          ->oneArray();
-          if($rawat) {
-            $stts_daftar ="Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
-            $stts_daftar_hidden = $stts_daftar;
-            if($this->settings->get('settings.cekstatusbayar') == 'false'){
-              $stts_daftar_hidden = 'Lama';
-            }
-            $bg_status = 'text-danger';
-          } else {
-            $result = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
-            if($result >= 1) {
-              $stts_daftar = 'Lama';
-              $bg_status = 'text-info';
-              $stts_daftar_hidden = $stts_daftar;
-            } else {
-              $stts_daftar = 'Baru';
-              $bg_status = 'text-success';
-              $stts_daftar_hidden = $stts_daftar;
-            }
-          }
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'stts_daftar_hidden' => $stts_daftar_hidden, 'bg_status' =>$bg_status]);
-      } else {
-        $rawat = $this->db('reg_periksa')
-          ->where('no_rawat', $_POST['no_rawat'])
-          ->oneArray();
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => $rawat['stts_daftar']]);
-      }
-      exit();
-    }
+  public function anyForm()
+  {
 
-    public function postSave()
-    {
-      if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
-
-        $_POST['status_lanjut'] = 'Ralan';
-        $_POST['stts'] = 'Belum';
-        $_POST['status_bayar'] = 'Belum Bayar';
-        $_POST['p_jawab'] = '-';
-        $_POST['almt_pj'] = '-';
-        $_POST['hubunganpj'] = '-';
-
-        $poliklinik = $this->db('poliklinik')->where('kd_poli', $this->settings('settings', 'laboratorium'))->oneArray();
-
-        $_POST['biaya_reg'] = $poliklinik['registrasi'];
-
-        $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
-
-      	$birthDate = new \DateTime($pasien['tgl_lahir']);
-      	$today = new \DateTime("today");
-      	$umur_daftar = "0";
-        $status_umur = 'Hr';
-        if ($birthDate < $today) {
-        	$y = $today->diff($birthDate)->y;
-        	$m = $today->diff($birthDate)->m;
-        	$d = $today->diff($birthDate)->d;
-          $umur_daftar = $d;
-          $status_umur = "Hr";
-          if($y !='0'){
-            $umur_daftar = $y;
-            $status_umur = "Th";
-          }
-          if($y =='0' && $m !='0'){
-            $umur_daftar = $m;
-            $status_umur = "Bl";
-          }
-        }
-
-        $_POST['umurdaftar'] = $umur_daftar;
-        $_POST['sttsumur'] = $status_umur;
-        $_POST['status_poli'] = 'Lama';
-        $_POST['kd_poli'] = $this->settings('settings', 'laboratorium');
-
-        $query = $this->db('reg_periksa')->save($_POST);
-      } else {
-        $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->valu([
-          'kd_dokter' => $_POST['kd_dokter'],
-          'kd_pj' => $_POST['kd_pj']
-        ]);
-      }
-      exit();
-    }
-
-    public function anyPasien()
-    {
-      if(isset($_POST['cari'])) {
-        $pasien = $this->db('pasien')
-          ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-          ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
-          ->asc('no_rkm_medis')
-          ->limit(5)
-          ->toArray();
-      }
-      echo $this->draw('pasien.html', ['pasien' => $pasien]);
-      exit();
-    }
-
-    public function getAntrian()
-    {
-      $settings = $this->settings('settings');
-      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $rawat_jalan = $this->db('reg_periksa')
+    $this->assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
+    $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
+    $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
+    $this->assign['no_rawat'] = '';
+    $this->assign['no_reg'] = '';
+    $this->assign['tgl_registrasi'] = date('Y-m-d');
+    $this->assign['jam_reg'] = date('H:i:s');
+    if (isset($_POST['no_rawat'])) {
+      $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      $this->assign['reg_periksa'] = $this->db('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
         ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
-        ->where('no_rawat', $_GET['no_rawat'])
+        ->where('no_rawat', $no_rawat)
         ->oneArray();
-      echo $this->draw('antrian.html', ['rawat_jalan' => $rawat_jalan]);
-      exit();
+      echo $this->draw('form.html', [
+        'rawat_jalan' => htmlspecialchars_array($this->assign),
+        'no_rawat_baru' => '',
+        'no_reg_baru' => ''
+      ]);
+    } else {
+      $this->assign['reg_periksa'] = [
+        'no_rkm_medis' => '',
+        'nm_pasien' => '',
+        'no_reg' => '',
+        'no_rawat' => '',
+        'tgl_registrasi' => '',
+        'jam_reg' => '',
+        'kd_dokter' => '',
+        'no_rm' => '',
+        'kd_poli' => '',
+        'p_jawab' => '',
+        'almt_pj' => '',
+        'hubunganpj' => '',
+        'biaya_reg' => '',
+        'stts' => '',
+        'stts_daftar' => '',
+        'status_lanjut' => '',
+        'kd_pj' => '',
+        'umurdaftar' => '',
+        'sttsumur' => '',
+        'status_bayar' => '',
+        'status_poli' => '',
+        'nm_pasien' => '',
+        'tgl_lahir' => '',
+        'jk' => '',
+        'alamat' => '',
+        'no_tlp' => '',
+        'pekerjaan' => ''
+      ];
+      echo $this->draw('form.html', [
+        'rawat_jalan' => htmlspecialchars_array($this->assign),
+        'no_rawat_baru' => '',
+        'no_reg_baru' => ''
+      ]);
     }
+    exit();
+  }
 
-    public function getCetakHasil()
-    {
-      $settings = $this->settings('settings');
-      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
-      $qr = QRCode::getMinimumQRCode($pj_lab['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
-      $im = $qr->createImage(4, 4);
-      imagepng($im, BASE_DIR .'/'.ADMIN.'/tmp/qrcode.png');
-      imagedestroy($im);
-      $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
-
-      $pasien = $this->db('reg_periksa')
-        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
-        ->where('no_rawat', $_GET['no_rawat'])
+  public function anyStatusDaftar()
+  {
+    if (isset($_POST['no_rkm_medis'])) {
+      $no_rkm_medis = htmlspecialchars($_POST['no_rkm_medis'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      $rawat = $this->db('reg_periksa')
+        ->where('no_rkm_medis', $no_rkm_medis)
+        ->where('status_bayar', 'Belum Bayar')
+        ->limit(1)
         ->oneArray();
-      $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
-      $dokter_perujuk = $this->db('periksa_lab')
-        ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
-        ->where('no_rawat', $_GET['no_rawat'])
-        ->where('tgl_periksa', $_GET['tgl_periksa'])
-        ->where('jam', $_GET['jam'])
+      if ($rawat) {
+        $stts_daftar = "Transaki tanggal " . date('Y-m-d', strtotime($rawat['tgl_registrasi'])) . " belum diselesaikan";
+        $stts_daftar_hidden = $stts_daftar;
+        if ($this->settings->get('settings.cekstatusbayar') == 'false') {
+          $stts_daftar_hidden = 'Lama';
+        }
+        $bg_status = 'text-danger';
+      } else {
+        $result = $this->db('reg_periksa')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+        if ($result >= 1) {
+          $stts_daftar = 'Lama';
+          $bg_status = 'text-info';
+          $stts_daftar_hidden = $stts_daftar;
+        } else {
+          $stts_daftar = 'Baru';
+          $bg_status = 'text-success';
+          $stts_daftar_hidden = $stts_daftar;
+        }
+      }
+      echo $this->draw('stts.daftar.html', ['stts_daftar' => htmlspecialchars($stts_daftar, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'stts_daftar_hidden' => htmlspecialchars($stts_daftar_hidden, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'bg_status' => htmlspecialchars($bg_status, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
+    } else {
+      $no_rawat = htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      $rawat = $this->db('reg_periksa')
+        ->where('no_rawat', $no_rawat)
         ->oneArray();
+      echo $this->draw('stts.daftar.html', [
+        'stts_daftar' => htmlspecialchars($rawat['stts_daftar'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'stts_daftar_hidden' => htmlspecialchars($rawat['stts_daftar'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'bg_status' => ''
+      ]);
+    }
+    exit();
+  }
 
-      $rows_periksa_lab = $this->db('periksa_lab')
-      ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+  public function postSave()
+  {
+    if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+
+      $_POST['status_lanjut'] = 'Ralan';
+      $_POST['stts'] = 'Belum';
+      $_POST['status_bayar'] = 'Belum Bayar';
+      $_POST['p_jawab'] = '-';
+      $_POST['almt_pj'] = '-';
+      $_POST['hubunganpj'] = '-';
+
+      $poliklinik = $this->db('poliklinik')->where('kd_poli', $this->settings('settings', 'laboratorium'))->oneArray();
+
+      $_POST['biaya_reg'] = $poliklinik['registrasi'];
+
+      $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+
+      $birthDate = new \DateTime($pasien['tgl_lahir']);
+      $today = new \DateTime("today");
+      $umur_daftar = "0";
+      $status_umur = 'Hr';
+      if ($birthDate < $today) {
+        $y = $today->diff($birthDate)->y;
+        $m = $today->diff($birthDate)->m;
+        $d = $today->diff($birthDate)->d;
+        $umur_daftar = $d;
+        $status_umur = "Hr";
+        if ($y != '0') {
+          $umur_daftar = $y;
+          $status_umur = "Th";
+        }
+        if ($y == '0' && $m != '0') {
+          $umur_daftar = $m;
+          $status_umur = "Bl";
+        }
+      }
+
+      $_POST['umurdaftar'] = $umur_daftar;
+      $_POST['sttsumur'] = $status_umur;
+      $_POST['status_poli'] = 'Lama';
+      $_POST['kd_poli'] = $this->settings('settings', 'laboratorium');
+
+      $query = $this->db('reg_periksa')->save($_POST);
+    } else {
+      $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->update([
+        'kd_dokter' => $_POST['kd_dokter'],
+        'kd_pj' => $_POST['kd_pj']
+      ]);
+    }
+    exit();
+  }
+
+  public function anyPasien()
+  {
+    $pasien = [];
+    if (isset($_POST['cari'])) {
+      $cari = htmlspecialchars($_POST['cari'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      $pasien = $this->db('pasien')
+        ->like('no_rkm_medis', '%' . $cari . '%')
+        ->orLike('nm_pasien', '%' . $cari . '%')
+        ->asc('no_rkm_medis')
+        ->limit(5)
+        ->toArray();
+    }
+    echo $this->draw('pasien.html', ['pasien' => htmlspecialchars_array($pasien)]);
+    exit();
+  }
+
+  public function getAntrian()
+  {
+    $settings = $this->settings('settings');
+    $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+    $no_rawat = htmlspecialchars($_GET['no_rawat'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $rawat_jalan = $this->db('reg_periksa')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+      ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+      ->where('no_rawat', $no_rawat)
+      ->oneArray();
+    echo $this->draw('antrian.html', ['rawat_jalan' => htmlspecialchars_array($rawat_jalan)]);
+    exit();
+  }
+
+  public function getCetakHasil()
+  {
+    /* ===============================
+     * SETTINGS
+     * =============================== */
+    $settings = $this->settings('settings');
+    $this->tpl->set(
+      'settings',
+      $this->tpl->noParse_array(htmlspecialchars_array($settings))
+    );
+
+    /* ===============================
+     * PENANGGUNG JAWAB LAB + QR
+     * =============================== */
+    $pj_lab = $this->db('dokter')
+      ->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))
+      ->oneArray();
+
+    $qr = QRCode::getMinimumQRCode(
+      $pj_lab['nm_dokter'],
+      QR_ERROR_CORRECT_LEVEL_L
+    );
+    $im = $qr->createImage(4, 4);
+    imagepng($im, BASE_DIR . '/' . ADMIN . '/tmp/qrcode.png');
+    imagedestroy($im);
+
+    $qrCode = url() . "/" . ADMIN . "/tmp/qrcode.png";
+
+    /* ===============================
+     * DATA PASIEN
+     * =============================== */
+    $pasien = $this->db('reg_periksa')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->where('no_rawat', $_GET['no_rawat'])
+      ->oneArray();
+
+    $reg_periksa = $this->db('reg_periksa')
+      ->where('no_rawat', $_GET['no_rawat'])
+      ->oneArray();
+
+    $dokter_perujuk = $this->db('periksa_lab')
+      ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
+      ->where('no_rawat', $_GET['no_rawat'])
+      ->where('tgl_periksa', $_GET['tgl_periksa'])
+      ->where('jam', $_GET['jam'])
+      ->oneArray();
+
+    /* ===============================
+     * DATA PEMERIKSAAN LAB
+     * =============================== */
+    $rows = $this->db('periksa_lab')
+      ->join(
+        'jns_perawatan_lab',
+        'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw'
+      )
       ->where('no_rawat', $_GET['no_rawat'])
       ->where('tgl_periksa', $_GET['tgl_periksa'])
       ->where('jam', $_GET['jam'])
       ->where('periksa_lab.status', $_GET['status'])
       ->toArray();
 
-      $periksa_lab = [];
-      $jumlah_total_lab = 0;
-      $no_lab = 1;
-      foreach ($rows_periksa_lab as $row) {
-        $jumlah_total_lab += $row['biaya'];
-        $row['nomor'] = $no_lab++;
-        $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
-          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
-          ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
-          ->where('detail_periksa_lab.tgl_periksa', $_GET['tgl_periksa'])
-          ->where('detail_periksa_lab.jam', $_GET['jam'])
-          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
-          ->toArray();
-        $periksa_lab[] = $row;
-      }
+    $periksa_lab = [];
+    $jumlah_total_lab = 0;
+    $no = 1;
 
-      $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
-      $im=$qr->createImage(4,4);
-      imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
-      imagedestroy($im);
+    foreach ($rows as $row) {
+      $jumlah_total_lab += $row['biaya'];
+      $row['nomor'] = $no++;
 
-      $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
-
-      $filename = convertNorawat($dokter_perujuk['no_rawat']).'_'.$dokter_perujuk['kd_jenis_prw'].'_'.$dokter_perujuk['tgl_periksa'];
-      if (file_exists(UPLOADS.'/laboratorium/'.$filename.'.pdf')) {
-        unlink(UPLOADS.'/laboratorium/'.$filename.'.pdf');
-      }
-
-      echo $this->draw('cetakhasil.html', [
-        'periksa_lab' => $periksa_lab,
-        'jumlah_total_lab' => $jumlah_total_lab,
-        'qrCode' => $qrCode,
-        'pj_lab' => $pj_lab['nm_dokter'],
-        'dokter_perujuk' => $dokter_perujuk['nama'],
-        'pasien' => $pasien,
-        'reg_periksa' => $reg_periksa, 
-        'filename' => $filename,
-        'no_rawat' => $_GET['no_rawat'],
-        'wagateway' => $this->settings->get('wagateway')
-      ]);
-
-      $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'format' => 'A4', 
-        'orientation' => 'P'
-      ]);
-
-      $css = '
-      <style>
-        del { 
-          display: none;
-        }
-        table {
-          padding-top: 1cm;
-          padding-bottom: 1cm;
-        }
-        td, th {
-          border-bottom: 1px solid #dddddd;
-          padding: 5px;
-        }        
-        tr:nth-child(even) {
-          background-color: #ffffff;
-        }
-      </style>
-      ';
-      
-      $url = url(ADMIN.'/tmp/cetakhasil.html');
-      $html = file_get_contents($url);
-      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
-      $mpdf->WriteHTML($css);
-      $mpdf->WriteHTML($html);
-  
-      // Output a PDF file save to server
-      $mpdf->Output(UPLOADS.'/laboratorium/'.$filename.'.pdf','F');
-
-      exit();
-    }
-
-    public function getCetakPermintaan()
-    {
-      $settings = $this->settings('settings');
-      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
-
-      $qr = QRCode::getMinimumQRCode($pj_lab['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
-      $im = $qr->createImage(4, 4);
-      imagepng($im, BASE_DIR .'/'.ADMIN.'/tmp/qrcode.png');
-      imagedestroy($im);
-      $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
-
-      $pasien = $this->db('reg_periksa')
-        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
-        ->where('no_rawat', $_GET['no_rawat'])
-        ->oneArray();
-      $dokter_perujuk = $this->db('permintaan_lab')
-        ->join('pegawai', 'pegawai.nik=permintaan_lab.dokter_perujuk')
-        ->where('noorder', $_GET['noorder'])
-        ->where('no_rawat', $_GET['no_rawat'])
-        ->where('permintaan_lab.status', strtolower($_GET['status']))
-        ->group('no_rawat')
-        ->oneArray();
-
-      $rows_permintaan_lab = $this->db('permintaan_lab')
-        ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
-        ->where('noorder', $_GET['noorder'])
-        ->where('no_rawat', $_GET['no_rawat'])
-        ->where('permintaan_lab.status', strtolower($_GET['status']))
+      $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+        ->join(
+          'template_laboratorium',
+          'template_laboratorium.id_template=detail_periksa_lab.id_template'
+        )
+        ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
+        ->where('detail_periksa_lab.tgl_periksa', $_GET['tgl_periksa'])
+        ->where('detail_periksa_lab.jam', $_GET['jam'])
+        ->where(
+          'detail_periksa_lab.kd_jenis_prw',
+          $row['kd_jenis_prw']
+        )
         ->toArray();
-      $permintaan_laboratorium = [];
-      foreach ($rows_permintaan_lab as $row) {
-        $rows2 = $this->db('permintaan_pemeriksaan_lab')
-          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
-          ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
-          ->toArray();
-          foreach ($rows2 as $row2) {
-            $row2['noorder'] = $row2['noorder'];
-            $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
-            $row2['stts_bayar'] = $row2['stts_bayar'];
-            $row2['nm_perawatan'] = $row2['nm_perawatan'];
-            $row2['kd_pj'] = $row2['kd_pj'];
-            $row2['status'] = $row2['status'];
-            $row2['kelas'] = $row2['kelas'];
-            $row2['kategori'] = $row2['kategori'];
-            $row2['template_laboratorium'] = $this->db('template_laboratorium')->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
-            $row['permintaan_pemeriksaan_lab'][] = $row2;
-          }
-        $permintaan_laboratorium[] = $row;
+
+      $periksa_lab[] = $row;
+    }
+
+    /* ===============================
+     * FILENAME PDF
+     * =============================== */
+    $filename =
+      convertNorawat($dokter_perujuk['no_rawat']) . '_' .
+      $dokter_perujuk['kd_jenis_prw'] . '_' .
+      $dokter_perujuk['tgl_periksa'];
+
+    if (file_exists(UPLOADS . '/laboratorium/' . $filename . '.pdf')) {
+      unlink(UPLOADS . '/laboratorium/' . $filename . '.pdf');
+    }
+
+    /* ===============================
+     * INJECT DATA KE TEMPLATE
+     * =============================== */
+    $this->tpl->set(
+      'periksa_lab',
+      $periksa_lab
+    );
+    $this->tpl->set(
+      'jumlah_total_lab',
+      $jumlah_total_lab
+    );
+    $this->tpl->set(
+      'qrCode',
+      $qrCode
+    );
+    $this->tpl->set(
+      'pj_lab',
+      $pj_lab['nm_dokter']
+    );
+    $this->tpl->set(
+      'dokter_perujuk',
+      $dokter_perujuk['nama']
+    );
+    $this->tpl->set(
+      'pasien',
+      $pasien
+    );
+    $this->tpl->set(
+      'reg_periksa',
+      $reg_periksa
+    );
+    $this->tpl->set(
+      'filename',
+      $filename
+    );
+    $this->tpl->set(
+      'no_rawat',
+      $_GET['no_rawat']
+    );
+    $this->tpl->set(
+      'wagateway',
+      $this->settings->get('wagateway')
+    );
+
+    /* ===============================
+     * RENDER HTML SEKALI
+     * =============================== */
+    $html = $this->draw('cetakhasil.html');
+
+    /* ===============================
+     * OUTPUT HTML (PREVIEW)
+     * =============================== */
+    echo $html;
+
+    /* ===============================
+     * GENERATE PDF
+     * =============================== */
+    $mpdf = new \Mpdf\Mpdf([
+      'mode' => 'utf-8',
+      'format' => 'A4',
+      'orientation' => 'P'
+    ]);
+
+    $mpdf->WriteHTML(
+      $this->core->setPrintCss(),
+      \Mpdf\HTMLParserMode::HEADER_CSS
+    );
+
+    $mpdf->WriteHTML($html, \Mpdf\HTMLParserMode::HTML_BODY);
+
+    // Simpan PDF ke server
+    $mpdf->Output(
+      UPLOADS . '/laboratorium/' . $filename . '.pdf',
+      'F'
+    );
+
+    exit;
+  }
+
+  public function getCetakPermintaan()
+  {
+    $settings = $this->settings('settings');
+    $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+    $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
+
+    $qr = QRCode::getMinimumQRCode($pj_lab['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
+    $im = $qr->createImage(4, 4);
+    imagepng($im, BASE_DIR . '/' . ADMIN . '/tmp/qrcode.png');
+    imagedestroy($im);
+    $qrCode = url() . "/" . ADMIN . "/tmp/qrcode.png";
+
+    $pasien = $this->db('reg_periksa')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->where('no_rawat', $_GET['no_rawat'])
+      ->oneArray();
+    $dokter_perujuk = $this->db('permintaan_lab')
+      ->join('pegawai', 'pegawai.nik=permintaan_lab.dokter_perujuk')
+      ->where('noorder', $_GET['noorder'])
+      ->where('no_rawat', $_GET['no_rawat'])
+      ->where('permintaan_lab.status', strtolower($_GET['status']))
+      ->group('no_rawat')
+      ->oneArray();
+
+    $rows_permintaan_lab = $this->db('permintaan_lab')
+      ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+      ->where('noorder', $_GET['noorder'])
+      ->where('no_rawat', $_GET['no_rawat'])
+      ->where('permintaan_lab.status', strtolower($_GET['status']))
+      ->toArray();
+    $permintaan_laboratorium = [];
+    foreach ($rows_permintaan_lab as $row) {
+      $rows2 = $this->db('permintaan_pemeriksaan_lab')
+        ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+        ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
+        ->toArray();
+      foreach ($rows2 as $row2) {
+        $row2['noorder'] = $row2['noorder'];
+        $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
+        $row2['stts_bayar'] = $row2['stts_bayar'];
+        $row2['nm_perawatan'] = $row2['nm_perawatan'];
+        $row2['kd_pj'] = $row2['kd_pj'];
+        $row2['status'] = $row2['status'];
+        $row2['kelas'] = $row2['kelas'];
+        $row2['kategori'] = $row2['kategori'];
+        $row2['template_laboratorium'] = $this->db('template_laboratorium')->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
+        $row['permintaan_pemeriksaan_lab'][] = $row2;
       }
-
-      echo $this->draw('cetakpermintaan.html', [
-        'permintaan_laboratorium' => $permintaan_laboratorium,
-        'qrCode' => $qrCode,
-        'pj_lab' => $pj_lab['nm_dokter'],
-        'dokter_perujuk' => $dokter_perujuk['nama'],
-        'pasien' => $pasien,
-        'no_rawat' => $_GET['no_rawat']
-      ]);
-      exit();
+      $permintaan_laboratorium[] = $row;
     }
 
-    public function postHapus()
-    {
-      $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
-      exit();
-    }
+    echo $this->draw('cetakpermintaan.html', [
+      'permintaan_laboratorium' => $permintaan_laboratorium,
+      'qrCode' => $qrCode,
+      'pj_lab' => $pj_lab['nm_dokter'],
+      'dokter_perujuk' => htmlspecialchars_array($dokter_perujuk)['nama'],
+      'pasien' => $pasien,
+      'no_rawat' => htmlspecialchars($_GET['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+    ]);
+    exit();
+  }
 
-    public function postSaveDetail($type = "ralan")
-    {
-      if($_POST['kat'] == 'laboratorium') {
-        $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
+  public function postHapus()
+  {
+    $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
+    exit();
+  }
+
+  public function postSaveDetail($type = "ralan")
+  {
+    if ($_POST['kat'] == 'laboratorium') {
+      $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
+      
+      $jml = 1;
+      if (isset($_POST['jml_tindakan'])) {
+        $jml = is_array($_POST['jml_tindakan']) ? $_POST['jml_tindakan'][0] : $_POST['jml_tindakan'];
+      }
+      $jml = (int) $jml;
+
+      $periksa_lab = false;
+      for ($i = 0; $i < $jml; $i++) {
         $periksa_lab = $this->db('periksa_lab')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'nip' => $this->core->getUserInfo('username', null, true),
             'kd_jenis_prw' => $_POST['kd_jenis_prw'],
             'tgl_periksa' => $_POST['tgl_perawatan'],
-            'jam' => $_POST['jam_rawat'],
+            'jam' => date('H:i:s', strtotime($_POST['jam_rawat'] . ' +' . $i . '0 seconds')),
             'dokter_perujuk' => $_POST['kode_provider'],
             'bagian_rs' => $jns_perawatan['bagian_rs'],
             'bhp' => $jns_perawatan['bhp'],
@@ -608,15 +1435,17 @@ class Admin extends AdminModule
             'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
             'status' => $_POST['status']
           ]);
-        if($periksa_lab) {
-          $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
-          foreach ($template_laboratorium as $row) {
+      }
+      if ($periksa_lab) {
+        $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
+        foreach ($template_laboratorium as $row) {
+          for ($i = 0; $i < $jml; $i++) {
             $this->db('detail_periksa_lab')
               ->save([
                 'no_rawat' => $_POST['no_rawat'],
                 'kd_jenis_prw' => $_POST['kd_jenis_prw'],
                 'tgl_periksa' => $_POST['tgl_perawatan'],
-                'jam' => $_POST['jam_rawat'],
+                'jam' => date('H:i:s', strtotime($_POST['jam_rawat'] . ' +' . $i . '0 seconds')),
                 'id_template' => $row['id_template'],
                 'nilai' => '',
                 'nilai_rujukan' => $row['nilai_rujukan_ld'],
@@ -633,521 +1462,602 @@ class Admin extends AdminModule
           }
         }
       }
-
-      exit();
     }
+    exit();
+  }
 
-    public function anySaveNilai()
-    {
-      $this->db('detail_periksa_lab')
+  public function anySaveNilai()
+  {
+    $hasil = $this->db('detail_periksa_lab')
+      ->where('no_rawat', $_REQUEST['no_rawat'])
+      ->where('tgl_periksa', $_REQUEST['tgl_periksa'])
+      ->where('jam', $_REQUEST['jam'])
+      ->where('id_template', $_REQUEST['id_template'])
+      ->save([
+        'nilai' => $_REQUEST['value']
+      ]);
+    if ($hasil) {
+      $this->db('permintaan_lab')
         ->where('no_rawat', $_REQUEST['no_rawat'])
-        ->where('tgl_periksa', $_REQUEST['tgl_periksa'])
-        ->where('jam', $_REQUEST['jam'])
-        ->where('id_template', $_REQUEST['id_template'])
-        ->save([
-          'nilai' => $_REQUEST['value']
-        ]);
-
-      exit();
+        ->where('tgl_permintaan', $_REQUEST['tgl_periksa'])
+        ->where('jam_permintaan', $_REQUEST['jam'])
+        ->save(
+          [
+            'tgl_hasil' => date('Y-m-d'),
+            'jam_hasil' => date('H:i:s')
+          ]
+        );
     }
 
-    public function anySaveKeterangan()
-    {
-      $this->db('detail_periksa_lab')
-        ->where('no_rawat', $_REQUEST['no_rawat'])
-        ->where('tgl_periksa', $_REQUEST['tgl_periksa'])
-        ->where('jam', $_REQUEST['jam'])
-        ->where('id_template', $_REQUEST['id_template'])
-        ->save([
-          'keterangan' => $_REQUEST['value']
-        ]);
-      exit();
-    }
+    exit();
+  }
 
-    public function postHapusLaboratorium()
-    {
-      $periksa_lab = $this->db('periksa_lab')
+  public function anySaveKeterangan()
+  {
+    $this->db('detail_periksa_lab')
+      ->where('no_rawat', $_REQUEST['no_rawat'])
+      ->where('tgl_periksa', $_REQUEST['tgl_periksa'])
+      ->where('jam', $_REQUEST['jam'])
+      ->where('id_template', $_REQUEST['id_template'])
+      ->save([
+        'keterangan' => $_REQUEST['value']
+      ]);
+    exit();
+  }
+
+  public function postHapusLaboratorium()
+  {
+    $periksa_lab = $this->db('periksa_lab')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
       ->where('tgl_periksa', $_POST['tgl_perawatan'])
       ->where('jam', $_POST['jam_rawat'])
       ->where('status', 'Ralan')
       ->delete();
-      if($periksa_lab) {
-        $this->db('detail_periksa_lab')
+    if ($periksa_lab) {
+      $this->db('detail_periksa_lab')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
         ->where('tgl_periksa', $_POST['tgl_perawatan'])
         ->where('jam', $_POST['jam_rawat'])
         ->delete();
-      }
+    }
+    exit();
+  }
+
+  public function postBayarParsial()
+  {
+    $username = $this->core->checkAuth('POST');
+    if (!$this->core->checkPermission($username, 'can_update', 'laboratorium')) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Anda tidak punya izin untuk melakukan pembayaran.']);
       exit();
     }
 
-    public function anyRincian()
-    {
+    if (!$this->isBillingParsialEnabled()) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Fitur billing parsial tidak diaktifkan.']);
+      exit();
+    }
 
-      $rows = $this->db('permintaan_lab')
-        ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->where('permintaan_lab.status', strtolower($_POST['status']))
+    $noRawat = trim((string) ($_POST['no_rawat'] ?? ''));
+    $kdJenisPrw = trim((string) ($_POST['kd_jenis_prw'] ?? ''));
+    $tglPeriksa = trim((string) ($_POST['tgl_periksa'] ?? ''));
+    $jamPeriksa = trim((string) ($_POST['jam'] ?? ''));
+    $status = trim((string) ($_POST['status'] ?? 'Ralan'));
+    $metode = trim((string) ($_POST['metode'] ?? 'Tunai'));
+    $jumlah = (float) str_replace(',', '.', (string) ($_POST['jumlah_bayar'] ?? 0));
+
+    if ($noRawat === '' || $kdJenisPrw === '' || $tglPeriksa === '' || $jamPeriksa === '' || $jumlah <= 0) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Data pembayaran tidak valid.']);
+      exit();
+    }
+
+    $total = 0;
+    try {
+      $row = $this->db('periksa_lab')
+        ->where('no_rawat', $noRawat)
+        ->where('kd_jenis_prw', $kdJenisPrw)
+        ->where('tgl_periksa', $tglPeriksa)
+        ->where('jam', $jamPeriksa)
+        ->where('status', $status)
+        ->oneArray();
+      $total = (float) ($row['biaya'] ?? 0);
+    } catch (\Exception $e) {
+      $total = 0;
+    }
+
+    if ($total <= 0) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Data tindakan laboratorium tidak ditemukan.']);
+      exit();
+    }
+
+    $paidMap = $this->getParsialPaidMap($noRawat, 'LAB', 'laboratorium');
+    $key = $kdJenisPrw.'|'.$tglPeriksa.'|'.$jamPeriksa.'|'.$status;
+    $paid = (float) ($paidMap[$key] ?? 0);
+    $remaining = $total - $paid;
+    if ($remaining < 0) {
+      $remaining = 0;
+    }
+    if ($remaining <= 0) {
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Tindakan laboratorium ini sudah lunas.']);
+      exit();
+    }
+    if ($jumlah > $remaining) {
+      $jumlah = $remaining;
+    }
+
+    try {
+      $pdo = $this->core->db()->pdo();
+      $pdo->beginTransaction();
+
+      $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran (no_rawat, tgl_bayar, jam_bayar, metode, jumlah_bayar, id_user, keterangan)
+        VALUES (?, ?, ?, ?, ?, ?, ?)");
+      $stmt->execute([
+        $noRawat,
+        date('Y-m-d'),
+        date('H:i:s'),
+        $metode !== '' ? $metode : 'Tunai',
+        $jumlah,
+        (int) $this->core->getUserInfo('id'),
+        'Parsial Laboratorium'
+      ]);
+      $pembayaranId = (int) $pdo->lastInsertId();
+
+      $stmt = $pdo->prepare("INSERT INTO mlite_billing_pembayaran_detail (pembayaran_id, kelompok, jumlah_alokasi, ref_modul, kd_jenis_prw, tgl_periksa, jam, status_periksa)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+      $stmt->execute([$pembayaranId, 'LAB', $jumlah, 'laboratorium', $kdJenisPrw, $tglPeriksa, $jamPeriksa, $status]);
+
+      $pdo->commit();
+    } catch (\Exception $e) {
+      try { $this->core->db()->pdo()->rollBack(); } catch (\Exception $x) {}
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan pembayaran parsial.']);
+      exit();
+    }
+
+    $paidAfter = $paid + $jumlah;
+    $remainingAfter = $total - $paidAfter;
+    if ($remainingAfter < 0) {
+      $remainingAfter = 0;
+    }
+    $this->setOrderPaidStatusLab($noRawat, $kdJenisPrw, $status, $tglPeriksa, $jamPeriksa, ($remainingAfter <= 0 && $total > 0));
+
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'success', 'message' => 'Pembayaran parsial berhasil disimpan.', 'pembayaran_id' => $pembayaranId]);
+    exit();
+  }
+
+  public function anyNotaParsial()
+  {
+    $username = $this->core->checkAuth('GET');
+    if (!$this->core->checkPermission($username, 'can_read', 'laboratorium')) {
+      echo 'Anda tidak punya izin.';
+      exit();
+    }
+
+    if (!$this->isBillingParsialEnabled()) {
+      echo 'Fitur billing parsial tidak diaktifkan.';
+      exit();
+    }
+
+    $settings = $this->settings('settings');
+    $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+    $pembayaranId = (int) ($_GET['pembayaran_id'] ?? 0);
+    if ($pembayaranId <= 0) {
+      echo 'ID pembayaran tidak valid.';
+      exit();
+    }
+
+    $pdo = $this->core->db()->pdo();
+
+    try {
+      $stmt = $pdo->prepare("SELECT h.id, h.no_rawat, h.tgl_bayar, h.jam_bayar, h.metode, h.jumlah_bayar, h.id_user, h.keterangan,
+        COALESCE(p.nama, u.fullname) AS nama_kasir
+        FROM mlite_billing_pembayaran h
+        LEFT JOIN mlite_users u ON u.id = h.id_user
+        LEFT JOIN pegawai p ON p.nik = u.username
+        WHERE h.id = ?");
+      $stmt->execute([$pembayaranId]);
+      $pembayaran = $stmt->fetch(\PDO::FETCH_ASSOC);
+    } catch (\Exception $e) {
+      $pembayaran = null;
+    }
+
+    if (!$pembayaran) {
+      echo 'Data pembayaran tidak ditemukan.';
+      exit();
+    }
+
+    $noRawat = (string) ($pembayaran['no_rawat'] ?? '');
+
+    try {
+      $stmt = $pdo->prepare("SELECT d.kd_jenis_prw, d.tgl_periksa, d.jam, d.status_periksa, d.jumlah_alokasi, pl.nm_perawatan
+        FROM mlite_billing_pembayaran_detail d
+        LEFT JOIN jns_perawatan_lab pl ON pl.kd_jenis_prw = d.kd_jenis_prw
+        WHERE d.pembayaran_id = ? AND d.kelompok = 'LAB' AND d.ref_modul = 'laboratorium'
+        ORDER BY d.id ASC");
+      $stmt->execute([$pembayaranId]);
+      $detail = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\Exception $e) {
+      $detail = [];
+    }
+
+    $totalDetail = 0;
+    foreach ($detail as $d) {
+      $totalDetail += (float) ($d['jumlah_alokasi'] ?? 0);
+    }
+
+    $reg = $this->db('reg_periksa')->where('no_rawat', $noRawat)->oneArray();
+    $pasien = [];
+    if (!empty($reg['no_rkm_medis'])) {
+      $pasien = $this->db('pasien')->where('no_rkm_medis', $reg['no_rkm_medis'])->oneArray();
+    }
+
+    $namaKasir = trim((string) ($pembayaran['nama_kasir'] ?? ''));
+    if ($namaKasir === '') {
+      $namaKasir = $this->core->getUserInfo('fullname', null, true);
+    }
+
+    $show = isset($_GET['show']) ? (string) $_GET['show'] : 'kecil';
+    if ($show === 'besar') {
+      echo $this->draw('nota_parsial.besar.html', [
+        'pembayaran' => htmlspecialchars_array($pembayaran),
+        'detail' => htmlspecialchars_array($detail),
+        'pasien' => htmlspecialchars_array($pasien),
+        'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'total_detail' => $totalDetail
+      ]);
+    } else {
+      echo $this->draw('nota_parsial.kecil.html', [
+        'pembayaran' => htmlspecialchars_array($pembayaran),
+        'detail' => htmlspecialchars_array($detail),
+        'pasien' => htmlspecialchars_array($pasien),
+        'nama_kasir' => htmlspecialchars($namaKasir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+        'total_detail' => $totalDetail
+      ]);
+    }
+    exit();
+  }
+
+  public function anyRincian()
+  {
+
+    $rows = $this->db('permintaan_lab')
+      ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('permintaan_lab.status', strtolower($_POST['status']))
+      ->toArray();
+    $laboratorium = [];
+    foreach ($rows as $row) {
+      $rows2 = $this->db('permintaan_pemeriksaan_lab')
+        ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+        ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
         ->toArray();
-      $laboratorium = [];
-      foreach ($rows as $row) {
-        $rows2 = $this->db('permintaan_pemeriksaan_lab')
-          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
-          ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
-          ->toArray();
-          $row['permintaan_pemeriksaan_lab'] = [];
-          foreach ($rows2 as $row2) {
-            $row2['noorder'] = $row2['noorder'];
-            $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
-            $row2['stts_bayar'] = $row2['stts_bayar'];
-            $row2['nm_perawatan'] = $row2['nm_perawatan'];
-            $row2['kd_pj'] = $row2['kd_pj'];
-            $row2['status'] = $row2['status'];
-            $row2['kelas'] = $row2['kelas'];
-            $row2['kategori'] = $row2['kategori'];
-            $rows3 = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $row2['noorder'])->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
-            $row2['permintaan_detail_permintaan_lab'] = [];
-            foreach ($rows3 as $row3) {
-              $row3['template_laboratorium'] = $this->db('template_laboratorium')->where('kd_jenis_prw', $row3['kd_jenis_prw'])->where('id_template', $row3['id_template'])->oneArray();
-              $row2['permintaan_detail_permintaan_lab'][] = $row3;
-            }
-            $row['permintaan_pemeriksaan_lab'][] = $row2;
-          }
-        $laboratorium[] = $row;
+      $row['permintaan_pemeriksaan_lab'] = [];
+      foreach ($rows2 as $row2) {
+        $row2['noorder'] = $row2['noorder'];
+        $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
+        $row2['stts_bayar'] = $row2['stts_bayar'];
+        $row2['nm_perawatan'] = $row2['nm_perawatan'];
+        $row2['kd_pj'] = $row2['kd_pj'];
+        $row2['status'] = $row2['status'];
+        $row2['kelas'] = $row2['kelas'];
+        $row2['kategori'] = $row2['kategori'];
+        $rows3 = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $row2['noorder'])->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
+        $row2['permintaan_detail_permintaan_lab'] = [];
+        foreach ($rows3 as $row3) {
+          $row3['template_laboratorium'] = $this->db('template_laboratorium')->where('kd_jenis_prw', $row3['kd_jenis_prw'])->where('id_template', $row3['id_template'])->oneArray();
+          $row2['permintaan_detail_permintaan_lab'][] = $row3;
+        }
+        $row['permintaan_pemeriksaan_lab'][] = $row2;
       }
+      $laboratorium[] = $row;
+    }
 
-      $rows_periksa_lab = $this->db('periksa_lab')
+    $rows_periksa_lab = $this->db('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
       ->join('dokter', 'dokter.kd_dokter=periksa_lab.dokter_perujuk')
       ->where('periksa_lab.status', $_POST['status'])
       ->where('no_rawat', $_POST['no_rawat'])
       ->toArray();
 
-      $periksa_lab = [];
-      $no_lab = 1;
-      foreach ($rows_periksa_lab as $row) {
-        $row['nomor'] = $no_lab++;
-        $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
-          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
-          ->where('detail_periksa_lab.no_rawat', $_POST['no_rawat'])
-          ->where('detail_periksa_lab.tgl_periksa', $row['tgl_periksa'])
-          ->where('detail_periksa_lab.jam', $row['jam'])
-          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
-          ->toArray();
-        $periksa_lab[] = $row;
+    $billingParsialEnabled = $this->isBillingParsialEnabled();
+    $periksa_lab = [];
+    $no_lab = 1;
+    $parsialPaidMap = $billingParsialEnabled ? $this->getParsialPaidMap($_POST['no_rawat'], 'LAB', 'laboratorium') : [];
+    foreach ($rows_periksa_lab as $row) {
+      $row['nomor'] = $no_lab++;
+      $key = ((string) ($row['kd_jenis_prw'] ?? '')).'|'.((string) ($row['tgl_periksa'] ?? '')).'|'.((string) ($row['jam'] ?? '')).'|'.((string) ($_POST['status'] ?? ''));
+      $row['parsial_paid'] = (float) ($parsialPaidMap[$key] ?? 0);
+      $row['parsial_remaining'] = (float) ($row['biaya'] ?? 0) - (float) ($row['parsial_paid'] ?? 0);
+      if ($row['parsial_remaining'] < 0) {
+        $row['parsial_remaining'] = 0;
       }
-
-      $pasien = $this->db('pasien')->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))->oneArray();
-      $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
-      
-      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'no_rawat' => $_POST['no_rawat'], 'laboratorium' => $laboratorium, 'pasien' => $pasien, 'reg_periksa' => $reg_periksa]);
-      exit();
+      $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+        ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+        ->where('detail_periksa_lab.no_rawat', $_POST['no_rawat'])
+        ->where('detail_periksa_lab.tgl_periksa', $row['tgl_periksa'])
+        ->where('detail_periksa_lab.jam', $row['jam'])
+        ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
+        ->toArray();
+      $periksa_lab[] = $row;
     }
 
-    public function postHapusPermintaanLaboratorium()
-    {
-      $this->db('permintaan_lab')
+    $pasien = $this->db('pasien')->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))->oneArray();
+    $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+    $parsialHistory = $billingParsialEnabled ? $this->getParsialHistory($_POST['no_rawat']) : [];
+
+    echo $this->draw('rincian.html', [
+      'periksa_lab' => $periksa_lab,
+      'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+      'laboratorium' => htmlspecialchars_array($laboratorium),
+      'pasien' => $pasien,
+      'reg_periksa' => $reg_periksa,
+      'billing_parsial_enabled' => $billingParsialEnabled ? 'true' : 'false',
+      'parsial_history' => htmlspecialchars_array($parsialHistory)
+    ]);
+    exit();
+  }
+
+  public function postHapusPermintaanLaboratorium()
+  {
+    $this->db('permintaan_lab')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('noorder', $_POST['noorder'])
       ->where('tgl_permintaan', $_POST['tgl_permintaan'])
       ->where('jam_permintaan', $_POST['jam_permintaan'])
       ->where('status', 'Ralan')
       ->delete();
-      exit();
-    }
+    exit();
+  }
 
-    public function getDetailPermintaan($noorder, $kd_jenis_prw)
-    {
-      $rows = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $noorder)->where('kd_jenis_prw', $kd_jenis_prw)->toArray();
-      $detail_permintaan_lab = [];
-      foreach ($rows as $row) {
-        $row['template_laboratorium'] = $this->db('template_laboratorium')->where('kd_jenis_prw', $row['kd_jenis_prw'])->where('id_template', $row['id_template'])->oneArray();
-        $detail_permintaan_lab[] = $row;
-      }
-      $this->tpl->set('detail', $detail_permintaan_lab);
-      echo $this->tpl->draw(MODULES.'/laboratorium/view/admin/details.html', true);
-      exit();
+  public function getDetailPermintaan($noorder, $kd_jenis_prw)
+  {
+    $rows = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $noorder)->where('kd_jenis_prw', $kd_jenis_prw)->toArray();
+    $detail_permintaan_lab = [];
+    foreach ($rows as $row) {
+      $row['template_laboratorium'] = $this->db('template_laboratorium')->where('kd_jenis_prw', $row['kd_jenis_prw'])->where('id_template', $row['id_template'])->oneArray();
+      $detail_permintaan_lab[] = $row;
     }
+    $this->tpl->set('detail', $detail_permintaan_lab);
+    echo $this->tpl->draw(MODULES . '/laboratorium/view/admin/details.html', true);
+    exit();
+  }
 
-    public function postValidasiPermintaanLab()
-    {
-      $permintaan_lab = $this->db('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->oneArray();
-      $validasi_permintaan = $this->db('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->save(['tgl_sampel' => date('Y-m-d'), 'jam_sampel' => date('H:i:s')]);
-      $permintaan_pemeriksaan_lab = $this->db('permintaan_pemeriksaan_lab')->where('noorder', $_POST['noorder'])->toArray();
-      //var_dump($permintaan_lab);
-      foreach ($permintaan_pemeriksaan_lab as $row) {
-        $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
-        $periksa_lab = $this->db('periksa_lab')
+  public function postValidasiPermintaanLab()
+  {
+    $permintaan_lab = $this->db('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->oneArray();
+    $validasi_permintaan = $this->db('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->save(['tgl_sampel' => date('Y-m-d'), 'jam_sampel' => date('H:i:s')]);
+    $permintaan_pemeriksaan_lab = $this->db('permintaan_pemeriksaan_lab')->where('noorder', $_POST['noorder'])->toArray();
+    //var_dump($permintaan_lab);
+    foreach ($permintaan_pemeriksaan_lab as $row) {
+      $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+      $periksa_lab = $this->db('periksa_lab')
+        ->save([
+          'no_rawat' => $_POST['no_rawat'],
+          'nip' => $this->core->getUserInfo('username', null, true),
+          'kd_jenis_prw' => $row['kd_jenis_prw'],
+          'tgl_periksa' => $_POST['tgl_permintaan'],
+          'jam' => $_POST['jam_permintaan'],
+          'dokter_perujuk' => $permintaan_lab['dokter_perujuk'],
+          'bagian_rs' => $jns_perawatan['bagian_rs'],
+          'bhp' => $jns_perawatan['bhp'],
+          'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+          'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+          'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+          'kso' => $jns_perawatan['kso'],
+          'menejemen' => $jns_perawatan['menejemen'],
+          'biaya' => $jns_perawatan['total_byr'],
+          'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
+          'status' => $_POST['status'],
+          'kategori' => 'PK'
+        ]);
+      //var_dump($permintaan_pemeriksaan_lab);
+      $permintaan_detail_permintaan_lab = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $_POST['noorder'])->where('kd_jenis_prw', $row['kd_jenis_prw'])->toArray();
+      foreach ($permintaan_detail_permintaan_lab as $row) {
+        $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $row['kd_jenis_prw'])->where('id_template', $row['id_template'])->oneArray();
+        $this->db('detail_periksa_lab')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
-            'nip' => $this->core->getUserInfo('username', null, true),
             'kd_jenis_prw' => $row['kd_jenis_prw'],
             'tgl_periksa' => $_POST['tgl_permintaan'],
             'jam' => $_POST['jam_permintaan'],
-            'dokter_perujuk' => $permintaan_lab['dokter_perujuk'],
-            'bagian_rs' => $jns_perawatan['bagian_rs'],
-            'bhp' => $jns_perawatan['bhp'],
-            'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
-            'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
-            'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
-            'kso' => $jns_perawatan['kso'],
-            'menejemen' => $jns_perawatan['menejemen'],
-            'biaya' => $jns_perawatan['total_byr'],
-            'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
-            'status' => $_POST['status'],
-            'kategori' => 'PK'
+            'id_template' => $row['id_template'],
+            'nilai' => '',
+            'nilai_rujukan' => $template_laboratorium['nilai_rujukan_ld'],
+            'keterangan' => '',
+            'bagian_rs' => $template_laboratorium['bagian_rs'],
+            'bhp' => $template_laboratorium['bhp'],
+            'bagian_perujuk' => $template_laboratorium['bagian_perujuk'],
+            'bagian_dokter' => $template_laboratorium['bagian_dokter'],
+            'bagian_laborat' => $template_laboratorium['bagian_laborat'],
+            'kso' => $template_laboratorium['kso'],
+            'menejemen' => $template_laboratorium['menejemen'],
+            'biaya_item' => $template_laboratorium['biaya_item']
           ]);
-        //var_dump($permintaan_pemeriksaan_lab);
-        $permintaan_detail_permintaan_lab = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $_POST['noorder'])->where('kd_jenis_prw', $row['kd_jenis_prw'])->toArray();
-        foreach ($permintaan_detail_permintaan_lab as $row) {
-          $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $row['kd_jenis_prw'])->where('id_template', $row['id_template'])->oneArray();
-          $this->db('detail_periksa_lab')
-            ->save([
-              'no_rawat' => $_POST['no_rawat'],
-              'kd_jenis_prw' => $row['kd_jenis_prw'],
-              'tgl_periksa' => $_POST['tgl_permintaan'],
-              'jam' => $_POST['jam_permintaan'],
-              'id_template' => $row['id_template'],
-              'nilai' => '',
-              'nilai_rujukan' => $template_laboratorium['nilai_rujukan_ld'],
-              'keterangan' => '',
-              'bagian_rs' => $template_laboratorium['bagian_rs'],
-              'bhp' => $template_laboratorium['bhp'],
-              'bagian_perujuk' => $template_laboratorium['bagian_perujuk'],
-              'bagian_dokter' => $template_laboratorium['bagian_dokter'],
-              'bagian_laborat' => $template_laboratorium['bagian_laborat'],
-              'kso' => $template_laboratorium['kso'],
-              'menejemen' => $template_laboratorium['menejemen'],
-              'biaya_item' => $template_laboratorium['biaya_item']
-            ]);
-          //var_dump($permintaan_detail_permintaan_lab);
-        }
+        //var_dump($permintaan_detail_permintaan_lab);
       }
-      exit();
     }
+    exit();
+  }
 
-    public function postHapusDetailPermintaan()
-    {
-      $this->db('permintaan_detail_permintaan_lab')
-        ->where('noorder', $_POST['noorder'])
-        ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
-        ->where('id_template', $_POST['id_template'])
-        ->delete();
-      exit();
-    }
+  public function postHapusDetailPermintaan()
+  {
+    $this->db('permintaan_detail_permintaan_lab')
+      ->where('noorder', $_POST['noorder'])
+      ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
+      ->where('id_template', $_POST['id_template'])
+      ->delete();
+    exit();
+  }
 
-    public function anyLayananLab()
-    {
-      $layanan = $this->db('jns_perawatan_lab')
-        ->where('status', '1')
-        ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
-        ->limit(10)
-        ->toArray();
-      echo $this->draw('layanan.html', ['layanan' => $layanan]);
-      exit();
-    }
-
-    public function postProviderList()
-    {
-
-      if(isset($_POST["query"])){
-        $output = '';
-        $key = "%".$_POST["query"]."%";
-        $rows = $this->db('dokter')->like('nm_dokter', $key)->where('status', '1')->limit(10)->toArray();
-        $output = '';
-        if(count($rows)){
-          foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["kd_dokter"].': '.$row["nm_dokter"].'</li>';
-          }
-        }
-        echo $output;
-      }
-
-      exit();
-
-    }
-
-    public function postProviderList2()
-    {
-
-      if(isset($_POST["query"])){
-        $output = '';
-        $key = "%".$_POST["query"]."%";
-        $rows = $this->db('petugas')->like('nama', $key)->limit(10)->toArray();
-        $output = '';
-        if(count($rows)){
-          foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["nip"].': '.$row["nama"].'</li>';
-          }
-        }
-        echo $output;
-      }
-
-      exit();
-
-    }
-
-    public function postMaxid()
-    {
-      $max_id = $this->db('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
-      if(empty($max_id['no_rawat'])) {
-        $max_id['no_rawat'] = '000000';
-      }
-      $_next_no_rawat = sprintf('%06s', ($max_id['no_rawat'] + 1));
-      $next_no_rawat = date('Y/m/d').'/'.$_next_no_rawat;
-      echo $next_no_rawat;
-      exit();
-    }
-
-    public function postMaxAntrian()
-    {
-      $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $this->settings('settings', 'laboratorium'))->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
-      if(empty($max_id['no_reg'])) {
-        $max_id['no_reg'] = '000';
-      }
-      $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
-      echo $_next_no_reg;
-      exit();
-    }
-
-    public function convertNorawat($text)
-    {
-        setlocale(LC_ALL, 'en_EN');
-        $text = str_replace('/', '', trim($text));
-        return $text;
-    }
-
-    public function getHasilPdf()
-    {
-
-      $tmp = $this->db('mlite_temporary')->toArray();
-      $settings = $this->settings('settings');
-      $logo = $this->settings->get('settings.logo');
-      $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
-
-      $pasien = $this->db('reg_periksa')
-        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
-        ->where('no_rawat', $_GET['no_rawat'])
-        ->oneArray();
-      $dokter_perujuk = $this->db('periksa_lab')
-        ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
-        ->where('no_rawat', $_GET['no_rawat'])
-        ->group('no_rawat')
-        ->oneArray();
-
-      $rows_periksa_lab = $this->db('periksa_lab')
-      ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
-      ->where('no_rawat', $_GET['no_rawat'])
+  public function anyLayananLab()
+  {
+    $layanan = $this->db('jns_perawatan_lab')
+      ->where('status', '1')
+      ->like('nm_perawatan', '%' . htmlspecialchars($_POST['layanan'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '%')
+      ->limit(10)
       ->toArray();
+    echo $this->draw('layanan.html', ['layanan' => htmlspecialchars_array($layanan)]);
+    exit();
+  }
 
-      $periksa_lab = [];
-      $jumlah_total_lab = 0;
-      $no_lab = 1;
-      foreach ($rows_periksa_lab as $row) {
-        $jumlah_total_lab += $row['biaya'];
-        $row['nomor'] = $no_lab++;
-        $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
-          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
-          ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
-          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
-          ->toArray();
-        $periksa_lab[] = $row;
-      }
+  public function postProviderList()
+  {
 
-      $pdf = new PDF_MC_Table('P','mm','Legal');
-      $pdf->AddPage();
-      $pdf->SetAutoPageBreak(true, 10);
-      $pdf->SetTopMargin(10);
-      $pdf->SetLeftMargin(10);
-      $pdf->SetRightMargin(10);
-
-      $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
-      $pdf->SetFont('Arial', '', 24);
-      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
-      $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
-      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
-      $pdf->Line(10, 30, 205, 30);
-      $pdf->Line(10, 31, 205, 31);
-
-      //make a dummy empty cell as a vertical spacer
-      $pdf->Cell(189 ,30,'',0,1);//end of line
-
-      //billing address
-      $pdf->SetFont('Arial','',12);
-      $pdf->Cell(45 ,6,'Nama',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pasien['nm_pasien'],0,1);
-      $pdf->Cell(45 ,6,'Umur',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pasien['umur'],0,1);
-      $pdf->Cell(45 ,6,'Poli/Ruangan',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pasien['nm_poli'],0,1);
-      $pdf->Cell(45 ,6,'Dokter PJ',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pj_lab['nm_dokter'],0,1);
-      $pdf->Cell(45 ,6,'Dokter Pengirim',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$dokter_perujuk['nama'],0,1);
-      $pdf->Cell(45 ,6,'Tanggal',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pasien['tgl_registrasi'],0,1);
-
-      $pdf->SetXY(10, 85);
-      $pdf->SetFont('Arial','B',14);
-      $pdf->Cell(0, 4, 'Hasil Pemeriksaan Laboratorium', 0, 1, 'C', false);
-
-      //make a dummy empty cell as a vertical spacer
-      $pdf->Cell(205 ,2,'',0,1);//end of line
-      //invoice contents
-      /*
-      $pdf->SetFont('Arial','B',12);
-
-      $pdf->Cell(10 ,7,'No',1,0);
-      $pdf->Cell(85 ,7,'Pemeriksaan',1,0);
-      $pdf->Cell(25 ,7,'Hasil',1,0);
-      $pdf->Cell(25 ,7,'Rujukan',1,0);
-      $pdf->Cell(25 ,7,'Satuan',1,0);
-      $pdf->Cell(25 ,7,'Keterangan',1,1);//end of line
-      */
-
-      $pdf->SetFont('Arial', 'B', 11);
-      $pdf->SetWidths(array(10,85,25,25,25,25));
-      $pdf->Row(array('No','Pemeriksaan','Hasil','Rujukan','Satuan','Keterangan'));
-      $pdf->SetFont('Arial', '', 10);
-      $no_lab_pdf = 1;
-      foreach ($rows_periksa_lab as $row) {
-        $row['nomor'] = $no_lab_pdf++;
-        $rows2 = $this->db('detail_periksa_lab')
-          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
-          ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
-          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
-          ->toArray();
-        $pdf->SetWidths(array(10,185));
-        $pdf->Row(array($row['nomor'],$row['nm_perawatan']));
-        foreach ($rows2 as $row2) {
-          $pdf->SetWidths(array(10,85,25,25,25,25));
-          $pdf->Row(array('','',$row2['nilai'],$row2['nilai_rujukan'],$row2['satuan'],$row2['keterangan']));
+    if (isset($_POST["query"])) {
+      $output = '';
+      $key = "%" . $_POST["query"] . "%";
+      $rows = $this->db('dokter')->like('nm_dokter', $key)->where('status', '1')->limit(10)->toArray();
+      $output = '';
+      if (count($rows)) {
+        foreach ($rows as $row) {
+          $output .= '<li class="list-group-item link-class">' . htmlspecialchars($row["kd_dokter"] . ': ' . $row["nm_dokter"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
         }
       }
+      echo $output;
+    }
 
-      $pdf->Cell(189 ,10,'',0,1);//end of line
+    exit();
 
-      $pdf->SetFont('Arial','',11);
+  }
 
-      $pdf->Cell(120 ,5,'',0,0);
-      $pdf->Cell(69 ,10,$settings['kota'].', '.date('Y-m-d'),0,1);//end of line
+  public function postProviderList2()
+  {
 
-      $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
-      //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
-      $im=$qr->createImage(4,4);
-      imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
-      imagedestroy($im);
-
-      $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
-
-      $pdf->Cell(120 ,5,'',0,0);
-      $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );
-      $pdf->Cell(189 ,32,'',0,1);//end of line
-      $pdf->Cell(120 ,5,'',0,0);
-      $pdf->Cell(69 ,5,$this->core->getUserInfo('fullname', null, true),0,1);//end of line
-
-      $filename = convertNorawat($dokter_perujuk['no_rawat']).'_'.$dokter_perujuk['kd_jenis_prw'].'_'.$dokter_perujuk['tgl_periksa'];
-      if (file_exists(UPLOADS.'/laboratorium/'.$filename.'.pdf')) {
-        unlink(UPLOADS.'/laboratorium/'.$filename.'.pdf');
+    if (isset($_POST["query"])) {
+      $output = '';
+      $key = "%" . $_POST["query"] . "%";
+      $rows = $this->db('petugas')->like('nama', $key)->limit(10)->toArray();
+      $output = '';
+      if (count($rows)) {
+        foreach ($rows as $row) {
+          $output .= '<li class="list-group-item link-class">' . htmlspecialchars($row["nip"] . ': ' . $row["nama"], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+        }
       }
-
-      //$pdf->Output('F', UPLOADS.'/laboratorium/'.$filename.'.pdf', true);
-
-      $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
-
-      exit();
+      echo $output;
     }
 
+    exit();
 
-    public function postKirimEmail() {
-      $email = $_POST['email'];
-      $nama_lengkap = $_POST['receiver'];
-      $file = $_POST['file'];
-      $this->sendEmail($email, $nama_lengkap, $file);
-      exit();
+  }
+
+  public function postMaxid()
+  {
+    $urut = $this->db('reg_periksa')
+      ->where('tgl_registrasi', date('Y-m-d'))
+      ->nextRightNumber('no_rawat', 6);
+
+    $next_no_rawat = date('Y/m/d') . '/' . sprintf('%06d', $urut);
+
+    echo $next_no_rawat;
+
+    exit();
+  }
+
+  public function postMaxAntrian()
+  {
+    $urut = $this->db('reg_periksa')
+      ->where('kd_poli', $this->settings('settings', 'laboratorium'))
+      ->where('tgl_registrasi', date('Y-m-d'))
+      ->nextRightNumber('no_reg', 3);
+
+    echo sprintf('%03d', $urut);
+
+    exit();
+  }
+
+  public function convertNorawat($text)
+  {
+    setlocale(LC_ALL, 'en_EN');
+    $text = str_replace('/', '', trim($text));
+    return $text;
+  }
+
+  public function postKirimEmail()
+  {
+    $email = $_POST['email'];
+    $nama_lengkap = $_POST['receiver'];
+    $file = $_POST['file'];
+    $this->sendEmail($email, $nama_lengkap, $file);
+    exit();
+  }
+
+  private function sendEmail($email, $receiver, $file)
+  {
+    $binary_content = file_get_contents($file);
+
+    if ($binary_content === false) {
+      throw new \Exception("Could not fetch remote content from: '$file'");
     }
 
-    private function sendEmail($email, $receiver, $file)
-    {
-      $binary_content = file_get_contents($file);
+    $mail = new PHPMailer(true);
+    $temp = @file_get_contents(MODULES . "/laboratorium/email/email.send.html");
 
-      if ($binary_content === false) {
-         throw new Exception("Could not fetch remote content from: '$file'");
-      }
+    $temp = str_replace("{SITENAME}", $this->core->settings->get('settings.nama_instansi'), $temp);
+    $temp = str_replace("{ADDRESS}", $this->core->settings->get('settings.alamat') . " - " . $this->core->settings->get('settings.kota'), $temp);
+    $temp = str_replace("{TELP}", $this->core->settings->get('settings.nomor_telepon'), $temp);
+    //$temp  = str_replace("{NUMBER}", $number, $temp);
 
-	    $mail = new PHPMailer(true);
-      $temp  = @file_get_contents(MODULES."/laboratorium/email/email.send.html");
+    //$mail->SMTPDebug = SMTP::DEBUG_SERVER; // for detailed debug output
+    $mail->isSMTP();
+    $mail->Host = $this->settings->get('api.apam_smtp_host');
+    $mail->SMTPAuth = true;
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port = $this->settings->get('api.apam_smtp_port');
 
-      $temp  = str_replace("{SITENAME}", $this->core->settings->get('settings.nama_instansi'), $temp);
-      $temp  = str_replace("{ADDRESS}", $this->core->settings->get('settings.alamat')." - ".$this->core->settings->get('settings.kota'), $temp);
-      $temp  = str_replace("{TELP}", $this->core->settings->get('settings.nomor_telepon'), $temp);
-      //$temp  = str_replace("{NUMBER}", $number, $temp);
+    $mail->Username = $this->settings->get('api.apam_smtp_username');
+    $mail->Password = $this->settings->get('api.apam_smtp_password');
 
-	    //$mail->SMTPDebug = SMTP::DEBUG_SERVER; // for detailed debug output
-      $mail->isSMTP();
-      $mail->Host = $this->settings->get('api.apam_smtp_host');
-      $mail->SMTPAuth = true;
-      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-      $mail->Port = $this->settings->get('api.apam_smtp_port');
+    // Sender and recipient settings
+    $mail->setFrom($this->core->settings->get('settings.email'), $this->core->settings->get('settings.nama_instansi'));
+    $mail->addAddress($email, $receiver);
+    $mail->AddStringAttachment($binary_content, "hasil_laboratorium.pdf", $encoding = 'base64', $type = 'application/pdf');
 
-      $mail->Username = $this->settings->get('api.apam_smtp_username');
-      $mail->Password = $this->settings->get('api.apam_smtp_password');
+    // Setting the email content
+    $mail->IsHTML(true);
+    $mail->Subject = "Hasil pemeriksaan laboratorium anda di " . $this->core->settings->get('settings.nama_instansi');
+    $mail->Body = $temp;
 
-      // Sender and recipient settings
-      $mail->setFrom($this->core->settings->get('settings.email'), $this->core->settings->get('settings.nama_instansi'));
-      $mail->addAddress($email, $receiver);
-      $mail->AddStringAttachment($binary_content, "hasil_laboratorium.pdf", $encoding = 'base64', $type = 'application/pdf');
+    $mail->send();
 
-      // Setting the email content
-      $mail->IsHTML(true);
-      $mail->Subject = "Hasil pemeriksaan laboratorium anda di ".$this->core->settings->get('settings.nama_instansi');
-      $mail->Body = $temp;
-
-      $mail->send();
-
-      if (!$mail->send()) {
-        echo 'Error: ' . $mail->ErrorInfo;
-      } else {
-        echo 'Pesan email telah dikirim.';
-      }
-
+    if (!$mail->send()) {
+      echo 'Error: ' . $mail->ErrorInfo;
+    } else {
+      echo 'Pesan email telah dikirim.';
     }
 
-    public function postCekWaktu()
-    {
-      echo date('H:i:s');
-      exit();
-    }
+  }
 
-    public function getJavascript()
-    {
-        header('Content-type: text/javascript');
-        $this->assign['websocket'] = $this->settings->get('settings.websocket');
-        $this->assign['websocket_proxy'] = $this->settings->get('settings.websocket_proxy');
-        echo $this->draw(MODULES.'/laboratorium/js/admin/laboratorium.js', ['mlite' => $this->assign]);
-        exit();
-    }
+  public function postCekWaktu()
+  {
+    echo date('H:i:s');
+    exit();
+  }
 
-    private function _addHeaderFiles()
-    {
-        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
-        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
-        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
-        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
-        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
-        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
-        $this->core->addJS(url([ADMIN, 'laboratorium', 'javascript']), 'footer');
-    }
+  public function getJavascript()
+  {
+    header('Content-type: text/javascript');
+    $this->assign['websocket'] = $this->settings->get('settings.websocket');
+    $this->assign['websocket_proxy'] = $this->settings->get('settings.websocket_proxy');
+    echo $this->draw(MODULES . '/laboratorium/js/admin/laboratorium.js', ['mlite' => htmlspecialchars_array($this->assign)]);
+    exit();
+  }
+
+  private function _addHeaderFiles()
+  {
+    $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+    $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+    $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+    $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+    $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+    $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+    $this->core->addJS(url([ADMIN, 'laboratorium', 'javascript']), 'footer');
+  }
 
 }

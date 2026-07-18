@@ -4,8 +4,9 @@ return [
     'name'          =>  'WA Gateway',
     'description'   =>  'Modul Whatsapp Gateway mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'whatsapp',
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('wagateway', 'server', 'https://mlite.id')");

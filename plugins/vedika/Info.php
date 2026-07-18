@@ -3,8 +3,9 @@ return [
     'name'          =>  'Vedika',
     'description'   =>  'Modul klaim online Vedika BPJS',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'code',
     'pages'         =>  ['e-Vedika Dashboard' => 'vedika'],
     'install'       =>  function () use ($core) {

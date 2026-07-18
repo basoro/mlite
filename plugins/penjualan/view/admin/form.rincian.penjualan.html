@@ -2,7 +2,7 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Jumlah Tagihan</label>
     <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{$total_tagihan}" name="jumlah_total" maxlength="11" disabled>
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=isset_or($total_tagihan)?}" name="jumlah_total" maxlength="11" disabled>
     </div>
     <input type="text" class="form-control" style="background-color:white;border:none;box-shadow:none;text-align:right;font-weight:bold;" placeholder="jumlah total"  value="{?=terbilang($total_tagihan)?}" name="terbilang_jumlah_total" disabled >
     </div>
@@ -15,7 +15,7 @@
     <div class="form-group">
     <label class="col-sm-5 control-label">Jumlah Harus Bayar</label>
     <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{$total_tagihan}" name="jumlah_harus_bayar" maxlength="11" disabled />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=isset_or($total_tagihan)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
     </div>
     <input type="text" class="form-control" style="background-color:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang($total_tagihan)?}" name="terbilang_jumlah_harus_bayar" disabled >
     </div>
@@ -45,7 +45,7 @@
 </div>
 <div class="pull-right">
   <button type="button" name="button" class="btn btn-success" id="simpan_billing_penjualan"><span class="fa fa-save"></span><span class="hidden-xs"> Simpan</span></button>
-  <button type="button" name="button" class="btn btn-primary" id="cetak_billing_kecil_penjualan" data-no_rawat="{$no_rawat}"><span class="fa fa-file-o"></span><span class="hidden-xs"> Nota</span></button>
-  <button type="button" name="button" class="btn btn-info" id="cetak_billing_penjualan" data-no_rawat="{$no_rawat}"><span class="fa fa-file"></span><span class="hidden-xs"> Invoice</span></button>
+  <button type="button" name="button" class="btn btn-primary" id="cetak_billing_kecil_penjualan"><span class="fa fa-file-o"></span><span class="hidden-xs"> Nota</span></button>
+  <button type="button" name="button" class="btn btn-info" id="cetak_billing_penjualan"><span class="fa fa-file"></span><span class="hidden-xs"> Invoice</span></button>
   <button type="button" name="button" class="btn btn-warning" id="selesai_billing_penjualan"><span class="fa fa-check"></span><span class="hidden-xs"> Selesai</span></button>
 </div> 

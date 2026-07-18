@@ -42,15 +42,15 @@
 		<div class="front-side">
 			<div class="info-grid">
 				<div class="name">
-					<h2>{$kartu.settings.nama_instansi}</h2>
-					<h5>{$kartu.settings.alamat}</h5>
-					<h5>Telp: {$kartu.settings.nomor_telepon} - Email: {$kartu.settings.email}</h5>
+					<h2>{?=isset_or($kartu.settings.nama_instansi)?}</h2>
+					<h5>{?=isset_or($kartu.settings.alamat)?}</h5>
+					<h5>Telp: {?=isset_or($kartu.settings.nomor_telepon)?} - Email: {?=isset_or($kartu.settings.email)?}</h5>
 				</div>
 				<div class="name-tag">
 					<h1>
-						<strong>{$kartu.pasien.no_rkm_medis}</strong>
+						<strong>{?=isset_or($kartu.pasien.no_rkm_medis)?}</strong>
 					</h1>
-					<h3>{$kartu.pasien.nm_pasien}</h3>
+					<h3>{?=isset_or($kartu.pasien.nm_pasien)?}</h3>
 				</div>
 			</div>
 		</div>

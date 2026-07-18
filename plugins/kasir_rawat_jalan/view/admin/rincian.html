@@ -1,4 +1,9 @@
-<div class="dokter_ralan_view">
+<div class="dokter_ralan_view" data-edit-locked="{?=isset_or($billing_control.edit_locked)?}" data-print-locked="{?=isset_or($billing_control.print_locked)?}" data-lock-message="{?=isset_or($billing_control.message)?}">
+    {if: !empty($billing_control.message)}
+    <div class="alert alert-warning">
+      {?=isset_or($billing_control.message)?}
+    </div>
+    {/if}
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Rekap Billing</a></li>
         <li role="presentation"><a href="#pendaftaran" aria-controls="home" role="tab" data-toggle="tab">Pendaftaran</a></li>
@@ -7,6 +12,7 @@
         <li role="presentation"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium</a></li>
         <li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi</a></li>
         <li role="presentation"><a href="#operasi" aria-controls="rad" role="tab" data-toggle="tab">Operasi</a></li>
+        <li role="presentation"><a href="#biayalain" aria-controls="biayalain" role="tab" data-toggle="tab">Biaya Lainnya</a></li>
     </ul>
 
     <div class="tab-content">
@@ -35,7 +41,7 @@
                 <tr>
                   <td>3.</td>
                   <td>Obat dan BHP</td>
-                  <td>Rp. <span class="pull-right" id="jurnal_obat_bhp">{?= number_format($jumlah_total_obat,2,',','.')?}</span></td>
+                  <td>Rp. <span class="pull-right" id="jurnal_obat_bhp">{?= number_format($jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah,2,',','.')?}</span></td>
                 </tr>
                 <tr>
                   <td>4.</td>
@@ -52,9 +58,118 @@
                   <td>Operasi</td>
                   <td>Rp. <span class="pull-right" id="jurnal_radiologi">{?= number_format($jumlah_total_operasi + $jumlah_total_obat_operasi,2,',','.')?}</span></td>
                 </tr>
+                <tr>
+                  <td>7.</td>
+                  <td>Obat Pulang</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat_pulang,2,',','.')?}</span></td>
+                </tr>
+                <tr>
+                  <td>8.</td>
+                  <td>Biaya Tambahan (termasuk UTD)</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_tambahan,2,',','.')?}</span></td>
+                </tr>
               </tbody>
             </table>
           </div>
+          {if: isset_or($split_bill.groups)}
+          <div class="panel-group" id="splitBillAccordion" role="tablist" aria-multiselectable="true" style="margin-top:15px;">
+          <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="splitBillHeading">
+              <h4 class="panel-title" style="margin:0;">
+                <a role="button" data-toggle="collapse" data-parent="#splitBillAccordion" href="#splitBillCollapse" aria-expanded="false" aria-controls="splitBillCollapse">
+                  <strong>Split Bill per Kelompok</strong>
+                  <span class="small text-muted pull-right"><i class="fa fa-chevron-down"></i></span>
+                </a>
+              </h4>
+            </div>
+            <div id="splitBillCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="splitBillHeading">
+            <div class="panel-body">
+              <div class="row" style="margin-bottom:10px;">
+                <div class="col-sm-4">
+                  <select class="form-control input-sm" id="split_metode">
+                    <option value="Tunai">Tunai</option>
+                    <option value="Transfer">Transfer</option>
+                    <option value="QRIS">QRIS</option>
+                    <option value="EDC">EDC</option>
+                  </select>
+                </div>
+                <div class="col-sm-8 text-right" style="padding-top:6px;">
+                  <strong>Sisa Total: </strong>
+                  Rp. {?= number_format(isset_or($split_bill.total_sisa,0),2,',','.')?}
+                </div>
+              </div>
+              <div class="table-responsive no-margin">
+                <table class="table table-striped table-bordered no-padding" width="100%">
+                  <thead>
+                    <tr>
+                      <th>Kelompok</th>
+                      <th width="180px;">Tagihan</th>
+                      <th width="180px;">Terbayar</th>
+                      <th width="180px;">Sisa</th>
+                      <th width="240px;">Bayar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loop: $split_bill.groups}
+                    <tr>
+                      <td><strong>{?=isset_or($value.label)?}</strong><div class="small text-muted">{?=isset_or($value.status)?}</div></td>
+                      <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.total,0),2,',','.')?}</span></td>
+                      <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.paid,0),2,',','.')?}</span></td>
+                      <td>Rp. <span class="pull-right"><strong>{?= number_format(isset_or($value.remaining,0),2,',','.')?}</strong></span></td>
+                      <td>
+                        <div class="input-group input-group-sm">
+                          <input type="text" class="form-control split_amount" value="{?= number_format(isset_or($value.remaining,0),0,',','.')?}" {if: empty($value.remaining) || !empty($billing_control.edit_locked)}disabled{/if}>
+                          <span class="input-group-btn">
+                            <button type="button" class="btn btn-info split_pay" data-kelompok="{?=isset_or($value.kelompok)?}" {if: empty($value.remaining) || !empty($billing_control.edit_locked)}disabled{/if}>Bayar</button>
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                    {/loop}
+                  </tbody>
+                </table>
+              </div>
+              {if: isset_or($split_history)}
+              <div class="table-responsive" style="margin-top:10px;">
+                <table class="table table-striped table-bordered no-padding" width="100%">
+                  <thead>
+                    <tr>
+                      <th width="30px;">No</th>
+                      <th width="140px;">Tanggal</th>
+                      <th width="90px;">Jam</th>
+                      <th width="120px;">Metode</th>
+                      <th>Kelompok</th>
+                      <th>Jumlah</th>
+                      <th width="90px;">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loop: $split_history}
+                    <tr>
+                      <td>{?=$counter?}.</td>
+                      <td>{?=isset_or($value.tgl_bayar)?}</td>
+                      <td>{?=isset_or($value.jam_bayar)?}</td>
+                      <td>{?=isset_or($value.metode)?}</td>
+                      <td>{?=isset_or($value.kelompok_label, isset_or($value.kelompok))?}</td>
+                      <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.jumlah_bayar,0),2,',','.')?}</span></td>
+                      <td width="150px;">
+                        <a class="btn btn-default btn-xs" target="_blank" href="{?=url([ADMIN,'kasir_rawat_jalan','kuitansisplit'])?}&show=kecil&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Kecil</a>
+                        <a class="btn btn-info btn-xs" target="_blank" href="{?=url([ADMIN,'kasir_rawat_jalan','kuitansisplit'])?}&show=besar&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Besar</a>
+                      </td>
+                    </tr>
+                    {/loop}
+                    {if: empty($split_history)}
+                    <tr><td colspan="7" class="text-center">Belum ada pembayaran split bill.</td></tr>
+                    {/if}
+                  </tbody>
+                </table>
+              </div>
+              {/if}
+            </div>
+            </div>
+          </div>
+          </div>
+          {/if}
         </div>
         <div role="tabpanel" class="tab-pane fade in" id="pendaftaran">
           <h4>Pendaftaran</h4>
@@ -71,7 +186,7 @@
               <tbody>
                 <tr>
                   <td>1.</td>
-                  <td>{$poliklinik.nm_poli}</td>
+                  <td>{?=isset_or($poliklinik.nm_poli)?}</td>
                   <td>1</td>
                   <td>Rp. <span class="pull-right">{?= number_format($poliklinik.registrasi,2,',','.')?}</span></td>
                 </tr>
@@ -101,11 +216,11 @@
               <tbody>
                 {loop: $tindakan}
                 <tr>
-                  <td>{$value.nomor}</td>
-                  <td>{$value.nm_perawatan}</td>
-                  <td>{$value.provider}</td>
+                  <td>{?=isset_or($value.nomor)?}</td>
+                  <td>{?=isset_or($value.nm_perawatan)?}</td>
+                  <td>{?=isset_or($value.provider)?}</td>
                   <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-                  <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{if: $value.provider == 'Dokter'}rawat_jl_dr{elseif: $value.provider == 'Perawat'}rawat_jl_pr{else}rawat_jl_drpr{/if}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
+                  <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" data-tgl_perawatan="{?=isset_or($value.tgl_perawatan)?}" data-jam_rawat="{?=isset_or($value.jam_rawat)?}" data-provider="{if: $value.provider == 'Dokter'}rawat_jl_dr{elseif: $value.provider == 'Perawat'}rawat_jl_pr{else}rawat_jl_drpr{/if}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
                 </tr>
                 {/loop}
               </tbody>
@@ -135,17 +250,27 @@
               <tbody>
                 {loop: $detail_pemberian_obat}
                 <tr>
-                  <td>{$value.nomor}</td>
-                  <td>{$value.nama_brng}</td>
-                  <td>{$value.jml}</td>
+                  <td>{?=isset_or($value.nomor)?}</td>
+                  <td>{?=isset_or($value.nama_brng)?}</td>
+                  <td>{if: $value.jml > 0}{?=isset_or($value.jml)?}{/if}</td>
                   <td>Rp. <span class="pull-right">{?= number_format(($value.biaya_obat * $value.jml),2,',','.')?}</span></td>
                   <td colspan="2">
-                    <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-kode_brng="{$value.kode_brng}" data-jml="{$value.jml}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                    <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_peresepan="{?=isset_or($value.tgl_perawatan)?}" data-jam_peresepan="{?=isset_or($value.jam)?}" data-kode_brng="{?=isset_or($value.kode_brng)?}" data-jml="{?=isset_or($value.jml)?}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
                   </td>
                 </tr>
                 {/loop}
               </tbody>
               <tfoot>
+                <tr>
+                  <th colspan="3">Total Embalase</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_embalase,2,',','.')?}</span></th>
+                  <th></th>
+                </tr>
+                <tr>
+                  <th colspan="3">Total Tuslah</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_tuslah,2,',','.')?}</span></th>
+                  <th></th>
+                </tr>
                 <tr>
                   <th colspan="3">Total Biaya Obat</th>
                   <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat,2,',','.')?}</span></th>
@@ -170,11 +295,11 @@
               <tbody>
                 {loop: $periksa_lab}
                 <tr>
-                  <td>{$value.nomor}</td>
-                  <td>{$value.nm_perawatan}</td>
+                  <td>{?=isset_or($value.nomor)?}</td>
+                  <td>{?=isset_or($value.nm_perawatan)?}</td>
                   <td>Rp. <span class="pull-right">{?= number_format($value.biaya,2,',','.')?}</span></td>
                   <td colspan="2">
-                    <button type="button" class="btn btn-danger btn-xs hapus_laboratorium" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                    <button type="button" class="btn btn-danger btn-xs hapus_laboratorium" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}" data-jam_periksa="{?=isset_or($value.jam)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
                   </td>
                 </tr>
                 {/loop}
@@ -204,11 +329,11 @@
               <tbody>
                 {loop: $periksa_radiologi}
                 <tr>
-                  <td>{$value.nomor}</td>
-                  <td>{$value.nm_perawatan}</td>
+                  <td>{?=isset_or($value.nomor)?}</td>
+                  <td>{?=isset_or($value.nm_perawatan)?}</td>
                   <td>Rp. <span class="pull-right">{?= number_format($value.biaya,2,',','.')?}</span></td>
                   <td colspan="2">
-                    <button type="button" class="btn btn-danger btn-xs hapus_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                    <button type="button" class="btn btn-danger btn-xs hapus_radiologi" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}" data-jam_periksa="{?=isset_or($value.jam)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
                   </td>
                 </tr>
                 {/loop}
@@ -255,6 +380,49 @@
             </table>
           </div>
         </div>
+        <div role="tabpanel" class="tab-pane fade in" id="biayalain">
+          <h4>Biaya Lainnya</h4>
+          <div class="table-responsive no-margin">
+            <table class="table table-striped table-bordered no-padding" width="100%">
+              <thead>
+                <tr>
+                  <th width="20px;">No.</th>
+                  <th>Nama Item</th>
+                  <th>Jumlah</th>
+                  <th>Harga</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loop: $resep_pulang}
+                <tr>
+                  <td>{?=isset_or($value.nomor)?}</td>
+                  <td>{?=isset_or($value.nama_brng)?}</td>
+                  <td>{?=isset_or($value.jml_barang)?}</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+                </tr>
+                {/loop}
+                {loop: $tambahan_biaya}
+                <tr>
+                  <td>{?=isset_or($value.nomor)?}</td>
+                  <td>{?=isset_or($value.nama_biaya)?}</td>
+                  <td>1</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
+                </tr>
+                {/loop}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="3">Total Obat Pulang</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat_pulang,2,',','.')?}</span></th>
+                </tr>
+                <tr>
+                  <th colspan="3">Total Biaya Tambahan (termasuk UTD)</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_tambahan,2,',','.')?}</span></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
     </div>
 </div>
 
@@ -263,51 +431,51 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Tagihan</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi)?}" name="jumlah_total" maxlength="11" disabled>
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=isset_or($total_tagihan, ($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan))?}" name="jumlah_total" maxlength="11" disabled>
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi),3,"")?}" name="terbilang_jumlah_total" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(isset_or($total_tagihan, ($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan)),3,"")?}" name="terbilang_jumlah_total" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Potongan</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Potongan Faktur" value="" name="potongan_faktur" id="potongan_faktur2" maxlength="15" tabindex="1" />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Potongan Faktur" value="{?=isset_or($potongan_aktif, 0)?}" name="potongan_faktur" id="potongan_faktur2" maxlength="15" tabindex="1" {if: !empty($billing_control.edit_locked)}disabled{/if} />
       </div>
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Harus Bayar</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=isset_or($jumlah_harus_bayar_aktif, isset_or($total_tagihan, ($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan)))?}" name="jumlah_harus_bayar" maxlength="11" disabled />
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(isset_or($jumlah_harus_bayar_aktif, isset_or($total_tagihan, ($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_embalase + $jumlah_total_tuslah + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_obat_pulang + $jumlah_total_tambahan))),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Bayar</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Jumlah Bayar" value="0" name="jumlah_bayar" id="jumlah_bayar2" maxlength="15" tabindex="2" />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Jumlah Bayar" value="{?=isset_or($jumlah_bayar_aktif, 0)?}" name="jumlah_bayar" id="jumlah_bayar2" maxlength="15" tabindex="2" {if: !empty($billing_control.edit_locked)}disabled{/if} />
       </div>
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Kembalian</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold"  placeholder="Kembalian" value="0" name="kembalian" disabled maxlength="11" />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold"  placeholder="Kembalian" value="{?=isset_or($kembalian_aktif, 0)?}" name="kembalian" disabled maxlength="11" />
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" name="terbilang_kembalian" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" name="terbilang_kembalian" value="{if: isset_or($jumlah_bayar_aktif, 0) < isset_or($jumlah_harus_bayar_aktif, isset_or($total_tagihan, 0))}Kurang Bayar{elseif: !empty($kembalian_aktif)}{?=terbilang($kembalian_aktif,3,"")?}{/if}" disabled >
     </div>
     <div class="form-group">
       <label for="keterangan" class="col-sm-5 control-label">Cara Bayar</label>
       <div class="col-sm-7">
-        <select class="form-control" name="keterangan" id="keterangan">
-          <option value="Tunai">Tunai</option>
-          <option value="Kurang Bayar">Kurang Bayar</option>
-          <option value="Belum Bayar">Belum Bayar</option>
+        <select class="form-control" name="keterangan" id="keterangan" {if: !empty($billing_control.edit_locked)}disabled{/if}>
+          <option value="Tunai" {if: isset_or($billing_terakhir.keterangan, 'Tunai') == 'Tunai'}selected{/if}>Tunai</option>
+          <option value="Kurang Bayar" {if: isset_or($billing_terakhir.keterangan) == 'Kurang Bayar'}selected{/if}>Kurang Bayar</option>
+          <option value="Belum Bayar" {if: isset_or($billing_terakhir.keterangan) == 'Belum Bayar'}selected{/if}>Belum Bayar</option>
         </select>
       </div>
     </div>
   </div>
   <div class="pull-right">
-    <button type="button" name="button" class="btn btn-success" id="simpan_billing"><span class="fa fa-save"></span><span class="hidden-xs"> Simpan</span></button>
-    <button type="button" name="button" class="btn btn-primary" id="cetak_billing_kecil" data-no_rawat="{$no_rawat}"><span class="fa fa-file-o"></span><span class="hidden-xs"> Nota</span></button>
-    <button type="button" name="button" class="btn btn-info" id="cetak_billing" data-no_rawat="{$no_rawat}"><span class="fa fa-file"></span><span class="hidden-xs"> Invoice</span></button>
+    <button type="button" name="button" class="btn btn-success" id="simpan_billing" {if: !empty($billing_control.edit_locked)}disabled{/if}><span class="fa fa-save"></span><span class="hidden-xs"> Simpan</span></button>
+    <button type="button" name="button" class="btn btn-primary" id="cetak_billing_kecil" data-no_rawat="{?=isset_or($no_rawat)?}" {if: !empty($billing_control.print_locked)}disabled{/if}><span class="fa fa-file-o"></span><span class="hidden-xs"> Nota</span></button>
+    <button type="button" name="button" class="btn btn-info" id="cetak_billing" data-no_rawat="{?=isset_or($no_rawat)?}" {if: !empty($billing_control.print_locked)}disabled{/if}><span class="fa fa-file"></span><span class="hidden-xs"> Invoice</span></button>
     <button type="button" name="button" class="btn btn-warning" id="selesai_billing"><span class="fa fa-check"></span><span class="hidden-xs"> Selesai</span></button>
   </div>
 </div>

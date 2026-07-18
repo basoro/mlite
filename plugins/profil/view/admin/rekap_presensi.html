@@ -15,7 +15,7 @@
               <div class="input-group col col-md-4">
                 <select name="b" id="bulan" class="form-control form-inline" placeholder="Bulan">
                   {loop: $rekap.bulan}
-                  <option value="{$value}">{$value}</option>
+                  <option value="{?=isset_or($value)?}">{?=isset_or($value)?}</option>
                   {/loop}
                 </select>
               </div>
@@ -46,16 +46,16 @@
               {loop: $rekap.list}
               <tr>
                 <td>
-                  <a href="{$value.photo}" class="gallery">
-                    <img src="{$value.photo}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                  <a href="{?=isset_or($value.photo)?}" class="gallery">
+                    <img src="{?=isset_or($value.photo)?}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
                   </a>
-                  <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{$value.mapURL}"
-                      data-toggle="modal" data-target="#myModal">{$value.nama}</a></div>
+                  <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{?=isset_or($value.mapURL)?}"
+                      data-toggle="modal" data-target="#myModal">{?=isset_or($value.nama)?}</a></div>
                 </td>
-                <td>{$value.shift}</td>
-                <td>{$value.jam_datang}</td>
-                <td>{$value.jam_pulang}</td>
-                <td>{$value.durasi}</td>
+                <td>{?=isset_or($value.shift)?}</td>
+                <td>{?=isset_or($value.jam_datang)?}</td>
+                <td>{?=isset_or($value.jam_pulang)?}</td>
+                <td>{?=isset_or($value.durasi)?}</td>
               </tr>
               {/loop}
               {else}
@@ -66,7 +66,7 @@
             </tbody>
           </table>
         </div>
-        {$rekap.pagination}
+        {?=isset_or($rekap.pagination)?}
       </div>
     </div>
   </div>

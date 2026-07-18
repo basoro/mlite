@@ -1,6 +1,6 @@
   <script type="text/javascript">
 
-    const url = "{$url}";
+    const url = "{?=isset_or($url)?}";
 
     function loadFormPopup() {
       let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=0,height=0,left=100,top=100`;

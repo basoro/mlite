@@ -1,15 +1,15 @@
 <div class="row">
   <div class="col-md-12 text-center">
-    <img src="{$fotoURL}" width="120" height="120" class="img-thumbnail" alt="Profile Image" />
+    <img src="{?=isset_or($fotoURL)?}" width="120" height="120" class="img-thumbnail" alt="Profile Image" />
     <br>
   </div>
 </div>
-<h4 class="text-center">{$profil.nama}</h4>
-<h4 class="text-center">NIP/NIK: {$profil.nik}</h4>
+<h4 class="text-center">{?=isset_or($profil.nama)?}</h4>
+<h4 class="text-center">NIP/NIK: {?=isset_or($profil.nik)?}</h4>
 <div class="row" style="margin-bottom:20px;">
   <div class="col-md-12">
     <div class="text-center">
-      <button class="btn btn-big btn-primary">{$tanggal}</button>
+      <button class="btn btn-big btn-primary">{?=isset_or($tanggal)?}</button>
     </div>
   </div>
 </div>
@@ -53,14 +53,14 @@
             {loop: $sub_modules}
             <li class="module">
                 <div class="panel panel-default">
-                    <a href="{$value.url}" class="panel-body text-center">
+                    <a href="{?=isset_or($value.url)?}" class="panel-body text-center">
                         <div class="panel-thumb">
-                            <i class="fa fa-{$value.icon}"></i>
+                            <i class="fa fa-{?=isset_or($value.icon)?}"></i>
                             <div class="desc">
-                                {$value.desc}
+                                {?=isset_or($value.desc)?}
                             </div>
                         </div>
-                        <h4><b>{$value.name}</b></h4>
+                        <h4><b>{?=isset_or($value.name)?}</b></h4>
                     </a>
                 </div>
             </li>

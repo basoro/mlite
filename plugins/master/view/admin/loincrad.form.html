@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form id="loincrad_form">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>LOINC Code</label>
+                <input type="text" name="Code" class="form-control" value="{$loincrad.form.Code}" required {if: !empty($loincrad.form.Code)}readonly{/if}>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <label>Display</label>
+                <input type="text" name="Display" class="form-control" value="{$loincrad.form.Display}" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Component</label>
+                <input type="text" name="Component" class="form-control" value="{$loincrad.form.Component}">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>System</label>
+                <input type="text" name="System" class="form-control" value="{$loincrad.form.System}">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>Property</label>
+                <input type="text" name="Property" class="form-control" value="{$loincrad.form.Property}">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>Timing</label>
+                <input type="text" name="Timing" class="form-control" value="{$loincrad.form.Timing}">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>Scale</label>
+                <input type="text" name="Scale" class="form-control" value="{$loincrad.form.Scale}">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label>Method</label>
+                <input type="text" name="Method" class="form-control" value="{$loincrad.form.Method}">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Code System</label>
+            <input type="text" name="CodeSystem" class="form-control" value="{$loincrad.form.CodeSystem}">
+          </div>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+          <button type="button" class="btn btn-default" id="tutupform_btn">Batal</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -11,37 +11,74 @@
   .nowrap th, td {
     white-space: nowrap;
   }
+  /* Loader overlay untuk proses bridging INACBGS */
+  .loader-bridging {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .loader-bridging .wrap {
+    margin-top: 50px;
+    text-align: center;
+  }
+  .loader-bridging .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 10px auto;
+  }
+  .loader-bridging .text {
+    font-weight: 600;
+    color: #333;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 </style>
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
     <h4 class="modal-title">Bridging Inacbgs</h4>
 </div>
 <div class="modal-body" id="bridginginacbgs">
+  <div class="loader-bridging">
+    <div class="wrap">
+      <div class="spinner"></div>
+      <div class="text" style="font-size:16px;">Sabar brow.....!!</div><div class="text"> Sedang mengirim data klaim ke Server INACBG's...</div>
+    </div>
+  </div>
   <div style="margin-top:20px;">
     <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
     <div class="row">
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nama Pasien/JK</label>
-        <input type="text" id="nm_pasien" name="nm_pasien" class="form-control" value="{$reg_periksa.nm_pasien}" readonly>
+        <input type="text" id="nm_pasien" name="nm_pasien" class="form-control" value="{?=isset_or($reg_periksa.nm_pasien)?}" readonly>
       </div>
     </div>
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor RM</label>
-        <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$reg_periksa.no_rkm_medis}" readonly>
+        <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{?=isset_or($reg_periksa.no_rkm_medis)?}" readonly>
       </div>
     </div>
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Rawat</label>
-        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{$reg_periksa.no_rawat}" readonly>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{?=isset_or($reg_periksa.no_rawat)?}" readonly>
       </div>
     </div>
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Kartu</label>
-        <input type="text" id="nokartu" name="nokartu" class="form-control" value="{$reg_periksa.no_peserta}" readonly>
+        <input type="text" id="nokartu" name="nokartu" class="form-control" value="{?=isset_or($reg_periksa.no_peserta)?}" readonly>
       </div>
     </div>
     </div>
@@ -49,25 +86,25 @@
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Tanggal Registrasi</label>
-        <input type="text" id="tgl_registrasi" name="tgl_registrasi" class="form-control" value="{$reg_periksa.tgl_registrasi}" readonly>
+        <input type="text" id="tgl_registrasi" name="tgl_registrasi" class="form-control" value="{?=isset_or($reg_periksa.tgl_registrasi)?}" readonly>
       </div>
     </div>
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Poliklinik/Unit</label>
-        <input type="text" id="kd_poli" name="kd_poli" class="form-control" value="{$reg_periksa.nm_poli}" readonly>
+        <input type="text" id="kd_poli" name="kd_poli" class="form-control" value="{?=isset_or($reg_periksa.nm_poli)?}" readonly>
       </div>
     </div>
     <div class="col col-md-3">
-      <div class="form-group">
+      <div class="form-group" id="nama_dokter">
         <label for="poli">Dokter</label>
         <select class="form-control" name="nama_dokter">
           {if: $reg_periksa.status_lanjut == 'Ralan'}
-          <option value='{$reg_periksa.nm_dokter}'>{$reg_periksa.nm_dokter}</option>
+          <option value='{?=isset_or($reg_periksa.nm_dokter)?}'>{?=isset_or($reg_periksa.nm_dokter)?}</option>
           {/if}
           {if: $reg_periksa.status_lanjut == 'Ranap'}
             {loop: $reg_periksa.nm_dokter as $data}
-            <option value='{$data.nm_dokter}'>{$data.nm_dokter}</option>
+            <option value='{?=isset_or($data.nm_dokter)?}'>{?=isset_or($data.nm_dokter)?}</option>
             {/loop}
           {/if}
         </select>
@@ -76,7 +113,7 @@
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Cara Bayar</label>
-        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$reg_periksa.png_jawab}" readonly>
+        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{?=isset_or($reg_periksa.png_jawab)?}" readonly>
       </div>
     </div>
     </div>
@@ -108,13 +145,13 @@
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Nomor SEP</label>
-            <input type="text" id="nosep" name="nosep" class="form-control" value="{$reg_periksa.no_sep}">
+            <input type="text" id="nosep" name="nosep" class="form-control" value="{?=isset_or($reg_periksa.no_sep)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Tanggal Keluar</label>
-            <input type="text" id="keluar" name="keluar" class="form-control tanggal" value="{$reg_periksa.tgl_keluar}">
+            <input type="text" id="keluar" name="keluar" class="form-control tanggal" value="{?=isset_or($reg_periksa.tgl_keluar)?}">
           </div>
         </div>
         <div class="col col-md-3">
@@ -198,22 +235,36 @@
           <div class="form-group">
             <label for="">Tensi</label>
             <div class="input-group">
-              <input type="text" id="sistole" name="sistole" class="form-control" value="{$reg_periksa.sistole}"/>
+              <input type="text" id="sistole" name="sistole" class="form-control" value="{?=isset_or($reg_periksa.sistole)?}"/>
               <span class="input-group-addon">/</span>
-              <input type="text" id="diastole" name="diastole" class="form-control" value="{$reg_periksa.diastole}"/>
+              <input type="text" id="diastole" name="diastole" class="form-control" value="{?=isset_or($reg_periksa.diastole)?}"/>
             </div>
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
-            <label for="poli">Diagnosa</label>
-            <input type="text" id="diagnosa" name="diagnosa" class="form-control" value="{$penyakit}">
-          </div>
+              <label for="poli">Diagnosa</label>
+              <div class="input-group">
+                <input type="text" id="diagnosa" name="diagnosa" class="form-control" value="{?=isset_or($penyakit)?}">
+                <span class="input-group-btn">
+                  <a href="{?=url([ADMIN,'vedika','ubahdiagnosa',$reg_periksa.status_lanjut,convertNorawat($reg_periksa.no_rawat)])?}" class="btn btn-default btn-sm" data-toggle="modal" data-target="#diagnosaModal" title="Ubah Diagnosa" style="padding: 9px;">
+                    <i class="fa fa-clipboard"></i>
+                  </a>
+                </span>
+              </div>
+            </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Prosedur</label>
-            <input type="text" id="procedure" name="procedure" class="form-control" value="{$prosedur}">
+            <div class="input-group">
+              <input type="text" id="procedure" name="procedure" class="form-control" value="{?=isset_or($prosedur)?}">
+              <span class="input-group-btn">
+                <a href="{?=url([ADMIN,'vedika','ubahprosedur',$reg_periksa.status_lanjut,convertNorawat($reg_periksa.no_rawat)])?}" class="btn btn-default btn-sm" data-toggle="modal" data-target="#prosedurModal" title="Ubah Prosedur" style="padding: 9px;">
+                  <i class="fa fa-clipboard"></i>
+                </a>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -272,7 +323,7 @@
               <select name="adl_sub_acute" class="form-control">
                   <option value=""></option>
                   {loop: $adl}
-                  <option value="{$value}">{$value}</option>
+                  <option value="{?=isset_or($value)?}">{?=isset_or($value)?}</option>
                   {/loop}
               </select>
             </div>
@@ -283,7 +334,7 @@
               <select name="adl_chronic" class="form-control">
                   <option value=""></option>
                   {loop: $adl}
-                  <option value="{$value}">{$value}</option>
+                  <option value="{?=isset_or($value)?}">{?=isset_or($value)?}</option>
                   {/loop}
               </select>
             </div>
@@ -668,25 +719,25 @@
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Prosedur Non Bedah</label>
-            <input type="text" id="prosedur_non_bedah" name="prosedur_non_bedah" class="form-control" value="{$biaya_non_bedah}">
+            <input type="text" id="prosedur_non_bedah" name="prosedur_non_bedah" class="form-control" value="{?=isset_or($biaya_non_bedah)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Prosedur Bedah</label>
-            <input type="text" id="prosedur_bedah" name="prosedur_bedah" class="form-control" value="{$biaya_bedah}">
+            <input type="text" id="prosedur_bedah" name="prosedur_bedah" class="form-control" value="{?=isset_or($biaya_bedah)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Konsultasi</label>
-            <input type="text" id="konsultasi" name="konsultasi" class="form-control" value="{$biaya_konsultasi}">
+            <input type="text" id="konsultasi" name="konsultasi" class="form-control" value="{?=isset_or($biaya_konsultasi)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Tenaga Ahli</label>
-            <input type="text" id="tenaga_ahli" name="tenaga_ahli" class="form-control" value="{$biaya_tenaga_ahli}">
+            <input type="text" id="tenaga_ahli" name="tenaga_ahli" class="form-control" value="{?=isset_or($biaya_tenaga_ahli)?}">
           </div>
         </div>
         </div>
@@ -694,25 +745,25 @@
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Keperawatan</label>
-            <input type="text" id="keperawatan" name="keperawatan" class="form-control" value="{$biaya_keperawatan}">
+            <input type="text" id="keperawatan" name="keperawatan" class="form-control" value="{?=isset_or($biaya_keperawatan)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Penunjang</label>
-            <input type="text" id="penunjang" name="penunjang" class="form-control" value="{$biaya_penunjang}">
+            <input type="text" id="penunjang" name="penunjang" class="form-control" value="{?=isset_or($biaya_penunjang)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Radiologi</label>
-            <input type="text" id="radiologi" name="radiologi" class="form-control" value="{$biaya_radiologi}">
+            <input type="text" id="radiologi" name="radiologi" class="form-control" value="{?=isset_or($biaya_radiologi)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Laboratorium</label>
-            <input type="text" id="laboratorium" name="laboratorium" class="form-control" value="{$biaya_laboratorium}">
+            <input type="text" id="laboratorium" name="laboratorium" class="form-control" value="{?=isset_or($biaya_laboratorium)?}">
           </div>
         </div>
         </div>
@@ -720,25 +771,25 @@
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Pelayanan Darah</label>
-            <input type="text" id="pelayanan_darah" name="pelayanan_darah" class="form-control" value="{$biaya_pelayanan_darah}">
+            <input type="text" id="pelayanan_darah" name="pelayanan_darah" class="form-control" value="{?=isset_or($biaya_pelayanan_darah)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Rehabilitasi</label>
-            <input type="text" id="rehabilitasi" name="rehabilitasi" class="form-control" value="{$biaya_rehabilitasi}">
+            <input type="text" id="rehabilitasi" name="rehabilitasi" class="form-control" value="{?=isset_or($biaya_rehabilitasi)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Kamar</label>
-            <input type="text" id="kamar" name="kamar" class="form-control" value="{$biaya_kamar}">
+            <input type="text" id="kamar" name="kamar" class="form-control" value="{?=isset_or($biaya_kamar)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Rawat Intensif</label>
-            <input type="text" id="rawat_intensif" name="rawat_intensif" class="form-control" value="{$biaya_rawat_intensif}">
+            <input type="text" id="rawat_intensif" name="rawat_intensif" class="form-control" value="{?=isset_or($biaya_rawat_intensif)?}">
           </div>
         </div>
         </div>
@@ -746,25 +797,25 @@
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Obat</label>
-            <input type="text" id="obat" name="obat" class="form-control" value="{$biaya_obat}">
+            <input type="text" id="obat" name="obat" class="form-control" value="{?=isset_or($biaya_obat)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Obat Kronis</label>
-            <input type="text" id="obat_kronis" name="obat_kronis" class="form-control" value="{$biaya_obat_kronis}">
+            <input type="text" id="obat_kronis" name="obat_kronis" class="form-control" value="{?=isset_or($biaya_obat_kronis)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Obat Kemoterapi</label>
-            <input type="text" id="obat_kemoterapi" name="obat_kemoterapi" class="form-control" value="{$biaya_obat_kemoterapi}">
+            <input type="text" id="obat_kemoterapi" name="obat_kemoterapi" class="form-control" value="{?=isset_or($biaya_obat_kemoterapi)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Alkes</label>
-            <input type="text" id="alkes" name="alkes" class="form-control" value="{$biaya_alkes}">
+            <input type="text" id="alkes" name="alkes" class="form-control" value="{?=isset_or($biaya_alkes)?}">
           </div>
         </div>
         </div>
@@ -772,25 +823,25 @@
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">BMHP</label>
-            <input type="text" id="bmhp" name="bmhp" class="form-control" value="{$biaya_bmhp}">
+            <input type="text" id="bmhp" name="bmhp" class="form-control" value="{?=isset_or($biaya_bmhp)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Sewa Alat</label>
-            <input type="text" id="sewa_alat" name="sewa_alat" class="form-control" value="{$biaya_sewa_alat}">
+            <input type="text" id="sewa_alat" name="sewa_alat" class="form-control" value="{?=isset_or($biaya_sewa_alat)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Poli Eksekutif</label>
-            <input type="text" id="tarif_poli_eks" name="tarif_poli_eks" class="form-control" value="{$biaya_tarif_poli_eks}">
+            <input type="text" id="tarif_poli_eks" name="tarif_poli_eks" class="form-control" value="{?=isset_or($biaya_tarif_poli_eks)?}">
           </div>
         </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Biaya Tambahan</label>
-            <input type="text" id="add_payment_pct" name="add_payment_pct" class="form-control" value="{$biaya_add_payment_pct}">
+            <input type="text" id="add_payment_pct" name="add_payment_pct" class="form-control" value="{?=isset_or($biaya_add_payment_pct)?}">
           </div>
         </div>
         </div>
@@ -798,18 +849,24 @@
     </div>
     <div class="row">
     <div class="col col-md-12" style="margin: 20px 0;">
-      <button class="btn btn-success simpanbridging">
+      <input type="hidden" name="hide_input_data" id="hide_input_data" value="{?=isset_or($hide_input_data)?}">
+      <!-- <button class="btn btn-success simpanbridging">
           Simpan
-      </button>
+      </button> -->
       <!-- <button class="btn btn-info editbridging">
           Edit
       </button> -->
-      <button class="btn btn-danger hapusbridging">
+      <!-- <button class="btn btn-danger hapusbridging">
           Hapus
-      </button>
-      <button class="pull-right btn btn-primary kirimdatacenter">
-          Kirim ke DC
-      </button>
+      </button> -->
+      <span class="pull-right">
+        <button class="btn btn-success" id="groupingidrg">
+            Bridging iDRG
+        </button>
+        <button class="btn btn-primary kirimdatacenter">
+            Kirim ke DC
+        </button>
+      </span>
     </div>
     </div>
   </div>
@@ -825,23 +882,27 @@
           <th>Diagnosa</th>
           <th>Prosedur</th>
           <th>Kode CBG</th>
-          <th>Deskripsi</th>
+          <th>Deskripsi CBG</th>
+          <th>Kode iDRG</th>
+          <th>Deskripsi iDRG</th>
           <th>Tarif Klaim</th>
           <th>Tarif RS</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>{$get_claim_data.response.data.nama_pasien}</td>
-          <td>{$get_claim_data.response.data.nomor_kartu}</td>
-          <td><a href="{?=url([ADMIN,'vedika','klaimpdf','{$get_claim_data.response.data.nomor_sep}'])?}" target="_blank">{$get_claim_data.response.data.nomor_sep}</a></td>
-          <td>{$get_claim_data.response.data.nama_dokter}</td>
-          <td>{$get_claim_data.response.data.diagnosa}</td>
-          <td>{$get_claim_data.response.data.procedure}</td>
-          <td>{$get_claim_data.response.data.grouper.response.cbg.code}</td>
-          <td>{$get_claim_data.response.data.grouper.response.cbg.description}</td>
-          <td>{$get_claim_data.response.data.grouper.response.cbg.tariff}</td>
-          <td>{?=$get_claim_data.response.data.tarif_rs.prosedur_non_bedah + $get_claim_data.response.data.tarif_rs.prosedur_bedah + $get_claim_data.response.data.tarif_rs.konsultasi + $get_claim_data.response.data.tarif_rs.tenaga_ahli + $get_claim_data.response.data.tarif_rs.keperawatan + $get_claim_data.response.data.tarif_rs.penunjang + $get_claim_data.response.data.tarif_rs.radiologi + $get_claim_data.response.data.tarif_rs.laboratorium + $get_claim_data.response.data.tarif_rs.pelayanan_darah + $get_claim_data.response.data.tarif_rs.rehabilitasi + $get_claim_data.response.data.tarif_rs.kamar + $get_claim_data.response.data.tarif_rs.rawat_intensif + $get_claim_data.response.data.tarif_rs.obat + $get_claim_data.response.data.tarif_rs.obat_kronis + $get_claim_data.response.data.tarif_rs.obat_kemoterapi + $get_claim_data.response.data.tarif_rs.alkes + $get_claim_data.response.data.tarif_rs.bmhp + $get_claim_data.response.data.tarif_rs.sewa_alat?}</td>
+          <td>{if: isset($get_claim_data.response.data.nama_pasien)}{?=isset_or($get_claim_data.response.data.nama_pasien)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.nomor_kartu)}{?=isset_or($get_claim_data.response.data.nomor_kartu)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.nomor_sep)}<a href="{?=url([ADMIN,'vedika','klaimpdf',$get_claim_data.response.data.nomor_sep])?}" target="_blank">{?=isset_or($get_claim_data.response.data.nomor_sep)?}</a>{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.nama_dokter)}{?=isset_or($get_claim_data.response.data.nama_dokter)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.diagnosa)}{?=isset_or($get_claim_data.response.data.diagnosa)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.procedure)}{?=isset_or($get_claim_data.response.data.procedure)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_inacbg.cbg.code)}{?=isset_or($get_claim_data.response.data.grouper.response_inacbg.cbg.code)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_inacbg.cbg.description)}{?=isset_or($get_claim_data.response.data.grouper.response_inacbg.cbg.description)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_idrg.drg_code)}{?=isset_or($get_claim_data.response.data.grouper.response_idrg.drg_code)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_idrg.drg_description)}{?=isset_or($get_claim_data.response.data.grouper.response_idrg.drg_description)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.grouper.response_inacbg.tariff)}{?=isset_or($get_claim_data.response.data.grouper.response_inacbg.tariff)?}{/if}</td>
+          <td>{if: isset($get_claim_data.response.data.tarif_rs)}{?=(isset($get_claim_data.response.data.tarif_rs.prosedur_non_bedah) ? $get_claim_data.response.data.tarif_rs.prosedur_non_bedah : 0) + (isset($get_claim_data.response.data.tarif_rs.prosedur_bedah) ? $get_claim_data.response.data.tarif_rs.prosedur_bedah : 0) + (isset($get_claim_data.response.data.tarif_rs.konsultasi) ? $get_claim_data.response.data.tarif_rs.konsultasi : 0) + (isset($get_claim_data.response.data.tarif_rs.tenaga_ahli) ? $get_claim_data.response.data.tarif_rs.tenaga_ahli : 0) + (isset($get_claim_data.response.data.tarif_rs.keperawatan) ? $get_claim_data.response.data.tarif_rs.keperawatan : 0) + (isset($get_claim_data.response.data.tarif_rs.penunjang) ? $get_claim_data.response.data.tarif_rs.penunjang : 0) + (isset($get_claim_data.response.data.tarif_rs.radiologi) ? $get_claim_data.response.data.tarif_rs.radiologi : 0) + (isset($get_claim_data.response.data.tarif_rs.laboratorium) ? $get_claim_data.response.data.tarif_rs.laboratorium : 0) + (isset($get_claim_data.response.data.tarif_rs.pelayanan_darah) ? $get_claim_data.response.data.tarif_rs.pelayanan_darah : 0) + (isset($get_claim_data.response.data.tarif_rs.rehabilitasi) ? $get_claim_data.response.data.tarif_rs.rehabilitasi : 0) + (isset($get_claim_data.response.data.tarif_rs.kamar) ? $get_claim_data.response.data.tarif_rs.kamar : 0) + (isset($get_claim_data.response.data.tarif_rs.rawat_intensif) ? $get_claim_data.response.data.tarif_rs.rawat_intensif : 0) + (isset($get_claim_data.response.data.tarif_rs.obat) ? $get_claim_data.response.data.tarif_rs.obat : 0) + (isset($get_claim_data.response.data.tarif_rs.obat_kronis) ? $get_claim_data.response.data.tarif_rs.obat_kronis : 0) + (isset($get_claim_data.response.data.tarif_rs.obat_kemoterapi) ? $get_claim_data.response.data.tarif_rs.obat_kemoterapi : 0) + (isset($get_claim_data.response.data.tarif_rs.alkes) ? $get_claim_data.response.data.tarif_rs.alkes : 0) + (isset($get_claim_data.response.data.tarif_rs.bmhp) ? $get_claim_data.response.data.tarif_rs.bmhp : 0) + (isset($get_claim_data.response.data.tarif_rs.sewa_alat) ? $get_claim_data.response.data.tarif_rs.sewa_alat : 0)?}{else}0{/if}</td>
         </tr>
       </tbody>
     </table>
@@ -885,6 +946,7 @@
     var nosep = $('input:text[name=nosep]').val();
     var nokartu = $('input:text[name=nokartu]').val();
     var keluar = $('input:text[name=keluar]').val();
+    var cara_masuk = $('select[name=cara_masuk]').val();
     var kelas_rawat = $('select[name=kelas_rawat]').val();
     var nm_pasien = $('input:text[name=nm_pasien]').val();
     var nama_dokter = $('select[name=nama_dokter]').val();
@@ -892,7 +954,11 @@
     var procedure = $('input:text[name=procedure]').val();
     var adl_sub_acute = $('select[name=adl_sub_acute]').val();
     var adl_chronic = $('select[name=adl_chronic]').val();
-    var icu_indikator = $('select[name=icu_indikator]').val();
+    var icu_indikator = $('input:text[name=icu_indikator]').val();
+    var use_ind = $('input:text[name=use_ind]').val();
+    var ventilator_hour = $('input:text[name=ventilator_hour]').val();
+    var start_dttm = $('input:text[name=start_dttm]').val();
+    var stop_dttm = $('input:text[name=stop_dttm]').val();
     var sistole = $('input:text[name=sistole]').val();
     var diastole = $('input:text[name=diastole]').val();
     var dializer_single_use = $('select[name=dializer_single_use]').val();
@@ -903,6 +969,24 @@
     var add_payment_pct = $('input:text[name=add_payment_pct]').val();
     var birth_weight = $('input:text[name=birth_weight]').val();
     var discharge_status = $('select[name=discharge_status]').val();
+    var pemulasaraan_jenazah = $('select[name=pemulasaraan_jenazah]').val();
+    var kantong_jenazah = $('select[name=kantong_jenazah]').val();
+    var peti_jenazah = $('select[name=peti_jenazah]').val();
+    var plastik_erat = $('select[name=plastik_erat]').val();
+    var desinfektan_jenazah = $('select[name=desinfektan_jenazah]').val();
+    var covid19_status_cd = $('select[name=covid19_status_cd]').val();
+    var nomor_kartu_t = $('select[name=nomor_kartu_t]').val();
+    var episodes = $('input:text[name=episodes]').val();
+    var kantong_darah = $('input:text[name=kantong_darah]').val();
+    var usia_kehamilan = $('input:text[name=usia_kehamilan]').val();
+    var onset_kontraksi = $('select[name=onset_kontraksi]').val();
+    var delivery_method = $('select[name=delivery_method]').val();
+    var delivery_dttm = $('input:text[name=delivery_dttm]').val();
+    var letak_janin = $('select[name=letak_janin]').val();
+    var kondisi = $('select[name=kondisi]').val();
+    var use_manual = $('select[name=use_manual]').val();
+    var use_forcep = $('select[name=use_forcep]').val();
+    var use_vacuum = $('select[name=use_vacuum]').val();
     var prosedur_bedah = $('input:text[name=prosedur_bedah]').val();
     var prosedur_non_bedah = $('input:text[name=prosedur_non_bedah]').val();
     var konsultasi = $('input:text[name=konsultasi]').val();
@@ -928,6 +1012,8 @@
     bootbox.confirm("Apakah Anda yakin ingin mengirim data ini?", function(result){
       // ketika ditekan tombol ok
       if (result){
+        // tampilkan loader sebelum mengirim
+        $('.loader-bridging').show();
         // mengirimkan perintah penghapusan
         $.post(url, {
           no_rkm_medis: no_rkm_medis,
@@ -936,6 +1022,7 @@
           nosep: nosep,
           nokartu: nokartu,
           keluar: keluar,
+          cara_masuk: cara_masuk,
           kelas_rawat: kelas_rawat,
           nm_pasien: nm_pasien,
           nama_dokter: nama_dokter,
@@ -944,6 +1031,10 @@
           adl_sub_acute: adl_sub_acute,
           adl_chronic: adl_chronic,
           icu_indikator: icu_indikator,
+          use_ind: use_ind,
+          ventilator_hour: ventilator_hour,
+          start_dttm: start_dttm,
+          stop_dttm: stop_dttm,
           sistole: sistole,
           diastole: diastole,
           dializer_single_use: dializer_single_use, 
@@ -954,6 +1045,24 @@
           add_payment_pct: add_payment_pct,
           birth_weight: birth_weight,
           discharge_status: discharge_status,
+          pemulasaraan_jenazah: pemulasaraan_jenazah,
+          kantong_jenazah: kantong_jenazah,
+          peti_jenazah: peti_jenazah,
+          plastik_erat: plastik_erat,
+          desinfektan_jenazah: desinfektan_jenazah,
+          covid19_status_cd: covid19_status_cd,
+          nomor_kartu_t: nomor_kartu_t,
+          episodes: episodes,
+          kantong_darah: kantong_darah,
+          usia_kehamilan: usia_kehamilan,
+          delivery_method: delivery_method,
+          onset_kontraksi: onset_kontraksi,
+          delivery_dttm: delivery_dttm,
+          letak_janin: letak_janin,
+          kondisi: kondisi,  
+          use_manual: use_manual,
+          use_forcep: use_forcep,
+          use_vacuum: use_vacuum,
           prosedur_bedah: prosedur_bedah,
           prosedur_non_bedah: prosedur_non_bedah,
           konsultasi: konsultasi,
@@ -972,17 +1081,52 @@
           alkes: alkes,
           bmhp: bmhp,
           sewa_alat: sewa_alat,
-          tarif_poli_eks: tarif_poli_eks
+          tarif_poli_eks: tarif_poli_eks, 
+          lengkap: 'ya'
         } ,function(data) {
           console.log(data);
           alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
+          // tutup loader setelah alert
+          $('.loader-bridging').hide();
           //$('#inacbgsModal').modal('toggle');
+        }).fail(function(){
+          // jika gagal, pastikan loader ditutup agar tidak menggantung
+          $('.loader-bridging').hide();
         });
       }
     });
   });
 </script>
+<script type="text/javascript">
+  if ($('#hide_input_data').val() == '1') {
+    const inputs = document.querySelectorAll('#covid input');
+    const biaya = document.querySelectorAll('#biaya input');
+    const tambahan = document.querySelectorAll('#tambahan input');
+    const kelahiran = document.querySelectorAll('#kelahiran input');
+    const umum = document.querySelectorAll('#umum input');
+    inputs.forEach(input => input.disabled = true);
+    biaya.forEach(input => input.disabled = true);
+    tambahan.forEach(input => input.disabled = true);
+    kelahiran.forEach(input => input.disabled = true);
+    umum.forEach(input => input.disabled = true);
+  }
+  $("#bridginginacbgs").on("click", "#groupingidrg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var nosep = $('input:text[name=nosep]').val();
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    var loadURL =  baseURL + '/vedika/bridgingidrg/' + nosep + '/' + no_rawat.replaceAll('/','') + '/' + $('#hide_input_data').val() + '?t=' + mlite.token;
 
+    var modal = $('#moduleModal');
+    var modalContent = $('#moduleModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
 <script type="text/javascript">
   $("#bridginginacbgs").on("click", ".kirimdatacenter", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;

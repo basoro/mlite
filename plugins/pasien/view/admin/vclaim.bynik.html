@@ -157,7 +157,7 @@
 </div>
 <script>
 $(document).ready(function(){
-    $.get("{$url}", function(data){
+    $.get("{?=isset_or($url)?}", function(data){
       var data = JSON.parse(data);
       var jsonPretty = JSON.stringify(data, null, '\t');
       $("pre").text(jsonPretty);

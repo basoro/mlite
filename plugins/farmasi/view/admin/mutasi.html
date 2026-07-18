@@ -3,7 +3,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <!-- <span class="pull-right"><a href="{?=url(ADMIN.'/farmasi/mutasi')?}" class="btn btn-xs btn-info" role="tab">Aktif</a> <a href="{?=url(ADMIN.'/farmasi/mutasi/0')?}" class="btn btn-xs btn-info" role="tab">Tidak Aktif</a></span> -->
-                <h3 class="panel-title">{$databarang.title}</h3>
+                <h3 class="panel-title">{?=isset_or($databarang.title)?}</h3>
             </div>
             <div class="panel-body">
     					<div class="table-responsive no-margin">
@@ -23,18 +23,18 @@
             						{if: !empty($databarang.list)}
     								{loop: $databarang.list}
     								<tr>
-    									<td style="vertical-align:top">{$value.kode_brng}</td>
-                      <td style="vertical-align:top">{$value.nama_brng}</td>
+    									<td style="vertical-align:top">{?=isset_or($value.kode_brng)?}</td>
+                      <td style="vertical-align:top">{?=isset_or($value.nama_brng)?}</td>
                       <td style="vertical-align:top" class="text-right">{?=number_format($value.dasar,0,",",".")?}</td>
                       <td style="vertical-align:top" class="text-right">{?=number_format($value.h_beli,0,",",".")?}</td>
-                      <td style="vertical-align:top">{$value.expire}</td>
+                      <td style="vertical-align:top">{?=isset_or($value.expire)?}</td>
                       <td style="vertical-align:top">
                         {loop: $value.gudangbarang as $data}
                         <ul>
                           <li>
-                            Lokasi: {$data.nm_bangsal} ({$data.kd_bangsal}) - Stok: {$data.stok} 
+                            Lokasi: {?=isset_or($data.nm_bangsal)?} ({?=isset_or($data.kd_bangsal)?}) - Stok: {?=isset_or($data.stok)?} 
                             {if: $data.kd_bangsal != $this->core->settings->get('farmasi.gudang')}
-                            <a href="#re_stok" data-kode_brng="{$value.kode_brng}" data-kd_bangsal="{$data.kd_bangsal}">
+                            <a href="#re_stok" data-kode_brng="{?=isset_or($value.kode_brng)?}" data-kd_bangsal="{?=isset_or($data.kd_bangsal)?}">
                               <i class="fa fa-undo text-danger"></i>
                             </a> 
                             {/if}
@@ -43,15 +43,15 @@
                         {/loop}
                       </td>
     									<td style="vertical-align:top" class="text-right">
-                        <a href="#set_stok" data-kode_brng="{$value.kode_brng}" class="btn btn-success btn-xs">
+                        <a href="#set_stok" data-kode_brng="{?=isset_or($value.kode_brng)?}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Mutasi</span>
     										</a>
                         <!-- {if: $value.status == '1'}
-                          <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+                          <a href="{?=isset_or($value.delURL)?}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
       											<i class="fa fa-close"></i> <span class="hidden-xs">Delete</span>
       										</a>
                         {else}
-                          <a href="{$value.restoreURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin merestore?">
+                          <a href="{?=isset_or($value.restoreURL)?}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin merestore?">
       											<i class="fa fa-reply"></i> <span class="hidden-xs">Restore</span>
       										</a>
                         {/if} -->
@@ -82,7 +82,7 @@
         + '<label for="status_keluar">Pilih bangsal</label>'
         + '<select name="kd_bangsal" id="kd_bangsal" class="form-control" data-use-dimmer="false">'
         + '{loop: $databarang.bangsal}'
-        + '<option value="{$value.kd_bangsal}">{$value.nm_bangsal}</option>'
+        + '<option value="{?=isset_or($value.kd_bangsal)?}">{?=isset_or($value.nm_bangsal)?}</option>'
         + '{/loop}'
         + '</select>'
         + '</div>'
@@ -120,6 +120,7 @@
     event.stopPropagation();
     return false;
   });
+  
   $('a[href="#re_stok"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();

@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>{$title} - {$settings.nama_instansi}</title>
+    <title>{?=isset_or($title)?} - {?=isset_or($settings.nama_instansi)?}</title>
     <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
     <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
@@ -40,7 +40,7 @@
 </head>
 <body>
 <div class="container-fluid">
-  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> ANTRIAN POLIKLINIK {$settings.nama_instansi}</h1><br>
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{?=isset_or($logo)?}" alt="" width="60px"> ANTRIAN POLIKLINIK {?=isset_or($settings.nama_instansi)?}</h1><br>
   <div class="col-md-4" id="antrian_satu">
   </div>
   <div class="col-md-4" id="antrian_dua">
@@ -51,9 +51,9 @@
 <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;margin-left:0;margin-right:0;">
   <h3><marquee>
     {if: empty($running_text)}
-    {loop: $jadwal}<i class="fa fa-user-md"></i> {$value.nm_dokter} [{$value.nm_poli}] - {$value.jam_mulai} s/d  {$value.jam_selesai} WITA {/loop}
+    {loop: $jadwal}<i class="fa fa-user-md"></i> {?=isset_or($value.nm_dokter)?} [{?=isset_or($value.nm_poli)?}] - {?=isset_or($value.jam_mulai)?} s/d  {?=isset_or($value.jam_selesai)?} WITA {/loop}
     {else}
-    {$running_text}
+    {?=isset_or($running_text)?}
     {/if}
   </marquee></h3>
 </div>
@@ -61,9 +61,9 @@
   <div class="canvas">
     <p class="pull-right">
       Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
-      {$powered}.
+      {?=isset_or($powered)?}.
     </p>
-    <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+    <p><i class="fa fa-fw fa-calendar"></i> <span>{?=isset_or($tanggal)?}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
   </div>
 </footer>
 <script>

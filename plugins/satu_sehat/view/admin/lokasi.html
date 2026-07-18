@@ -14,7 +14,7 @@
                         <label>Poli/Unit</label>
                         <select name="kode" id="kode" class="form-control" onchange="document.getElementById('lokasi').value=this.options[this.selectedIndex].text.split('- ')[1]">
                             {loop: $lokasi}
-                            <option value="{$value.kode}">{$value.kode} - {$value.nama}</option>
+                            <option value="{?=isset_or($value.kode)?}">{?=isset_or($value.kode)?} - {?=isset_or($value.nama)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -28,7 +28,7 @@
                         <label>Departemen</label>
                         <select name="dep_id" id="dep_id" class="form-control" onchange="document.getElementById('nama').value=this.options[this.selectedIndex].text.split('- ')[1]">
                             {loop: $satu_sehat_departemen}
-                            <option value="{$value.dep_id}">{$value.dep_id} - {$value.nama}</option>
+                            <option value="{?=isset_or($value.dep_id)?}">{?=isset_or($value.dep_id)?} - {?=isset_or($value.nama)?}</option>
                             {/loop}
                         </select>
                     </div>
@@ -64,19 +64,19 @@
         <tbody>
         {loop: $satu_sehat_lokasi}
         <tr class="mapping_lokasi"
-        data-kode="{$value.kode}"
-        data-lokasi="{$value.lokasi}"
-        data-dep_id="{$value.dep_id}"
-        data-id_lokasi_satusehat="{$value.id_lokasi_satusehat}"
-        data-nama="{$value.nama}"
+        data-kode="{?=isset_or($value.kode)?}"
+        data-lokasi="{?=isset_or($value.lokasi)?}"
+        data-dep_id="{?=isset_or($value.dep_id)?}"
+        data-id_lokasi_satusehat="{?=isset_or($value.id_lokasi_satusehat)?}"
+        data-nama="{?=isset_or($value.nama)?}"
         >
-            <td>{$value.kode}</td>
-            <td>{$value.lokasi}</td>
-            <td>{$value.id_organisasi_satusehat}</td>
-            <td>{$value.id_lokasi_satusehat}</td>
-            <td>{$value.longitude}</td>
-            <td>{$value.latitude}</td>
-            <td>{$value.altitude}</td>
+            <td>{?=isset_or($value.kode)?}</td>
+            <td>{?=isset_or($value.lokasi)?}</td>
+            <td>{?=isset_or($value.id_organisasi_satusehat)?}</td>
+            <td>{?=isset_or($value.id_lokasi_satusehat)?}</td>
+            <td>{?=isset_or($value.longitude)?}</td>
+            <td>{?=isset_or($value.latitude)?}</td>
+            <td>{?=isset_or($value.altitude)?}</td>
         </tr>
         {/loop}
         </tbody>

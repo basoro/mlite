@@ -1,0 +1,345 @@
+<style>
+    body {
+        background: #f4f7f6;
+        padding: 20px;
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .top-action-bar {
+        text-align: left;
+        max-width: 210mm;
+        margin: 0 auto 20px auto;
+    }
+    .top-action-bar button {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        padding: 8px 15px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        margin-right: 5px;
+        color: #fff;
+    }
+    .btn-simpan { background-color: #28a745; }
+    .btn-simpan:hover { background-color: #218838; }
+    .btn-cetak { background-color: #007bff; }
+    .btn-cetak:hover { background-color: #0069d9; }
+    .btn-tutup { background-color: #6c757d; }
+    .btn-tutup:hover { background-color: #5a6268; }
+
+    .paper {
+        background: #fff;
+        width: 210mm;
+        min-height: 297mm;
+        padding: 15mm 20mm;
+        margin: 0 auto;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        color: #000;
+        line-height: 1.5;
+        box-sizing: border-box;
+    }
+
+    .kop-header {
+        border-bottom: 4px solid #000;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    .logo-instansi {
+        width: 90px;
+        height: auto;
+    }
+    .header-text { text-align: center; }
+    .header-title {
+        font-size: 26px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #164f6b;
+        margin: 2px 0;
+        letter-spacing: 1px;
+    }
+    .header-address {
+        font-size: 13px;
+        margin: 3px 0 0 0;
+    }
+
+    .surat-title-container {
+        text-align: center;
+        margin: 25px 0 20px;
+    }
+    .surat-title {
+        font-size: 17px;
+        font-weight: bold;
+        text-decoration: underline;
+        margin: 0 0 5px 0;
+        letter-spacing: 1px;
+    }
+
+    .content-body {
+        font-size: 14px;
+    }
+
+    .info-table {
+        width: 100%;
+        margin-left: 20px;
+        line-height: 1.9;
+    }
+    .info-table td:first-child { width: 38%; }
+    .info-table td:nth-child(2) { width: 3%; }
+
+    .input-clean {
+        border: none;
+        background: #f0f0f0;
+        padding: 2px 5px;
+        font-family: 'Times New Roman', Times, serif;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .input-clean:focus {
+        background: #fff;
+        outline: 1px dashed #ccc;
+    }
+    .textarea-clean {
+        border: 1px dashed #ccc;
+        background: #f0f0f0;
+        padding: 4px 6px;
+        font-family: 'Times New Roman', Times, serif;
+        border-radius: 4px;
+        font-size: 14px;
+        resize: vertical;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .textarea-clean:focus {
+        background: #fff;
+        outline: 1px dashed #aaa;
+    }
+
+    .print-only { display: none; }
+
+    .ttd-area {
+        margin-top: 50px;
+        float: right;
+        text-align: center;
+        width: 280px;
+        font-size: 14px;
+    }
+
+    @media print {
+        @page { size: A4 portrait; margin: 0; }
+        body { background: #fff; padding: 0; margin: 0; }
+        .paper { box-shadow: none; border: none; margin: 0; width: 100%; padding: 15mm 20mm; }
+        .top-action-bar, .no-print { display: none !important; }
+        .screen-only { display: none !important; }
+        .print-only { display: inline !important; font-weight: normal; }
+        #print_nomor_surat { font-weight: normal !important; }
+        .input-clean { background: transparent !important; padding: 0; }
+        .textarea-clean { background: transparent !important; border: none; resize: none; padding: 0; }
+    }
+</style>
+
+<div class="top-action-bar no-print">
+    <button class="btn btn-simpan" onclick="Simpan()">&#9635; Simpan Data</button>
+    <button class="btn btn-cetak" onclick="window.print()">&#128424; Cetak Surat</button>
+    <button class="btn btn-tutup" onclick="window.close()">Tutup</button>
+</div>
+
+<div class="paper">
+    <table class="kop-header" width="100%">
+        <tr>
+            <td width="13%" style="text-align: center; vertical-align: middle;">
+                <img src="{?=url()?}/{$settings.logo}" class="logo-instansi" onerror="this.style.display='none';">
+            </td>
+            <td width="87%" class="header-text">
+                <h1 class="header-title">{$settings.nama_instansi}</h1>
+                <p class="header-address">
+                    {$settings.alamat}, {$settings.kota}, {$settings.propinsi}<br>
+                    Telp: {$settings.nomor_telepon} - Email: {$settings.email}
+                </p>
+            </td>
+        </tr>
+    </table>
+
+    <div class="surat-title-container">
+        <h3 class="surat-title">SURAT KETERANGAN KEMATIAN</h3>
+        <div style="text-align:center; font-size:14px;">
+            Nomor:
+            <input type="text" class="input-clean screen-only" id="nomor_surat" value="{?=!empty($surat.nomor_surat) ? $surat.nomor_surat : $nomor_surat?}" style="width:200px; text-align:center;" onkeyup="syncText('nomor_surat')">
+            <span class="print-only" id="print_nomor_surat">{?=!empty($surat.nomor_surat) ? $surat.nomor_surat : $nomor_surat?}</span>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <p style="margin-bottom:15px; text-align:justify;">
+            Yang bertanda tangan di bawah ini, Dokter pada {$settings.nama_instansi}, dengan ini menerangkan bahwa pasien yang tersebut di bawah ini:
+        </p>
+
+        <table class="info-table">
+            <tr>
+                <td>Nama Lengkap</td>
+                <td>:</td>
+                <td style="font-weight:bold;">{$pasien.nm_pasien}</td>
+            </tr>
+            <tr>
+                <td>NIK</td>
+                <td>:</td>
+                <td>{$pasien.no_ktp}</td>
+            </tr>
+            <tr>
+                <td>Umur</td>
+                <td>:</td>
+                <td>{$pasien.umur}</td>
+            </tr>
+            <tr>
+                <td>Jenis Kelamin</td>
+                <td>:</td>
+                <td>{if: $pasien.jk == 'L'}Laki-laki{elseif: $pasien.jk == 'P'}Perempuan{else}-{/if}</td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top;">Alamat</td>
+                <td style="vertical-align:top;">:</td>
+                <td style="text-align:justify; padding-right:10px;">{$pasien.alamat}</td>
+            </tr>
+            <tr>
+                <td>No. Rawat</td>
+                <td>:</td>
+                <td>{$no_rawat}</td>
+            </tr>
+        </table>
+
+        <p style="margin-top:20px; margin-bottom:10px;">Telah <strong>meninggal dunia</strong> pada:</p>
+
+        <table class="info-table">
+            <tr>
+                <td>Tanggal</td>
+                <td>:</td>
+                <td>
+                    <input type="date" class="input-clean screen-only" id="tanggal_meninggal" value="{?=isset_or($surat.tanggal_meninggal, date('Y-m-d'))?}" onchange="syncDateText('tanggal_meninggal')">
+                    <span class="print-only" id="print_tanggal_meninggal">{?=isset_or($surat.tanggal_meninggal, date('d/m/Y'))?}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>Pukul</td>
+                <td>:</td>
+                <td>
+                    <input type="time" class="input-clean screen-only" id="jam_meninggal" value="{?=isset_or($surat.jam_meninggal, date('H:i'))?}" onchange="syncText('jam_meninggal')">
+                    <span class="print-only" id="print_jam_meninggal">{?=isset_or($surat.jam_meninggal, date('H:i'))?}</span>
+                    <span class="screen-only"> WIB</span>
+                    <span class="print-only"> WIB</span>
+                </td>
+            </tr>
+            <tr>
+                <td>Sebab Kematian</td>
+                <td>:</td>
+                <td>
+                    <input type="text" class="input-clean screen-only" id="sebab_kematian" value="{?=isset_or($surat.sebab_kematian)?}" placeholder="Diagnosa / sebab kematian..." style="width:280px;" onkeyup="syncText('sebab_kematian')">
+                    <span class="print-only" id="print_sebab_kematian">{?=isset_or($surat.sebab_kematian)?}</span>
+                </td>
+            </tr>
+        </table>
+
+        <p style="margin-top:20px;">
+            <strong>Keterangan:</strong>
+            <span class="screen-only">
+                <textarea class="textarea-clean" id="keterangan" rows="2" style="width:100%; margin-top:5px;" onkeyup="syncText('keterangan')">{?=isset_or($surat.keterangan)?}</textarea>
+            </span>
+            <span class="print-only" id="print_keterangan">{?=isset_or($surat.keterangan)?}</span>
+        </p>
+
+        <p style="margin-top:20px; text-align:justify;">
+            Demikian surat keterangan ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana mestinya.
+        </p>
+    </div>
+
+    <div class="ttd-area">
+        {$settings.kota}, {?=date('d F Y')?}<br>
+        Dokter Pemeriksa,
+        <div id="qrcode_surat" style="margin: 15px auto; width: 80px;"></div>
+        <strong>{$nm_dokter}</strong>
+    </div>
+
+    <div style="clear:both;"></div>
+</div>
+
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+<script>
+var nomorSuratTersimpan = {?=json_encode(!empty($nomor_surat_tersimpan))?};
+
+function generateQR() {
+    $('#qrcode_surat').html('');
+    $('#qrcode_surat').qrcode({
+        text: "{$surat_verifikasi_url}",
+        width: 80,
+        height: 80
+    });
+}
+
+function syncText(id) {
+    $('#print_' + id).text($('#' + id).val());
+}
+
+function syncDateText(id) {
+    var val = $('#' + id).val();
+    if (val) {
+        var bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        var d = val.split('-');
+        val = parseInt(d[2]) + ' ' + bulan[parseInt(d[1]) - 1] + ' ' + d[0];
+    }
+    $('#print_' + id).text(val);
+}
+
+$(document).ready(function() {
+    document.title = 'Surat Kematian ({$pasien.no_rkm_medis} - {$pasien.nm_pasien})';
+    generateQR();
+    syncText('nomor_surat');
+    syncDateText('tanggal_meninggal');
+    syncText('jam_meninggal');
+    syncText('sebab_kematian');
+    syncText('keterangan');
+});
+
+function Simpan() {
+    var postData = {
+        no_rawat:          "{$no_rawat}",
+        nomor_surat:       $('#nomor_surat').val(),
+        no_rkm_medis:      "{$pasien.no_rkm_medis}",
+        nm_pasien:         "{$pasien.nm_pasien}",
+        no_ktp:            "{$pasien.no_ktp}",
+        tgl_lahir:         "{$pasien.tgl_lahir}",
+        umur:              "{$pasien.umur}",
+        jk:                "{$pasien.jk}",
+        alamat:            "{$pasien.alamat}",
+        tanggal_meninggal: $('#tanggal_meninggal').val(),
+        jam_meninggal:     $('#jam_meninggal').val(),
+        sebab_kematian:    $('#sebab_kematian').val(),
+        keterangan:        $('#keterangan').val(),
+        dokter:            "{$nm_dokter}",
+        petugas:           "{?=$this->core->getUserInfo('username')?}"
+    };
+
+    $('.btn-simpan').html('Menyimpan...').attr('disabled', true);
+
+    $.post("{?=url([ADMIN,'surat','simpansuratkematian'])?}", postData)
+        .done(function(data) {
+            try {
+                var res = (typeof data === 'object') ? data : JSON.parse(data);
+                if (res.status === 'success') {
+                    nomorSuratTersimpan = true;
+                    alert('Surat Keterangan Kematian berhasil disimpan!');
+                    window.location.reload();
+                } else {
+                    alert('Gagal: ' + (res.msg || 'Terjadi kesalahan'));
+                    $('.btn-simpan').html('&#9635; Simpan Data').attr('disabled', false);
+                }
+            } catch (e) {
+                alert('Respons server tidak valid. Cek log PHP.');
+                $('.btn-simpan').html('&#9635; Simpan Data').attr('disabled', false);
+            }
+        })
+        .fail(function(xhr) {
+            alert('Gagal menghubungi server: ' + xhr.status);
+            $('.btn-simpan').html('&#9635; Simpan Data').attr('disabled', false);
+        });
+}
+</script>

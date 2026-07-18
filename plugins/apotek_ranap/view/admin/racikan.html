@@ -11,9 +11,9 @@
         <tbody>
           {if: $racikan}
           {loop: $racikan}
-          <tr class="pilih_racikan" data-kd_racik="{$value.kd_racik}" data-nm_racik="{$value.nm_racik}" data-kat="racikan">
-            <td>{$value.kd_racik}</td>
-            <td>{$value.nm_racik}</td>
+          <tr class="pilih_racikan" data-kd_racik="{?=isset_or($value.kd_racik)?}" data-nm_racik="{?=isset_or($value.nm_racik)?}" data-kat="racikan">
+            <td>{?=isset_or($value.kd_racik)?}</td>
+            <td>{?=isset_or($value.nm_racik)?}</td>
           </tr>
           {/loop}
           {else}

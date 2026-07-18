@@ -27,6 +27,8 @@ class Admin extends AdminModule
     {
         return [
             'Kelola' => 'manage',
+            'WS BPJS' => 'wsbpjs',
+            'WS RS' => 'wsrs',
             'Katalog' => 'index',
             'Mapping Poliklinik' => 'mappingpoli',
             'Add Mapping Poliklinik' => 'addmappingpoli',
@@ -45,7 +47,8 @@ class Admin extends AdminModule
     {
       $sub_modules = [
         ['name' => 'Katalog', 'url' => url([ADMIN, 'jkn_mobile', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile'],
-        ['name' => 'Referensi', 'url' => url([ADMIN, 'jkn_mobile', 'ref']), 'icon' => 'tasks', 'desc' => 'Referensi JKN Mobile'],
+        ['name' => 'WS BPJS', 'url' => url([ADMIN, 'jkn_mobile', 'wsbpjs']), 'icon' => 'tasks', 'desc' => 'WS BPJS JKN Mobile'],
+        ['name' => 'WS RS', 'url' => url([ADMIN, 'jkn_mobile', 'wsrs']), 'icon' => 'tasks', 'desc' => 'WS RS JKN Mobile'],
         ['name' => 'Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'mappingpoli']), 'icon' => 'tasks', 'desc' => 'Mapping Poliklinik JKN Mobile'],
         ['name' => 'Add Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'addmappingpoli']), 'icon' => 'tasks', 'desc' => 'Add mapping poliklinik JKN Mobile'],
         ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile', 'mappingdokter']), 'icon' => 'tasks', 'desc' => 'Mapping Dokter JKN Mobile'],
@@ -59,7 +62,7 @@ class Admin extends AdminModule
         ['name' => 'Dashboard Antrol Local BPJS', 'url' => url([ADMIN, 'jkn_mobile', 'antrollocal']), 'icon' => 'tasks', 'desc' => 'Antrian Online Local BPJS'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
     }
 
     public function getIndex()
@@ -67,9 +70,72 @@ class Admin extends AdminModule
         return $this->draw('index.html');
     }
 
-    public function getRef()
+    public function getWSBpjs()
     {
-        return $this->draw('ref.html');
+        $this->getCssCard();
+        $parsedown = new \Systems\Lib\Parsedown();
+        $readme_file = MODULES . '/jkn_mobile/README.md';
+        $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
+        return $this->draw('wsbpjs.html', ['readme' => $readme]);
+    }
+
+    public function getWSRS()
+    {
+        $this->getCssCard();
+        $referensi_poli = $this->db('maping_poli_bpjs')->toArray();
+        $referensi_dokter = $this->db('maping_dokter_dpjpvclaim')->toArray();
+        return $this->draw('wsrs.html', [
+            'referensi_poli' => $referensi_poli,
+            'referensi_dokter' => $referensi_dokter,
+            'header_username' => $this->settings->get('jkn_mobile.header_username'),
+            'header_password' => $this->settings->get('jkn_mobile.header_password'),
+            'x_username' => $this->settings->get('jkn_mobile.x_username'),
+            'x_password' => $this->settings->get('jkn_mobile.x_password'),
+            'header_token' => $this->settings->get('jkn_mobile.header_token'),
+            'token' => $this->settings->get('jkn_mobile.token')
+        ]);
+    }
+
+    public function postWsRequest()
+    {
+        $endpoint = $_POST['endpoint'];
+        $method = $_POST['method'];
+        $data = $_POST['data'] ?? null;
+
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid . $this->secretkey . $tStamp;
+
+        $url = $this->bpjsurl . $endpoint;
+
+        $output = '';
+        if ($method == 'GET') {
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        } elseif ($method == 'POST') {
+             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        } elseif ($method == 'PUT') {
+             $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        } elseif ($method == 'DELETE') {
+             $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        }
+
+        $json = json_decode($output, true);
+
+        // Jika json tidak berbentuk array (gagal decode / response kosong) jadikan array kosong agar tidak error di htmlspecialchars_array
+        if (!is_array($json)) {
+            $json = [];
+        }
+
+        if (isset($json['response']) && !is_array($json['response'])) {
+             $stringDecrypt = stringDecrypt($key, $json['response']);
+             $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent($stringDecrypt);
+             if ($decompress) {
+                 $json['response'] = json_decode($decompress, true);
+             }
+        }
+
+        echo json_encode(htmlspecialchars_array($json));
+        exit();
     }
 
     public function getRefPoliFinger()
@@ -111,7 +177,7 @@ class Admin extends AdminModule
         $url = $this->bpjsurl.'ref/poli';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        //echo json_encode($json);
+        //echo json_encode(htmlspecialchars_array($json));
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
         $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -147,7 +213,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['poliklinik'] = $this->db('poliklinik')->where('status','1')->toArray();
-        return $this->draw('form.mappingpoli.html', ['row' => $this->assign]);
+        return $this->draw('form.mappingpoli.html', ['row' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postPoliklinik_Save()
@@ -191,7 +257,7 @@ class Admin extends AdminModule
         $url = $this->bpjsurl.'ref/dokter';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        //echo json_encode($json);
+        //echo json_encode(htmlspecialchars_array($json));
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
         $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -228,7 +294,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['dokter'] = $this->db('dokter')->where('status','1')->toArray();
-        return $this->draw('form.mappingdokter.html', ['row' => $this->assign]);
+        return $this->draw('form.mappingdokter.html', ['row' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postDokter_Save()
@@ -265,7 +331,8 @@ class Admin extends AdminModule
 
     public function getJadwalDokter()
     {
-        $poli = $this->db('maping_poli_bpjs')->group('kd_poli_bpjs')->toArray();
+        $this->getCssCard();
+        $poli = $this->db('maping_poli_bpjs')->toArray();
         return $this->draw('jadwaldokter.html',['poli'=>$poli]);
     }
 
@@ -281,18 +348,26 @@ class Admin extends AdminModule
         $url = $this->bpjsurl . 'jadwaldokter/kodepoli/'.$kodepoli.'/tanggal/'.$tanggal;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        $code = $json['metadata']['code'];
-        $message = $json['metadata']['message'];
-        $stringDecrypt = stringDecrypt($key, $json['response']);
-        $decompress = '""';
-        if (!empty($stringDecrypt)) {
-          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+        
+        if (isset($json['metadata']['code'])) {
+             $code = $json['metadata']['code'];
+             $message = $json['metadata']['message'];
+             
+             if ($code == '200' && isset($json['response'])) {
+                 $stringDecrypt = stringDecrypt($key, $json['response']);
+                 $decompress = '';
+                 if (!empty($stringDecrypt)) {
+                     $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+                 }
+                 $response = json_decode($decompress, true);
+             } else {
+                 $response = []; // Empty array if not found or error
+             }
+        } else {
+             $response = []; // Empty array if invalid response
         }
-        if ($json['metadata']['code'] == '200') {
-            $response = $decompress;
-        }
-        $response = json_decode($response, true);
-        echo json_encode($response);
+        
+        echo json_encode(htmlspecialchars_array($response));
         exit();
     }
 
@@ -305,9 +380,9 @@ class Admin extends AdminModule
         $date = $_POST['periode_antrol'];
       $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile.exclude_taskid'));
       $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
-      FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
+      FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi=? AND reg_periksa.kd_poli NOT IN (?)
       ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg)");
-      $query->execute();
+      $query->execute([$date, $exclude_taskid]);
       $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
       $rows = [];
@@ -322,8 +397,8 @@ class Admin extends AdminModule
           if(!$mlite_antrian_referensi) {
               $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
           }
-          $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
-          $mutasi_berkas2 = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+          $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
+          $mutasi_berkas2 = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
           $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $resep_obat2 = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
@@ -353,6 +428,7 @@ class Admin extends AdminModule
           $taskid5['waktu'] = '';
           $taskid6['waktu'] = '';
           $taskid7['waktu'] = '';
+          $taskid99['waktu'] = '';
 
           if(!empty($q['nomor_referensi'])) {
             $taskid1 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', '1')->oneArray();
@@ -462,8 +538,8 @@ class Admin extends AdminModule
       $taskid['99'] = date('Y-m-d H:i:s', $taskid99['waktu'] / 1000 );
       
       $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('postdate', $pasien['tgl_registrasi'])->oneArray();
-      $berkas_dikirim = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $pasien['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
-      $berkas_diterima = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $pasien['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+      $berkas_dikirim = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $pasien['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
+      $berkas_diterima = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $pasien['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
       $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $pasien['no_rawat'])->oneArray();
       $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)', 'datajam2' => 'concat(tgl_perawatan," ",jam)', 'no_resep' => 'no_resep'])->where('no_rawat', $pasien['no_rawat'])->oneArray();
 
@@ -726,7 +802,7 @@ class Admin extends AdminModule
             'nomor_referensi' =>  $nomorreferensi,
             'kode_booking' => $kodebooking
         ];
-        echo json_encode($response);
+        echo json_encode(htmlspecialchars_array($response));
         $this->db('mlite_antrian_referensi')->save([
             'tanggal_periksa' => $reg_periksa['tgl_registrasi'],
             'no_rkm_medis' => $reg_periksa['no_rkm_medis'],
@@ -784,7 +860,7 @@ class Admin extends AdminModule
         $output1 = BpjsService::post($url, $data1, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json1 = json_decode($output1, true);
         echo 'Response:<br>';
-        echo json_encode($json1);
+        echo json_encode(htmlspecialchars_array($json1));
         if(isset($json1['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -820,7 +896,7 @@ class Admin extends AdminModule
         $output1 = BpjsService::post($url, $data1, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json1 = json_decode($output1, true);
         echo 'Response:<br>';
-        echo json_encode($json1);
+        echo json_encode(htmlspecialchars_array($json1));
         if(isset($json1['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -855,7 +931,7 @@ class Admin extends AdminModule
         $output2 = BpjsService::post($url, $data2, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json2 = json_decode($output2, true);
         echo 'Response:<br>';
-        echo json_encode($json2);
+        echo json_encode(htmlspecialchars_array($json2));
         if(isset($json2['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -890,7 +966,7 @@ class Admin extends AdminModule
         $output3 = BpjsService::post($url, $data3, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json3 = json_decode($output3, true);
         echo 'Response:<br>';
-        echo json_encode($json3);
+        echo json_encode(htmlspecialchars_array($json3));
         if(isset($json3['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -925,7 +1001,7 @@ class Admin extends AdminModule
         $output4 = BpjsService::post($url, $data4, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json4 = json_decode($output4, true);
         echo 'Response:<br>';
-        echo json_encode($json4);
+        echo json_encode(htmlspecialchars_array($json4));
         if(isset($json4['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -970,7 +1046,7 @@ class Admin extends AdminModule
         $output5 = BpjsService::post($url, $data5, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json5 = json_decode($output5, true);
         echo 'Response:<br>';
-        echo json_encode($json5);
+        echo json_encode(htmlspecialchars_array($json5));
         if(isset($json5['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -1005,7 +1081,7 @@ class Admin extends AdminModule
         $output6 = BpjsService::post($url, $data6, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json6 = json_decode($output6, true);
         echo 'Response:<br>';
-        echo json_encode($json6);
+        echo json_encode(htmlspecialchars_array($json6));
         if(isset($json6['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -1040,7 +1116,7 @@ class Admin extends AdminModule
         $output7 = BpjsService::post($url, $data7, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json7 = json_decode($output7, true);
         echo 'Response:<br>';
-        echo json_encode($json7);
+        echo json_encode(htmlspecialchars_array($json7));
         if(isset($json7['metadata']['code']) == 200){
           $this->db('mlite_antrian_referensi_taskid')
           ->where('nomor_referensi', $kode_booking)
@@ -1070,13 +1146,14 @@ class Admin extends AdminModule
       $date = date('Y-m');
       if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
         $date = $_POST['periode_antrol'];
-      $query = $this->db()->pdo()->prepare("SELECT COUNT(*) as jumlah, keterangan FROM mlite_antrian_referensi WHERE tanggal_periksa LIKE '$date%' GROUP BY keterangan");
-      $query->execute();
+      $query = $this->db()->pdo()->prepare("SELECT COUNT(*) as jumlah, keterangan FROM mlite_antrian_referensi WHERE tanggal_periksa LIKE ? GROUP BY keterangan");
+      $query->execute([$date.'%']);
       $query = $query->fetchAll(\PDO::FETCH_ASSOC);
 
       $rows = [];
       $a = [];
       $a['jumlah'] = 0;
+      $a['keterangan'] = '';
       foreach ($query as $q) {
         if (strpos($q['keterangan'], 'Rujukan nomor ') !== false) {
           $s = explode(" ", $q['keterangan']);
@@ -1120,6 +1197,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'jkn_mobile', 'index']));
+        }
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile';
         $this->assign['propinsi'] = $this->db('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile.kdprop'))->oneArray();
@@ -1135,13 +1216,27 @@ class Admin extends AdminModule
         $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
 
         $this->assign['jkn_mobile'] = htmlspecialchars_array($this->settings('jkn_mobile'));
-        return $this->draw('settings.html', ['settings' => $this->assign]);
+        return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postSaveSettings()
     {
-        $_POST['jkn_mobile']['display'] = implode(',', $_POST['jkn_mobile']['display']);
-        $_POST['jkn_mobile']['exclude_taskid'] = implode(',', $_POST['jkn_mobile']['exclude_taskid']);
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'jkn_mobile', 'index']));
+        }
+        if (isset($_POST['jkn_mobile']['display']) && is_array($_POST['jkn_mobile']['display'])) {
+            $_POST['jkn_mobile']['display'] = implode(',', $_POST['jkn_mobile']['display']);
+        } else {
+            $_POST['jkn_mobile']['display'] = '';
+        }
+        
+        if (isset($_POST['jkn_mobile']['exclude_taskid']) && is_array($_POST['jkn_mobile']['exclude_taskid'])) {
+            $_POST['jkn_mobile']['exclude_taskid'] = implode(',', $_POST['jkn_mobile']['exclude_taskid']);
+        } else {
+            $_POST['jkn_mobile']['exclude_taskid'] = '';
+        }
+
         foreach ($_POST['jkn_mobile'] as $key => $val) {
             $this->settings('jkn_mobile', $key, $val);
         }
@@ -1199,23 +1294,23 @@ class Admin extends AdminModule
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
             $response = [];
-            if($json['metadata']['code'] == '200') {
+            if($json && isset($json['metadata']['code']) && $json['metadata']['code'] == '200') {
               $response = $json['response']['list'];
             }
             $this->assign['list'] = $response;
 
-            echo $this->draw('antrol.display.html', ['row' => $this->assign]);
+            echo $this->draw('antrol.display.html', ['row' => htmlspecialchars_array($this->assign)]);
         } else {
             $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
             $response = [];
-            if($json['metadata']['code'] == '200') {
+            if($json && isset($json['metadata']['code']) && $json['metadata']['code'] == '200') {
               $response = $json['response']['list'];
             }
             $this->assign['list'] = $response;
 
-            return $this->draw('antrol.html', ['row' => $this->assign]);
+            return $this->draw('antrol.html', ['row' => htmlspecialchars_array($this->assign)]);
         }
         exit();
     }
@@ -1229,9 +1324,9 @@ class Admin extends AdminModule
           } else {
             $tanggal = date('Y-m-d');
           }
-        $sql = "SELECT * FROM bridging_sep WHERE tglsep = '$tanggal' AND jnspelayanan = '2' AND kdpolitujuan NOT IN ('IGD','HDL')";
+        $sql = "SELECT * FROM bridging_sep WHERE tglsep = ? AND jnspelayanan = '2' AND kdpolitujuan NOT IN ('IGD','HDL')";
         $query = $this->db()->pdo()->prepare($sql);
-        $query->execute();
+        $query->execute([$tanggal]);
         $sep_terbit = $query->fetchAll();
         $jml_sep = 1;
         $jml_antrol = 1;
@@ -1399,10 +1494,10 @@ class Admin extends AdminModule
           $data = $data->fetchAll();
 
           // create json format
-          $datatable['draw']            = isset($_GET['draw']) ? $_GET['draw'] : 1;
-          $datatable['recordsTotal']    = $totaldata;
-          $datatable['recordsFiltered'] = $totaldata;
-          $datatable['data']            = array();
+          $datatable['draw']            = isset($_GET['draw']) ? intval(htmlspecialchars($_GET['draw'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')) : 1;
+        $datatable['recordsTotal']    = $totaldata;
+        $datatable['recordsFiltered'] = $totaldata;
+        $datatable['data']            = array();
 
           foreach ($data as $row) {
 
@@ -1413,7 +1508,7 @@ class Admin extends AdminModule
 
           }
 
-          echo json_encode($datatable);
+          echo json_encode(htmlspecialchars_array($datatable));
 
           break;
 

@@ -43,12 +43,12 @@
             <tbody>
               {loop: $taskid}
               <tr>
-                <td>{$value.no_rkm_medis} {$value.nm_pasien}</td>
-                <td>{$value.tanggal_periksa}</td>
-                <td>{$value.no_rawat}</td>
-                <td>{$value.keterangan}</td>
-                <td>{$value.nomor_referensi}</td>
-                <td>{$value.kodebooking}</td>
+                <td>{?=isset_or($value.no_rkm_medis)?} {?=isset_or($value.nm_pasien)?}</td>
+                <td>{?=isset_or($value.tanggal_periksa)?}</td>
+                <td>{?=isset_or($value.no_rawat)?}</td>
+                <td>{?=isset_or($value.keterangan)?}</td>
+                <td>{?=isset_or($value.nomor_referensi)?}</td>
+                <td>{?=isset_or($value.kodebooking)?}</td>
               </tr>
               {/loop}
             </tbody>

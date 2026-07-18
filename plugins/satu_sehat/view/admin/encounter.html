@@ -3,8 +3,8 @@
     <h4 class="modal-title">Kirim Data Encounter Satu Sehat</h4>
 </div>
 <div class="modal-body">
-  <h4>{$pesan}</h4>
-  <div id="response" style="display:none;">{$response}</div>
+  <h4>{?=isset_or($pesan)?}</h4>
+  <div id="response" style="display:none;">{?=isset_or($response)?}</div>
   <pre></pre>
 </div>
 <div class="modal-footer">

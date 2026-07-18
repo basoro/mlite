@@ -6,6 +6,8 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+  public $assign = [];
+
   public function navigation()
   {
       return [
@@ -17,11 +19,15 @@ class Admin extends AdminModule
   {
       $this->assign['title'] = 'Pengaturan Modul API AFM';
       $this->assign['afm'] = htmlspecialchars_array($this->settings('afm'));
-      return $this->draw('settings.html', ['settings' => $this->assign]);
+      return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postSaveSettings()
   {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'afm', 'manage']));
+      }
       foreach ($_POST['afm'] as $key => $val) {
           $this->settings('afm', $key, $val);
       }

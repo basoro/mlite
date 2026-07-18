@@ -3,8 +3,9 @@ return [
     'name'          =>  'Anjungan',
     'description'   =>  'Modul anjungan pasien rawat jalan',
     'author'        =>  'Basoro',
+    'category'      =>  'bridging', 
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'desktop',
     'pages'            =>  ['Anjungan Pasien Mandiri' => 'anjungan'],
     'install'       =>  function () use ($core) {

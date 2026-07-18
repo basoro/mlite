@@ -19,14 +19,14 @@
     <tbody>
       {loop: $detail}
       <tr>
-        <td>{$value.template_laboratorium.urut}</td>
-        <td>{$value.template_laboratorium.Pemeriksaan}</td>
-        <td>{$value.template_laboratorium.satuan}</td>
-        <td>{$value.template_laboratorium.nilai_rujukan_la}</td>
-        <td>{$value.template_laboratorium.nilai_rujukan_pa}</td>
-        <td>{$value.template_laboratorium.nilai_rujukan_ld}</td>
-        <td>{$value.template_laboratorium.nilai_rujukan_pd}</td>
-        <!--<td><span class="fa fa-trash btn btn-danger hapus_detail_permintaan" data-noorder={$value.noorder} data-kd_jenis_prw={$value.kd_jenis_prw}  data-id_template={$value.id_template}><span></td>-->
+        <td>{?=isset_or($value.template_laboratorium.urut)?}</td>
+        <td>{?=isset_or($value.template_laboratorium.Pemeriksaan)?}</td>
+        <td>{?=isset_or($value.template_laboratorium.satuan)?}</td>
+        <td>{?=isset_or($value.template_laboratorium.nilai_rujukan_la)?}</td>
+        <td>{?=isset_or($value.template_laboratorium.nilai_rujukan_pa)?}</td>
+        <td>{?=isset_or($value.template_laboratorium.nilai_rujukan_ld)?}</td>
+        <td>{?=isset_or($value.template_laboratorium.nilai_rujukan_pd)?}</td>
+        <!--<td><span class="fa fa-trash btn btn-danger hapus_detail_permintaan" data-noorder={?=isset_or($value.noorder)?} data-kd_jenis_prw={?=isset_or($value.kd_jenis_prw)?}  data-id_template={?=isset_or($value.id_template)?}><span></td>-->
       </tr>
       {/loop}
     </tbody>

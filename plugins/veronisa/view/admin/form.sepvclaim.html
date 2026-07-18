@@ -38,7 +38,7 @@
             <label>Poli Tujuan</label>
             <select name="kd_poli" class="form-control" data-use-search="true">
                 {loop: $poliklinik}
-                <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                <option value="{?=isset_or($value.kd_poli)?}">{?=isset_or($value.nm_poli)?}</option>
                 {/loop}
             </select>
         </div>
@@ -48,7 +48,7 @@
             <label>Dokter Penanggung Jawab</label>
             <select name="kd_dokter" class="form-control">
                 {loop: $dokter}
-                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                <option value="{?=isset_or($value.kd_dokter)?}">{?=isset_or($value.nm_dokter)?}</option>
                 {/loop}
             </select>
         </div>

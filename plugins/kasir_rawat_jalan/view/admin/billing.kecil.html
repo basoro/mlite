@@ -37,22 +37,22 @@
 		<center>
 			<table  style="font-size: 8pt;" rules='rows'>
 			<tr>
-				<td align = "center" > <strong style="font-size: 15pt;" >{$settings.nama_instansi}</strong></td>
+				<td align = "center" > <strong style="font-size: 15pt;" >{?=isset_or($settings.nama_instansi)?}</strong></td>
 			</tr>
 
 			<tr>
 			<td  align = "center" >
-				<p style="font-size: 8pt;">{$settings.alamat}</p>
+				<p style="font-size: 8pt;">{?=isset_or($settings.alamat)?}</p>
 			</td>
 			</tr>
 
 			<tr>
 			<td  align = "center"  >
 			BUKTI PEMBAYARAN<br>
-				Kode Faktur : {$billing.kd_billing}<br>
-				Nama Pasien : {$pasien.nm_pasien}<br>
-				No RM : {$pasien.no_rkm_medis}<br>
-				Alamat : {$pasien.alamat}<br>
+				Kode Faktur : {?=isset_or($billing.kd_billing)?}<br>
+				Nama Pasien : {?=isset_or($pasien.nm_pasien)?}<br>
+				No RM : {?=isset_or($pasien.no_rkm_medis)?}<br>
+				Alamat : {?=isset_or($pasien.alamat)?}<br>
 			</td>
 			</tr>
 				<tr >
@@ -72,9 +72,9 @@
 			<td style="font-size: 9pt;" ><i>Terbilang : # {?=terbilang($billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
 		</tr>
 			<td >
-			<p align="center" >{$settings.kota},  {?=date('d-m-Y')?}<br>
+			<p align="center" >{?=isset_or($settings.kota)?},  {?=date('d-m-Y')?}<br>
 			 Kasir<br><br><br>
-			{$fullname}<br>
+			{?=isset_or($fullname)?}<br>
 			</p>
 		</td>
 		</table></center>

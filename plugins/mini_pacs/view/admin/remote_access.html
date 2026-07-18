@@ -1,0 +1,40 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default" style="border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 15px; overflow: hidden; margin-top: 50px;">
+            <div class="panel-body text-center" style="padding: 60px 40px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                <div style="font-size: 80px; color: #3498db; margin-bottom: 30px;">
+                    <i class="fa fa-cloud"></i>
+                </div>
+                <h1 style="font-weight: 700; color: #2c3e50; margin-bottom: 20px;">Akses Dibatasi</h1>
+                <p style="font-size: 18px; color: #7f8c8d; max-width: 600px; margin: 0 auto 40px; line-height: 1.6;">
+                    Instalasi Mini PACS ini sedang dikonfigurasi sebagai <strong>Remote Client</strong>. 
+                    Manajemen data DICOM dilakukan secara terpusat pada server utama.
+                </p>
+                
+                <div style="background: white; padding: 25px; border-radius: 10px; display: inline-block; margin-bottom: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-width: 300px;">
+                    <span style="display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #bdc3c7; margin-bottom: 10px;">Remote Server Address</span>
+                    <code style="font-size: 20px; color: #e67e22; background: none; border: none;">{$is_mono.remote_ip}</code>
+                </div>
+                
+                <div class="clearfix"></div>
+                
+                <div style="display: flex; justify-content: center; gap: 15px;">
+                    <a href="{$is_mono.remote_ip}" target="_blank" class="btn btn-primary btn-lg" style="padding: 12px 30px; border-radius: 30px; font-weight: 600; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);">
+                        <i class="fa fa-external-link"></i> Buka Server PACS
+                    </a>
+                    <a href="{?=url([ADMIN, 'mini_pacs', 'settings'])?}" class="btn btn-default btn-lg" style="padding: 12px 30px; border-radius: 30px; font-weight: 600;">
+                        <i class="fa fa-cog"></i> Pengaturan
+                    </a>
+                </div>
+                
+                {if: defined('MULTI_APP') && MULTI_APP}
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #dee2e6;">
+                    <p style="font-size: 13px; color: #95a5a6;">
+                        <i class="fa fa-info-circle"></i> Catatan: Mode ini dikelola secara otomatis melalui konfigurasi MULTI_APP.
+                    </p>
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</article>

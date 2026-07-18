@@ -7,7 +7,7 @@
           <div class="panel-body">
             <div class="row clearfix">
               <div class="col col-md-6">
-                <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($presensi.totalRecords)?}</h3>
+                <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=$presensi.totalRecords?}</h3>
               </div>
               {if: $this->core->getUserInfo('role') == 'admin'}
               <div class="col col-md-2">
@@ -16,7 +16,7 @@
                   <select name="departemen" id="dep" data-use-search="true" data-options-height="10px" class="form-control dep" style="margin-top:5px;margin-bottom:15px;">
                       <option value="">---Pilih Departemen---</option>
                     {loop: $presensi.dep}
-                      <option value="{$value.dep_id}" class="dropdown-item">{$value.nama}</option>
+                      <option value="{?=isset_or($value.dep_id)?}" class="dropdown-item">{?=isset_or($value.nama)?}</option>
                     {/loop}
                   </select>
                 </div>
@@ -29,7 +29,7 @@
                   <select name="bidang" id="bidang" data-use-search="true" data-options-height="10px" class="form-control bidang" style="margin-top:5px;margin-bottom:15px;">
                       <option value="">---Pilih Ruangan---</option>
                     {loop: $presensi.bidang}
-                      <option value="{$value.nama}" class="dropdown-item">{$value.nama}</option>
+                      <option value="{?=isset_or($value.nama)?}" class="dropdown-item">{?=isset_or($value.nama)?}</option>
                     {/loop}
                   </select>
                 </div>
@@ -65,17 +65,17 @@
                   {loop: $presensi.list}
                   <tr>
                     <td>
-                      <a href="{$value.photo}" class="gallery">
-                        <img src="{$value.photo}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                      <a href="{?=isset_or($value.photo)?}" class="gallery">
+                        <img src="{?=isset_or($value.photo)?}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
                       </a>
-                      <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{$value.mapURL}" data-toggle="modal" data-target="#myModal">{$value.nama}</a></div>
+                      <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{?=isset_or($value.mapURL)?}" data-toggle="modal" data-target="#myModal">{?=isset_or($value.nama)?}</a></div>
                     </td>
-                    <td>{$value.jbtn}</td>
-                    <td>{$value.shift}</td>
-                    <td>{$value.bidang}</td>
-                    <td>{$value.jam_datang}</td>
+                    <td>{?=isset_or($value.jbtn)?}</td>
+                    <td>{?=isset_or($value.shift)?}</td>
+                    <td>{?=isset_or($value.bidang)?}</td>
+                    <td>{?=isset_or($value.jam_datang)?}</td>
                     <td>
-                      <a href="{$value.editURL}" class="btn btn-success btn-xs">
+                      <a href="{?=isset_or($value.editURL)?}" class="btn btn-success btn-xs">
                         <i class="fa fa-home"></i> <span class="hidden-xs">Verif</span>
                       </a>
                     </td>
@@ -89,7 +89,7 @@
                 </tbody>
               </table>
             </div>
-            {$presensi.pagination}
+            {?=isset_or($presensi.pagination)?}
           </div>
       </div>
   </div>

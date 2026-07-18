@@ -65,7 +65,7 @@
                               <label>Permintaan PA</label>
                               <select name="permintaan_pa" id="permintaan_pa" class="form-control" data-use-search="true">
                                 {loop: $permintaan_pa}
-                                  <option value="{$value}">{$value}</option>
+                                  <option value="{?=isset_or($value)?}">{?=isset_or($value)?}</option>
                                 {/loop}
                               </select>
                             </div>
@@ -106,27 +106,27 @@
         <tbody>
           {loop: $laporanoperasi}
           <tr class="laporanoperasi"
-          data-no_rkm_medis="{$value.no_rkm_medis}"
-          data-nm_pasien="{$value.nm_pasien}"
-          data-no_rawat="{$value.no_rawat}"
-          data-tanggal="{$value.tanggal}"
-          data-selesaioperasi="{$value.selesaioperasi}"
-          data-diagnosa_preop="{$value.diagnosa_preop}"
-          data-diagnosa_postop="{$value.diagnosa_postop}"
-          data-jaringan_dieksekusi="{$value.jaringan_dieksekusi}"
-          data-permintaan_pa="{$value.permintaan_pa}"
-          data-laporan_operasi="{$value.laporan_operasi}"
+          data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}"
+          data-nm_pasien="{?=isset_or($value.nm_pasien)?}"
+          data-no_rawat="{?=isset_or($value.no_rawat)?}"
+          data-tanggal="{?=isset_or($value.tanggal)?}"
+          data-selesaioperasi="{?=isset_or($value.selesaioperasi)?}"
+          data-diagnosa_preop="{?=isset_or($value.diagnosa_preop)?}"
+          data-diagnosa_postop="{?=isset_or($value.diagnosa_postop)?}"
+          data-jaringan_dieksekusi="{?=isset_or($value.jaringan_dieksekusi)?}"
+          data-permintaan_pa="{?=isset_or($value.permintaan_pa)?}"
+          data-laporan_operasi="{?=isset_or($value.laporan_operasi)?}"
           >
-            <td>{$value.no_rawat}</td>
-            <td>{$value.no_rkm_medis}</td>
-            <td>{$value.nm_pasien}</td>
-            <td>{$value.tanggal}</td>
-            <td>{$value.selesaioperasi}</td>
-            <td>{$value.diagnosa_preop}</td>
-            <td>{$value.diagnosa_postop}</td>
-            <td>{$value.jaringan_dieksekusi}</td>
-            <td>{$value.permintaan_pa}</td>
-            <td>{$value.laporan_operasi}</td>
+            <td>{?=isset_or($value.no_rawat)?}</td>
+            <td>{?=isset_or($value.no_rkm_medis)?}</td>
+            <td>{?=isset_or($value.nm_pasien)?}</td>
+            <td>{?=isset_or($value.tanggal)?}</td>
+            <td>{?=isset_or($value.selesaioperasi)?}</td>
+            <td>{?=isset_or($value.diagnosa_preop)?}</td>
+            <td>{?=isset_or($value.diagnosa_postop)?}</td>
+            <td>{?=isset_or($value.jaringan_dieksekusi)?}</td>
+            <td>{?=isset_or($value.permintaan_pa)?}</td>
+            <td>{?=isset_or($value.laporan_operasi)?}</td>
           </tr>
           {/loop}
         </tbody>

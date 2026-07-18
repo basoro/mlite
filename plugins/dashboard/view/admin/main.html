@@ -1,7 +1,7 @@
 <style>
   html {
     height: 0;
-    background: url('{?=url()?}/{$settings.wallpaper}') no-repeat center center fixed;
+    background: url('{?=url()?}/{?=isset_or($settings.wallpaper)?}') no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -22,7 +22,7 @@
     bottom: 120px;
     left: 80px;
     width: 100%;
-    color: {$settings.text_color} !important;
+    color: {?=isset_or($settings.text_color)?} !important;
   }
 
   p.title {
@@ -180,9 +180,9 @@
 </style>
 
 <div class="dashboard_wall">
-  <img src="{?=url()?}/{$settings.logo}" class="logo" width="120px" alt="">
-  <p class="title">{$settings.nama_instansi}</p>
-  <p class="alamat">{$settings.alamat} - {$settings.kota} - {$settings.propinsi}</p>
+  <img src="{?=url()?}/{?=isset_or($settings.logo)?}" class="logo" width="120px" alt="">
+  <p class="title">{?=isset_or($settings.nama_instansi)?}</p>
+  <p class="alamat">{?=isset_or($settings.alamat)?} - {?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}</p>
 </div>
 {if: $presensi}
 <div class="btn-group">
@@ -194,27 +194,27 @@
     {if: $cek_presensi}
     <div class="alert alert-success coba" role="alert">
       <div class="halo">
-        <b>Halo {$nama}</b>
+        <b>Halo {?=isset_or($nama)?}</b>
       </div>
       <i class="fa fa-thumbs-up"></i> Anda Sudah Presensi Masuk
       <br>
-      <i>* {$teks} *</i>
+      <i>* {?=isset_or($teks)?} *</i>
     </div>
     {elseif: $cek_rekap}
     <div class="alert alert-info coba" role="alert">
       <div class="halo">
-        <b>Halo {$nama}</b>
+        <b>Halo {?=isset_or($nama)?}</b>
       </div>
       <i class="fa fa-check-square"></i> Anda Sudah Presensi Pulang<br>
-      <i>* {$teks} *</i>
+      <i>* {?=isset_or($teks)?} *</i>
     </div>
     {else}
     <div class="alert alert-warning coba" role="alert">
       <div class="halo">
-        <b>Halo {$nama}</b>
+        <b>Halo {?=isset_or($nama)?}</b>
       </div>
       <i class="fa fa-exclamation-triangle"></i> Anda Belum Presensi<br>
-      <i>* {$teks} *</i>
+      <i>* {?=isset_or($teks)?} *</i>
     </div>
     {/if}
   {/if}
@@ -234,7 +234,7 @@
           <select class="form-control" id="shift" style="width:240px;">
             <option>Pilih Shift</option>
             {loop: $jam_jaga}
-            <option value="{$value.shift}"><i>{$value.shift}</i> : {$value.jam_masuk} - {$value.jam_pulang}</option>
+            <option value="{?=isset_or($value.shift)?}"><i>{?=isset_or($value.shift)?}</i> : {?=isset_or($value.jam_masuk)?} - {?=isset_or($value.jam_pulang)?}</option>
             {/loop}
           </select><br><br>
           <input type="button" class="btn btn-info"
@@ -252,8 +252,8 @@
     window.navigator.geolocation.getCurrentPosition(function(pos) {
       console.log(pos);
       var units = 'm';
-      var latitude2 = '{$pengaturan_presensi.lat}';
-      var longitude2 = '{$pengaturan_presensi.lon}';
+      var latitude2 = '{?=isset_or($pengaturan_presensi.lat)?}';
+      var longitude2 = '{?=isset_or($pengaturan_presensi.lon)?}';
       var latitude1 = pos.coords.latitude;
       var longitude1 = pos.coords.longitude;
       var theta = longitude1 - longitude2;
@@ -270,7 +270,7 @@
       var kilometers = a * 1.609344;
       var meters = kilometers * 1000;
 
-      if(meters > {$pengaturan_presensi.distance}) {
+      if(meters > {?=isset_or($pengaturan_presensi.distance)?}) {
         alert('Presensi harus di area Rumah Sakit!!')
       } else {
         $('#myModal').modal('show', function () {
@@ -283,7 +283,7 @@
       switch (code) {
         case GeolocationPositionError.TIMEOUT:
           // Handle timeout.
-          alert('Koneksi Terputus')
+          alert('Gagal mendapatkan lokasi (Timeout). Pastikan GPS aktif dan sinyal bagus.')
           break;
         case GeolocationPositionError.PERMISSION_DENIED:
           // User denied the request.
@@ -295,7 +295,7 @@
           break;
       }
     },
-    {timeout: 5000 , maximumAge: 0});
+    {timeout: 10000 , maximumAge: 0});
   }
   {/if}
 

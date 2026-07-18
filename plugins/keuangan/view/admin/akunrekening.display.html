@@ -12,11 +12,11 @@
       <tbody>
         {if: $akunrekening.list}
         {loop: $akunrekening.list}
-        <tr class="edit" data-kd_rek="{$value.kd_rek}">
-          <td>{if: strlen($value.kd_rek) == 1}{elseif: strlen($value.kd_rek) == 3}&nbsp;&nbsp;{elseif: strlen($value.kd_rek) == 5}&nbsp;&nbsp;&nbsp;&nbsp;{elseif: strlen($value.kd_rek) == 7}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{/if}{$value.kd_rek}</td>
-          <td>{$value.nm_rek}</td>
-          <td>{$value.tipe}</td>
-          <td>{$value.balance}</td>
+        <tr class="edit" data-kd_rek="{?=isset_or($value.kd_rek)?}">
+          <td>{if: strlen($value.kd_rek) == 1}{elseif: strlen($value.kd_rek) == 3}&nbsp;&nbsp;{elseif: strlen($value.kd_rek) == 5}&nbsp;&nbsp;&nbsp;&nbsp;{elseif: strlen($value.kd_rek) == 7}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{/if}{?=isset_or($value.kd_rek)?}</td>
+          <td>{?=isset_or($value.nm_rek)?}</td>
+          <td>{?=isset_or($value.tipe)?}</td>
+          <td>{?=isset_or($value.balance)?}</td>
         </tr>
         {/loop}
         {else}

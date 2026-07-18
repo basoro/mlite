@@ -17,7 +17,7 @@
                                     <input type="hidden" name="t" id="t" value="{?=$_SESSION['token']?}">
                                     <select name="kd_dokter" id="kd_dokter" class="form-control">
                                         {loop: $dokter}
-                                        <option value="{$value.kd_dokter_bpjs}">{$value.nm_dokter_bpjs}</option>
+                                        <option value="{?=isset_or($value.kd_dokter_bpjs)?}">{?=isset_or($value.nm_dokter_bpjs)?}</option>
                                         {/loop}
                                     </select>
                                 </div>
@@ -27,7 +27,7 @@
                                     <label for="">Poli</label>
                                     <select name="kd_poli" id="kd_poli" class="form-control">
                                         {loop: $poli}
-                                        <option value="{$value.kd_poli_bpjs}">{$value.nm_poli_bpjs}</option>
+                                        <option value="{?=isset_or($value.kd_poli_bpjs)?}">{?=isset_or($value.nm_poli_bpjs)?}</option>
                                         {/loop}
                                     </select>
                                 </div>

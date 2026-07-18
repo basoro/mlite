@@ -12,7 +12,7 @@
                     <!-- <input type="text" name="poli" id="poli" class="form-control"> -->
                     <select name="poli" id="poli" class="form-control">
                         {loop: $poli}
-                        <option value="{$value.kd_poli_bpjs}">{$value.nm_poli_bpjs}</option>
+                        <option value="{?=isset_or($value.kd_poli_bpjs)?}">{?=isset_or($value.nm_poli_bpjs)?}</option>
                         {/loop}
                     </select>
                 </div>

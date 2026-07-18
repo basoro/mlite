@@ -4,8 +4,9 @@ return [
     'name'          =>  'Pendaftaran Pasien',
     'description'   =>  'Modul data pasien untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'layanan', 
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'users',
     'install'       =>  function () use ($core) {
     },

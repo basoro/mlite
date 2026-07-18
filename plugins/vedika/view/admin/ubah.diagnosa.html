@@ -7,7 +7,7 @@
   <div id="icd10dan9">
     <div class="panel panel-default">
       <div class="panel-body">
-        <input type="hidden" name="no_rawat" value="{$no_rawat}">
+        <input type="hidden" name="no_rawat" value="{?=isset_or($no_rawat)?}">
         <div class="form-group">
           <div class="row">
             <div class="col-sm-12">
@@ -34,10 +34,11 @@
                 </div>
                 <div class="input-group">
                   <input type="text" name="icd10" id="icd10" class="form-control" />
-                  <input type="hidden" name="status" class="form-control" value="{$status_lanjut}" />
+                  <input type="hidden" name="status" class="form-control" value="{?=isset_or($status_lanjut)?}" />
                   <ul class="list-group" id="icd10List" style="z-index:1000;position:absolute;width:100%;"></ul>
                   <span class="input-group-btn">
-                    <button id="simpan_icd10" class="btn btn-primary btn-block">Simpan
+                    <button id="simpan_icd10" class="btn btn-primary btn-block">
+                      Simpan
                     </button>
                   </span>
                 </div>
@@ -61,10 +62,10 @@
       <tbody>
         {loop: $diagnosa_pasien}
         <tr>
-          <td>{$value.kd_penyakit}</td>
-          <td>{$value.nm_penyakit}</td>
-          <td contenteditable="true" data-old_value="{$value.prioritas}" onBlur="savePrioritas(this,'prioritas','{$value.no_rawat}','{$value.kd_penyakit}','{$status_lanjut}')" onClick="highlightEdit(this);">{$value.prioritas}</td>
-          <td><a href="" class="btn btn-xs btn-danger fa fa-trash hapus_diagnosa" data-no_rawat="{$value.no_rawat}" data-kd_penyakit="{$value.kd_penyakit}" data-prioritas="{$value.prioritas}"></a></td>
+          <td>{?=isset_or($value.kd_penyakit)?}</td>
+          <td>{?=isset_or($value.nm_penyakit)?}</td>
+          <td contenteditable="true" data-old_value="{?=isset_or($value.prioritas)?}" onBlur="savePrioritas(this,'prioritas','{?=isset_or($value.no_rawat)?}','{?=isset_or($value.kd_penyakit)?}','{?=isset_or($status_lanjut)?}')" onClick="highlightEdit(this);">{?=isset_or($value.prioritas)?}</td>
+          <td><a href="" class="btn btn-xs btn-danger fa fa-trash hapus_diagnosa" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_penyakit="{?=isset_or($value.kd_penyakit)?}" data-prioritas="{?=isset_or($value.prioritas)?}"></a></td>
         </tr>
         {/loop}
       </tbody>
@@ -85,29 +86,52 @@
     });
   });
 </script>
+<style>
+  /* Styling item diagnosis tidak valid */
+  #icd10List li.invalid-diagnosis {
+    background: #f2dede;
+    cursor: not-allowed;
+  }
+  #icd10List li.invalid-diagnosis:hover {
+    background: #f8d7da;
+  }
+  /* Styling hover item valid untuk konsistensi */
+  #icd10List li.valid-diagnosis:hover {
+    background: #f5f5f5;
+  }
+</style>
 <script>
-  $('#icd10').keyup(function(){
-       var query = $(this).val();
-       if(query != '')
-       {
-            $.ajax({
-                 url: "{?=url([ADMIN, 'icd_10', 'icd10'])?}",
-                 method:"POST",
-                 data:{query:query},
-                 success:function(data)
-                 {
-                      $('#icd10List').fadeIn();
-                      $('#icd10List').html(data);
-                 }
-            });
-       }
-       $('#icd10List').fadeIn();
+  $('#icd10').keyup(function () {
+    var query = $(this).val();
+    if (query != '') {
+      $.ajax({
+        url: "{?=url([ADMIN, 'vedika', 'icd10'])?}",
+        method: "POST",
+        data: { query: query },
+        success: function (data) {
+          $('#icd10List').fadeIn();
+          $('#icd10List').html(data);
+        }
+      });
+    }
+    $('#icd10List').fadeIn();
   });
-  $('#icd10List').on('click', 'li', function(){
-       $('#icd10').val($(this).text().split(': ')[1]);
-       $('#kode_icd10').text($(this).text().split(': ')[0]);
-       var kode_icd10 = $('#kode_icd10').val();
-       $('#icd10List').fadeOut();
+
+  $('#icd10List').on('click', 'li', function () {
+    var codeVal =
+      $(this).attr('data-display-code') ||
+      $(this).attr('data-code') ||
+      $(this).find('.selectator_option_title').clone().children().remove().end().text().trim();
+
+    var code = codeVal;
+    var name =
+      $(this).attr('data-display-name') ||
+      $(this).attr('data-name') ||
+      $(this).find('.selectator_option_subtitle').text().trim();
+
+    $('#icd10').val(name);
+    $('#kode_icd10').text(code);
+    $('#icd10List').fadeOut();
   });
 </script>
 <script type="text/javascript">
@@ -121,7 +145,7 @@
     var kode = $('#kode_icd10').text();
     var status = $('input:hidden[name=status]').val();
 
-    var url = baseURL + '/icd_10/saveicd10?t=' + mlite.token;
+    var url = baseURL + '/vedika/saveicd10?t=' + mlite.token;
 
     $.post(url,{
       no_rawat: no_rawat,
@@ -131,7 +155,30 @@
       kd_penyakit: kode
     } ,function(data) {
       alert('Data diagnosa ' + kode + ' telah disimpan!!');
+      // Kumpulkan seluruh kode diagnosa dari tabel saat ini
+      var codes = [];
+      $('#data_diagnosa table tbody tr').each(function(){
+        var c = $(this).find('td').eq(0).text().trim();
+        if (c) { codes.push(c); }
+      });
+      // Tambahkan kode baru dan hilangkan duplikasi
+      codes.push(kode);
+      var uniqueCodes = [];
+      $.each(codes, function(i, c){ if (c && uniqueCodes.indexOf(c) === -1) uniqueCodes.push(c); });
+      var joinedCodes = uniqueCodes.join('#');
+
+      // Update nilai input diagnosa di dalam modal INACBGs dengan format kode1#kode2#kode3
+      var inacbgsModal = $('#inacbgsModal');
+      if (inacbgsModal.length) {
+        inacbgsModal.find('input#diagnosa, input[name="diagnosa"]').val(joinedCodes);
+      }
+      // Refresh tabel diagnosa dan tutup modal status
       $("#data_diagnosa").show().load(baseURL + '/vedika/displaydiagnosa/' + status + '/{?=convertNoRawat($no_rawat)?}/?t=' + mlite.token);
+      // Clear input dan fokus kembali untuk input diagnosa berikutnya
+      $('#icd10').val('');
+      $('#kode_icd10').text('kode');
+      $('#icd10').focus();
+      $('#icd10List').fadeOut();
       //bersih();
       //$('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       //"Data ICD 10 (Diagnosa) pasien telah disimpan!"+
@@ -161,17 +208,30 @@
           kd_penyakit: kd_penyakit,
           prioritas: prioritas
         } ,function(data) {
-          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-          //$("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
-          //bersih();
+          // tampilkan notif
           alert('Data diagnosa ' + kd_penyakit + ' telah dihapus!!');
-          /*
-          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-          "Data diagnosa telah dihapus!"+
-          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-          "</div>").show();
-          */
-          $('#statusModal').modal('toggle');
+
+          // Kumpulkan seluruh kode diagnosa yang tersisa dari tabel, kecuali yang dihapus
+          var remainingCodes = [];
+          $('#data_diagnosa table tbody tr').each(function(){
+            var c = $(this).find('td').eq(0).text().trim();
+            if (c && c !== kd_penyakit) { remainingCodes.push(c); }
+          });
+          // Hilangkan duplikasi dan gabungkan dengan pemisah '#'
+          var uniqueRemaining = [];
+          $.each(remainingCodes, function(i, c){ if (c && uniqueRemaining.indexOf(c) === -1) uniqueRemaining.push(c); });
+          var joinedRemaining = uniqueRemaining.join('#');
+
+          // Update nilai input diagnosa di dalam modal INACBGs dengan sisa kode
+          var inacbgsModal = $('#inacbgsModal');
+          if (inacbgsModal.length) {
+            inacbgsModal.find('input#diagnosa, input[name="diagnosa"]').val(joinedRemaining);
+          }
+
+          // Refresh tabel diagnosa
+          var status = $('input:hidden[name=status]').val();
+          $("#data_diagnosa").show().load(baseURL + '/vedika/displaydiagnosa/' + status + '/{?=convertNoRawat($no_rawat)?}/?t=' + mlite.token);
+
         });
       }
     });

@@ -13,13 +13,13 @@
     <tbody>
       {loop: $rujuk_keluar}
       <tr>
-        <td>{$value.no_rawat}</td>
-        <td>{$value.no_sep}</td>
-        <td class="pilih_nosurat" data-no_surat="{$value.no_sep}">{$value.no_srb}</td>
-        <td>{$value.namaprogram}</td>
-        <td>{$value.nmdpjp}</td>
-        <td>{$value.keterangan}</td>
-        <td>{$value.saran}</td>
+        <td>{?=isset_or($value.no_rawat)?}</td>
+        <td>{?=isset_or($value.no_sep)?}</td>
+        <td class="pilih_nosurat" data-no_surat="{?=isset_or($value.no_sep)?}">{?=isset_or($value.no_srb)?}</td>
+        <td>{?=isset_or($value.namaprogram)?}</td>
+        <td>{?=isset_or($value.nmdpjp)?}</td>
+        <td>{?=isset_or($value.keterangan)?}</td>
+        <td>{?=isset_or($value.saran)?}</td>
       </tr>
       {/loop}
     </tbody>

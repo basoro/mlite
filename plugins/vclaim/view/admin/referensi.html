@@ -158,7 +158,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['jenis_pelayanan']) && $_GET['jenis_pelayanan']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!='' && isset($_GET['kode_spesialis']) && $_GET['kode_spesialis']!=''}
+                                {if: isset($_GET['jenis_pelayanan']) && $_GET['jenis_pelayanan'] != '' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan'] != '' && isset($_GET['kode_spesialis']) && $_GET['kode_spesialis'] != ''}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -184,7 +184,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['propinsi']) && $_GET['propinsi']=='all'}
+                                {if: isset($_GET['propinsi']) && $_GET['propinsi'] == 'all'}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -213,7 +213,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['kode_propinsi']) && $_GET['kode_propinsi']!=''}
+                                {if: isset($_GET['kode_propinsi']) && $_GET['kode_propinsi'] != ''}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -242,7 +242,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['kode_kabupaten']) && $_GET['kode_kabupaten']!=''}
+                                {if: isset($_GET['kode_kabupaten']) && $_GET['kode_kabupaten'] != ''}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -348,7 +348,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['spesialistik']) && $_GET['spesialistik']=='all'}
+                                {if: isset($_GET['spesialistik']) && $_GET['spesialistik'] == 'all'}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -373,7 +373,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['ruangrawat']) && $_GET['ruangrawat']=='all'}
+                                {if: isset($_GET['ruangrawat']) && $_GET['ruangrawat'] == 'all'}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -398,7 +398,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['carakeluar']) && $_GET['carakeluar']=='all'}
+                                {if: isset($_GET['carakeluar']) && $_GET['carakeluar'] == 'all'}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -422,7 +422,7 @@
                                       Kirim Parameter
                                   </button>
                                 </form>
-                                {if: isset($_GET['pascapulang']) && $_GET['pascapulang']=='all'}
+                                {if: isset($_GET['pascapulang']) && $_GET['pascapulang'] == 'all'}
                                 <h4 class="m-t-xl">Respons result</h4>
                                 <pre>
                                 </pre>
@@ -439,98 +439,98 @@
 </div>
 
 <script>
-    {if: isset($_GET['diagnosa']) && $_GET['diagnosa']!=''}
+    {if: isset($_GET['diagnosa']) && $_GET['diagnosa'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'diagnosa', $_GET['diagnosa']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['poli']) && $_GET['poli']!=''}
+    {if: isset($_GET['poli']) && $_GET['poli'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'poli', $_GET['poli']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['kode_faskes']) && $_GET['kode_faskes']!='' && isset($_GET['jenis_faskes']) && $_GET['jenis_faskes']!=''}
+    {if: isset($_GET['kode_faskes']) && $_GET['kode_faskes'] != '' && isset($_GET['jenis_faskes']) && $_GET['jenis_faskes'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'faskes', $_GET['kode_faskes'], $_GET['jenis_faskes']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['jenis_pelayanan']) && $_GET['jenis_pelayanan']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!='' && isset($_GET['kode_spesialis']) && $_GET['kode_spesialis']!=''}
+    {if: isset($_GET['jenis_pelayanan']) && $_GET['jenis_pelayanan'] != '' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan'] != '' && isset($_GET['kode_spesialis']) && $_GET['kode_spesialis'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'dokterdpjp', $_GET['jenis_pelayanan'], $_GET['tgl_pelayanan'], $_GET['kode_spesialis']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['propinsi']) && $_GET['propinsi']=='all'}
+    {if: isset($_GET['propinsi']) && $_GET['propinsi'] == 'all'}
         $.get("{?=url([ADMIN, 'vclaim', 'propinsi'])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['kode_propinsi']) && $_GET['kode_propinsi']!=''}
+    {if: isset($_GET['kode_propinsi']) && $_GET['kode_propinsi'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'kabupaten', $_GET['kode_propinsi']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['kode_kabupaten']) && $_GET['kode_kabupaten']!=''}
+    {if: isset($_GET['kode_kabupaten']) && $_GET['kode_kabupaten'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'kecamatan', $_GET['kode_kabupaten']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['procedure']) && $_GET['procedure']!=''}
+    {if: isset($_GET['procedure']) && $_GET['procedure'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'procedure', $_GET['procedure']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['kelasrawat']) && $_GET['kelasrawat']=='all'}
+    {if: isset($_GET['kelasrawat']) && $_GET['kelasrawat'] == 'all'}
         $.get("{?=url([ADMIN, 'vclaim', 'kelasrawat'])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['dokter']) && $_GET['dokter']!=''}
+    {if: isset($_GET['dokter']) && $_GET['dokter'] != ''}
         $.get("{?=url([ADMIN, 'vclaim', 'dokter', $_GET['dokter']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['spesialistik']) && $_GET['spesialistik']=='all'}
+    {if: isset($_GET['spesialistik']) && $_GET['spesialistik'] == 'all'}
         $.get("{?=url([ADMIN, 'vclaim', 'spesialistik'])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['ruangrawat']) && $_GET['ruangrawat']=='all'}
+    {if: isset($_GET['ruangrawat']) && $_GET['ruangrawat'] == 'all'}
         $.get("{?=url([ADMIN, 'vclaim', 'ruangrawat'])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['carakeluar']) && $_GET['carakeluar']=='all'}
+    {if: isset($_GET['carakeluar']) && $_GET['carakeluar'] == 'all'}
         $.get("{?=url([ADMIN, 'vclaim', 'carakeluar'])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
-    {if: isset($_GET['pascapulang']) && $_GET['pascapulang']=='all'}
+    {if: isset($_GET['pascapulang']) && $_GET['pascapulang'] == 'all'}
         $.get("{?=url([ADMIN, 'vclaim', 'pascapulang'])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');

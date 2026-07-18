@@ -1,0 +1,33 @@
+.cp-panel-stat .panel-body {
+  min-height: 88px;
+}
+
+.cp-stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
+}
+
+.cp-stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+.cp-list-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.cp-day-panel {
+  border: 1px solid #e5e5e5;
+}
+
+.cp-action-col .btn {
+  margin-bottom: 4px;
+}
+
+.m-t-20 {
+  margin-top: 20px;
+}

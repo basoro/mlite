@@ -4,11 +4,11 @@
 </div>
 <div class="modal-body">
     <h5>Request:</h5>
-    <pre>{$request}</pre><br><br>
+    <pre>{?=isset_or($request)?}</pre><br><br>
     <h5>Response:</h5>
-    <pre>{$response}</pre><br><br>
+    <pre>{?=isset_or($response)?}</pre><br><br>
     <h5>Status:</h5>
-    <pre>{$status}</pre><br><br>
+    <pre>{?=isset_or($status)?}</pre><br><br>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>

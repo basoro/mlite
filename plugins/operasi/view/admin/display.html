@@ -19,7 +19,7 @@
         {loop: $operasi.list}
         <tr>
           <td style="white-space: nowrap;">
-            <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{$value.no_rkm_medis} <span class="caret"></span></button></span>
+            <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{?=isset_or($value.no_rkm_medis)?} <span class="caret"></span></button></span>
             <ul class="dropdown-menu" role="menu">
               {if: $cek_vclaim}
                 <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynokartu', $value.no_peserta, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor Kartu</a></li>
@@ -27,20 +27,20 @@
               {/if}
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Obat dan BHP</a></li>
-              <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
+              <li><a href="#layanan_obat" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}" data-nm_pasien="{?=isset_or($value.nm_pasien)?}">Obat dan BHP</a></li>
+              <li><a href="#berkas_digital" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}" data-nm_pasien="{?=isset_or($value.nm_pasien)?}">Berkas Digital</a></li>
               {/if}
             </ul>
           </td>
-          <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}">{$value.no_rawat}</td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.tgl_operasi}</td>
-          <td style="white-space: nowrap;">{$value.kategori}</td>
-          <td style="white-space: nowrap;">{$value.jenis_anasthesi}</td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.kode_paket} - {$value.nm_perawatan}</td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.operator1}</td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.asisten_operator1}</td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status}</td>
+          <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{?=isset_or($value.nm_pasien)?}</a></td>
+          <td class="edit" data-no_rawat="{?=isset_or($value.no_rawat)?}">{?=isset_or($value.no_rawat)?}</td>
+          <td class="edit" data-no_rawat="{?=isset_or($value.no_rawat)?}" style="white-space: nowrap;">{?=isset_or($value.tgl_operasi)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.kategori)?}</td>
+          <td style="white-space: nowrap;">{?=isset_or($value.jenis_anasthesi)?}</td>
+          <td class="edit" data-no_rawat="{?=isset_or($value.no_rawat)?}" style="white-space: nowrap;">{?=isset_or($value.kode_paket)?} - {?=isset_or($value.nm_perawatan)?}</td>
+          <td class="edit" data-no_rawat="{?=isset_or($value.no_rawat)?}" style="white-space: nowrap;">{?=isset_or($value.operator1)?}</td>
+          <td class="edit" data-no_rawat="{?=isset_or($value.no_rawat)?}" style="white-space: nowrap;">{?=isset_or($value.asisten_operator1)?}</td>
+          <td class="edit" data-no_rawat="{?=isset_or($value.no_rawat)?}" style="white-space: nowrap;">{?=isset_or($value.status)?}</td>
         </tr>
         {/loop}
       </tbody>

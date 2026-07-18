@@ -135,6 +135,62 @@ $("#rincian").on("click",".nota_lab", function(event){
   window.open(baseURL + '/radiologi/cetakpermintaan?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
 });
 
+$("#rincian").on("keyup", ".parsial_amount_rad", function(event){
+  event.preventDefault();
+  var v = (this.value || '').replace(/[^0-9]/g, '');
+  this.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+});
+
+$("#rincian").on("click", ".bayar_parsial_rad", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+  var tgl_periksa = $(this).attr("data-tgl_periksa");
+  var jam = $(this).attr("data-jam");
+  var metode = $('#parsial_metode_rad').val() || 'Tunai';
+  var jumlah_bayar = $(this).closest('.input-group').find('.parsial_amount_rad').val();
+  jumlah_bayar = (jumlah_bayar || '0').replace(/[^0-9]/g,'');
+  if (Number(jumlah_bayar) <= 0) {
+    alert('Jumlah bayar wajib diisi.');
+    return;
+  }
+
+  bootbox.confirm("Simpan pembayaran parsial untuk tindakan radiologi ini?", function(result){
+    if (result) {
+      var url = baseURL + '/radiologi/bayarparsial?t=' + mlite.token;
+      $.post(url, {
+        no_rawat: no_rawat,
+        kd_jenis_prw: kd_jenis_prw,
+        tgl_periksa: tgl_periksa,
+        jam: jam,
+        status: status,
+        metode: metode,
+        jumlah_bayar: jumlah_bayar
+      }, function(data) {
+        var response = {};
+        try { response = (typeof data === 'string') ? JSON.parse(data) : data; } catch(e) { response = data; }
+        if (response && response.status === 'error') {
+          alert(response.message || 'Gagal menyimpan pembayaran parsial.');
+          return;
+        }
+        if (response && response.pembayaran_id) {
+          window.open(baseURL + '/radiologi/notaparsial?show=kecil&pembayaran_id=' + response.pembayaran_id + '&t=' + mlite.token);
+        }
+        var refreshUrl = baseURL + '/radiologi/rincian?t=' + mlite.token;
+        $.post(refreshUrl, {no_rawat : no_rawat, status: status}, function(html) {
+          $("#rincian").html(html).show();
+        });
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          (response && response.message ? response.message : "Pembayaran parsial berhasil disimpan.")+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+      });
+    }
+  });
+});
+
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
@@ -144,6 +200,7 @@ $("#display").on("click",".riwayat_perawatan", function(event){
 
 // ketika baris data diklik
 $("#display").on("click", ".edit", function(event){
+  {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'radiologi') == true}
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/radiologi/form?t=' + mlite.token;
@@ -157,6 +214,7 @@ $("#display").on("click", ".edit", function(event){
       $("#stts_daftar").html(data).show();
     });
   });
+  {/if}
 });
 
 // ketika tombol hapus ditekan
@@ -518,6 +576,7 @@ $("#rincian").on("click",".hasil_radiologi", function(event){
       + '<form method="post" action="" enctype="multipart/form-data">'
       + '  Select file : <input type="file" name="file" id="file" class="form-control"><br>'
       + '  <input type="button" class="btn btn-info" value="Upload" id="btn_upload">'
+      + '  <input type="button" class="btn btn-success" value="Upload Mini PACS (CR)" id="btn_upload_pacs" style="margin-left: 5px;">'
       + '</form>'
       + '<div id="preview"></div>'
       + '</div>'
@@ -597,6 +656,53 @@ $("#rincian").on("click",".hasil_radiologi", function(event){
         }
       });
     });
+
+    $('#btn_upload_pacs').click(function(){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var url= baseURL + '/mini_pacs/apiupload?t=' + mlite.token;
+
+      var fd = new FormData();
+      var files = $('#file')[0].files[0];
+      if(!files) {
+        bootbox.alert("Silakan pilih file gambar (JPEG/PNG) terlebih dahulu.");
+        return;
+      }
+      fd.append('file_image',files);
+      fd.append('no_rawat',no_rawat);
+      fd.append('modality','CR');
+
+      var btn = $(this);
+      var oldVal = btn.val();
+      btn.prop('disabled', true).val('Uploading...');
+
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: fd,
+        contentType: false,
+        processData: false,
+        dataType: 'json',
+        success: function(data)
+        {
+            btn.prop('disabled', false).val(oldVal);
+            if(data.status == 'success')
+            {
+                bootbox.alert("Berhasil mengunggah dan mengkonversi ke Mini PACS!");
+                if(data.result) {
+                    $('#preview').append("<img src='"+data.result+"' width='100' height='100' style='display: inline-block; margin: 5px; border: 2px solid #555;'>");
+                }
+            }
+            else
+            {
+                bootbox.alert(data.message || 'Gagal mengunggah');
+            }
+        },
+        error: function() {
+            btn.prop('disabled', false).val(oldVal);
+            bootbox.alert("Terjadi kesalahan jaringan.");
+        }
+      });
+    });
   });
 
   box.modal('show');
@@ -629,7 +735,45 @@ $("#rincian").on("click",".validasi_permintaan_radiologi", function(event){
         noorder: noorder,
         status: status
       } ,function(data) {
-        console.log(data);
+        // console.log(data);
+        var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat, status: status
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Validasi permintaan laboratorium telah selesai!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+$("#rincian").on("click",".validasi_hasil_radiologi", function(event){
+  event.preventDefault();
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url = baseURL + '/radiologi/validasihasilradiologi?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_permintaan = $(this).attr("data-tgl_permintaan");
+  var jam_permintaan = $(this).attr("data-jam_permintaan");
+  var noorder = $(this).attr("data-noorder");
+  var status  = $('input:text[name=status]').val();
+
+  //console.log(no_rawat + ' - ' + noorder + ' - ' + tgl_permintaan + ' - ' + jam_permintaan);
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menvalidasi data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_rawat: no_rawat,
+        tgl_permintaan: tgl_permintaan,
+        jam_permintaan: jam_permintaan,
+        noorder: noorder,
+        status: status
+      } ,function(data) {
+        // console.log(data);
         var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat, status: status
         }, function(data) {
@@ -808,7 +952,7 @@ $("#form_rincian").on("click","#jam_reg", function(event){
   {if: $mlite.websocket_proxy != ''}
     var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
   {else}
-    var URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+    var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
   {/if}
 
   var ws = new WebSocket(URL_WEBSOCKET);
@@ -829,7 +973,7 @@ $("#form_rincian").on("click","#jam_reg", function(event){
         }
       }
     }catch(e){
-      console.log(e);
+      // console.log(e);
     }
   }
   

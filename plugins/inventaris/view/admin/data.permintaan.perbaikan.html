@@ -29,16 +29,16 @@
           <tbody>
             {loop: $perbaikan}
             <tr>
-              <td>{$value.no_permintaan}</td>
-              <td>{$value.no_inventaris}</td>
-              <td>{$value.nik} - {$value.nama}</td>
-              <td>{$value.tanggal}</td>
-              <td>{$value.deskripsi_kerusakan}</td>
-              <td class="text-{if: $value.status_perbaikan == 'Sudah'}primary{else}danger{/if}">{$value.status_perbaikan}</td>
+              <td>{?=isset_or($value.no_permintaan)?}</td>
+              <td>{?=isset_or($value.no_inventaris)?}</td>
+              <td>{?=isset_or($value.nik)?} - {?=isset_or($value.nama)?}</td>
+              <td>{?=isset_or($value.tanggal)?}</td>
+              <td>{?=isset_or($value.deskripsi_kerusakan)?}</td>
+              <td class="text-{if: $value.status_perbaikan == 'Sudah'}primary{else}danger{/if}">{?=isset_or($value.status_perbaikan)?}</td>
               <td>
-                <a href="{$value.tampil}" class="btn btn-xs btn-primary"><i class="fa fa-search"></i> Tampil</a>
-                <a href="{$value.ubah}" class="btn btn-xs btn-info"><i class="fa fa-edit"></i> Ubah</a>
-                <a href="{$value.hapus}" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> Hapus</a>
+                <a href="{?=isset_or($value.tampil)?}" class="btn btn-xs btn-primary"><i class="fa fa-search"></i> Tampil</a>
+                <a href="{?=isset_or($value.ubah)?}" class="btn btn-xs btn-info"><i class="fa fa-edit"></i> Ubah</a>
+                <a href="{?=isset_or($value.hapus)?}" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> Hapus</a>
               </td>
             </tr>
             {/loop}

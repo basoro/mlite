@@ -70,7 +70,7 @@ function printContent(el){
                   SURAT ELEGIBILITAS PESERTA
                 </div>
                 <div style="font-size:21px;text-align:center;">
-                  {$settings.nama_instansi}
+                  {?=isset_or($settings.nama_instansi)?}
                 </div>
               </td>
             </tr>
@@ -82,7 +82,7 @@ function printContent(el){
           <table>
             <tr>
               <td width="420">
-                  <b><u>{$data_sep.potensi_prb}</u></b>
+                  <b><u>{?=isset_or($data_sep.potensi_prb)?}</u></b>
               </td>
               <td width="580">
                 
@@ -102,7 +102,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.no_sep}
+                {?=isset_or($data_sep.no_sep)?}
               </td>
             </tr>
           </table>
@@ -119,7 +119,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.tglsep}
+                {?=isset_or($data_sep.tglsep)?}
               </td>
             </tr>
           </table>
@@ -136,7 +136,7 @@ function printContent(el){
                 :
               </td>
               <td width="450">
-                {$data_sep.no_kartu} (MR: {$data_sep.nomr})
+                {?=isset_or($data_sep.no_kartu)?} (MR: {?=isset_or($data_sep.nomr)?})
               </td>
               <td width="90">
                 Peserta
@@ -145,7 +145,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.peserta}
+                {?=isset_or($data_sep.peserta)?}
               </td>
             </tr>
           </table>
@@ -162,7 +162,7 @@ function printContent(el){
                 :
               </td>
               <td width="450">
-                {$data_sep.nama_pasien} ({$data_sep.jkel})
+                {?=isset_or($data_sep.nama_pasien)?} ({?=isset_or($data_sep.jkel)?})
               </td>
               <td width="90">
                 Jns. Kunjungan
@@ -188,7 +188,7 @@ function printContent(el){
                 :
               </td>
               <td width="450">
-                {$data_sep.tanggal_lahir}
+                {?=isset_or($data_sep.tanggal_lahir)?}
               </td>
               <td width="90">
                 Jns. Rawat
@@ -214,7 +214,7 @@ function printContent(el){
                 :
               </td>
               <td width="450">
-                {$data_sep.notelep}
+                {?=isset_or($data_sep.notelep)?}
               </td>
               <td width="90">
                 Kls. Rawat
@@ -223,7 +223,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                Kelas {$data_sep.klsrawat}
+                Kelas {?=isset_or($data_sep.klsrawat)?}
               </td>
             </tr>
           </table>
@@ -240,7 +240,7 @@ function printContent(el){
                 :
               </td>
               <td width="450">
-                {$data_sep.nmpolitujuan}
+                {?=isset_or($data_sep.nmpolitujuan)?}
               </td>
             </tr>
           </table>
@@ -257,7 +257,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.nmdpdjp}
+                {?=isset_or($data_sep.nmdpdjp)?}
               </td>
             </tr>
           </table>
@@ -274,7 +274,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.nmppkrujukan}
+                {?=isset_or($data_sep.nmppkrujukan)?}
               </td>
             </tr>
           </table>
@@ -291,7 +291,7 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.diagawal} - {$data_sep.nmdiagnosaawal}
+                {?=isset_or($data_sep.diagawal)?} - {?=isset_or($data_sep.nmdiagnosaawal)?}
               </td>
             </tr>
           </table>
@@ -308,7 +308,7 @@ function printContent(el){
                 :
               </td>
               <td width="550" valign="top">
-                {$data_sep.catatan}
+                {?=isset_or($data_sep.catatan)?}
               </td>
               <td width="200" halign="center" valign="bottom">
                 Pasien/Keluarga Pasien
@@ -326,14 +326,14 @@ function printContent(el){
                   *Saya Menyetujui BPJS Kesehatan menggunakan informasi Medis Pasien jika diperlukan.<br>
                   **SEP bukan sebagai bukti penjaminan peserta<br>
                   Cetakan ke 1 {?=date('d/m/Y H:i:s')?} PM<br>
-                  Masa berlaku {$data_sep.tglrujukan} s/d {$data_sep.batas_rujukan}
+                  Masa berlaku {?=isset_or($data_sep.tglrujukan)?} s/d {?=isset_or($data_sep.batas_rujukan)?}
                 </i>
               </td>
               <td valign="bottom" halign="center" padding="0" margin="0">
                 <center>
                   <!-- <div id="qrcodeSEP" style="margin-top:2px;width:50px;"></div><br> -->
-                  <img src="{$data_sep.qrCode}" width="100px" style="margin: 0.2em;"/><br>
-                  {$data_sep.nama_pasien}<br>
+                  <img src="{?=isset_or($data_sep.qrCode)?}" width="100px" style="margin: 0.2em;"/><br>
+                  {?=isset_or($data_sep.nama_pasien)?}<br>
                 </center>
                 -----------------------------------
               </td>
@@ -512,7 +512,7 @@ function printContent(el){
     <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
     <script>
       jQuery('#qrcodeSEP').qrcode({
-        text	: "No.SEP: {$data_sep.no_sep}",
+        text	: "No.SEP: {?=isset_or($data_sep.no_sep)?}",
         width : 80,
         height: 80
       });

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rekap Presensi</title>
+</head>
+<body>
+    <h3>Rekap Presensi</h3>
+    <p>Periode: {$rekap.awal} s/d {$rekap.akhir}</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nama Pegawai</th>
+                <th>Jabatan</th>
+                <th>Shift</th>
+                <th>Bidang/Ruang</th>
+                <th>Jam Datang</th>
+                <th>Jam Pulang</th>
+                <th>Durasi</th>
+                <th>Efektif</th>
+                <th>Kurang</th>
+                <th>Hari</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $rekap.list}
+            <tr>
+                <td>{$value.nama}</td>
+                <td>{$value.jbtn}</td>
+                <td>{$value.shift}</td>
+                <td>{$value.bidang}</td>
+                <td>{$value.jam_datang}</td>
+                <td>{$value.jam_pulang}</td>
+                <td>{$value.durasi}</td>
+                <td>{$value.efektif.efektif}</td>
+                <td>{$value.efektif.kurang}</td>
+                <td>{$value.date}</td>
+                <td>{$value.status}</td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+</body>
+</html>

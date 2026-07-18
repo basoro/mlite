@@ -1,4 +1,5 @@
 .DS_Store
+.trae/
 config.php
 admin/tmp
 admin/pla.php
@@ -7,11 +8,17 @@ websocket
 uploads
 vendor
 __vendor
-systems/data/database.sdb
+app_amati/
+systems/data/*.sdb
 webapps
 backup/
 plugins/apotek_online
 plugins/simrsp
+# plugins/mini_pacs/*.sh
+# plugins/mini_pacs/*.json
+# plugins/mini_pacs/worklist_monitor.php
+# plugins/mini_pacs/receiver.php
+# plugins/mini_pacs/systemd/*
 config.php
 themes/mlite
 systems/lib/jasperphp
@@ -21,31 +28,49 @@ plugins/utd/www
 plugins/lisensi
 assets/easyui
 plugins/desktop
-plugins/crud_generator
+plugins/sia
 plugins/kasir
 plugins/dokter_radiologi
 plugins/dokter_ulun
 plugins/reg_periksa
-plugins/khanza
 plugins/___siap_insulin
 plugins/siap_insulin
 plugins/pasien_galleries
 plugins/cssd
+plugins/orthanc/docker
 jasperphp
 plugins/utd/Site.php
 plugins/utd/view/adonan.html
 websocket
-plugins/khanza.zip
 plugins/website_ausy
-plugins/khanza
+plugins/rsgmgha
+plugins/verifikasi_klaim
 plugins/pasien_galleries
 # plugins/log_antrian_taskid
 
+mobile-react/node_modules
+frontend-react/node_modules
+frontend-react/dist
+frontend-react/node_modules/*
+frontend-react/dist/*
 
-.env
+#docker/
+docker/mysql*
+docker/orthanc/orthanc-db/*
+docker/orthanc/dummy-dicom/*
+docker/.trae
+docker/nginx/conf.d/*
+docker/dns/dnsmasq.log
+docker/www/*
+
+# .env
 logs/
 config.php
 #workerman.php
 composer.lock
 backups
 themes/atilamedika
+.vercel
+api/
+docker/.env
+mobile-react/node_modules/.package-lock.json

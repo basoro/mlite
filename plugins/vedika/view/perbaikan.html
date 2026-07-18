@@ -85,9 +85,9 @@
 						<tr>
               <td>
                 <span class="btn btn-primary btn-xs">
-                  <a href="{$value.downloadURL}" target="_blank"><i class="fa fa-download"></i></a> <a href="{$value.pdfURL}" target="_blank">{$value.no_sep}</a>
+                  <a href="{?=isset_or($value.downloadURL)?}" target="_blank"><i class="fa fa-download"></i></a> <a href="{?=isset_or($value.pdfURL)?}" target="_blank">{?=isset_or($value.no_sep)?}</a>
 								</span><br>
-                <a href="{$value.catatanURL}" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#moduleModal">
+                <a href="{?=isset_or($value.catatanURL)?}" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#moduleModal">
                   <i class="fa fa-folder-open"></i> Feedback
 								</a>
                 {loop: $value.status_pengajuan as $data}
@@ -103,16 +103,16 @@
 							<td>
                 <table>
                   <tr>
-                    <td width='120px'>No.Rawat</td><td>: {$value.no_rawat}</td>
+                    <td width='120px'>No.Rawat</td><td>: {?=isset_or($value.no_rawat)?}</td>
                   </tr>
                   <tr>
-                    <td width='120px'>No.RM</td><td>: {$value.no_rkm_medis}</td>
+                    <td width='120px'>No.RM</td><td>: {?=isset_or($value.no_rkm_medis)?}</td>
                   </tr>
                   <tr>
-                    <td width='120px'>Nama Pasien</td><td>: {$value.nm_pasien}</td>
+                    <td width='120px'>Nama Pasien</td><td>: {?=isset_or($value.nm_pasien)?}</td>
                   </tr>
                   <tr>
-                    <td width='120px'>Umur</td><td>: {$value.umurdaftar} {$value.sttsumur}</td>
+                    <td width='120px'>Umur</td><td>: {?=isset_or($value.umurdaftar)?} {?=isset_or($value.sttsumur)?}</td>
                   </tr>
                   <tr>
                     <td width='120px'>Jenis Kelamin</td><td>: {if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
@@ -125,29 +125,29 @@
               <td>
                 <table>
                   <tr>
-                    <td width='120px'>Tgl.Registrasi</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
+                    <td width='120px'>Tgl.Registrasi</td><td>: {?=isset_or($value.tgl_registrasi)?} {?=isset_or($value.jam_reg)?}</td>
                   </tr>
                   <tr>
-                    <td width='120px'>Poliklinik</td><td>: {$value.nm_poli}</td>
+                    <td width='120px'>Poliklinik</td><td>: {?=isset_or($value.nm_poli)?}</td>
                   </tr>
                   <tr>
-                    <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
+                    <td width='120px'>Dokter</td><td>: {?=isset_or($value.nm_dokter)?}</td>
                   </tr>
                   <tr>
-                    <td width='120px'>Status</td><td>: {$value.status_lanjut} ({$value.png_jawab})</td>
+                    <td width='120px'>Status</td><td>: {?=isset_or($value.status_lanjut)?} ({?=isset_or($value.png_jawab)?})</td>
                   </tr>
                 </table>
               </td>
               <td>
                 <table>
                   <tr>
-                    <td width='120px'>No. Kunjungan</td><td>: {$value.no_rujukan}</td>
+                    <td width='120px'>No. Kunjungan</td><td>: {?=isset_or($value.no_rujukan)?}</td>
                   </tr>
                   <tr>
-                    <td width='120px'>No. Kartu</td><td>: {$value.no_peserta}</td>
+                    <td width='120px'>No. Kartu</td><td>: {?=isset_or($value.no_peserta)?}</td>
                   </tr>
                   <tr>
-                    <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
+                    <td width='120px'>Dx. Utama</td><td>: {?=isset_or($value.kd_penyakit)?} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
                   </tr>
                 </table>
               </td>
@@ -156,13 +156,13 @@
                   {if: !empty($value.berkas_digital_pasien)}
                   {loop: $value.berkas_digital_pasien as $data}
                   <tr>
-                    <td>- <a href="{?=url($data.src.lg)?}" class="gallery">{if: $data.title=='bpjs'}Kartu BPJS{elseif: $data.title=='inhealth'}Kartu Inhealth{elseif: $data.title=='ktp'}KTP{else}Kartu Keluarga{/if}</a></td>
+                    <td>- <a href="{?=url($data.src.lg)?}" class="gallery">{if: $data.title == 'bpjs'}Kartu BPJS{elseif: $data.title=='inhealth'}Kartu Inhealth{elseif: $data.title=='ktp'}KTP{else}Kartu Keluarga{/if}</a></td>
                   </tr>
                   {/loop}
                   {/if}
                   {loop: $value.berkas_digital as $data}
                   <tr>
-                    <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" target="_blank" class="gallery">{$data.nama}</a></td>
+                    <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{?=isset_or($data.lokasi_file)?}" target="_blank" class="gallery">{?=isset_or($data.nama)?}</a></td>
                   </tr>
                   {/loop}
                 </table>
@@ -175,7 +175,7 @@
 					</tbody>
 				</table>
 		  </div>
-      {$vedika.pagination}
+      {?=isset_or($vedika.pagination)?}
     </div>
   </div>
 </div>

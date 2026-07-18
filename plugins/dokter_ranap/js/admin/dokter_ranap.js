@@ -1,3 +1,6 @@
+// Global variable untuk chart
+var vitalSignsChart = null;
+
 // sembunyikan form dan notif
 $("#form_rincian").hide();
 $("#form_soap").hide();
@@ -9,6 +12,20 @@ $('#aturan_pakai').hide();
 $('#daftar_racikan').hide();
 $("#info_tambahan").hide();
 $("#form_kontrol").hide();
+
+// Inisialisasi jam_rawat saat halaman dibuka
+$(function(){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var $jr = $('input:text[name=jam_rawat]').last();
+  if ($jr.length) {
+    $jr.focus();
+    if (!$jr.val()) {
+      $.post(baseURL + '/dokter_ranap/cekwaktu?t=' + mlite.token, {}, function(data){
+        $jr.val(data);
+      });
+    }
+  }
+});
 
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -154,8 +171,8 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     event.preventDefault();
 
     var no_rawat        = $('input:text[name=no_rawat]').val();
-    var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-    var jam_rawat       = $('input:text[name=jam_rawat]').val();
+    var tgl_perawatan   = $('#soap_tgl_perawatan').val();
+    var jam_rawat       = $('#soap_jam_rawat').val();
     var suhu_tubuh      = $('input:text[name=suhu_tubuh]').val();
     var tensi           = $('input:text[name=tensi]').val();
     var nadi            = $('input:text[name=nadi]').val();
@@ -200,9 +217,13 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       var url = baseURL + '/dokter_ranap/soap?t=' + mlite.token;
       $.post(url, {no_rawat : no_rawat,
       }, function(data) {
-        // tampilkan data
-        $("#soap").html(data).show();
-      });
+          // tampilkan data
+          $("#soap").html(data).show();
+          // Load vital signs chart when SOAP data is displayed
+          setTimeout(function() {
+            loadVitalSignsChart();
+          }, 500);
+        });
       $('input:text[name=suhu_tubuh]').val("");
       $('input:text[name=tensi]').val("");
       $('input:text[name=nadi]').val("");
@@ -302,6 +323,10 @@ $("#soap").on("click",".hapus_soap", function(event){
         }, function(data) {
           // tampilkan data
           $("#soap").html(data).show();
+          // Load vital signs chart when SOAP data is displayed
+          setTimeout(function() {
+            loadVitalSignsChart();
+          }, 500);
         });
         $('input:text[name=suhu_tubuh]').val("");
         $('input:text[name=tensi]').val("");
@@ -582,8 +607,8 @@ $("#obat").on("click", ".pilih_obat", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-dasar");
-  var stok = $(this).attr("data-stok");
-  var stokminimal = $(this).attr("data-stokminimal");
+  var stok = parseFloat($(this).attr("data-stok"));
+  var stokminimal = parseFloat($(this).attr("data-stokminimal"));
   var kat = $(this).attr("data-kat");
 
   if(stok < stokminimal) {
@@ -638,7 +663,7 @@ $("#obat_racikan").on("click", ".pilih_obat_racikan", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-dasar");
-  var stok = $(this).attr("data-stok");
+  var stok = parseFloat($(this).attr("data-stok"));
 
   if(stok < 1) {
     alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
@@ -760,6 +785,11 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
       // tampilkan data
       $("#rincian").html(data).show();
     });
+    $.post(baseURL + '/dokter_ranap/cekwaktu?t=' + mlite.token, {
+    } ,function(data) {
+      $("#form_rincian #rincian_jam_reg").val(data);
+      $('input:text[name=jam_rawat]').last().val(data).focus();
+    });
     $('input:hidden[name=kd_jenis_prw]').val("");
     $('input:text[name=nm_perawatan]').val("");
     $('input:hidden[name=kat]').val("");
@@ -776,6 +806,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('#keterangan').val("");
     $('input:text[name=kandungan]').val("");
     $('.row_racikan').remove();
+    $('input:text[name=jam_rawat]').last().val("");
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -852,6 +883,41 @@ $("#rincian").on("click",".hapus_permintaan_lab", function(event){
     }
   });
 });
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_permintaan_rad", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/dokter_ranap/hapuspermintaanrad?t=' + mlite.token;
+  var dokter_perujuk = $(this).attr("data-provider");
+  var noorder = $(this).attr("data-noorder");
+  var no_rawat = $(this).attr("data-no_rawat");
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        noorder: noorder,
+        no_rawat: no_rawat,
+        dokter_perujuk: dokter_perujuk
+      } ,function(data) {
+        var url = baseURL + '/dokter_ranap/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
 
 // ketika tombol hapus ditekan
 $("#rincian").on("click",".hapus_resep_obat", function(event){
@@ -950,15 +1016,41 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
   var jam_rawat       = $('input:text[name=jam_reg]').val();
   var kode_brng       = JSON.stringify($('input:hidden[name=kode_brng_copyresep]').serializeArray());
   var jml       = JSON.stringify($('input:text[name=jml_copyresep]').serializeArray());
-  var aturan_pakai       = JSON.stringify($('input:hidden[name=aturan_copyresep]').serializeArray());
+  var aturan_pakai       = JSON.stringify($('input:text[name=aturan_copyresep]').serializeArray());
 
-  $.post(url_save, {no_rawat : no_rawat,
+  // Racikan Data
+  var nama_racik = JSON.stringify($('input:hidden[name=nama_racik_copyresep]').serializeArray());
+  var kd_racik = JSON.stringify($('input:hidden[name=kd_racik_copyresep]').serializeArray());
+  var keterangan = JSON.stringify($('input:hidden[name=keterangan_copyresep]').serializeArray());
+  var no_racik = JSON.stringify($('input:hidden[name=no_racik_copyresep]').serializeArray());
+  var jml_dr = JSON.stringify($('input:text[name=jml_dr_copyresep]').serializeArray());
+  var aturan_pakai_racik = JSON.stringify($('input:text[name=aturan_pakai_copyresep]').serializeArray());
+
+  var data = {
+    no_rawat : no_rawat,
     tgl_perawatan : tgl_perawatan,
     jam_rawat : jam_rawat,
     kode_brng : kode_brng,
     jml : jml,
-    aturan_pakai : aturan_pakai
-  }, function(data) {
+    aturan_pakai : aturan_pakai,
+    nama_racik: nama_racik,
+    kd_racik: kd_racik,
+    keterangan: keterangan,
+    no_racik: no_racik,
+    jml_dr: jml_dr,
+    aturan_pakai_racik: aturan_pakai_racik
+  };
+
+  // Add dynamic racikan details
+  $('input:hidden[name^="no_racik_copyresep"]').each(function() {
+      var nr = $(this).val();
+      data['kode_brng_racikan_' + nr] = JSON.stringify($('input:hidden[name="kode_brng_racikan_copyresep_' + nr + '"]').serializeArray());
+      data['jml_racikan_' + nr] = JSON.stringify($('input:text[name="jml_racikan_copyresep_' + nr + '"]').serializeArray());
+      data['p1_' + nr] = JSON.stringify($('input:hidden[name="p1_copyresep_' + nr + '"]').serializeArray());
+      data['p2_' + nr] = JSON.stringify($('input:hidden[name="p2_copyresep_' + nr + '"]').serializeArray());
+  });
+
+  $.post(url_save, data, function(data) {
     //alert(data);
     //if(data == 'ErrorError') {
     //  alert('Stok tidak mencukupi pada satu atau lebih obat.');
@@ -1072,7 +1164,7 @@ $(document).ready(function () {
         dataType: 'json',
         success: function(data) {
           callback(data.slice(0, 100));
-          console.log(data);
+          // console.log(data);
         },
         error: function() {
           callback();
@@ -1103,3 +1195,469 @@ $("#form_rincian").on("click","#jam_reg", function(event){
       $("#form_rincian #jam_reg").val(data);
     });
 });
+
+// Assessment Medis Ranap Handlers
+$(document).off('click', '#saveMedisRanap').on('click', '#saveMedisRanap', function(event) {
+  event.preventDefault();
+  
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var formData = {
+    no_rawat: $('input[name="no_rawat_medisRanap"]').val(),
+    kd_dokter: '{?=$this->core->getUserInfo("username", $_SESSION["mlite_user"])?}',
+    tanggal: $('input[name="tanggal"]').val(),
+    anamnesis: $('select[name="anamnesis"]').val(),
+    hubungan: $('input[name="hubungan"]').val(),
+    keluhan_utama: $('textarea[name="keluhan_utama"]').val(),
+    rps: $('textarea[name="rps"]').val(),
+    rpd: $('textarea[name="rpd"]').val(),
+    rpk: $('textarea[name="rpk"]').val(),
+    rpo: $('textarea[name="rpo"]').val(),
+    alergi: $('textarea[name="alergi"]').val(),
+    keadaan: $('select[name="keadaan"]').val(),
+    gcs: $('input[name="gcs"]').val(),
+    kesadaran: $('select[name="kesadaran"]').val(),
+    td: $('input[name="td"]').val(),
+    nadi: $('input[name="nadi"]').val(),
+    rr: $('input[name="rr"]').val(),
+    suhu: $('input[name="suhu"]').val(),
+    spo: $('input[name="spo"]').val(),
+    bb: $('input[name="bb"]').val(),
+    tb: $('input[name="tb"]').val(),
+    kepala: $('select[name="kepala"]').val(),
+    mata: $('select[name="mata"]').val(),
+    gigi: $('select[name="gigi"]').val(),
+    tht: $('select[name="tht"]').val(),
+    thoraks: $('select[name="thoraks"]').val(),
+    jantung: $('select[name="jantung"]').val(),
+    paru: $('select[name="paru"]').val(),
+    abdomen: $('select[name="abdomen"]').val(),
+    genital: $('select[name="genital"]').val(),
+    ekstremitas: $('select[name="ekstremitas"]').val(),
+    kulit: $('select[name="kulit"]').val(),
+    ket_fisik: $('textarea[name="ket_fisik"]').val(),
+    ket_lokalis: $('textarea[name="ket_lokalis"]').val(),
+    lab: $('textarea[name="lab"]').val(),
+    rad: $('textarea[name="rad"]').val(),
+    penunjang: $('textarea[name="penunjang"]').val(),
+    diagnosis: $('textarea[name="diagnosis"]').val(),
+    tata: $('textarea[name="tata"]').val(),
+    edukasi: $('textarea[name="edukasi"]').val(),
+    mode: $('#mode').val(),
+    original_tanggal: $('#original_tanggal').val(),
+    t: '{?=$_SESSION["token"]?}'
+  };
+  
+  $.post(baseURL + '/dokter_ranap/medisranap', formData, function(data) {
+    alert('Data assessment berhasil disimpan!');
+    var no_rawat_clean = formData.no_rawat ? formData.no_rawat.replace(/\//g, '') : '';
+    $('.tampildata').load(baseURL + '/dokter_ranap/medisranaptampil/' + no_rawat_clean + '?t=' + mlite.token);
+    // Reset form to add mode
+    $('#mode').val('add');
+    $('#original_tanggal').val('');
+    $('#resetForm').hide();
+    // Close modal
+    $('#medisRanapModal').modal('hide');
+  }).fail(function() {
+    alert('Terjadi kesalahan saat menyimpan data!');
+  });
+});
+
+$(document).off('click', '.edit_medis_ranap').on('click', '.edit_medis_ranap', function(event) {
+  event.preventDefault();
+  
+  // Fill form with data attributes
+  $('input[name="no_rawat_medisRanap"]').val($(this).data('no_rawat'));
+  $('input[name="tanggal"]').val($(this).data('tanggal'));
+  $('select[name="anamnesis"]').val($(this).data('anamnesis'));
+  $('input[name="hubungan"]').val($(this).data('hubungan'));
+  $('textarea[name="keluhan_utama"]').val($(this).data('keluhan_utama'));
+  $('textarea[name="rps"]').val($(this).data('rps'));
+  $('textarea[name="rpd"]').val($(this).data('rpd'));
+  $('textarea[name="rpk"]').val($(this).data('rpk'));
+  $('textarea[name="rpo"]').val($(this).data('rpo'));
+  $('textarea[name="alergi"]').val($(this).data('alergi'));
+  $('select[name="keadaan"]').val($(this).data('keadaan'));
+  $('input[name="gcs"]').val($(this).data('gcs'));
+  $('select[name="kesadaran"]').val($(this).data('kesadaran'));
+  $('input[name="td"]').val($(this).data('td'));
+  $('input[name="nadi"]').val($(this).data('nadi'));
+  $('input[name="rr"]').val($(this).data('rr'));
+  $('input[name="suhu"]').val($(this).data('suhu'));
+  $('input[name="spo"]').val($(this).data('spo'));
+  $('input[name="bb"]').val($(this).data('bb'));
+  $('input[name="tb"]').val($(this).data('tb'));
+  $('select[name="kepala"]').val($(this).data('kepala'));
+  $('select[name="mata"]').val($(this).data('mata'));
+  $('select[name="gigi"]').val($(this).data('gigi'));
+  $('select[name="tht"]').val($(this).data('tht'));
+  $('select[name="thoraks"]').val($(this).data('thoraks'));
+  $('select[name="jantung"]').val($(this).data('jantung'));
+  $('select[name="paru"]').val($(this).data('paru'));
+  $('select[name="abdomen"]').val($(this).data('abdomen'));
+  $('select[name="genital"]').val($(this).data('genital'));
+  $('select[name="ekstremitas"]').val($(this).data('ekstremitas'));
+  $('select[name="kulit"]').val($(this).data('kulit'));
+  $('textarea[name="ket_fisik"]').val($(this).data('ket_fisik'));
+  $('textarea[name="ket_lokalis"]').val($(this).data('ket_lokalis'));
+  $('textarea[name="lab"]').val($(this).data('lab'));
+  $('textarea[name="rad"]').val($(this).data('rad'));
+  $('textarea[name="penunjang"]').val($(this).data('penunjang'));
+  $('textarea[name="diagnosis"]').val($(this).data('diagnosis'));
+  $('textarea[name="tata"]').val($(this).data('tata'));
+  $('textarea[name="edukasi"]').val($(this).data('edukasi'));
+  
+  // Set edit mode
+  $('#mode').val('edit');
+  $('#original_tanggal').val($(this).data('tanggal'));
+  $('#resetForm').show();
+});
+
+$(document).off('click', '.hapus_medis_ranap').on('click', '.hapus_medis_ranap', function(event) {
+  event.preventDefault();
+  
+  if(confirm('Yakin ingin menghapus data assessment ini?')) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).data('no_rawat');
+    var tanggal = $(this).data('tanggal');
+    
+    $.post(baseURL + '/dokter_ranap/hapusmedisranap', {
+      no_rawat: no_rawat,
+      tanggal: tanggal,
+      t: '{?=$_SESSION["token"]?}'
+    }, function(data) {
+      alert('Data assessment berhasil dihapus!');
+      var no_rawat_clean = no_rawat ? no_rawat.replace(/\//g, '') : '';
+      $('.tampildata').load(baseURL + '/dokter_ranap/medisranaptampil/' + no_rawat_clean + '?t=' + mlite.token);
+    }).fail(function() {
+      alert('Terjadi kesalahan saat menghapus data!');
+    });
+  }
+});
+
+$(document).off('click', '#resetForm').on('click', '#resetForm', function(event) {
+  event.preventDefault();
+  
+  // Reset all form fields
+  $('#medisRanapModal form')[0].reset();
+  
+  // Reset mode
+  $('#mode').val('add');
+  $('#original_tanggal').val('');
+  $(this).hide();
+  
+  // Reset datetime
+  $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
+});
+
+// Load assessment data when modal opens
+$(document).on('shown.bs.modal', '#medisRanapModal', function () {
+  var no_rawat = $('#medisRanapBtn').data('no_rawat');
+  if(no_rawat) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat_clean = no_rawat ? no_rawat.replace(/\//g, '') : '';
+    $('.tampildata').load(baseURL + '/dokter_ranap/medisranaptampil/' + no_rawat_clean + '?t=' + mlite.token);
+  }
+});
+
+// Auto calculate BMI when height and weight change
+$(document).on('input', 'input[name="tb"], input[name="bb"]', function() {
+  var tb = parseFloat($('input[name="tb"]').val());
+  var bb = parseFloat($('input[name="bb"]').val());
+  
+  if(tb > 0 && bb > 0) {
+    var tinggi_m = tb / 100;
+    var bmi = bb / (tinggi_m * tinggi_m);
+    // Display BMI somewhere if needed
+    console.log('BMI: ' + bmi.toFixed(2));
+  }
+});
+
+// Auto-fill current datetime when modal opens
+$(document).on('show.bs.modal', '#medisRanapModal', function () {
+  if($('#mode').val() === 'add') {
+    $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
+  }
+});
+
+// Assessment Nyeri Handlers
+$(document).off('click', '#saveAssessmentNyeri').on('click', '#saveAssessmentNyeri', function(event) {
+  event.preventDefault();
+  
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var formData = {
+    no_rawat: $('input[name="no_rawat_assessmentNyeri"]').val(),
+    nip: '{?=$this->core->getUserInfo("username", $_SESSION["mlite_user"])?}',
+    tanggal: $('input[name="tanggal"]').val(),
+    nyeri: $('select[name="nyeri"]').val(),
+    provokes: $('select[name="provokes"]').val(),
+    ket_provokes: $('input[name="ket_provokes"]').val(),
+    quality: $('select[name="quality"]').val(),
+    ket_quality: $('input[name="ket_quality"]').val(),
+    lokasi: $('input[name="lokasi"]').val(),
+    menyebar: $('select[name="menyebar"]').val(),
+    skala_nyeri: $('select[name="skala_nyeri"]').val(),
+    durasi: $('input[name="durasi"]').val(),
+    nyeri_hilang: $('select[name="nyeri_hilang"]').val(),
+    ket_nyeri: $('textarea[name="ket_nyeri"]').val(),
+    mode: $('#mode').val(),
+    original_tanggal: $('#original_tanggal').val(),
+    t: '{?=$_SESSION["token"]?}'
+  };
+  
+  $.post(baseURL + '/dokter_ranap/assessmentnyeri', formData, function(data) {
+    alert('Data assessment nyeri berhasil disimpan!');
+    var no_rawat_clean = formData.no_rawat ? formData.no_rawat.replace(/\//g, '') : '';
+    $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + no_rawat_clean + '?t=' + mlite.token);
+    // Reset form to add mode
+    $('#mode').val('add');
+    $('#original_tanggal').val('');
+    $('#resetFormNyeri').hide();
+    // Close modal
+    $('#assessmentNyeriModal').modal('hide');
+  }).fail(function() {
+    alert('Terjadi kesalahan saat menyimpan data!');
+  });
+});
+
+$(document).off('click', '.edit_assessment_nyeri').on('click', '.edit_assessment_nyeri', function(event) {
+  event.preventDefault();
+  
+  // Fill form with data attributes
+  $('input[name="no_rawat_assessmentNyeri"]').val($(this).data('no_rawat'));
+  $('input[name="tanggal"]').val($(this).data('tanggal'));
+  $('select[name="nyeri"]').val($(this).data('nyeri'));
+  $('select[name="provokes"]').val($(this).data('provokes'));
+  $('input[name="ket_provokes"]').val($(this).data('ket_provokes'));
+  $('select[name="quality"]').val($(this).data('quality'));
+  $('input[name="ket_quality"]').val($(this).data('ket_quality'));
+  $('input[name="lokasi"]').val($(this).data('lokasi'));
+  $('select[name="menyebar"]').val($(this).data('menyebar'));
+  $('select[name="skala_nyeri"]').val($(this).data('skala_nyeri'));
+  $('input[name="durasi"]').val($(this).data('durasi'));
+  $('select[name="nyeri_hilang"]').val($(this).data('nyeri_hilang'));
+  $('textarea[name="ket_nyeri"]').val($(this).data('ket_nyeri'));
+  
+  // Set edit mode
+  $('#mode').val('edit');
+  $('#original_tanggal').val($(this).data('tanggal'));
+  $('#resetFormNyeri').show();
+});
+
+$(document).off('click', '.hapus_assessment_nyeri').on('click', '.hapus_assessment_nyeri', function(event) {
+  event.preventDefault();
+  
+  if(confirm('Yakin ingin menghapus data assessment nyeri ini?')) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).data('no_rawat');
+    var tanggal = $(this).data('tanggal');
+    
+    $.post(baseURL + '/dokter_ranap/hapusassessmentnyeri', {
+      no_rawat: no_rawat,
+      tanggal: tanggal,
+      t: '{?=$_SESSION["token"]?}'
+    }, function(data) {
+      alert('Data assessment nyeri berhasil dihapus!');
+      var no_rawat_clean = no_rawat ? no_rawat.replace(/\//g, '') : '';
+      $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + no_rawat_clean + '?t=' + mlite.token);
+    }).fail(function() {
+      alert('Terjadi kesalahan saat menghapus data!');
+    });
+  }
+});
+
+$(document).off('click', '#resetFormNyeri').on('click', '#resetFormNyeri', function(event) {
+  event.preventDefault();
+  
+  // Reset all form fields
+  $('#assessmentNyeriModal form')[0].reset();
+  
+  // Reset mode
+  $('#mode').val('add');
+  $('#original_tanggal').val('');
+  $(this).hide();
+  
+  // Reset datetime
+  $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
+});
+
+// Load assessment nyeri data when modal opens
+$(document).on('shown.bs.modal', '#assessmentNyeriModal', function () {
+  var no_rawat = $('#assessmentNyeriBtn').data('no_rawat');
+  if(no_rawat) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat_clean = no_rawat ? no_rawat.replace(/\//g, '') : '';
+    $('.tampildata').load(baseURL + '/dokter_ranap/assessmentnyeritampil/' + no_rawat_clean + '?t=' + mlite.token);
+  }
+});
+
+// Auto-fill current datetime when assessment nyeri modal opens
+$(document).on('show.bs.modal', '#assessmentNyeriModal', function () {
+  if($('#mode').val() === 'add') {
+    $('input[name="tanggal"]').val('{?=date("Y-m-d H:i:s")?}');
+  }
+});
+
+// Validation for required fields in Assessment Nyeri
+$(document).on('change', 'select[name="nyeri"]', function() {
+  var nyeri = $(this).val();
+  if(nyeri === 'Tidak Ada Nyeri') {
+    $('select[name="skala_nyeri"]').val('0');
+    $('input[name="lokasi"]').val('-');
+    $('select[name="provokes"]').val('-');
+    $('select[name="quality"]').val('-');
+    $('select[name="menyebar"]').val('Tidak');
+    $('select[name="nyeri_hilang"]').val('-');
+  }
+});
+
+// Load Vital Signs Chart
+function loadVitalSignsChart() {
+  console.log('loadVitalSignsChart() called');
+  
+  var no_rawat = $('input[name="no_rawat"]').val();
+  console.log('no_rawat:', no_rawat);
+  
+  if (!no_rawat) {
+    console.log('No rawat not found, showing no-data message');
+    $('#chart-no-data').show();
+    $('#chart-loading').hide();
+    return;
+  }
+  
+  // Check if Chart.js is loaded
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js is not loaded!');
+    $('#chart-loading').hide();
+    $('#chart-no-data').show();
+    return;
+  }
+  
+  $('#chart-loading').show();
+  $('#chart-no-data').hide();
+  
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url = baseURL + '/dokter_ranap/vitalsignschart?t=' + mlite.token;
+  console.log('AJAX URL:', url);
+  
+  $.post(url, {no_rawat: no_rawat}, function(data) {
+    console.log('AJAX Success - Raw data:', data);
+    $('#chart-loading').hide();
+    
+    if (data && data.labels && data.labels.length > 0) {
+      console.log('Data found, creating chart with', data.labels.length, 'data points');
+      createVitalSignsChart(data);
+    } else {
+      console.log('No data found or empty labels');
+      $('#chart-no-data').show();
+    }
+  }, 'json').fail(function(xhr, status, error) {
+    console.error('AJAX Failed:', status, error);
+    console.error('Response:', xhr.responseText);
+    $('#chart-loading').hide();
+    $('#chart-no-data').show();
+  });
+}
+
+// Create Vital Signs Chart
+function createVitalSignsChart(chartData) {
+  console.log('createVitalSignsChart() called with data:', chartData);
+  
+  // Check if Chart.js is loaded
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js is not loaded in createVitalSignsChart!');
+    return;
+  }
+  
+  var ctx = document.getElementById('vitalSignsChart');
+  
+  // Check if canvas element exists
+  if (!ctx) {
+    console.error('Canvas element vitalSignsChart not found');
+    return;
+  }
+  
+  console.log('Canvas element found, getting 2D context');
+  ctx = ctx.getContext('2d');
+  
+  // Destroy existing chart if exists
+  if (vitalSignsChart && typeof vitalSignsChart.destroy === 'function') {
+    console.log('Destroying existing chart');
+    vitalSignsChart.destroy();
+  }
+  
+  console.log('Creating new Chart instance');
+  vitalSignsChart = new Chart(ctx, {
+    type: 'line',
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Grafik Tren Tanda Vital Pasien'
+        },
+        legend: {
+          display: true,
+          position: 'top'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              var label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += context.parsed.y;
+              }
+              return label;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Waktu Pemeriksaan'
+          }
+        },
+        y: {
+          type: 'linear',
+          display: true,
+          position: 'left',
+          title: {
+            display: true,
+            text: 'Nilai Tanda Vital'
+          },
+          beginAtZero: false
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          title: {
+            display: true,
+            text: 'Tinggi/Berat'
+          },
+          grid: {
+            drawOnChartArea: false,
+          },
+        }
+      }
+    }
+  });
+  
+  console.log('Vital Signs Chart created successfully!');
+}
+
+// Update chart after saving SOAP data
+function updateVitalSignsChart() {
+  loadVitalSignsChart();
+}

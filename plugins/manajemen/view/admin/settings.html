@@ -10,7 +10,7 @@
                         <label>Cara Bayar Umum</label>
                         <select name="manajemen[penjab_umum]" class="form-control">
                           {loop: $settings.penjab}
-                            <option value="{$value.kd_pj}" {if: $value.kd_pj == $settings.manajemen.penjab_umum}selected{/if}>{$value.png_jawab}</option>
+                            <option value="{?=isset_or($value.kd_pj)?}" {if: $value.kd_pj == $settings.manajemen.penjab_umum}selected{/if}>{?=isset_or($value.png_jawab)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -18,7 +18,7 @@
                         <label>Cara Bayar BPJS</label>
                         <select name="manajemen[penjab_bpjs]" class="form-control">
                           {loop: $settings.penjab}
-                            <option value="{$value.kd_pj}" {if: $value.kd_pj == $settings.manajemen.penjab_bpjs}selected{/if}>{$value.png_jawab}</option>
+                            <option value="{?=isset_or($value.kd_pj)?}" {if: $value.kd_pj == $settings.manajemen.penjab_bpjs}selected{/if}>{?=isset_or($value.png_jawab)?}</option>
                           {/loop}
                         </select>
                     </div>

@@ -23,7 +23,111 @@ class Admin extends AdminModule
         ['name' => 'Data Pengguna', 'url' => url([ADMIN, 'users', 'manage']), 'icon' => 'users', 'desc' => 'Data pengguna'],
         ['name' => 'Tambah Baru', 'url' => url([ADMIN, 'users', 'add']), 'icon' => 'user-plus', 'desc' => 'Tambah pengguna baru'],
       ];
-      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('index.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
+    }
+
+    public function apiSave()
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_write', 'users')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) $input = $_POST;
+        
+        $_POST = $input;
+
+        $id = isset($_POST['id']) ? $_POST['id'] : null;
+
+        // admin
+        if ($id == 1) {
+            $_POST['access'] = 'all';
+        }
+
+        // check if required fields are empty
+        if (empty($_POST['username']) || empty($_POST['email'])) {
+            return ['status' => 'error', 'message' => 'Username dan Email wajib diisi.'];
+        }
+
+        // check if user already exists
+        if($id == null) {
+          if ($this->_userAlreadyExists($_POST['username'])) {
+            return ['status' => 'error', 'message' => 'Pengguna sudah terdaftar.'];
+          }
+        }
+        
+        // chech if e-mail adress is correct
+        $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+            return ['status' => 'error', 'message' => 'Email salah.'];
+        }
+        // check if password is longer than 5 characters
+        if (isset($_POST['password']) && !empty($_POST['password']) && strlen($_POST['password']) < 8) {
+            return ['status' => 'error', 'message' => 'Password terlalu pendek. Minimal 8 karakter.'];
+        }
+
+        // access and cap are already strings from frontend
+        if (!isset($_POST['access'])) $_POST['access'] = 'dashboard';
+        if (!isset($_POST['cap'])) $_POST['cap'] = '';
+        $_POST['role'] = $this->_normalizeRoleInput($_POST['role'] ?? []);
+
+        unset($_POST['save']);
+        unset($_POST['status']); // mlite_users table does not have status column
+        unset($_POST['password_confirmation']);
+
+        if (!empty($_POST['password'])) {
+            $_POST['password'] = password_hash($_POST['password'], PASSWORD_BCRYPT);
+        } else {
+            unset($_POST['password']);
+        }
+
+        if (!$id) {    // new
+            try {
+                $query = $this->db('mlite_users')->save($_POST);
+            } catch (\Exception $e) {
+                return ['status' => 'error', 'message' => $e->getMessage()];
+            }
+        } else {        // edit
+            try {
+                $query = $this->db('mlite_users')->where('id', $id)->save($_POST);
+            } catch (\Exception $e) {
+                return ['status' => 'error', 'message' => $e->getMessage()];
+            }
+        }
+
+        if ($query) {
+            return ['status' => 'success', 'message' => 'Pengguna berhasil disimpan.'];
+        } else {
+            return ['status' => 'error', 'message' => 'Gagal menyimpan pengguna.'];
+        }
+    }
+
+    public function apiDelete($id = null)
+    {
+        $username = $this->core->checkAuth('POST');
+        if (!$this->core->checkPermission($username, 'can_write', 'users')) {
+            return ['status' => 'error', 'message' => 'Invalid User Permission Credentials'];
+        }
+        if (!$id) {
+             $input = json_decode(file_get_contents('php://input'), true);
+             $id = isset($input['id']) ? $input['id'] : null;
+        }
+
+        if (!$id) {
+            return ['status' => 'error', 'message' => 'ID tidak ditemukan.'];
+        }
+
+        if ($id != 1 && $this->core->getUserInfo('id') != $id && ($user = $this->db('mlite_users')->oneArray($id))) {
+            if ($this->db('mlite_users')->delete($id)) {
+                if (is_array($user) && !empty($user['avatar'])) {
+                    @unlink(UPLOADS."/users/".$user['avatar']);
+                }
+                return ['status' => 'success', 'message' => 'Pengguna berhasil dihapus.'];
+            } else {
+                return ['status' => 'error', 'message' => 'Tidak dapat menghapus pengguna.'];
+            }
+        }
+        return ['status' => 'error', 'message' => 'Tidak diizinkan menghapus pengguna ini.'];
     }
 
     /**
@@ -36,7 +140,9 @@ class Admin extends AdminModule
             if (empty($row['fullname'])) {
                 $row['fullname'] = '----';
             }
+            $row['role'] = implode(', ', $this->_parseRoles($row['role'] ?? ''));
             $row['editURL'] = url([ADMIN, 'users', 'edit', $row['id']]);
+            $row['permURL'] = url([ADMIN, 'users', 'permission', $row['id']]);
             $row['delURL']  = url([ADMIN, 'users', 'delete', $row['id']]);
         }
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
@@ -54,12 +160,12 @@ class Admin extends AdminModule
         if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
           $this->_addInfoUser();
         }
-        $this->_getInfoRole();
         if (!empty($redirectData = getRedirectData())) {
-            $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
+            $this->assign['form'] = $redirectData;
         } else {
             $this->assign['form'] = ['username' => '', 'email' => '', 'fullname' => '', 'description' => '', 'role' => '', 'cap' => ''];
         }
+        $this->_getInfoRole($this->assign['form']['role'] ?? '');
 
         $this->assign['title'] = 'Pengguna baru';
         $this->assign['modules'] = $this->_getModules('all');
@@ -68,8 +174,9 @@ class Admin extends AdminModule
           $this->assign['cap'] = $this->_getInfoCap();
         }
         $this->assign['avatarURL'] = url(MODULES.'/users/img/default.png');
+        $this->assign['usersForCopy'] = $this->_getUsersForCopy();
 
-        return $this->draw('form.html', ['users' => $this->assign]);
+        return $this->draw('form.html', ['users' => htmlspecialchars_array($this->assign)]);
     }
 
     /**
@@ -80,20 +187,21 @@ class Admin extends AdminModule
         if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
           $this->_addInfoUser();
         }
-        $this->_getInfoRole();
         $user = $this->db('mlite_users')->oneArray($id);
 
-        if (!empty($user)) {
+        if (!empty($user) && is_array($user)) {
             $this->assign['form'] = $user;
+            $this->_getInfoRole($user['role'] ?? '');
             $this->assign['title'] = 'Sunting pengguna';
-            $this->assign['modules'] = $this->_getModules($user['access']);
+            $this->assign['modules'] = $this->_getModules(isset($user['access']) ? $user['access'] : null);
             $this->assign['cap'] = [];
             if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
-              $this->assign['cap'] = $this->_getInfoCap($user['cap']);
+              $this->assign['cap'] = $this->_getInfoCap(isset($user['cap']) ? $user['cap'] : null);
             }
-            $this->assign['avatarURL'] = url(UPLOADS.'/users/'.$user['avatar']);
+            $this->assign['avatarURL'] = url(UPLOADS.'/users/'.(isset($user['avatar']) ? $user['avatar'] : 'default.png'));
+            $this->assign['usersForCopy'] = $this->_getUsersForCopy();
 
-            return $this->draw('form.html', ['users' => $this->assign]);
+            return $this->draw('form.html', ['users' => htmlspecialchars_array($this->assign)]);
         } else {
             redirect(url([ADMIN, 'users', 'manage']));
         }
@@ -125,10 +233,13 @@ class Admin extends AdminModule
         }
 
         // check if user already exists
-        if ($this->_userAlreadyExists($id)) {
+        if($id == null) {
+          if ($this->_userAlreadyExists($_POST['username'])) {
             $errors++;
             $this->notify('failure', 'Pengguna sudah terdaftar.');
+          }
         }
+        
         // chech if e-mail adress is correct
         $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
         if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
@@ -140,6 +251,7 @@ class Admin extends AdminModule
             $errors++;
             $this->notify('failure', 'Password terlalu pendek. Minimal 8 karakter serta memuat kombinasi huruf besar, huruf kecil, angka, dan karakter khusus ');
         }
+        $_POST['role'] = $this->_normalizeRoleInput($_POST['role'] ?? []);
         // access to modules
         if ((count($_POST['access']) == count($this->_getModules())) || ($id == 1)) {
             $_POST['access'] = 'all';
@@ -195,7 +307,7 @@ class Admin extends AdminModule
 
             if ($query) {
                 if (isset($img) && $img->getInfos('width')) {
-                    if (isset($user)) {
+                    if (isset($user) && is_array($user) && !empty($user['avatar'])) {
                         unlink(UPLOADS."/users/".$user['avatar']);
                     }
 
@@ -220,7 +332,7 @@ class Admin extends AdminModule
     {
         if ($id != 1 && $this->core->getUserInfo('id') != $id && ($user = $this->db('mlite_users')->oneArray($id))) {
             if ($this->db('mlite_users')->delete($id)) {
-                if (!empty($user['avatar'])) {
+                if (is_array($user) && !empty($user['avatar'])) {
                     unlink(UPLOADS."/users/".$user['avatar']);
                 }
 
@@ -230,6 +342,95 @@ class Admin extends AdminModule
             }
         }
         redirect(url([ADMIN, 'users', 'manage']));
+    }
+
+    /**
+    * manage user permissions
+    */
+    public function getPermission($id)
+    {
+        $user = $this->db('mlite_users')->oneArray($id);
+        if (!$user) {
+             redirect(url([ADMIN, 'users', 'manage']));
+        }
+
+        $modules = $this->db('mlite_modules')->toArray();
+        $permissions = [];
+        
+        foreach ($modules as $module) {
+            $dir = $module['dir'];
+            $details = $this->core->getModuleInfo($dir);
+            $name = isset($details['name']) ? $details['name'] : $dir;
+            
+            $existing = $this->db('mlite_crud_permissions')
+                ->where('user', $user['username'])
+                ->where('module', $dir)
+                ->oneArray();
+            
+            if (!$existing) {
+                $existing = [
+                    'can_create' => 'true',
+                    'can_read' => 'true',
+                    'can_update' => 'true',
+                    'can_delete' => 'true'
+                ];
+            }
+            
+            $permissions[] = [
+                'dir' => $dir,
+                'name' => $name,
+                'can_create' => $existing['can_create'] == 'true',
+                'can_read'   => $existing['can_read']   == 'true',
+                'can_update' => $existing['can_update'] == 'true',
+                'can_delete' => $existing['can_delete'] == 'true',
+            ];
+        }
+        
+        return $this->draw('permission.html', ['user' => $user, 'permissions' => $permissions]);
+    }
+
+    /**
+    * save user permissions
+    */
+    public function postSavePermission($id)
+    {
+        $user = $this->db('mlite_users')->oneArray($id);
+        if (!$user) {
+             redirect(url([ADMIN, 'users', 'manage']));
+        }
+        
+        $modules = $this->db('mlite_modules')->toArray();
+        foreach ($modules as $module) {
+            $dir = $module['dir'];
+            
+            $can_create = isset($_POST['permissions'][$dir]['can_create']) ? 'true' : 'false';
+            $can_read   = isset($_POST['permissions'][$dir]['can_read'])   ? 'true' : 'false';
+            $can_update = isset($_POST['permissions'][$dir]['can_update']) ? 'true' : 'false';
+            $can_delete = isset($_POST['permissions'][$dir]['can_delete']) ? 'true' : 'false';
+            
+            $existing = $this->db('mlite_crud_permissions')
+                ->where('user', $user['username'])
+                ->where('module', $dir)
+                ->oneArray();
+                
+            $data = [
+                'user' => $user['username'],
+                'module' => $dir,
+                'can_create' => $can_create,
+                'can_read' => $can_read,
+                'can_update' => $can_update,
+                'can_delete' => $can_delete
+            ];
+            
+            if ($existing) {
+                $this->db('mlite_crud_permissions')->where('id', $existing['id'])->save($data);
+            } else {
+                $this->db('mlite_crud_permissions')->save($data);
+            }
+        }
+        
+        $this->notify('success', 'Hak akses pengguna berhasil disimpan.');
+        redirect(url([ADMIN, 'users', 'permission', $id]));
     }
 
     private function _addInfoUser() {
@@ -245,24 +446,74 @@ class Admin extends AdminModule
     }
 
     /**
+     * Get users with access for copy functionality
+     * @return array
+     */
+    private function _getUsersForCopy() {
+        $users = $this->db('mlite_users')
+            ->select('id, username, fullname, access')
+            ->where('id', '!=', 1) // Exclude admin user
+            ->toArray();
+        
+        // Filter out empty or null access
+        $filteredUsers = array_filter($users, function($user) {
+            return !empty($user['access']) && $user['access'] !== 'dashboard';
+        });
+        
+        return array_values($filteredUsers);
+    }
+
+    /**
     * list of active user roles
     * @return array
     */
 
-    private function _getInfoRole() {
+    private function _getInfoRole($selectedRoles = null) {
       $role = array('pengguna','kasir','rekammedis','radiologi','laboratorium','paramedis','apoteker','medis','manajemen','admin');
+      $selectedRoles = $this->_parseRoles($selectedRoles);
       if (count($role)) {
         $this->assign['role'] = [];
         foreach($role as $row) {
-            $this->assign['role'][] = $row;
+            $this->assign['role'][] = [
+                'name' => $row,
+                'attr' => in_array($row, $selectedRoles, true) ? 'selected' : ''
+            ];
         }
       }
+    }
+
+    private function _parseRoles($roleValue): array
+    {
+        if (is_array($roleValue)) {
+            return array_values(array_filter(array_map('trim', $roleValue)));
+        }
+
+        if (!is_string($roleValue) || trim($roleValue) === '') {
+            return [];
+        }
+
+        $decoded = json_decode($roleValue, true);
+        if (is_array($decoded)) {
+            return array_values(array_filter(array_map('trim', $decoded)));
+        }
+
+        return array_values(array_filter(array_map('trim', explode(',', $roleValue))));
+    }
+
+    private function _normalizeRoleInput($roleInput): string
+    {
+        $roles = $this->_parseRoles($roleInput);
+        if (empty($roles)) {
+            return '';
+        }
+
+        return implode(',', array_values(array_unique($roles)));
     }
 
     private function _getInfoCap($kd_poli = null)
     {
         $result = [];
-        $rows = $this->db()->pdo()->prepare("(SELECT kd_poli AS cap, nm_poli AS nm_cap FROM poliklinik) UNION (SELECT kd_bangsal AS cap, nm_bangsal AS nm_cap FROM bangsal)");
+        $rows = $this->db()->pdo()->prepare("SELECT kd_poli AS cap, nm_poli AS nm_cap FROM poliklinik UNION SELECT kd_bangsal AS cap, nm_bangsal AS nm_cap FROM bangsal");
         $rows->execute();
         $rows = $rows->fetchAll();
 
@@ -273,16 +524,19 @@ class Admin extends AdminModule
         }
 
         foreach ($rows as $row) {
-            if (empty($kd_poliArray)) {
-                $attr = '';
-            } else {
-                if (in_array($row['cap'], $kd_poliArray)) {
-                    $attr = 'selected';
-                } else {
+            // Check if $row is valid array before accessing its elements
+            if ($row && is_array($row) && isset($row['cap']) && isset($row['nm_cap'])) {
+                if (empty($kd_poliArray)) {
                     $attr = '';
+                } else {
+                    if (in_array($row['cap'], $kd_poliArray)) {
+                        $attr = 'selected';
+                    } else {
+                        $attr = '';
+                    }
                 }
+                $result[] = ['cap' => $row['cap'], 'nm_cap' => $row['nm_cap'], 'attr' => $attr];
             }
-            $result[] = ['cap' => $row['cap'], 'nm_cap' => $row['nm_cap'], 'attr' => $attr];
         }
         return $result;
     }
@@ -306,16 +560,24 @@ class Admin extends AdminModule
             if ($row['dir'] != 'dashboard') {
                 $details = $this->core->getModuleInfo($row['dir']);
 
-                if (empty($accessArray)) {
-                    $attr = '';
-                } else {
-                    if (in_array($row['dir'], $accessArray) || ($accessArray[0] == 'all')) {
-                        $attr = 'selected';
-                    } else {
+                // Check if $details is valid array before accessing its elements
+                if ($details && is_array($details)) {
+                    if (empty($accessArray)) {
                         $attr = '';
+                    } else {
+                        if (in_array($row['dir'], $accessArray) || (isset($accessArray[0]) && $accessArray[0] == 'all')) {
+                            $attr = 'selected';
+                        } else {
+                            $attr = '';
+                        }
                     }
+                    $result[] = [
+                        'dir' => $row['dir'], 
+                        'name' => isset($details['name']) ? $details['name'] : $row['dir'], 
+                        'icon' => isset($details['icon']) ? $details['icon'] : 'folder', 
+                        'attr' => $attr
+                    ];
                 }
-                $result[] = ['dir' => $row['dir'], 'name' => $details['name'], 'icon' => $details['icon'], 'attr' => $attr];
             }
         }
         return $result;
@@ -325,13 +587,9 @@ class Admin extends AdminModule
     * check if user already exists
     * @return array
     */
-    private function _userAlreadyExists($id = null)
+    private function _userAlreadyExists($username)
     {
-        if (!$id) {    // new
-            $count = $this->db('mlite_users')->where('username', $_POST['username'])->count();
-        } else {        // edit
-            $count = $this->db('mlite_users')->where('username', $_POST['username'])->where('id', '<>', $id)->count();
-        }
+        $count = $this->db('mlite_users')->where('username', $username)->count();
         if ($count > 0) {
             return true;
         } else {

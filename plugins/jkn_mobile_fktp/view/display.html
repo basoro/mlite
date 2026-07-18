@@ -64,7 +64,7 @@
     <![endif]-->
   </head>
   <body>
-    <h1 class="text-center text-white antrian-judul"><img class="logo" src="{?=url()?}/{$settings.logo}" alt="" width="80px"> Faskes Tingkat I {$fktp} <span class="pull-right" style="font-size: 16px;"><i class="fa fa-expand" onclick="toggleFullScreen(document.body)"></i>&nbsp&nbsp</span></h1>
+    <h1 class="text-center text-white antrian-judul"><img class="logo" src="{?=url()?}/{?=isset_or($settings.logo)?}" alt="" width="80px"> Faskes Tingkat I {?=isset_or($fktp)?} <span class="pull-right" style="font-size: 16px;"><i class="fa fa-expand" onclick="toggleFullScreen(document.body)"></i>&nbsp&nbsp</span></h1>
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-5">
@@ -73,8 +73,8 @@
                         <h1 class="panel-title" style="font-size:36px;">Antrian Dipanggil</h1>
                     </div>
                     <div class="panel-body" style="color:#000;padding:0;margin:0;">
-                      <div class="bg-info" style="font-size:240px;">
-                        {$antrean}
+                      <div class="bg-info" style="font-size:210px;">
+                        {?=isset_or($antrean)?}
                       </div>
                     </div>
                 </div>
@@ -84,8 +84,8 @@
                       <div class="panel-heading">
                         <h1 class="panel-title" style="font-size:32px;">Sisa Antrean</h1>
                       </div>
-                      <div class="panel-body text-center bg-success" style="color: #000; font-size: 150px;">
-                        {$sisa_antrean}
+                      <div class="panel-body text-center bg-success" style="color: #000; font-size: 180px;">
+                        {?=isset_or($sisa_antrean)?}
                       </div>
                     </div>
                   </div>
@@ -94,8 +94,8 @@
                       <div class="panel-heading">
                         <h1 class="panel-title" style="font-size:32px;">Total Antrean</h1>
                       </div>
-                      <div class="panel-body text-center bg-danger" style="color: #000; font-size: 150px;">
-                        {$total_antrean}
+                      <div class="panel-body text-center bg-danger" style="color: #000; font-size: 180px;">
+                        {?=isset_or($total_antrean)?}
                       </div>
                     </div>
                   </div>
@@ -105,7 +105,7 @@
                 <div class="panel panel-default" style="border-radius:0 !important;">
                     <div class="panel-body text-center bg-warning" style="padding:0;margin:0;">
                       <div class="embed-responsive embed-responsive-4by3">
-                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{$vidio_anjungan}?rel=0&modestbranding=1&autohide=1&mute=0&showinfo=0&controls=1&loop=1&autoplay=1" allowfullscreen></iframe>
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{?=isset_or($vidio_anjungan)?}?rel=0&modestbranding=1&autohide=1&mute=0&showinfo=0&controls=1&loop=1&autoplay=1" allowfullscreen></iframe>
                       </div>
                     </div>
                 </div>
@@ -116,14 +116,14 @@
     <div class="container-fluid">
       <div class="row">
         <div class="panel-title marquee">
-          <marquee>{$running_text}</marquee>
+          <marquee>{?=isset_or($running_text)?}</marquee>
         </div>
       </div>
     </div>
     <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
         <p class="pull-right">
           Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
-          {$powered}.
+          {?=isset_or($powered)?}.
         </p>
     </footer>
   </body>

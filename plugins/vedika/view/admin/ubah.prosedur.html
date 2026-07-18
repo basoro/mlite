@@ -1,13 +1,25 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
-    <h4 class="modal-title">Ubah Diagnosa</h4>
+    <h4 class="modal-title">Ubah Prosedur</h4>
 </div>
 <div class="modal-body">
 
-  <div id="icd10dan9">
+  <style>
+    /* Styling item prosedur tidak valid */
+    #icd9List li.invalid-procedure { background: #f2dede; cursor: not-allowed; }
+    #icd9List li.invalid-procedure:hover { background: #f8d7da; }
+    /* Styling hover item valid untuk konsistensi */
+    #icd9List li.valid-procedure:hover { background: #f5f5f5; }
+    .selectator_option_title { font-weight: bold; }
+    .selectator_option_subtitle { color: #666; }
+    .label { display: inline-block; padding: 2px 6px; font-size: 12px; border-radius: 3px; }
+    .label-danger { background: #d9534f; color: #fff; }
+  </style>
+
+  <div id="icd9dan10">
     <div class="panel panel-default">
       <div class="panel-body">
-        <input type="hidden" name="no_rawat" value="{$no_rawat}">
+        <input type="hidden" name="no_rawat" value="{?=isset_or($no_rawat)?}">
         <div class="form-group">
           <div class="row">
               <div class="col-sm-12">
@@ -34,11 +46,11 @@
                   </div>
                   <div class="input-group">
                     <input type="text" name="icd9" id="icd9" class="form-control" />
-                    <input type="hidden" name="status" class="form-control" value="{$status_lanjut}" />
+                    <input type="hidden" name="status" class="form-control" value="{?=isset_or($status_lanjut)?}" />
                     <ul class="list-group" id="icd9List" style="z-index:1000;position:absolute;width:100%;"></ul>
                     <span class="input-group-btn">
                         <button id="simpan_icd9" class="btn btn-primary btn-block">
-                            <span class="glyphicon glyphicon-plus"></span>
+                          Simpan
                         </button>
                     </span>
                   </div>
@@ -62,10 +74,10 @@
       <tbody>
         {loop: $prosedur_pasien}
         <tr>
-          <td>{$value.kode}</td>
-          <td>{$value.deskripsi_panjang}</td>
-          <td>{$value.prioritas}</td>
-          <td><a href="" class="btn btn-xs btn-danger fa fa-trash hapus_prosedur" data-no_rawat="{$value.no_rawat}" data-kode="{$value.kode}" data-prioritas="{$value.prioritas}"></a></td>
+          <td>{?=isset_or($value.kode)?}</td>
+          <td>{?=isset_or($value.deskripsi_panjang)?}</td>
+          <td>{?=isset_or($value.prioritas)?}</td>
+          <td><a href="" class="btn btn-xs btn-danger fa fa-trash hapus_prosedur" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kode="{?=isset_or($value.kode)?}" data-prioritas="{?=isset_or($value.prioritas)?}"></a></td>
         </tr>
         {/loop}
       </tbody>
@@ -87,33 +99,41 @@
   });
 </script>
 <script>
-  $('#icd9').keyup(function(){
-       var query = $(this).val();
-       if(query != '')
-       {
-            $.ajax({
-                 url: "{?=url([ADMIN, 'icd_9', 'icd9'])?}",
-                 method:"POST",
-                 data:{query:query},
-                 success:function(data)
-                 {
-                      $('#icd9List').fadeIn();
-                      $('#icd9List').html(data);
-                 }
-            });
-       }
-       $('#icd9List').fadeIn();
+  $('#icd9').keyup(function () {
+    var query = $(this).val();
+    if (query != '') {
+      $.ajax({
+        url: "{?=url([ADMIN, 'vedika', 'icd9'])?}",
+        method: "POST",
+        data: { query: query },
+        success: function (data) {
+          $('#icd9List').fadeIn();
+          $('#icd9List').html(data);
+        }
+      });
+    }
+    $('#icd9List').fadeIn();
   });
-  $('#icd9List').on('click', 'li', function(){
-       $('#icd9').val($(this).text().split(': ')[1]);
-       $('#kode_icd9').text($(this).text().split(': ')[0]);
-       var kode_icd9 = $('#kode_icd9').val();
-       $('#icd9List').fadeOut();
+
+  $('#icd9List').on('click', 'li', function () {
+    var codeVal =
+      $(this).attr('data-display-code') ||
+      $(this).attr('data-code') ||
+      $(this).text().split(': ')[0];
+
+    var nameVal =
+      $(this).attr('data-display-name') ||
+      $(this).attr('data-name') ||
+      $(this).text().split(': ')[1];
+
+    $('#icd9').val(nameVal);
+    $('#kode_icd9').text(codeVal);
+    $('#icd9List').fadeOut();
   });
 </script>
 <script type="text/javascript">
   // tombol simpan diklik
-  $("#icd10dan9").on("click", "#simpan_icd9", function(event){
+  $("#icd9dan10").on("click", "#simpan_icd9", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_rawat = $('input:hidden[name=no_rawat]').val();
@@ -122,7 +142,7 @@
     var kode = $('#kode_icd9').text();
     var status = $('input:hidden[name=status]').val();
 
-    var url = baseURL + '/icd_9/saveicd9?t=' + mlite.token;
+    var url = baseURL + '/vedika/saveicd9?t=' + mlite.token;
 
     $.post(url,{
       no_rawat: no_rawat,
@@ -132,13 +152,28 @@
       kode: kode
     } ,function(data) {
       alert('Data prosedur ' + kode + ' telah disimpan!!');
+      // Kumpulkan seluruh kode prosedur dari tabel saat ini
+      var codes = [];
+      $('#data_prosedur table tbody tr').each(function(){
+        var c = $(this).find('td').eq(0).text().trim();
+        if (c) { codes.push(c); }
+      });
+      // Tambahkan kode baru dan hilangkan duplikasi
+      codes.push(kode);
+      var uniqueCodes = [];
+      $.each(codes, function(i, c){ if (c && uniqueCodes.indexOf(c) === -1) uniqueCodes.push(c); });
+      var joinedCodes = uniqueCodes.join('#');
+      // Update nilai input prosedur di dalam modal INACBGs
+      var inacbgsModal = $('#inacbgsModal');
+      if (inacbgsModal.length) {
+        inacbgsModal.find('input#procedure, input[name="procedure"]').val(joinedCodes);
+      }
       $("#data_prosedur").show().load(baseURL + '/vedika/displayprosedur/' + status + '/{?=convertNoRawat($no_rawat)?}/?t=' + mlite.token);
-      //console.log(status + ' - ' + no_rawat);
-      //bersih();
-      //$('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      //"Data ICD 9 (Prosedur) pasien telah disimpan!"+
-      //"<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      //"</div>").show();
+      // Clear input dan fokus kembali untuk input prosedur berikutnya
+      $('#icd9').val('');
+       $('#kode_icd9').text('kode');
+      $('#icd9').focus();
+      $('#icd9List').fadeOut();
     });
   });
 </script>
@@ -152,6 +187,7 @@
     var no_rawat = $(this).attr("data-no_rawat");
     var kode = $(this).attr("data-kode");
     var prioritas = $(this).attr("data-prioritas");
+    var status = $('input:hidden[name=status]').val();
 
     // tampilkan dialog konfirmasi
     bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -163,17 +199,22 @@
           kode: kode,
           prioritas: prioritas
         } ,function(data) {
-          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-          //$("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
-          //bersih();
           alert('Data prosedur ' + kode + ' telah dihapus!!');
-          /*
-          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-          "Data diagnosa telah dihapus!"+
-          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-          "</div>").show();
-          */
-          $('#statusModal').modal('toggle');
+          // Refresh tabel prosedur lalu update input prosedur di INACBGs
+          $("#data_prosedur").show().load(baseURL + '/vedika/displayprosedur/' + status + '/{?=convertNoRawat($no_rawat)?}/?t=' + mlite.token, function() {
+            var codes = [];
+            $('#data_prosedur table tbody tr').each(function(){
+              var c = $(this).find('td').eq(0).text().trim();
+              if (c) { codes.push(c); }
+            });
+            var uniqueCodes = [];
+            $.each(codes, function(i, c){ if (c && uniqueCodes.indexOf(c) === -1) uniqueCodes.push(c); });
+            var joinedCodes = uniqueCodes.join('#');
+            var inacbgsModal = $('#inacbgsModal');
+            if (inacbgsModal.length) {
+              inacbgsModal.find('input#procedure, input[name="procedure"]').val(joinedCodes);
+            }
+          });
         });
       }
     });

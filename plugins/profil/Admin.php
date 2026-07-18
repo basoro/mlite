@@ -6,6 +6,8 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    // Property declarations to fix PHP 8.3 deprecation warnings
+    public $assign;
 
     public function navigation()
     {
@@ -52,7 +54,7 @@ class Admin extends AdminModule
         if (!empty($cek_profil['photo'])) {
             $fotoURL = WEBAPPS_URL . '/penggajian/' . $cek_profil['photo'];
         }
-        return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi, 'fotoURL' => $fotoURL]);
+        return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules), 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi, 'fotoURL' => $fotoURL]);
     }
 
     public function getBiodata()
@@ -70,9 +72,9 @@ class Admin extends AdminModule
         $this->assign['pendidikan'] = $this->db('pendidikan')->toArray();
         $this->assign['jnj_jabatan'] = $this->db('jnj_jabatan')->toArray();
 
-        $this->assign['fotoURL'] = url(WEBAPPS_PATH . '/penggajian/' . $row['photo']);
+        $this->assign['fotoURL'] = url(WEBAPPS_PATH . '/penggajian/' . ($row['photo'] ?? ''));
 
-        return $this->draw('biodata.html', ['biodata' => $this->assign]);
+        return $this->draw('biodata.html', ['biodata' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postBiodataSave($id = null)
@@ -231,7 +233,7 @@ class Admin extends AdminModule
         // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
 
-        return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign, 'array_hari' => $array_hari, 'array_bulan' => $array_bulan]);
+        return $this->draw('jadwal.manage.html', ['jadwal' => htmlspecialchars_array($this->assign), 'array_hari' => $array_hari, 'array_bulan' => $array_bulan]);
     }
 
     public function getRekap_Presensi($page = 1)
@@ -257,7 +259,7 @@ class Admin extends AdminModule
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->like('nama', '%' . $phrase . '%')
                 ->orLike('shift', '%' . $phrase . '%')
                 ->asc('jam_datang')
@@ -266,7 +268,7 @@ class Admin extends AdminModule
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->toArray();
@@ -274,7 +276,7 @@ class Admin extends AdminModule
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->toArray();
@@ -301,7 +303,7 @@ class Admin extends AdminModule
                 ])
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->like('nama', '%' . $phrase . '%')
                 ->orLike('shift', '%' . $phrase . '%')
                 ->asc('jam_datang')
@@ -323,7 +325,7 @@ class Admin extends AdminModule
                 ])
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->offset($offset)
@@ -344,7 +346,7 @@ class Admin extends AdminModule
                 ])
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '<', date('Y-m-t', mktime(0, 0, 0, $bulan, 1, date('Y'))))
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->offset($offset)
@@ -365,7 +367,7 @@ class Admin extends AdminModule
         $this->assign['getBulan'] = $bulan;
         $this->assign['getUser'] = $username;
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
+        return $this->draw('rekap_presensi.html', ['rekap' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getGoogleMap($id, $tanggal)
@@ -454,7 +456,7 @@ class Admin extends AdminModule
             }
         }
 
-        return $this->draw('presensi.html', ['presensi' => $this->assign]);
+        return $this->draw('presensi.html', ['presensi' => htmlspecialchars_array($this->assign)]);
     }
 
     public function getGanti_Pass()
@@ -464,7 +466,7 @@ class Admin extends AdminModule
         $this->assign['username'] = $username;
         $this->assign['title'] = 'Ganti Password';
 
-        return $this->draw('ganti_pass.html', ['ganti_pass' => $this->assign]);
+        return $this->draw('ganti_pass.html', ['ganti_pass' => htmlspecialchars_array($this->assign)]);
     }
 
     public function postGanti_Save($id = null)
@@ -497,12 +499,24 @@ class Admin extends AdminModule
             unset($_POST['save']);
 
             if ($row_user && password_verify(trim($_POST['pass_lama']), $row_user['password'])) {
+                // If forced change, require valid OTP
+                if (!empty($_SESSION['mlite_force_change'])) {
+                    $otp = isset_or($_POST['otp_code'], '');
+                    if (empty($otp) || empty($row_user['otp_code']) || empty($row_user['otp_expires']) || ($otp !== $row_user['otp_code']) || (time() > strtotime($row_user['otp_expires']))) {
+                        $this->notify('failure', 'OTP tidak valid atau kedaluwarsa');
+                        redirect($location, $_POST);
+                    }
+                }
                 $password = password_hash($_POST['pass_baru'], PASSWORD_BCRYPT);
-                $query = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->save(['password' => $password]);
+                $saveData = ['password' => $password, 'password_changed_at' => date('Y-m-d H:i:s'), 'otp_code' => null, 'otp_expires' => null];
+                $query = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->save($saveData);
             }
 
             if ($query) {
                 $this->notify('success', 'Simpan sukses');
+                if (!empty($_SESSION['mlite_force_change'])) {
+                    unset($_SESSION['mlite_force_change']);
+                }
             } else {
                 $this->notify('failure', 'Kata kunci lama salah');
             }

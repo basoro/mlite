@@ -8,29 +8,29 @@
             	<div class="panel-body">
                     <div class="form-group">
                         <label>Judul Berita</label>
-                        <input type="text" name="website[title]" class="form-control" value="{$settings.title}" required />
+                        <input type="text" name="website[title]" class="form-control" value="{?=isset_or($settings.title)?}" required />
                     </div>
                     <div class="form-group">
                         <label>Keterangan</label>
-                        <input type="text" name="website[desc]" class="form-control" value="{$settings.desc}" required />
+                        <input type="text" name="website[desc]" class="form-control" value="{?=isset_or($settings.desc)?}" required />
                     </div>
                     <div class="form-group">
                         <label>Artikel per halaman</label>
-                        <input type="number" name="website[perpage]" class="form-control" value="{$settings.perpage}" required />
+                        <input type="number" name="website[perpage]" class="form-control" value="{?=isset_or($settings.perpage)?}" required />
                     </div>
                     <div class="form-group">
                         <label>Shortname Disqus</label>
-                        <input type="text" name="website[disqus]" class="form-control" value="{$settings.disqus}" />
+                        <input type="text" name="website[disqus]" class="form-control" value="{?=isset_or($settings.disqus)?}" />
                     </div>
                     <div class="form-group">
                         <label>Jumlah artikel terakhir</label>
-                        <input type="number" name="website[latestPostsCount]" class="form-control" value="{$settings.latestPostsCount}" />
+                        <input type="number" name="website[latestPostsCount]" class="form-control" value="{?=isset_or($settings.latestPostsCount)?}" />
                     </div>
                     <div class="form-group">
                         <label>Format tanggal</label>
                         <select name="website[dateformat]" class="form-control" required>
                             {loop: $settings.dateformats}
-                                <option value="{$value.value}" {?= $settings.dateformat == $value.value ? 'selected' : '' ?}>{$value.name}</option>
+                                <option value="{?=isset_or($value.value)?}" {?= $settings.dateformat == $value.value ? 'selected' : '' ?}>{?=isset_or($value.name)?}</option>
                             {/loop}
                         </select>
                     </div>

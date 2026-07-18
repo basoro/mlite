@@ -58,8 +58,11 @@ function htmlspecialchars_array(array $array)
     foreach ($array as $key => $value) {
         if (is_array($value)) {
             $array[$key] = htmlspecialchars_array($value);
+        } elseif ($value instanceof Closure) {
+            // Abaikan Closure, jangan panggil htmlspecialchars
+            continue;
         } else {
-            $array[$key] = htmlspecialchars($value ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $array[$key] = htmlspecialchars((string)($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         }
     }
 
@@ -242,9 +245,17 @@ function mlite_dir() {
     return dirname(str_replace(ADMIN, '', $_SERVER['SCRIPT_NAME']));
 }
 
+/**
+ * Check if variable is set and return it or alternate value
+ * Compatible with PHP 8+ strict types
+ * 
+ * @param mixed $var Variable to check
+ * @param mixed $alternate Alternate value if variable is not set
+ * @return mixed
+ */
 function isset_or(&$var, $alternate = null)
 {
-    return (isset($var)) ? $var : $alternate;
+    return isset($var) ? $var : $alternate;
 }
 
 function cmpver($a, $b)
@@ -309,14 +320,23 @@ function get_headers_list($key = null)
 
 function str_gen($length, $characters = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM")
 {
-    $return = null;
+    $return = '';
+    $length = (int) $length;
+    if ($length <= 0) {
+        return $return;
+    }
 
     if (is_string($characters)) {
         $characters = str_split($characters);
     }
 
+    if (!is_array($characters) || empty($characters)) {
+        return $return;
+    }
+
+    $maxIndex = count($characters) - 1;
     for ($i = 0; $i < $length; $i++) {
-        $return .= $characters[rand(0, count($characters) - 1)];
+        $return .= $characters[random_int(0, $maxIndex)];
     }
 
     return $return;

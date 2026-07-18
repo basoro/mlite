@@ -5,13 +5,14 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="initial-scale=0.1">
-  <title>{$title} - {$settings.nama_instansi}</title>
+  <title>{?=isset_or($title)?} - {?=isset_or($settings.nama_instansi)?}</title>
   <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
   <link rel="stylesheet" href="{?=url(MODULES)?}/anjungan/css/bootstrap.min.css">
   <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
   <link href="{?=url(MODULES)?}/anjungan/css/gijgo.min.css" rel="stylesheet" type="text/css" />
   <link href="{?=url(MODULES)?}/anjungan/css/jquery-ui.min.css" rel="stylesheet">
   <link href="{?=url(MODULES)?}/anjungan/css/keyboard.css" rel="stylesheet">
+  
   <style media="screen">
     body {
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -157,9 +158,9 @@
 
 <body>
   <div class="mx-auto text-center text-white">
-    <img src="{?=url()?}/{$logo}" width="150"><br>
+    <img src="{?=url()?}/{?=isset_or($logo)?}" width="150"><br>
     <h3 class="display-6">Anjungan Cetak Surat Eligibilitas Peserta BPJS</h3>
-    <h2 class="display-5">{$settings.nama_instansi}</h2>
+    <h2 class="display-5">{?=isset_or($settings.nama_instansi)?}</h2>
   </div>
   <br><br><br><br>
   <div class="container" id="form_sep">
@@ -168,7 +169,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">No Rekam Medis</label>
-            <input type="text" class="form-control" name="norm" id="sep_norm" value="{$reg_periksa.no_rkm_medis}"
+            <input type="text" class="form-control" name="norm" id="sep_norm" value="{?=isset_or($reg_periksa.no_rkm_medis)?}"
               readonly>
           </div>
         </div>
@@ -177,7 +178,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">Nama</label>
-            <input type="text" class="form-control" name="nmps" id="nama_peserta" value="{$reg_periksa.nm_pasien}" readonly>
+            <input type="text" class="form-control" name="nmps" id="nama_peserta" value="{?=isset_or($reg_periksa.nm_pasien)?}" readonly>
           </div>
         </div>
       </div>
@@ -185,7 +186,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">JK</label>
-            <input type="text" class="form-control" name="jk" id="sep_jenis_kelamin_kode" value="{$reg_periksa.jk}" readonly>
+            <input type="text" class="form-control" name="jk" id="sep_jenis_kelamin_kode" value="{?=isset_or($reg_periksa.jk)?}" readonly>
           </div>
         </div>
       </div>
@@ -193,7 +194,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">Tanggal Lahir</label>
-            <input type="text" class="form-control" name="tgllhr" id="sep_tanggal_lahir" value="{$reg_periksa.tgl_lahir}" readonly>
+            <input type="text" class="form-control" name="tgllhr" id="sep_tanggal_lahir" value="{?=isset_or($reg_periksa.tgl_lahir)?}" readonly>
           </div>
         </div>
       </div>
@@ -202,7 +203,7 @@
           <div class="form-line">
             <label for="norm" class="text-white">No Telp</label>
             <input type="number" class="form-control" name="notlp" id="sep_nomor_telepon" required minlength=8
-              maxlength=13 value="{if: $reg_periksa.no_tlp == ''}00000000{else}{$reg_periksa.no_tlp}{/if}">
+              maxlength=13 value="{if: $reg_periksa.no_tlp == ''}00000000{else}{?=isset_or($reg_periksa.no_tlp)?}{/if}">
           </div>
         </div>
       </div>
@@ -210,7 +211,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">No SKDP</label>
-            <input type="text" class="form-control" name="skdp" id="sep_nomor_skdp" value="{$skdp_bpjs}">
+            <input type="text" class="form-control" name="skdp" id="sep_nomor_skdp" value="{?=isset_or($skdp_bpjs)?}">
           </div>
         </div>
       </div>
@@ -220,7 +221,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">No Peserta</label>
-            <input type="text" class="form-control" name="nops" id="sep_no_kartu" value="{$reg_periksa.no_peserta}"
+            <input type="text" class="form-control" name="nops" id="sep_no_kartu" value="{?=isset_or($reg_periksa.no_peserta)?}"
               readonly>
           </div>
         </div>
@@ -229,7 +230,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm">Kode PPK</label>
-            <input type="text" class="form-control" name="ppk" id="sep_kppk_pelayanan" value="{$kode_ppk}" readonly>
+            <input type="text" class="form-control" name="ppk" id="sep_kppk_pelayanan" value="{?=isset_or($kode_ppk)?}" readonly>
           </div>
         </div>
       </div>
@@ -237,7 +238,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm">PPK Pelayanan</label>
-            <input type="text" class="form-control" name="nmrs" id="sep_nppk_pelayanan" value="{$nama_ppk}" readonly>
+            <input type="text" class="form-control" name="nmrs" id="sep_nppk_pelayanan" value="{?=isset_or($nama_ppk)?}" readonly>
           </div>
         </div>
       </div>
@@ -245,7 +246,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm">No Rawat</label>
-            <input type="text" class="form-control" name="no_rawat" value="{$reg_periksa.no_rawat}" id="sep_no_rawat"
+            <input type="text" class="form-control" name="no_rawat" value="{?=isset_or($reg_periksa.no_rawat)?}" id="sep_no_rawat"
               readonly>
           </div>
         </div>
@@ -255,7 +256,7 @@
           <div class="form-line">
             <label for="norm" class="text-white">Status</label>
             <input type="text" class="form-control" name="stts" id="stts"
-              value="{$rujukan.rujukan.peserta.statusPeserta.keterangan}" readonly>
+              value="{?=isset_or($rujukan.rujukan.peserta.statusPeserta.keterangan)?}" readonly>
           </div>
         </div>
       </div>
@@ -263,7 +264,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">Nama Poli Tujuan</label>
-            <input type="text" class="form-control" name="nmpoli" id="sep_spesialis_nama" value="{$reg_periksa.nm_poli}"
+            <input type="text" class="form-control" name="nmpoli" id="sep_spesialis_nama" value="{?=isset_or($reg_periksa.nm_poli)?}"
               readonly>
           </div>
         </div>
@@ -273,7 +274,7 @@
           <div class="form-line">
             <label for="norm" class="text-white">Nama Perujuk</label>
             <input type="text" class="form-control" name="nmruj" id="sep_asal_rujukan_nama"
-              value="{$rujukan.rujukan.provPerujuk.nama}" readonly>
+              value="{?=isset_or($rujukan.rujukan.provPerujuk.nama)?}" readonly>
           </div>
         </div>
       </div>
@@ -291,7 +292,7 @@
           <div class="form-line">
             <label for="norm">Tanggal Rujuk</label>
             <input type="text" class="form-control" name="tglrjk" id="sep_tanggal_rujukan"
-              value="{$rujukan.rujukan.tglKunjungan}" readonly>
+              value="{?=isset_or($rujukan.rujukan.tglKunjungan)?}" readonly>
           </div>
         </div>
       </div>
@@ -302,7 +303,7 @@
           <div class="form-line">
             <label>Kode</label>
             <input type="text" class="form-control" name="kkls" id="sep_kelas_kode"
-              value="{$rujukan.rujukan.peserta.hakKelas.kode}" readonly>
+              value="{?=isset_or($rujukan.rujukan.peserta.hakKelas.kode)?}" readonly>
           </div>
         </div>
       </div>
@@ -311,7 +312,7 @@
           <div class="form-line">
             <label>Kelas</label>
             <input type="text" class="form-control" name="kls" id="kls"
-              value="{$rujukan.rujukan.peserta.hakKelas.keterangan}" readonly>
+              value="{?=isset_or($rujukan.rujukan.peserta.hakKelas.keterangan)?}" readonly>
           </div>
         </div>
       </div>
@@ -320,7 +321,7 @@
           <div class="form-line">
             <label for="norm">Peserta</label>
             <input type="text" class="form-control" name="psrt" id="sep_jenis_peserta"
-              value="{$rujukan.rujukan.peserta.jenisPeserta.keterangan}" readonly>
+              value="{?=isset_or($rujukan.rujukan.peserta.jenisPeserta.keterangan)?}" readonly>
           </div>
         </div>
       </div>
@@ -329,7 +330,7 @@
           <div class="form-line">
             <label for="norm">Jenis Pelayanan</label>
             <input type="text" class="form-control" name="kdpl" id='sep_pelayanan_kode'
-              value="{$rujukan.rujukan.pelayanan.kode}" readonly>
+              value="{?=isset_or($rujukan.rujukan.pelayanan.kode)?}" readonly>
           </div>
         </div>
       </div>
@@ -340,7 +341,7 @@
           <div class="form-line">
             <label for="norm">Kode Diagnosa</label>
             <input type="text" class="form-control" name="kddx" id="sep_diagnosa_kode"
-              value="{$rujukan.rujukan.diagnosa.kode}" readonly>
+              value="{?=isset_or($rujukan.rujukan.diagnosa.kode)?}" readonly>
           </div>
         </div>
       </div>
@@ -349,7 +350,7 @@
           <div class="form-line">
             <label for="norm">Nama Diagnosa</label>
             <input type="text" class="form-control" name="nmdx" id="sep_diagnosa_nama"
-              value="{$rujukan.rujukan.diagnosa.nama}" readonly>
+              value="{?=isset_or($rujukan.rujukan.diagnosa.nama)?}" readonly>
           </div>
         </div>
       </div>
@@ -358,7 +359,7 @@
           <div class="form-line">
             <label for="norm">Kode Poli Tujuan</label>
             <input type="text" class="form-control" name="kdpoli" id="sep_spesialis_kode"
-              value="{$rujukan.rujukan.poliRujukan.kode}" readonly>
+              value="{?=isset_or($rujukan.rujukan.poliRujukan.kode)?}" readonly>
           </div>
         </div>
       </div>
@@ -369,7 +370,7 @@
           <div class="form-line">
             <label for="norm">PPK Perujuk</label>
             <input type="text" class="form-control" name="ppruj" id="sep_asal_rujukan_kode"
-              value="{$rujukan.rujukan.provPerujuk.kode}" readonly>
+              value="{?=isset_or($rujukan.rujukan.provPerujuk.kode)?}" readonly>
           </div>
         </div>
       </div>
@@ -378,17 +379,17 @@
       <div class="form-group col-md-2 col-sm-2" style="display:none;">
         <label for="norm">No Rujukan</label>
         <input type="text" class="form-control" name="no_rujuk" id="sep_nomor_rujukan"
-          value="{$rujukan.rujukan.noKunjungan}" readonly>
+          value="{?=isset_or($rujukan.rujukan.noKunjungan)?}" readonly>
       </div>
       <div class="form-group col-md-2 col-sm-2" style="display:none;">
         <label for="norm">Kode DPJP</label>
         <input type="text" class="form-control" name="kddpjp" id="sep_dpjp_yang_melayani_kode"
-          value="{$dpjp.kd_dokter_bpjs}" readonly>
+          value="{?=isset_or($dpjp.kd_dokter_bpjs)?}" readonly>
       </div>
       <div class="form-group col-md-2 col-sm-2" style="display:none;">
         <label for="norm">Nama DPJP</label>
         <input type="text" class="form-control" name="nmdpjp" id="sep_dpjp_yang_melayani_nama"
-          value="{$dpjp.nm_dokter_bpjs}" readonly>
+          value="{?=isset_or($dpjp.nm_dokter_bpjs)?}" readonly>
       </div>
       <div class="col-md-2" style="display:none;">
         <div class="form-group">
@@ -432,7 +433,7 @@
   <br>
   <div class="pricing-header mt-5 px-3 py-3 pt-md-3 pb-md-2 mx-auto text-center text-danger bg-white">
     <h3 class="display-6">
-      <marquee>{$running_text}</marquee>
+      <marquee>{?=isset_or($running_text)?}</marquee>
     </h3>
   </div>
 
@@ -441,9 +442,9 @@
       <p class="pull-right">
         Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F.
             Basoro</b>.</a>
-        {$powered}.
+        {?=isset_or($powered)?}.
       </p>
-      <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span
+      <p><i class="fa fa-fw fa-calendar"></i> <span>{?=isset_or($tanggal)?}</span> <i class="fa fa-fw fa-clock-o"></i><span
           id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>',
           $username) ?}</span></p>
     </div>
@@ -457,7 +458,8 @@
   <script src="{?=url(MODULES)?}/anjungan/js/jquery-ui-custom.min.js"></script>
   <script src="{?=url(MODULES)?}/anjungan/js/jquery.keyboard.js"></script>
   <script src="{?=url(MODULES)?}/anjungan/js/jquery.mousewheel.js"></script>
-  <script type="text/javascript">
+
+ <script type="text/javascript">
     function showTime() {
       var a_p = "";
       var today = new Date();

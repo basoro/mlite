@@ -32,7 +32,7 @@
                             <label>Nama Pendonor</label>
                             <select id="no_pendonor" name="no_pendonor" class="form-control" data-use-search="true">
                               {loop: $pendonor}
-                    					<option value="{$value.no_pendonor}">{$value.nama}</option>
+                    					<option value="{?=isset_or($value.no_pendonor)?}">{?=isset_or($value.nama)?}</option>
                               {/loop}
                     				</select>
                         </div>
@@ -101,7 +101,7 @@
                             <label>Petugas Aftap</label>
                             <select id="petugas_aftap" name="petugas_aftap" class="form-control" data-use-search="true">
                               {loop: $petugas}
-                              <option value="{$value.nip}">{$value.nama}</option>
+                              <option value="{?=isset_or($value.nip)?}">{?=isset_or($value.nama)?}</option>
                               {/loop}
                             </select>
                         </div>
@@ -172,7 +172,7 @@
                           <label>Petugas Saring</label>
                           <select id="petugas_u_saring" name="petugas_u_saring" class="form-control" data-use-search="true">
                             {loop: $petugas}
-                            <option value="{$value.nip}">{$value.nama}</option>
+                            <option value="{?=isset_or($value.nip)?}">{?=isset_or($value.nama)?}</option>
                             {/loop}
                           </select>
                       </div>
@@ -229,43 +229,43 @@
           {if: $donor}
           {loop: $donor}
           <tr class="utd_donor"
-          data-no_donor="{$value.no_donor}"
-          data-no_pendonor="{$value.no_pendonor}"
-          data-tanggal="{$value.tanggal}"
-          data-dinas="{$value.dinas}"
-          data-tensi="{$value.tensi}"
-          data-no_bag="{$value.no_bag}"
-          data-jenis_bag="{$value.jenis_bag}"
-          data-jenis_donor="{$value.jenis_donor}"
-          data-tempat_aftap="{$value.tempat_aftap}"
-          data-petugas_aftap="{$value.petugas_aftap}"
-          data-hbsag="{$value.hbsag}"
-          data-hcv="{$value.hcv}"
-          data-hiv="{$value.hiv}"
-          data-spilis="{$value.spilis}"
-          data-malaria="{$value.malaria}"
-          data-petugas_u_saring="{$value.petugas_u_saring}"
-          data-status="{$value.status}"
+          data-no_donor="{?=isset_or($value.no_donor)?}"
+          data-no_pendonor="{?=isset_or($value.no_pendonor)?}"
+          data-tanggal="{?=isset_or($value.tanggal)?}"
+          data-dinas="{?=isset_or($value.dinas)?}"
+          data-tensi="{?=isset_or($value.tensi)?}"
+          data-no_bag="{?=isset_or($value.no_bag)?}"
+          data-jenis_bag="{?=isset_or($value.jenis_bag)?}"
+          data-jenis_donor="{?=isset_or($value.jenis_donor)?}"
+          data-tempat_aftap="{?=isset_or($value.tempat_aftap)?}"
+          data-petugas_aftap="{?=isset_or($value.petugas_aftap)?}"
+          data-hbsag="{?=isset_or($value.hbsag)?}"
+          data-hcv="{?=isset_or($value.hcv)?}"
+          data-hiv="{?=isset_or($value.hiv)?}"
+          data-spilis="{?=isset_or($value.spilis)?}"
+          data-malaria="{?=isset_or($value.malaria)?}"
+          data-petugas_u_saring="{?=isset_or($value.petugas_u_saring)?}"
+          data-status="{?=isset_or($value.status)?}"
           >
-            <td>{$value.no_donor}</td>
-            <td>{$value.nama}</td>
-            <td>{$value.no_pendonor}</td>
-            <td>{$value.no_telp}</td>
-            <td>{$value.tanggal}</td>
-            <td>{$value.dinas}</td>
-            <td>{$value.tensi}</td>
-            <td>{$value.no_bag}</td>
-            <td>{$value.jenis_bag}</td>
-            <td>{$value.jenis_donor}</td>
-            <td>{$value.tempat_aftap}</td>
-            <td>{$value.petugas_aftap}</td>
-            <td>{$value.hbsag}</td>
-            <td>{$value.hcv}</td>
-            <td>{$value.hiv}</td>
-            <td>{$value.spilis}</td>
-            <td>{$value.malaria}</td>
-            <td>{$value.petugas_u_saring}</td>
-            <td>{$value.status}</td>
+            <td>{?=isset_or($value.no_donor)?}</td>
+            <td>{?=isset_or($value.nama)?}</td>
+            <td>{?=isset_or($value.no_pendonor)?}</td>
+            <td>{?=isset_or($value.no_telp)?}</td>
+            <td>{?=isset_or($value.tanggal)?}</td>
+            <td>{?=isset_or($value.dinas)?}</td>
+            <td>{?=isset_or($value.tensi)?}</td>
+            <td>{?=isset_or($value.no_bag)?}</td>
+            <td>{?=isset_or($value.jenis_bag)?}</td>
+            <td>{?=isset_or($value.jenis_donor)?}</td>
+            <td>{?=isset_or($value.tempat_aftap)?}</td>
+            <td>{?=isset_or($value.petugas_aftap)?}</td>
+            <td>{?=isset_or($value.hbsag)?}</td>
+            <td>{?=isset_or($value.hcv)?}</td>
+            <td>{?=isset_or($value.hiv)?}</td>
+            <td>{?=isset_or($value.spilis)?}</td>
+            <td>{?=isset_or($value.malaria)?}</td>
+            <td>{?=isset_or($value.petugas_u_saring)?}</td>
+            <td>{?=isset_or($value.status)?}</td>
           </tr>
           {/loop}
           {/if}

@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>{$title} - {$settings.nama_instansi}</title>
+    <title>{?=isset_or($title)?} - {?=isset_or($settings.nama_instansi)?}</title>
     <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
     <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
@@ -39,23 +39,13 @@
 </head>
 <body>
 <div class="container-fluid">
-  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Jadwal Operasi {$settings.nama_instansi}</h1>
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{?=isset_or($logo)?}" alt="" width="60px"> Jadwal Operasi {?=isset_or($settings.nama_instansi)?}</h1>
   <table class="table table-bordered text-primary">
     <tbody class="bg-primary">
       <tr>
         <td>
             <div id="list_lab" style="font-size: 20px; font-weight:bold;">
-              <ul class="list-unstyled">
-                {loop: $display}
-                <li style="padding:10px;">
-                  Nama: {$value.nm_pasien}, No. RM: {$value.no_rkm_medis}  <span class="pull-right">Status: <b {if: $value.status == 'Selesai'}style="color:red;"{/if}>{$value.status}</b></span><br>
-                  [ Operator : {$value.namadok} ] [ Rujukan Dari :
-                  {if: $value.kd_poli == 'IGDK'}{$value.kamar.namabangsal}
-                    {elseif: $value.kd_poli == 'U0027'}{$value.kamar.namabangsal}
-                    {else} {$value.namapoli}{/if} ]<br>
-                </li>
-                {/loop}
-              </ul>
+              <ul class="list-unstyled" id="list_operasi"></ul>
             </div>
         </td>
       </tr>
@@ -69,10 +59,21 @@
   <div class="canvas">
     <p class="pull-right">
       Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
-      {$powered}.
+      {?=isset_or($powered)?}.
     </p>
-    <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+    <p><i class="fa fa-fw fa-calendar"></i> <span>{?=isset_or($tanggal)?}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
   </div>
 </footer>
 </body>
 </html>
+<script>
+  $(document).ready(function(){
+    loadOperasi();
+  }); 
+  function loadOperasi() {
+  $.get('{?=url()?}/anjungan/ajax?show=operasi-display', function(html){
+    $("#list_operasi").html(html);  
+    
+  });
+}
+</script> 

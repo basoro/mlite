@@ -94,7 +94,7 @@
       <a href="{?=url('veda/pengajuan/ralan')?}">
       <div class="card-counter success">
         <i class="fa fa-code-fork"></i>
-        <span class="count-numbers">{$stat.pengajuan_ralan}</span>
+        <span class="count-numbers">{?=isset_or($stat.pengajuan_ralan)?}</span>
         <span class="count-name">Rawat Jalan</span>
       </div>
       </a>
@@ -103,7 +103,7 @@
       <a href="{?=url('veda/pengajuan/ranap')?}">
       <div class="card-counter primary">
         <i class="fa fa-ticket"></i>
-        <span class="count-numbers">{$stat.pengajuan_ranap}</span>
+        <span class="count-numbers">{?=isset_or($stat.pengajuan_ranap)?}</span>
         <span class="count-name">Rawat Inap</span>
       </div>
       </a>
@@ -112,7 +112,7 @@
       <a href="{?=url('veda/perbaikan')?}">
       <div class="card-counter info">
         <i class="fa fa-users"></i>
-        <span class="count-numbers">{$stat.perbaiki}</span>
+        <span class="count-numbers">{?=isset_or($stat.perbaiki)?}</span>
         <span class="count-name">Perbaikan</span>
       </div>
       </a>

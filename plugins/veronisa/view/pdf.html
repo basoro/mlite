@@ -52,7 +52,7 @@ Ralan :
                   SURAT ELEGIBILITAS PESERTA
                 </div>
                 <div style="font-size:21px;text-align:center;">
-                  {$settings.nama_instansi}
+                  {?=isset_or($settings.nama_instansi)?}
                 </div>
               </td>
             </tr>
@@ -64,11 +64,11 @@ Ralan :
           <table>
             <tr>
               <td width="420">
-                            <b><u>PRB : {$print_sep.bpjs_prb.prb}</u></b>
+                            <b><u>PRB : {?=isset_or($print_sep.bpjs_prb.prb)?}</u></b>
               </td>
               <td width="580">
                 <center>
-                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={$print_sep.bridging_sep.no_sep}" alt="" width="200px">
+                  <img src="{?=url()?}/api/barcode/?codetype=code39&size=60&text={?=isset_or($print_sep.bridging_sep.no_sep)?}" alt="" width="200px">
                 </center>
               </td>
             </tr>
@@ -86,7 +86,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.no_sep}
+                {?=isset_or($print_sep.bridging_sep.no_sep)?}
               </td>
             </tr>
           </table>
@@ -103,7 +103,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.tglsep}
+                {?=isset_or($print_sep.bridging_sep.tglsep)?}
               </td>
             </tr>
           </table>
@@ -120,7 +120,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.no_kartu} ( MR: {$print_sep.bridging_sep.nomr})
+                {?=isset_or($print_sep.bridging_sep.no_kartu)?} ( MR: {?=isset_or($print_sep.bridging_sep.nomr)?})
               </td>
               <td width="90">
                 Peserta
@@ -129,7 +129,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.peserta}
+                {?=isset_or($print_sep.bridging_sep.peserta)?}
               </td>
             </tr>
           </table>
@@ -146,7 +146,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.nama_pasien}
+                {?=isset_or($print_sep.bridging_sep.nama_pasien)?}
               </td>
               <td width="90">
                 COB
@@ -155,7 +155,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.cob}
+                {?=isset_or($print_sep.bridging_sep.cob)?}
               </td>
             </tr>
           </table>
@@ -172,7 +172,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.tanggal_lahir} Kelamin: {$print_sep.bridging_sep.jkel}
+                {?=isset_or($print_sep.bridging_sep.tanggal_lahir)?} Kelamin: {?=isset_or($print_sep.bridging_sep.jkel)?}
               </td>
               <td width="90">
                 Jns. Rawat
@@ -198,7 +198,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.notelep}
+                {?=isset_or($print_sep.bridging_sep.notelep)?}
               </td>
               <td width="90">
                 Kls. Rawat
@@ -224,7 +224,7 @@ Ralan :
                 :
               </td>
               <td width="450">
-                {$print_sep.bridging_sep.nmpolitujuan}
+                {?=isset_or($print_sep.bridging_sep.nmpolitujuan)?}
               </td>
             </tr>
           </table>
@@ -241,7 +241,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.nmdpdjp}
+                {?=isset_or($print_sep.bridging_sep.nmdpdjp)?}
               </td>
             </tr>
           </table>
@@ -258,7 +258,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.nmppkrujukan}
+                {?=isset_or($print_sep.bridging_sep.nmppkrujukan)?}
               </td>
             </tr>
           </table>
@@ -275,7 +275,7 @@ Ralan :
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.nmdiagnosaawal}
+                {?=isset_or($print_sep.bridging_sep.nmdiagnosaawal)?}
               </td>
             </tr>
           </table>
@@ -292,7 +292,7 @@ Ralan :
                 :
               </td>
               <td width="550" valign="top">
-                {$print_sep.bridging_sep.catatan}
+                {?=isset_or($print_sep.bridging_sep.catatan)?}
               </td>
               <td width="200" halign="center" valign="bottom">
                 Pasien/Keluarga Pasien
@@ -311,12 +311,12 @@ Ralan :
                   *Saya Menyetujui BPJS Kesehatan menggunakan informasi Medis Pasien jika diperlukan.<br>
                   **SEP bukan sebagai bukti penjaminan peserta<br>
                   Cetakan ke 1 {?=date("d/m/Y H:i:s A")?}<br>
-                  Masa berlaku {$print_sep.bridging_sep.tglrujukan} s/d {$print_sep.batas_rujukan}
+                  Masa berlaku {?=isset_or($print_sep.bridging_sep.tglrujukan)?} s/d {?=isset_or($print_sep.batas_rujukan)?}
                 </i>
               </td>
               <td valign="bottom" halign="center" padding="0" margin="0">
                 <div id="qrcodeSEP" style="margin-top:10px;width:80px;"></div><br>
-                {$print_sep.bridging_sep.nama_pasien}<br>
+                {?=isset_or($print_sep.bridging_sep.nama_pasien)?}<br>
               </td>
             </tr>
           </table>
@@ -331,87 +331,87 @@ Ralan :
       <tr class="isi">
         <td valign="top" width="20%">No.RM</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.no_rkm_medis}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.no_rkm_medis)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Nama Pasien</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.nm_pasien}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.nm_pasien)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Alamat</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.alamat}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.alamat)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Umur</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.umur} ({if: $pasien.jk == 'L'}Laki-Laki{else}Perempuan{/if})</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.umur)?} ({if: $pasien.jk == 'L'}Laki-Laki{else}Perempuan{/if})</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Tempat & Tanggal Lahir</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.tmp_lahir}, {$pasien.tgl_lahir}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.tmp_lahir)?}, {?=isset_or($pasien.tgl_lahir)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Ibu Kandung</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.nm_ibu}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.nm_ibu)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Golongan Darah</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.gol_darah}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.gol_darah)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Status Nikah</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.stts_nikah}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.stts_nikah)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Agama</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.agama}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.agama)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Pendidikan Terakhir</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.pnd}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.pnd)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Pertama Daftar</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$pasien.tgl_daftar}</td>
+        <td valign="top" width="79%">{?=isset_or($pasien.tgl_daftar)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">No.Rawat</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.no_rawat}</td>
+        <td valign="top" width="79%">{?=isset_or($reg_periksa.no_rawat)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">No.Registrasi</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.no_reg}</td>
+        <td valign="top" width="79%">{?=isset_or($reg_periksa.no_reg)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Tanggal Registrasi</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.tgl_registrasi} {$reg_periksa.jam_reg}</td>
+        <td valign="top" width="79%">{?=isset_or($reg_periksa.tgl_registrasi)?} {?=isset_or($reg_periksa.jam_reg)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Unit/Poliklinik</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.nm_poli}</td>
+        <td valign="top" width="79%">{?=isset_or($reg_periksa.nm_poli)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Dokter</td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">
           {if: $reg_periksa.status_lanjut == 'Ralan'}
-            {$reg_periksa.nm_dokter}<br>
+            {?=isset_or($reg_periksa.nm_dokter)?}<br>
           {else}
             {loop: $dpjp_ranap}
-              {$value.nm_dokter}<br>
+              {?=isset_or($value.nm_dokter)?}<br>
             {/loop}
           {/if}
         </td>
@@ -419,27 +419,27 @@ Ralan :
       <tr class="isi">
         <td valign="top" width="20%">Cara Bayar</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.png_jawab}</td>
+        <td valign="top" width="79%">{?=isset_or($reg_periksa.png_jawab)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Penanggung Jawab</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.p_jawab}</td>
+        <td valign="top" width="79%">{?=isset_or($reg_periksa.p_jawab)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Alamat P.J.</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.almt_pj}</td>
+        <td valign="top" width="79%">{?=isset_or($reg_periksa.almt_pj)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Hubungan P.J.</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.hubunganpj}</td>
+        <td valign="top" width="79%">{?=isset_or($reg_periksa.hubunganpj)?}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Status</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.status_lanjut}</td>
+        <td valign="top" width="79%">{?=isset_or($reg_periksa.status_lanjut)?}</td>
       </tr>
       {*Diagnosa Penyakit*}
       <tr class="isi">
@@ -449,7 +449,7 @@ Ralan :
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
              <tr align="center"><td valign="top" width="24%" bgcolor="#FFFAF8">Kode</td><td valign="top" width="55%" bgcolor="#FFFAF8">Nama Penyakit</td><td valign="top" width="23%" bgcolor="#FFFAF8">Status</td></tr>
              {loop: $diagnosa_pasien}
-             <tr><td valign="top">{$value.kd_penyakit}</td><td valign="top">{$value.nm_penyakit}</td><td valign="top">{$value.status}</td></tr>
+             <tr><td valign="top">{?=isset_or($value.kd_penyakit)?}</td><td valign="top">{?=isset_or($value.nm_penyakit)?}</td><td valign="top">{?=isset_or($value.status)?}</td></tr>
              {/loop}
           </table>
         </td>
@@ -462,7 +462,7 @@ Ralan :
           <table width="100%" border="0" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
              <tr align="center"><td valign="top" width="24%" bgcolor="#FFFAF8">Kode</td><td valign="top" width="55%" bgcolor="#FFFAF8">Nama Tindakan</td><td valign="top" width="23%" bgcolor="#FFFAF8">Status</td></tr>
              {loop: $prosedur_pasien}
-             <tr><td valign="top">{$value.kode}</td><td valign="top">{$value.deskripsi_panjang}</td><td valign="top">{$value.status}</td></tr>
+             <tr><td valign="top">{?=isset_or($value.kode)?}</td><td valign="top">{?=isset_or($value.deskripsi_panjang)?}</td><td valign="top">{?=isset_or($value.status)?}</td></tr>
              {/loop}
           </table>
         </td>
@@ -487,35 +487,35 @@ Ralan :
              </tr>
              {loop: $pemeriksaan_ralan}
              <tr>
-                <td valign="top">{$value.tgl_perawatan} {$value.jam_rawat}</td>
-                <td valign="top">{$value.suhu_tubuh}</td>
-                <td valign="top">{$value.tensi}</td>
-                <td valign="top">{$value.nadi}</td>
-                <td valign="top">{$value.respirasi}</td>
-                <td valign="top">{$value.tinggi}</td>
-                <td valign="top">{$value.berat}</td>
-                <td valign="top">{$value.gcs}</td>
-                <td valign="top">{$value.kesadaran}</td>
+                <td valign="top">{?=isset_or($value.tgl_perawatan)?} {?=isset_or($value.jam_rawat)?}</td>
+                <td valign="top">{?=isset_or($value.suhu_tubuh)?}</td>
+                <td valign="top">{?=isset_or($value.tensi)?}</td>
+                <td valign="top">{?=isset_or($value.nadi)?}</td>
+                <td valign="top">{?=isset_or($value.respirasi)?}</td>
+                <td valign="top">{?=isset_or($value.tinggi)?}</td>
+                <td valign="top">{?=isset_or($value.berat)?}</td>
+                <td valign="top">{?=isset_or($value.gcs)?}</td>
+                <td valign="top">{?=isset_or($value.kesadaran)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Subjek</td>
-                <td valign="top" colspan="7"> : {$value.keluhan}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.keluhan)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Objek</td>
-                <td valign="top" colspan="7"> : {$value.pemeriksaan}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.pemeriksaan)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Asesmen</td>
-                <td valign="top" colspan="7"> : {$value.penilaian}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.penilaian)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Plan</td>
-                <td valign="top" colspan="7"> : {$value.rtl}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.rtl)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Alergi</td>
-                <td valign="top" colspan="7"> : {$value.alergi}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.alergi)?}</td>
              </tr>
              {/loop}
           </table>
@@ -542,35 +542,35 @@ Ralan :
              </tr>
              {loop: $pemeriksaan_ranap}
              <tr>
-                <td valign="top">{$value.tgl_perawatan} {$value.jam_rawat}</td>
-                <td valign="top">{$value.suhu_tubuh}</td>
-                <td valign="top">{$value.tensi}</td>
-                <td valign="top">{$value.nadi}</td>
-                <td valign="top">{$value.respirasi}</td>
-                <td valign="top">{$value.tinggi}</td>
-                <td valign="top">{$value.berat}</td>
-                <td valign="top">{$value.gcs}</td>
-                <td valign="top">{$value.kesadaran}</td>
+                <td valign="top">{?=isset_or($value.tgl_perawatan)?} {?=isset_or($value.jam_rawat)?}</td>
+                <td valign="top">{?=isset_or($value.suhu_tubuh)?}</td>
+                <td valign="top">{?=isset_or($value.tensi)?}</td>
+                <td valign="top">{?=isset_or($value.nadi)?}</td>
+                <td valign="top">{?=isset_or($value.respirasi)?}</td>
+                <td valign="top">{?=isset_or($value.tinggi)?}</td>
+                <td valign="top">{?=isset_or($value.berat)?}</td>
+                <td valign="top">{?=isset_or($value.gcs)?}</td>
+                <td valign="top">{?=isset_or($value.kesadaran)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Subjek</td>
-                <td valign="top" colspan="7"> : {$value.keluhan}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.keluhan)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Objek</td>
-                <td valign="top" colspan="7"> : {$value.pemeriksaan}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.pemeriksaan)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Asesmen</td>
-                <td valign="top" colspan="7"> : {$value.penilaian}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.penilaian)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Plan</td>
-                <td valign="top" colspan="7"> : {$value.rtl}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.rtl)?}</td>
              </tr>
              <tr>
                 <td valign="top" colspan="2">Alergi</td>
-                <td valign="top" colspan="7"> : {$value.alergi}</td>
+                <td valign="top" colspan="7"> : {?=isset_or($value.alergi)?}</td>
              </tr>
              {/loop}
           </table>
@@ -592,10 +592,10 @@ Ralan :
             </tr>
             {loop: $rawat_jl_dr}
             <tr>
-               <td valign='top'>{$value.tgl_perawatan}</td>
-               <td valign='top'>{$value.kd_jenis_prw}</td>
-               <td valign='top'>{$value.nm_perawatan}</td>
-               <td valign='top'>{$value.nm_dokter}</td>
+               <td valign='top'>{?=isset_or($value.tgl_perawatan)?}</td>
+               <td valign='top'>{?=isset_or($value.kd_jenis_prw)?}</td>
+               <td valign='top'>{?=isset_or($value.nm_perawatan)?}</td>
+               <td valign='top'>{?=isset_or($value.nm_dokter)?}</td>
             </tr>
             {/loop}
           </table>
@@ -617,10 +617,10 @@ Ralan :
             </tr>
             {loop: $rawat_jl_pr}
             <tr>
-              <td valign='top'>{$value.tgl_perawatan}</td>
-              <td valign='top'>{$value.kd_jenis_prw}</td>
-              <td valign='top'>{$value.nm_perawatan}</td>
-              <td valign='top'>{$value.nama}</td>
+              <td valign='top'>{?=isset_or($value.tgl_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.kd_jenis_prw)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.nama)?}</td>
             </tr>
             {/loop}
           </table>
@@ -643,11 +643,11 @@ Ralan :
             </tr>
             {loop: $rawat_jl_drpr}
             <tr>
-              <td valign='top'>{$value.tgl_perawatan}</td>
-              <td valign='top'>{$value.kd_jenis_prw}</td>
-              <td valign='top'>{$value.nm_perawatan}</td>
-              <td valign='top'>{$value.nm_dokter}</td>
-              <td valign='top'>{$value.nama}</td>
+              <td valign='top'>{?=isset_or($value.tgl_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.kd_jenis_prw)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_dokter)?}</td>
+              <td valign='top'>{?=isset_or($value.nama)?}</td>
             </tr>
             {/loop}
           </table>
@@ -669,10 +669,10 @@ Ralan :
             </tr>
             {loop: $rawat_inap_dr}
             <tr>
-              <td valign='top'>{$value.tgl_perawatan}</td>
-              <td valign='top'>{$value.kd_jenis_prw}</td>
-              <td valign='top'>{$value.nm_perawatan}</td>
-              <td valign='top'>{$value.nm_dokter}</td>
+              <td valign='top'>{?=isset_or($value.tgl_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.kd_jenis_prw)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_dokter)?}</td>
             </tr>
             {/loop}
           </table>
@@ -694,10 +694,10 @@ Ralan :
             </tr>
             {loop: $rawat_inap_pr}
             <tr>
-              <td valign='top'>{$value.tgl_perawatan}</td>
-              <td valign='top'>{$value.kd_jenis_prw}</td>
-              <td valign='top'>{$value.nm_perawatan}</td>
-              <td valign='top'>{$value.nama}</td>
+              <td valign='top'>{?=isset_or($value.tgl_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.kd_jenis_prw)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.nama)?}</td>
             </tr>
             {/loop}
           </table>
@@ -720,11 +720,11 @@ Ralan :
             </tr>
             {loop: $rawat_inap_drpr}
             <tr>
-              <td valign='top'>{$value.tgl_perawatan}</td>
-              <td valign='top'>{$value.kd_jenis_prw}</td>
-              <td valign='top'>{$value.nm_perawatan}</td>
-              <td valign='top'>{$value.nm_dokter}</td>
-              <td valign='top'>{$value.nama}</td>
+              <td valign='top'>{?=isset_or($value.tgl_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.kd_jenis_prw)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_dokter)?}</td>
+              <td valign='top'>{?=isset_or($value.nama)?}</td>
             </tr>
             {/loop}
           </table>
@@ -747,11 +747,11 @@ Ralan :
             </tr>
             {loop: $kamar_inap}
             <tr>
-              <td valign='top'>{$value.jam_masuk}</td>
-              <td valign='top'>{$value.tgl_keluar} {$value.jam_keluar}</td>
-              <td valign='top'>{$value.lama}</td>
-              <td valign='top'>{$value.kd_kamar}, {$value.nm_bangsal}</td>
-              <td valign='top'>{$value.stts_pulang}</td>
+              <td valign='top'>{?=isset_or($value.jam_masuk)?}</td>
+              <td valign='top'>{?=isset_or($value.tgl_keluar)?} {?=isset_or($value.jam_keluar)?}</td>
+              <td valign='top'>{?=isset_or($value.lama)?}</td>
+              <td valign='top'>{?=isset_or($value.kd_kamar)?}, {?=isset_or($value.nm_bangsal)?}</td>
+              <td valign='top'>{?=isset_or($value.stts_pulang)?}</td>
             </tr>
             {/loop}
           </table>
@@ -773,10 +773,10 @@ Ralan :
             </tr>
             {loop: $operasi}
             <tr>
-               <td valign='top'>{$value.tgl_operasi}</td>
-               <td valign='top'>{$value.kode_paket}</td>
-               <td valign='top'>{$value.nm_perawatan}</td>
-               <td valign='top'>{$value.jenis_anasthesi}</td>
+               <td valign='top'>{?=isset_or($value.tgl_operasi)?}</td>
+               <td valign='top'>{?=isset_or($value.kode_paket)?}</td>
+               <td valign='top'>{?=isset_or($value.nm_perawatan)?}</td>
+               <td valign='top'>{?=isset_or($value.jenis_anasthesi)?}</td>
             </tr>
             {/loop}
           </table>
@@ -799,11 +799,11 @@ Ralan :
             </tr>
             {loop: $tindakan_radiologi}
             <tr>
-              <td valign='top'>{$value.tgl_periksa} {$value.jam}</td>
-              <td valign='top'>{$value.kd_jenis_prw}</td>
-              <td valign='top'>{$value.nm_perawatan}</td>
-              <td valign='top'>{$value.nm_dokter}</td>
-              <td valign='top'>{$value.nama}</td>
+              <td valign='top'>{?=isset_or($value.tgl_periksa)?} {?=isset_or($value.jam)?}</td>
+              <td valign='top'>{?=isset_or($value.kd_jenis_prw)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_perawatan)?}</td>
+              <td valign='top'>{?=isset_or($value.nm_dokter)?}</td>
+              <td valign='top'>{?=isset_or($value.nama)?}</td>
             </tr>
             {/loop}
           </table>
@@ -823,8 +823,8 @@ Ralan :
             </tr>
             {loop: $hasil_radiologi}
             <tr>
-              <td valign='top'>{$value.tgl_periksa} {$value.jam}</td>
-              <td valign='top'>{$value.hasil}</td>
+              <td valign='top'>{?=isset_or($value.tgl_periksa)?} {?=isset_or($value.jam)?}</td>
+              <td valign='top'>{?=isset_or($value.hasil)?}</td>
             </tr>
             {/loop}
           </table>
@@ -847,15 +847,15 @@ Ralan :
            </tr>
            {loop: $pemeriksaan_laboratorium}
            <tr>
-             <th valign="top" width="20%">{$value.tgl_periksa}</th>
-             <th colspan="4" valign="top" width="80%">{$value.nm_perawatan}</th>
+             <th valign="top" width="20%">{?=isset_or($value.tgl_periksa)?}</th>
+             <th colspan="4" valign="top" width="80%">{?=isset_or($value.nm_perawatan)?}</th>
            </tr>
              {loop: $value.detail_periksa_lab as $data}
              <tr>
                <td></td>
-               <td>{$data.Pemeriksaan}</td>
-               <td>{$data.nilai} {$data.satuan}</td>
-               <td>{$data.nilai_rujukan}</td>
+               <td>{?=isset_or($data.Pemeriksaan)?}</td>
+               <td>{?=isset_or($data.nilai)?} {?=isset_or($data.satuan)?}</td>
+               <td>{?=isset_or($data.nilai_rujukan)?}</td>
                <td>{?=nl2br($data.keterangan)?}</td>
              </tr>
              {/loop}
@@ -879,10 +879,10 @@ Ralan :
             </tr>
             {loop: $pemberian_obat}
             <tr>
-              <td valign='top'>{$value.tgl_perawatan} {$value.jam}</td>
-              <td valign='top'>{$value.kode_brng}</td>
-              <td valign='top'>{$value.nama_brng}</td>
-              <td valign='top'>{$value.jml} {$value.kode_sat}</td>
+              <td valign='top'>{?=isset_or($value.tgl_perawatan)?} {?=isset_or($value.jam)?}</td>
+              <td valign='top'>{?=isset_or($value.kode_brng)?}</td>
+              <td valign='top'>{?=isset_or($value.nama_brng)?}</td>
+              <td valign='top'>{?=isset_or($value.jml)?} {?=isset_or($value.kode_sat)?}</td>
             </tr>
             {/loop}
           </table>
@@ -904,10 +904,10 @@ Ralan :
             </tr>
             {loop: $obat_operasi}
             <tr>
-              <td valign='top'>{$value.tgl_perawatan} {$value.jam}</td>
-              <td valign='top'>{$value.kode_brng}</td>
-              <td valign='top'>{$value.nama_brng}</td>
-              <td valign='top'>{$value.jumlah} {$value.kode_sat}</td>
+              <td valign='top'>{?=isset_or($value.tgl_perawatan)?} {?=isset_or($value.jam)?}</td>
+              <td valign='top'>{?=isset_or($value.kode_brng)?}</td>
+              <td valign='top'>{?=isset_or($value.nama_brng)?}</td>
+              <td valign='top'>{?=isset_or($value.jumlah)?} {?=isset_or($value.kode_sat)?}</td>
             </tr>
             {/loop}
           </table>
@@ -921,19 +921,19 @@ Ralan :
       <p>
         {if: $reg_periksa.status_lanjut == 'Ralan'}
           <div class="qrcodeDPJP" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
-          {$reg_periksa.nm_dokter}
+          {?=isset_or($reg_periksa.nm_dokter)?}
           <script>
           	jQuery('.qrcodeDPJP').qrcode({
-          		text	: "DPJP: {$reg_periksa.nm_dokter}"
+          		text	: "DPJP: {?=isset_or($reg_periksa.nm_dokter)?}"
           	});
           </script>
         {else}
           {loop: $dpjp_ranap}
-          <div class="qrcodeDPJP{$value.nomor}" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
-          {$value.nm_dokter}<br>
+          <div class="qrcodeDPJP{?=isset_or($value.nomor)?}" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
+          {?=isset_or($value.nm_dokter)?}<br>
           <script>
-          	jQuery('.qrcodeDPJP{$value.nomor}').qrcode({
-          		text	: "DPJP: {$value.nm_dokter}"
+          	jQuery('.qrcodeDPJP{?=isset_or($value.nomor)?}').qrcode({
+          		text	: "DPJP: {?=isset_or($value.nm_dokter)?}"
           	});
           </script>
           {/loop}
@@ -960,12 +960,12 @@ Ralan :
             </tr>
             {loop: $riwayat_obat as $value}
             <tr>
-              <td valign='top'>{$value.tgl_perawatan} {$value.jam}</td>
-              <td valign='top'>{$value.kode_brng}</td>
-              <td valign='top'>{$value.nama_brng}</td>
-              <td valign='top'>{$value.jml} {$value.kode_sat}</td>
+              <td valign='top'>{?=isset_or($value.tgl_perawatan)?} {?=isset_or($value.jam)?}</td>
+              <td valign='top'>{?=isset_or($value.kode_brng)?}</td>
+              <td valign='top'>{?=isset_or($value.nama_brng)?}</td>
+              <td valign='top'>{?=isset_or($value.jml)?} {?=isset_or($value.kode_sat)?}</td>
               <td valign='top'>
-                {$value.resep_obat_ku.aturan}
+                {?=isset_or($value.resep_obat_ku.aturan)?}
               </td>
             </tr>
             {/loop}
@@ -981,25 +981,25 @@ Ralan :
     <table  rules='rows' width="100%" style="font-size: 11px;font-family: verdana, sans-serif;">
 			<tr>
 			<td colspan="3">
-				<strong style="font-size: 15pt;" >{$billing_mlite_settings.nama_instansi}</strong>
+				<strong style="font-size: 15pt;" >{?=isset_or($billing_mlite_settings.nama_instansi)?}</strong>
 			</td>
 			</tr>
 			<tr>
 			<td width="80px">
-				<img width="70px" src='{?=url()?}/{$billing_mlite_settings.logo}' />
+				<img width="70px" src='{?=url()?}/{?=isset_or($billing_mlite_settings.logo)?}' />
 			</td>
 			<td>
 				<p style="font-size: 10px;">
-				{$billing_mlite_settings.alamat}<br>
-				 Telp : {$billing_mlite_settings.nomor_telepon}<br>
-         E-Mail : {$billing_mlite_settings.email}<br>
-				Website : {$billing_mlite_settings.website}</p></td>
-			<td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
+				{?=isset_or($billing_mlite_settings.alamat)?}<br>
+				 Telp : {?=isset_or($billing_mlite_settings.nomor_telepon)?}<br>
+         E-Mail : {?=isset_or($billing_mlite_settings.email)?}<br>
+				Website : {?=isset_or($billing_mlite_settings.website)?}</p></td>
+  			<td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
 				<p align="right" style="font-size: 10px;">
-				Kode Faktur : {$billing_mlite.kd_billing}<br>
-				Nama Pasien : {$billing_mlite_pasien.nm_pasien}<br>
-				No RM : {$billing_mlite_pasien.no_rkm_medis}<br>
-				Alamat : {$billing_mlite_pasien.alamat}<br></p>
+				Kode Faktur : {?=isset_or($billing_mlite.kd_billing, '-')?}<br>
+				Nama Pasien : {?=isset_or($billing_mlite_pasien.nm_pasien)?}<br>
+				No RM : {?=isset_or($billing_mlite_pasien.no_rkm_medis)?}<br>
+				Alamat : {?=isset_or($billing_mlite_pasien.alamat)?}<br></p>
 			</td>
 			</tr>
 		</table>
@@ -1020,7 +1020,7 @@ Ralan :
 			</tr>
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$billing_mlite_detail.poliklinik.nm_poli}</td>
+				<td>- {?=isset_or($billing_mlite_detail.poliklinik.nm_poli)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite_detail.poliklinik.registrasi,2,',','.')?}</span></td>
 				<td>1</td>
 				<td>Rp. <span class="pull-right">{?= number_format($billing_mlite_detail.poliklinik.registrasi,2,',','.')?}</span></td>
@@ -1035,9 +1035,9 @@ Ralan :
 			{loop: $billing_mlite_detail.detail_pemberian_obat as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nama_brng}</td>
+				<td>- {?=isset_or($data.nama_brng)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_obat,2,',','.')?}</span></td>
-				<td>{$data.jml}</td>
+				<td>{?=isset_or($data.jml)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -1051,9 +1051,9 @@ Ralan :
 			{loop: $billing_mlite_detail.rawat_jl_dr as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
-				<td>{$data.jml}</td>
+				<td>{?=isset_or($data.jml)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_dr,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -1067,9 +1067,9 @@ Ralan :
 			{loop: $billing_mlite_detail.rawat_jl_pr as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
-				<td>{$data.jml}</td>
+				<td>{?=isset_or($data.jml)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_pr,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -1083,9 +1083,9 @@ Ralan :
 			{loop: $billing_mlite_detail.rawat_jl_drpr as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
-				<td>{$data.jml}</td>
+				<td>{?=isset_or($data.jml)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_drpr,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -1099,7 +1099,7 @@ Ralan :
 			{loop: $billing_mlite_detail.periksa_lab as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
 				<td></td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
@@ -1115,7 +1115,7 @@ Ralan :
 			{loop: $billing_mlite_detail.periksa_radiologi as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
 				<td></td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
@@ -1131,7 +1131,7 @@ Ralan :
 			{loop: $billing_mlite_detail.operasi as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.jumlah,2,',','.')?}</span></td>
 				<td>1</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.jumlah,2,',','.')?}</span></td>
@@ -1147,9 +1147,9 @@ Ralan :
 			{loop: $billing_mlite_detail.obat_operasi as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_obat}</td>
+				<td>- {?=isset_or($data.nm_obat)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.hargasatuan,2,',','.')?}</span></td>
-				<td>{$data.jumlah}</td>
+				<td>{?=isset_or($data.jumlah)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.harga,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -1163,7 +1163,7 @@ Ralan :
 			{loop: $billing_mlite_detail.tambahan_biaya}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$value.nama_biaya}</td>
+				<td>- {?=isset_or($value.nama_biaya)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
 				<td>1</td>
 				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
@@ -1191,9 +1191,9 @@ Ralan :
 				<td colspan="3"></td>
 				<td colspan=3>
 					<br><br>
-				<p align="center" ><strong>{$billing_mlite_settings.kota}, {?=date('d-m-Y')?}</strong><br>
+				<p align="center" ><strong>{?=isset_or($billing_mlite_settings.kota)?}, {?=date('d-m-Y')?}</strong><br>
 				 Kasir<br><br>
-				 <img src="{$billing_mlite_qrcode}">
+				 <img src="{?=isset_or($billing_mlite_qrcode)?}">
 				 <br><br>
 				{*$billing_mlite_kasir*}<br>
 				</p>
@@ -1210,7 +1210,7 @@ Ralan :
         {loop: $berkas_digital_pasien}
             <tr class="isi8">
                     <td width="99%">
-                      <img src="{?=url()?}/{$value.src.sm}" style="max-width: 800px;"><br>{$value.title}
+                      <img src="{?=url()?}/{?=isset_or($value.src.sm)?}" style="max-width: 800px;"><br>{?=isset_or($value.title)?}
                     </td>
             </tr>
         {/loop}
@@ -1225,10 +1225,10 @@ Ralan :
     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
         {loop: $gambar_radiologi}
         <tr>
-          <td><img src="{?=url(WEBAPPS_URL)?}/radiologi/{$value.lokasi_gambar}" style="max-width: 800px;"></td>
+          <td><img src="{?=url(WEBAPPS_URL)?}/radiologi/{?=isset_or($value.lokasi_gambar)?}" style="max-width: 800px;"></td>
         </tr>
         {/loop}
-      <p>{$hasil_radiologi.hasil}</p>
+      <p>{?=isset_or($hasil_radiologi.hasil)?}</p>
     </table>
   </fieldset>
   {/if}
@@ -1241,7 +1241,7 @@ Ralan :
         {loop: $berkas_digital}
         {*if: $value.kode == $billing_mlite_veronisa.obat_kronis*}
         <tr>
-          <td><img src="{?=url(WEBAPPS_URL)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"><br>{$value.nama}</td>
+          <td><img src="{?=url(WEBAPPS_URL)?}/berkasrawat/{?=isset_or($value.lokasi_file)?}" style="max-width: 800px;"><br>{?=isset_or($value.nama)?}</td>
         </tr>
         {*/if*}
         {/loop}
@@ -1250,17 +1250,17 @@ Ralan :
   {/if}
   <script>
   	jQuery('#qrcodeSEP').qrcode({
-  		text	: "No.SEP: {$print_sep.bridging_sep.no_sep}"
+  		text	: "No.SEP: {?=isset_or($print_sep.bridging_sep.no_sep)?}"
   	});
   </script>
   <script>
   	jQuery('#qrCodePasien').qrcode({
-  		text	: "Nama Pasien: {$print_sep.bridging_sep.nama_pasien}"
+  		text	: "Nama Pasien: {?=isset_or($print_sep.bridging_sep.nama_pasien)?}"
   	});
   </script>
   <script>
   	jQuery('#qrCodeKasir').qrcode({
-  		text	: "Kasir: KASIR RS AURA SYIFA"
+  		text	: "Kasir: KASIR"
   	});
   </script>
 </body>

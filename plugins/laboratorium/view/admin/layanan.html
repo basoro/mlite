@@ -12,9 +12,9 @@
         <tbody>
           {if: $layanan}
           {loop: $layanan}
-          <tr class="pilih_layanan" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-nm_perawatan="{$value.nm_perawatan}" data-biaya="{$value.total_byr}" data-kat="laboratorium">
-            <td>{$value.kd_jenis_prw}</td>
-            <td>{$value.nm_perawatan}</td>
+          <tr class="pilih_layanan" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" data-nm_perawatan="{?=isset_or($value.nm_perawatan)?}" data-biaya="{?=isset_or($value.total_byr)?}" data-kat="laboratorium">
+            <td>{?=isset_or($value.kd_jenis_prw)?}</td>
+            <td>{?=isset_or($value.nm_perawatan)?}</td>
             <td><span class="hidden-xs">Rp. </span><span class="pull-right">{?= number_format($value.total_byr,2,',','.')?}</span></td>
           </tr>
           {/loop}

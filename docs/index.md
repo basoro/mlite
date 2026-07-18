@@ -1,7 +1,7 @@
 Instruksi Umum
 ==============
 
-mLITE adalah sistem manajemen kesehatan yang sederhana, ringan dan cepat. Pertama kali dirilis pada Mei 2019. Versi gratis dari aplikasi ini dibagikan di bawah [lisensi](/lisensi) yang mengharuskan meninggalkan informasi tentang penulis dan tautan balik. Dengan dokumentasi ini Anda akan belajar cara menginstal, mengkonfigurasi, dan membuat modul dan tema Anda sendiri.
+mLITE adalah sistem manajemen kesehatan yang sederhana, ringan dan cepat. Pertama kali dirilis pada Mei 2019. Versi gratis dari aplikasi ini dibagikan di bawah [https://github.com/basoro/mlite?tab=GPL-3.0-1-ov-file](/lisensi) yang mengharuskan meninggalkan informasi tentang penulis dan tautan balik. Dengan dokumentasi ini Anda akan belajar cara menginstal, mengkonfigurasi, dan membuat modul dan tema Anda sendiri.
 
 Dokumentasi dibagi menjadi beberapa bagian. Yang pertama adalah untuk instruksi umum, yang kedua untuk pengembang forntend dan yang terakhir untuk pengembang backend.
 
@@ -12,7 +12,7 @@ Persyaratan
 Persyaratan sistem untuk mLITE sangat sederhana, jadi setiap server modern sudah mencukupi.
 
 + Apache 2.2+ or Nginx dengan `mod_rewrite`
-+ PHP version 7.0+
++ PHP version 7.4+
 + MySQL Server 5.5+
 + Akses ke MySQL dan SQLite
 
@@ -290,7 +290,8 @@ File paling penting untuk setiap modul. Ini berisi informasi dasar dan instruksi
         'description'   =>  'Lorem ipsum....',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
-        'compatibility' =>  '2022*',                  // Kesesuaian dengan versi mLITE
+        'category'      =>  'main',
+        'compatibility' =>  '6.0.0*',                  // Kesesuaian dengan versi mLITE
         'icon'          =>  'bolt',
         'pages'         =>  ['Contoh' => 'contoh'],   // Berfungsi sebagai halaman (opsional)
         'install'       =>  function() use($core)     // Perintah install

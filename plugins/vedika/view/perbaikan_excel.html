@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Export Data Ke Excel - {$powered}.</title>
+	<title>Export Data Ke Excel - {?=isset_or($powered)?}.</title>
 </head>
 <body>
 	<style type="text/css">
@@ -46,20 +46,20 @@
 		</tr>
 		{loop: $display}
 		<tr>
-			<td>{$value.no}</td>
-			<td>{$value.nm_pasien}</td>
-			<td>&nbsp;{$value.no_rkm_medis}</td>
-			<td>{$value.nosep}</td>
-			<td>&nbsp;{$value.no_peserta}</td>
-			<td>{$value.tgl_masuk}</td>
-			<td>{$value.tgl_keluar}</td>
-			<td>{$value.kd_penyakit}</td>
-			<td>{$value.kd_prosedur}</td>
+			<td>{?=isset_or($value.no)?}</td>
+			<td>{?=isset_or($value.nm_pasien)?}</td>
+			<td>&nbsp;{?=isset_or($value.no_rkm_medis)?}</td>
+			<td>{?=isset_or($value.nosep)?}</td>
+			<td>&nbsp;{?=isset_or($value.no_peserta)?}</td>
+			<td>{?=isset_or($value.tgl_masuk)?}</td>
+			<td>{?=isset_or($value.tgl_keluar)?}</td>
+			<td>{?=isset_or($value.kd_penyakit)?}</td>
+			<td>{?=isset_or($value.kd_prosedur)?}</td>
 			<!--<td></td>
 			<td></td>
 			<td></td>-->
-			<td>{$value.konfirmasi_bpjs}</td>
-			<td>{$value.konfirmasi_rs}</td>
+			<td>{?=isset_or($value.konfirmasi_bpjs)?}</td>
+			<td>{?=isset_or($value.konfirmasi_rs)?}</td>
 		</tr>
 		{/loop}
 	</table>

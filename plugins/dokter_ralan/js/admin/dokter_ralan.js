@@ -10,6 +10,20 @@ $('#daftar_racikan').hide();
 $("#info_tambahan").hide();
 $("#form_kontrol").hide();
 
+// Inisialisasi jam_rawat saat halaman dibuka
+$(function(){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var $jr = $('input:text[name=jam_rawat]').last();
+  if ($jr.length) {
+    $jr.focus();
+    if (!$jr.val()) {
+      $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {}, function(data){
+        $jr.val(data);
+      });
+    }
+  }
+});
+
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
@@ -153,8 +167,8 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     event.preventDefault();
 
     var no_rawat        = $('input:text[name=no_rawat]').val();
-    var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-    var jam_rawat       = $('input:text[name=jam_rawat]').val();
+    var tgl_perawatan   = $('#soap_tgl_perawatan').val();
+    var jam_rawat       = $('#soap_jam_rawat').val();
     var suhu_tubuh      = $('input:text[name=suhu_tubuh]').val();
     var tensi           = $('input:text[name=tensi]').val();
     var nadi            = $('input:text[name=nadi]').val();
@@ -223,10 +237,9 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       $('input:text[name=spo2]').val("");
       $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
       $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
-      //$('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
       $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
       } ,function(data) {
-        $("#form_soap #jam_rawat").val(data);
+        $("#form_soap #soap_jam_rawat").val(data);
       });
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data soap telah disimpan!"+
@@ -403,6 +416,7 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
   alasan1      : alasan1,
   rtl1          : rtl1
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/dokter_ralan/kontrol?t=' + mlite.token;
@@ -626,8 +640,8 @@ $("#obat").on("click", ".pilih_obat", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-dasar");
-  var stok = $(this).attr("data-stok");
-  var stokminimal = $(this).attr("data-stokminimal");
+  var stok = parseFloat($(this).attr("data-stok"));
+  var stokminimal = parseFloat($(this).attr("data-stokminimal"));
   var kat = $(this).attr("data-kat");
 
   if(stok < stokminimal) {
@@ -682,7 +696,7 @@ $("#obat_racikan").on("click", ".pilih_obat_racikan", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-dasar");
-  var stok = $(this).attr("data-stok");
+  var stok = parseFloat($(this).attr("data-stok"));
 
   if(stok < 1) {
     alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
@@ -782,7 +796,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var kode_provider   = $('input:text[name=kode_provider]').val();
   var kode_provider2   = $('input:text[name=kode_provider2]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-  var jam_rawat       = $('input:text[name=jam_reg]').val();
+  var jam_rawat       = $('input:text[name=jam_rawat]').last().val();
   var biaya           = $('input:text[name=biaya]').val();
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
@@ -849,7 +863,8 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=nm_perawatan]').val("");
     $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
     } ,function(data) {
-      $("#form_rincian #jam_reg").val(data);
+      $("#form_rincian #rincian_jam_reg").val(data);
+      $('input:text[name=jam_rawat]').last().val(data).focus();
     });
     $('input:hidden[name=kat]').val("");
     $('input:text[name=biaya]').val("");
@@ -1081,18 +1096,44 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
   var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
   var no_rawat = $('input:text[name=no_rawat]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-  var jam_rawat       = $('input:text[name=jam_reg]').val();
+  var jam_rawat       = $('input:text[name=jam_rawat]').val();
   var kode_brng       = JSON.stringify($('input:hidden[name=kode_brng_copyresep]').serializeArray());
   var jml       = JSON.stringify($('input:text[name=jml_copyresep]').serializeArray());
   var aturan_pakai       = JSON.stringify($('input:text[name=aturan_copyresep]').serializeArray());
 
-  $.post(url_save, {no_rawat : no_rawat,
+  // Racikan Data
+  var nama_racik = JSON.stringify($('input:hidden[name=nama_racik_copyresep]').serializeArray());
+  var kd_racik = JSON.stringify($('input:hidden[name=kd_racik_copyresep]').serializeArray());
+  var keterangan = JSON.stringify($('input:hidden[name=keterangan_copyresep]').serializeArray());
+  var no_racik = JSON.stringify($('input:hidden[name=no_racik_copyresep]').serializeArray());
+  var jml_dr = JSON.stringify($('input:text[name=jml_dr_copyresep]').serializeArray());
+  var aturan_pakai_racik = JSON.stringify($('input:text[name=aturan_pakai_copyresep]').serializeArray());
+
+  var data = {
+    no_rawat : no_rawat,
     tgl_perawatan : tgl_perawatan,
     jam_rawat : jam_rawat,
     kode_brng : kode_brng,
     jml : jml,
-    aturan_pakai : aturan_pakai
-  }, function(data) {
+    aturan_pakai : aturan_pakai,
+    nama_racik: nama_racik,
+    kd_racik: kd_racik,
+    keterangan: keterangan,
+    no_racik: no_racik,
+    jml_dr: jml_dr,
+    aturan_pakai_racik: aturan_pakai_racik
+  };
+
+  // Add dynamic racikan details
+  $('input:hidden[name^="no_racik_copyresep"]').each(function() {
+      var nr = $(this).val();
+      data['kode_brng_racikan_' + nr] = JSON.stringify($('input:hidden[name="kode_brng_racikan_copyresep_' + nr + '"]').serializeArray());
+      data['jml_racikan_' + nr] = JSON.stringify($('input:text[name="jml_racikan_copyresep_' + nr + '"]').serializeArray());
+      data['p1_' + nr] = JSON.stringify($('input:hidden[name="p1_copyresep_' + nr + '"]').serializeArray());
+      data['p2_' + nr] = JSON.stringify($('input:hidden[name="p2_copyresep_' + nr + '"]').serializeArray());
+  });
+
+  $.post(url_save, data, function(data) {
     //alert(data);
     //if(data == 'ErrorError') {
     //  alert('Stok tidak mencukupi pada satu atau lebih obat.');
@@ -1206,7 +1247,7 @@ $(document).ready(function () {
         dataType: 'json',
         success: function(data) {
           callback(data.slice(0, 100));
-          console.log(data);
+          // console.log(data);
         },
         error: function() {
           callback();
@@ -1230,7 +1271,7 @@ $(document).ready(function () {
         dataType: 'json',
         success: function(data) {
           callback(data.slice(0, 100));
-          console.log(data);
+          // console.log(data);
         },
         error: function() {
           callback();
@@ -1381,21 +1422,21 @@ $("#form_soap").on("click","#odontogram", function(event){
   return false;
 });
 
-$("#form_soap").on("click","#jam_rawat", function(event){
+$("#form_soap").on("click","#soap_jam_rawat", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     var url = baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token;
     $.post(url, {
     } ,function(data) {
-      $("#form_soap #jam_rawat").val(data);
+      $("#form_soap #soap_jam_rawat").val(data);
     });
 });
 
-$("#form_rincian").on("click","#jam_reg", function(event){
+$("#form_rincian").on("click","#rincian_jam_reg", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     var url = baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token;
     $.post(url, {
     } ,function(data) {
-      $("#form_rincian #jam_reg").val(data);
+      $("#form_rincian #rincian_jam_reg").val(data);
     });
 });
 
@@ -1416,12 +1457,207 @@ $("#form_soap").on("click",".resume", function(event){
   return false;
 });
 
+$("#form_soap").on("click",".assesment", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val().replace(/\//g, '');
+
+  var loadURL =  baseURL + '/dokter_ralan/medisralan/' + no_rawat + '?t=' + mlite.token;
+
+  var modal = $('#assesmentModal');
+  var modalContent = $('#assesmentModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});
+
+// Event delegation untuk rujuk internal - bekerja untuk elemen dinamis
+$(document).on('click', 'a[href="#rujuk_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var url = baseURL + '/dokter_ralan/rujukaninternal?t=' + mlite.token;
+  var url_get = baseURL + '/dokter_ralan/getrujukaninternal?t=' + mlite.token;
+
+  $.post(url_get, {no_rawat: no_rawat}, function(data) {
+    var rujukan = JSON.parse(data);
+    var kd_poli_val = '';
+    var kd_dokter_val = '';
+    var isi_rujukan_val = '';
+    
+
+    var disabled_attr = '';
+    if(rujukan) {
+        kd_poli_val = rujukan.kd_poli;
+        kd_dokter_val = rujukan.kd_dokter;
+        isi_rujukan_val = rujukan.isi_rujukan;
+        jawab_rujukan_val = rujukan.jawab_rujukan;
+        disabled_attr = ' disabled';
+    }
+
+    var rujuk_internal = ''
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Pilih Poli</label>'
+        + '<select name="kd_poli" id="kd_poli" class="form-control" data-use-dimmer="false"' + disabled_attr + '>'
+        + '{loop: $mlite.poliklinik}'
+        + '<option value="{$value.kd_poli}">{$value.nm_poli}</option>'
+        + '{/loop}'
+        + '</select>'
+        + '</div>'
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Pilih Dokter</label>'
+        + '<select name="kd_dokter" id="kd_dokter" class="form-control" data-use-dimmer="false"' + disabled_attr + '>'
+        + '{loop: $mlite.dokter}'
+        + '<option value="{$value.kd_dokter}">{$value.nm_dokter}</option>'
+        + '{/loop}'
+        + '</select>'
+        + '</div>'
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Isi Rujukan</label>'
+        + '<textarea name="isi_rujukan" id="isi_rujukan" class="form-control" rows="6" ' + (rujukan ? 'disabled' : '') + '>' + isi_rujukan_val + '</textarea>'
+        + '</div>'
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Jawab Rujukan</label>'
+        + '<textarea name="jawab_rujukan" id="jawab_rujukan" class="form-control" rows="6" ' + (rujukan ? 'disabled' : '') + '>' + jawab_rujukan_val + '</textarea>'
+        + '</div>'
+        + '';
+
+    // tampilkan dialog konfirmasi
+    bootbox.dialog({
+      message: rujuk_internal,
+      title: 'Rujuk Internal',
+      buttons: {
+        main: {
+          label: 'Simpan',
+          className: 'btn-primary',
+          callback() {
+            var kd_poli = $('#kd_poli').val();
+            var kd_dokter = $('#kd_dokter').val();
+            var isi_rujukan = $('#isi_rujukan').val();
+            var jawab_rujukan = $('#jawab_rujukan').val();
+            $.post(url, {
+              no_rawat: no_rawat,
+              kd_poli: kd_poli,
+              kd_dokter: kd_dokter,
+              isi_rujukan: isi_rujukan,
+              jawab_rujukan: jawab_rujukan,
+            } ,function(data) {
+              var data = JSON.parse(data);
+              alert(data.message);
+              // Reload display setelah simpan
+              $("#display").load(baseURL + '/dokter_ralan/display?t=' + mlite.token);
+            });
+          }
+        }
+      }
+    });
+
+    // Set values for selects if they exist
+    if(kd_poli_val) {
+        $('#kd_poli').val(kd_poli_val);
+    }
+    if(kd_dokter_val) {
+        $('#kd_dokter').val(kd_dokter_val);
+    }
+
+    $('select').not(':disabled').selectator();
+  });
+
+  event.stopPropagation();
+  return false;
+});
+
+// Event delegation untuk edit rujukan internal
+$(document).on('click', 'a[href="#jawab_rujukan_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var dokter_tujuan = $(this).attr("data-dokter_tujuan");
+  var poli_tujuan = $(this).attr("data-poli_tujuan");
+  var keterangan = $(this).attr("data-keterangan");
+  var keterangan_jawab = $(this).attr("data-keterangan_jawab");
+  var url = baseURL + '/dokter_ralan/editrujukaninternal?t=' + mlite.token;
+  var edit_rujukan_internal = ''
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Poli Tujuan</label>'
+      + '<input type="text" value="' + poli_tujuan + '" class="form-control" readonly>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Dokter Tujuan</label>'
+      + '<input type="text" value="' + dokter_tujuan + '" class="form-control" readonly>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Isi Rujukan</label>'
+      + '<textarea name="isi_rujukan" id="isi_rujukan" class="form-control" rows="6" readonly> ' + keterangan + ' </textarea>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Jawab Rujukan</label>'
+      + '<textarea name="jawab_rujukan" id="jawab_rujukan" class="form-control" rows="6" required> ' + keterangan_jawab + ' </textarea>'
+      + '</div>'
+      + '';
+
+  // tampilkan dialog konfirmasi
+  bootbox.dialog({
+    message: edit_rujukan_internal,
+    title: 'Jawab Rujukan Internal',
+    buttons: {
+      main: {
+        label: 'Update',
+        className: 'btn-primary',
+        callback() {
+          var jawab_rujukan = $('#jawab_rujukan').val();
+          $.post(url, {
+            no_rawat: no_rawat,
+            jawab_rujukan: jawab_rujukan,
+          } ,function(data) {
+            var data = JSON.parse(data);
+            alert(data.message);
+            // Reload display setelah update
+            $("#display").load(baseURL + '/dokter_ralan/display?t=' + mlite.token);
+          });
+        }
+      }
+    }
+  });
+  $('select').selectator();
+  event.stopPropagation();
+  return false;
+});
+
+// Event delegation untuk hapus rujukan internal
+$(document).on('click', 'a[href="#hapus_rujukan_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var url = baseURL + '/dokter_ralan/hapusrujukaninternal?t=' + mlite.token;
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus rujukan internal ini?", function(result){
+    if (result){
+      $.post(url, {
+        no_rawat: no_rawat
+      } ,function(data) {
+        // console.log(data);
+        var data = JSON.parse(data);
+        alert(data.message);
+        // Reload display setelah hapus
+        $("#display").load(baseURL + '/dokter_ralan/display?t=' + mlite.token);
+      });
+    }
+  });
+  event.stopPropagation();
+  return false;
+});
+
 {if: $mlite.websocket == 'ya'}
 
   {if: $mlite.websocket_proxy != ''}
     var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
   {else}
-    var URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+    var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
   {/if}
 
   var ws = new WebSocket(URL_WEBSOCKET);
@@ -1436,7 +1672,7 @@ $("#form_soap").on("click",".resume", function(event){
         }
       }
     }catch(e){
-      console.log(e);
+      // console.log(e);
     }
   }
   

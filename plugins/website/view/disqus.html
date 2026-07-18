@@ -2,15 +2,15 @@
     {if: isset($isPost) && $post.comments == 1}
     <script>
         var disqus_config = function() {
-            this.page.url = "{$post.url}";
-            this.page.identifier = "{$post.disqus_identifier}";
+            this.page.url = "{?=isset_or($post.url)?}";
+            this.page.identifier = "{?=isset_or($post.disqus_identifier)?}";
         };
 
         (function() {
             var d = document,
                 s = d.createElement('script');
 
-            s.src = 'https://{$settings.website.disqus}.disqus.com/embed.js';
+            s.src = 'https://{?=isset_or($settings.website.disqus)?}.disqus.com/embed.js';
 
             s.setAttribute('data-timestamp', +new Date());
             (d.head || d.body).appendChild(s);
@@ -18,6 +18,6 @@
     </script>
     {/if}
     {if: isset($isNews) || isset($isPost)}
-    <script id="dsq-count-scr" src="//{$settings.website.disqus}.disqus.com/count.js" async></script>
+    <script id="dsq-count-scr" src="//{?=isset_or($settings.website.disqus)?}.disqus.com/count.js" async></script>
     {/if}
 {/if}

@@ -1,0 +1,71 @@
+<div class="table-responsive no-margin">
+  <table class="table table-striped no-margin">
+    <thead>
+      <tr>
+        <th>Kode</th>
+        <th>Nama KFA</th>
+        <th>Sediaan</th>
+        <th>Bahan</th>
+        <th>Tipe</th>
+        <th class="text-right">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {if: !empty($kfa.list)}
+      {loop: $kfa.list}
+      <tr>
+        <td>{$value.kode_kfa}</td>
+        <td>{$value.nama_kfa}</td>
+        <td>{$value.nama_sediaan}</td>
+        <td>{$value.nama_bahan}</td>
+        <td>{$value.type}</td>
+        <td class="text-right">
+          <div class="btn-group">
+            <button class="btn btn-default btn-xs edit" data-kode_kfa="{$value.kode_kfa}">Edit</button>
+            <button class="btn btn-danger btn-xs hapus" data-kode_kfa="{$value.kode_kfa}">Hapus</button>
+          </div>
+        </td>
+      </tr>
+      {/loop}
+      {else}
+      <tr>
+        <td colspan="6" class="text-center">Data tidak ditemukan</td>
+      </tr>
+      {/if}
+    </tbody>
+  </table>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <div class="padding-top-md">
+      Total Data: {$kfa.jumlah_data}
+    </div>
+  </div>
+  <div class="col-md-6">
+    <nav class="pull-right">
+      <ul class="pagination no-margin">
+        {if: $kfa.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-halaman="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $kfa.halaman > 1}
+        <li class="halaman" data-halaman="{?=$kfa.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$kfa.halaman} dari {$kfa.jml_halaman} Hal</a></li>
+        {if: $kfa.halaman < $kfa.jml_halaman}
+        <li class="halaman" data-halaman="{?=$kfa.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $kfa.halaman == $kfa.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-halaman="{$kfa.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      </ul>
+    </nav>
+  </div>
+</div>

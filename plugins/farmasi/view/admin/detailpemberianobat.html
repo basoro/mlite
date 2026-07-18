@@ -1,0 +1,75 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Detail Pemberian Obat</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form class="form-inline" style="margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label for="tgl_awal">Tanggal Awal:</label>
+                                <input type="date" class="form-control" id="tgl_awal" name="tgl_awal" value="{?=date('Y-m-d')?}">
+                            </div>
+                            <div class="form-group" style="margin-left: 10px;">
+                                <label for="tgl_akhir">Tanggal Akhir:</label>
+                                <input type="date" class="form-control" id="tgl_akhir" name="tgl_akhir" value="{?=date('Y-m-d')?}">
+                            </div>
+                            <div class="form-group" style="margin-left: 10px;">
+                                <label for="search_field">Cari di:</label>
+                                <select class="form-control" id="search_field" name="search_field">
+                                    <option value="tgl_perawatan">Tanggal Perawatan</option>
+                                    <option value="no_rawat">No. Rawat</option>
+                                    <option value="kode_brng">Kode Obat</option>
+                                    <option value="nama_brng">Nama Obat</option>
+                                    <option value="nm_pasien">Nama Pasien</option>
+                                    <option value="no_rkm_medis">No. RM</option>
+                                    <option value="status">Status</option>
+                                    <option value="nm_bangsal">Bangsal</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-left: 10px;">
+                                <input type="text" class="form-control" id="search_text" name="search_text" placeholder="Kata kunci...">
+                            </div>
+                            <button type="button" class="btn btn-primary" id="btn_cari" style="margin-left: 10px;">
+                                <i class="fa fa-search"></i> Cari
+                            </button>
+                            <button type="button" class="btn btn-default" id="btn_reset" style="margin-left: 5px;">
+                                <i class="fa fa-refresh"></i> Reset
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table id="tbl_detailpemberianobat" class="table table-striped table-bordered" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Jam</th>
+                                <th>No. RM</th>
+                                <th>Nama Pasien</th>
+                                <th>No. Rawat</th>
+                                <th>Kode Obat</th>
+                                <th>Nama Obat</th>
+                                <th>H. Beli</th>
+                                <th>Biaya Obat</th>
+                                <th>Jumlah</th>
+                                <th>Embalase</th>
+                                <th>Tuslah</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Bangsal</th>
+                                <th>Batch</th>
+                                <th>Faktur</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

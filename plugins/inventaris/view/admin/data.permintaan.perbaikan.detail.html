@@ -4,11 +4,11 @@
           Data Permintaan Perbaikan
           <div class="pull-right">
             {if: !$perbaikandetail}
-            <a href="{$perbaikan}" class="btn btn-xs btn-primary"><i class="fa fa-plus"></i> Baru</a>
+            <a href="{?=isset_or($perbaikan)?}" class="btn btn-xs btn-primary"><i class="fa fa-plus"></i> Baru</a>
             {/if}
             {if: $perbaikandetail}
-            <a href="{$perbaikan}" class="btn btn-xs btn-warning"><i class="fa fa-edit"></i> Ubah</a>
-            <a href="{$perbaikanhapus}" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> Hapus</a>
+            <a href="{?=isset_or($perbaikan)?}" class="btn btn-xs btn-warning"><i class="fa fa-edit"></i> Ubah</a>
+            <a href="{?=isset_or($perbaikanhapus)?}" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> Hapus</a>
             {/if}
           </div>
         </h3>
@@ -26,11 +26,11 @@
         </thead>
         <tbody>
           <tr>
-            <td>{$permintaan_perbaikan_inventaris.no_permintaan}</td>
-            <td>{$permintaan_perbaikan_inventaris.no_inventaris}</td>
-            <td>{$permintaan_perbaikan_inventaris.nik} - {$permintaan_perbaikan_inventaris.nama}</td>
-            <td>{$permintaan_perbaikan_inventaris.tanggal}</td>
-            <td>{$permintaan_perbaikan_inventaris.deskripsi_kerusakan}</td>
+            <td>{?=isset_or($permintaan_perbaikan_inventaris.no_permintaan)?}</td>
+            <td>{?=isset_or($permintaan_perbaikan_inventaris.no_inventaris)?}</td>
+            <td>{?=isset_or($permintaan_perbaikan_inventaris.nik)?} - {?=isset_or($permintaan_perbaikan_inventaris.nama)?}</td>
+            <td>{?=isset_or($permintaan_perbaikan_inventaris.tanggal)?}</td>
+            <td>{?=isset_or($permintaan_perbaikan_inventaris.deskripsi_kerusakan)?}</td>
           </tr>
           {if: $perbaikandetail}
             <tr>
@@ -42,7 +42,7 @@
                 Tanggal Perbaikan
               </td>
               <td colspan="3">
-                {$perbaikandetail.tanggal}
+                {?=isset_or($perbaikandetail.tanggal)?}
               </td>
             </tr>
             <tr>
@@ -51,7 +51,7 @@
                 Status
               </td>
               <td colspan="3">
-                {$perbaikandetail.status}
+                {?=isset_or($perbaikandetail.status)?}
               </td>
             </tr>
             <tr>
@@ -60,7 +60,7 @@
                 Uraian Kegiatan
               </td>
               <td colspan="3">
-                {$perbaikandetail.uraian_kegiatan}
+                {?=isset_or($perbaikandetail.uraian_kegiatan)?}
               </td>
             </tr>
             <tr>
@@ -69,7 +69,7 @@
                 Petugas
               </td>
               <td colspan="3">
-                {$perbaikandetail.nip} - {$perbaikandetail.nama}
+                {?=isset_or($perbaikandetail.nip)?} - {?=isset_or($perbaikandetail.nama)?}
               </td>
             </tr>
             <tr>
@@ -78,7 +78,7 @@
                 Pelaksana
               </td>
               <td colspan="3">
-                {$perbaikandetail.pelaksana}
+                {?=isset_or($perbaikandetail.pelaksana)?}
               </td>
             </tr>
             <tr>
@@ -87,7 +87,7 @@
                 Keterangan
               </td>
               <td colspan="3">
-                {$perbaikandetail.keterangan}
+                {?=isset_or($perbaikandetail.keterangan)?}
               </td>
             </tr>
           {else}

@@ -15,25 +15,25 @@
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Rekam Medis</label>
-        <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$bridging_sep.nomr}">
+        <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{?=isset_or($bridging_sep.nomr)?}">
       </div>
     </div>
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Rawat</label>
-        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{$bridging_sep.no_rawat}">
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{?=isset_or($bridging_sep.no_rawat)?}">
       </div>
     </div>
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Kartu</label>
-        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$bridging_sep.no_kartu}">
+        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{?=isset_or($bridging_sep.no_kartu)?}">
       </div>
     </div>
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor SEP</label>
-        <input type="text" id="noSep" name="noSep" class="form-control" value="{$bridging_sep.no_sep}">
+        <input type="text" id="noSep" name="noSep" class="form-control" value="{?=isset_or($bridging_sep.no_sep)?}">
       </div>
     </div>
     <div class="col col-md-3">
@@ -147,20 +147,20 @@
         <tbody>
           {loop: $dirujuk}
           <tr>
-            <td>{$value.no_sep}</td>
-            <td>{$value.tglRujukan}</td>
-            <td>{$value.tglRencanaKunjungan}</td>
-            <td>{$value.ppkDirujuk}</td>
-            <td>{$value.nm_ppkDirujuk}</td>
-            <td>{$value.jnsPelayanan}</td>
-            <td>{$value.catatan}</td>
-            <td>{$value.diagRujukan}</td>
-            <td>{$value.nama_diagRujukan}</td>
-            <td>{$value.tipeRujukan}</td>
-            <td>{$value.poliRujukan}</td>
-            <td>{$value.nama_poliRujukan}</td>
-            <td>{$value.no_rujukan}</td>
-            <td>{$value.user}</td>
+            <td>{?=isset_or($value.no_sep)?}</td>
+            <td>{?=isset_or($value.tglRujukan)?}</td>
+            <td>{?=isset_or($value.tglRencanaKunjungan)?}</td>
+            <td>{?=isset_or($value.ppkDirujuk)?}</td>
+            <td>{?=isset_or($value.nm_ppkDirujuk)?}</td>
+            <td>{?=isset_or($value.jnsPelayanan)?}</td>
+            <td>{?=isset_or($value.catatan)?}</td>
+            <td>{?=isset_or($value.diagRujukan)?}</td>
+            <td>{?=isset_or($value.nama_diagRujukan)?}</td>
+            <td>{?=isset_or($value.tipeRujukan)?}</td>
+            <td>{?=isset_or($value.poliRujukan)?}</td>
+            <td>{?=isset_or($value.nama_poliRujukan)?}</td>
+            <td>{?=isset_or($value.no_rujukan)?}</td>
+            <td>{?=isset_or($value.user)?}</td>
           </tr>
           {/loop}
         </tbody>

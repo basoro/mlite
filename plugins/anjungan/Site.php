@@ -27,6 +27,11 @@ class Site extends SiteModule
 
     public function routes()
     {
+        // Auth or IP Restriction Check
+        if (strpos($_SERVER['REQUEST_URI'], '/anjungan') !== false) {
+            $this->_checkAccess();
+        }
+
         $this->route('anjungan', 'getIndex');
         $this->route('anjungan/pasien', 'getDisplayAPM');
         $this->route('anjungan/loket', 'getDisplayAntrianLoket');
@@ -48,6 +53,7 @@ class Site extends SiteModule
         $this->route('anjungan/display/poli/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/laboratorium', 'getDisplayAntrianLaboratorium');
+        $this->route('anjungan/radiologi', 'getDisplayAntrianRadiologi');
         $this->route('anjungan/apotek', 'getDisplayAntrianApotek');
         $this->route('anjungan/apotek/ambilantrian', 'getDisplayAntrianApotekAmbil');
         $this->route('anjungan/ajax', 'getAjax');
@@ -70,6 +76,151 @@ class Site extends SiteModule
         //$this->route('anjungan/daftar/baru/(:str)', 'getDaftarBPJS');
     }
 
+    private function _checkAccess()
+    {
+        // 1. Check if user is logged in
+        if (isset($_SESSION['mlite_user'])) {
+            return true;
+        }
+
+        // 2. Check if IP is local/intranet
+        $clientIP = $_SERVER['REMOTE_ADDR'];
+        
+        // Define local/intranet ranges
+        // localhost, 127.0.0.1, ::1
+        // 10.0.0.0 - 10.255.255.255
+        // 172.16.0.0 - 172.31.255.255
+        // 192.168.0.0 - 192.168.255.255
+        
+        $isLocal = false;
+
+        // Check for IPv6 localhost
+        if ($clientIP === '::1') {
+            $isLocal = true;
+        }
+        
+        // Check for IPv4
+        $ipLong = ip2long($clientIP);
+
+        if ($ipLong !== false) {
+            // 127.0.0.0/8
+            if (($ipLong & 0xFF000000) === 0x7F000000) {
+                $isLocal = true;
+            }
+            // 10.0.0.0/8
+            elseif (($ipLong & 0xFF000000) === 0x0A000000) {
+                $isLocal = true;
+            }
+            // 172.16.0.0/12
+            elseif (($ipLong & 0xFFF00000) === 0xAC100000) {
+                $isLocal = true;
+            }
+            // 192.168.0.0/16
+            elseif (($ipLong & 0xFFFF0000) === 0xC0A80000) {
+                $isLocal = true;
+            }
+        }
+
+        if (!$isLocal) {
+            http_response_code(403);
+            $logo = $this->settings->get('settings.logo');
+            $instansi = $this->settings->get('settings.nama_instansi');
+            $alamat = $this->settings->get('settings.alamat');
+            $ip = $_SERVER['REMOTE_ADDR'];
+            
+            $html = '<!DOCTYPE html>
+            <html>
+            <head>
+                <title>Access Denied - ' . htmlspecialchars($instansi) . '</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {
+                        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                        background: #f0f2f5;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        margin: 0;
+                    }
+                    .container {
+                        background: white;
+                        padding: 40px;
+                        border-radius: 12px;
+                        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                        text-align: center;
+                        max-width: 500px;
+                        width: 90%;
+                    }
+                    .logo {
+                        width: 80px;
+                        height: auto;
+                        margin-bottom: 20px;
+                    }
+                    h1 {
+                        color: #dc3545;
+                        font-size: 24px;
+                        margin-bottom: 10px;
+                    }
+                    p {
+                        color: #6c757d;
+                        line-height: 1.6;
+                        margin-bottom: 20px;
+                    }
+                    .ip-badge {
+                        background: #e9ecef;
+                        padding: 8px 16px;
+                        border-radius: 50px;
+                        font-family: monospace;
+                        font-weight: bold;
+                        color: #495057;
+                        display: inline-block;
+                        margin-bottom: 20px;
+                    }
+                    .footer {
+                        margin-top: 30px;
+                        font-size: 12px;
+                        color: #adb5bd;
+                        border-top: 1px solid #eee;
+                        padding-top: 20px;
+                    }
+                    .btn {
+                        display: inline-block;
+                        background: #0d6efd;
+                        color: white;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        border-radius: 6px;
+                        transition: background 0.3s;
+                    }
+                    .btn:hover {
+                        background: #0b5ed7;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    ' . ($logo ? '<img src="' . url($logo) . '" alt="Logo" class="logo">' : '') . '
+                    <h1>Akses Ditolak</h1>
+                    <div class="ip-badge">IP Anda: ' . htmlspecialchars($ip) . '</div>
+                    <p>
+                        Maaf, halaman Anjungan hanya dapat diakses melalui jaringan lokal (Intranet) Rumah Sakit atau oleh pengguna yang telah terautentikasi.
+                    </p>
+                    <a href="' . url(ADMIN.'/login') . '" class="btn">Login Disini</a>
+                    <div class="footer">
+                        &copy; ' . date('Y') . ' ' . htmlspecialchars($instansi) . '<br>
+                        ' . htmlspecialchars($alamat) . '
+                    </div>
+                </div>
+            </body>
+            </html>';
+            
+            die($html);
+        }
+
+        return true;
+    }
+
     public function getIndex()
     {
         echo $this->draw('index.html', ['test' => 'Opo iki']);
@@ -80,7 +231,7 @@ class Site extends SiteModule
     {
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
-        $poliklinik = $this->db('poliklinik')->toArray();
+        $poliklinik = $this->db('poliklinik')->where('status', '1')->toArray();
         $carabayar = str_replace(",","','", $this->settings->get('anjungan.carabayar'));
         $penjab = $this->db()->pdo()->prepare("SELECT * FROM penjab WHERE kd_pj IN ('$carabayar')");
         $penjab->execute();
@@ -438,7 +589,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -448,11 +598,11 @@ class Site extends SiteModule
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
-                  ->where('tgl_registrasi', $date)
-                  ->where('kd_poli', $row['kd_poli'])
-                  ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                    ->where('tgl_registrasi', $date)
+                    ->where('kd_poli', $row['kd_poli'])
+                    ->where('kd_dokter', $row['kd_dokter'])
+                    ->nextRightNumber('no_reg', 3);
+
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -690,7 +840,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -699,12 +848,13 @@ class Site extends SiteModule
                   ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
+
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
                   ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                  ->nextRightNumber('no_reg', 3);
+
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -823,7 +973,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -833,11 +982,10 @@ class Site extends SiteModule
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
                   ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                  ->nextRightNumber('no_reg', 3);
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -956,7 +1104,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -966,11 +1113,10 @@ class Site extends SiteModule
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
                   ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                  ->nextRightNumber('no_reg', 3);
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -1097,7 +1243,6 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -1107,11 +1252,10 @@ class Site extends SiteModule
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
                 $row['get_no_reg'] = $this->db('reg_periksa')
-                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
                   ->where('kd_dokter', $row['kd_dokter'])
-                  ->oneArray();
+                  ->nextRightNumber('no_reg', 3);
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
                 $row['interval'] = 0;
                 if($row['diff'] == 0) {
@@ -1252,31 +1396,124 @@ class Site extends SiteModule
         //exit();
     }
 
-    public function _resultDisplayAntrianLaboratorium()
+    public function getDisplayAntrianRadiologi()
     {
-        $date = date('Y-m-d');
-        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
-        $day = array(
-          'Sun' => 'AKHAD',
-          'Mon' => 'SENIN',
-          'Tue' => 'SELASA',
-          'Wed' => 'RABU',
-          'Thu' => 'KAMIS',
-          'Fri' => 'JUMAT',
-          'Sat' => 'SABTU'
-        );
-        $hari=$day[$tentukan_hari];
+        $logo  = $this->settings->get('settings.logo');
+        $title = 'Display Antrian Radiologi';
+        $display = $this->_resultDisplayAntrianRadiologi();
 
-        $poliklinik = $this->settings('settings', 'laboratorium');
-        $rows = $this->db('reg_periksa')
-          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-          ->where('tgl_registrasi', date('Y-m-d'))
-          ->where('kd_poli', $poliklinik)
-          ->asc('no_reg')
-          ->toArray();
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
+        }
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $__username;
+        $running_text = $this->settings->get('anjungan.text_radiologi');
+        if(empty($running_text)) {
+          $running_text = $this->settings->get('anjungan.text_laboratorium');
+        }
 
-        return $rows;
+        $content = $this->draw('display.antrian.radiologi.html', [
+          'logo' => $logo,
+          'title' => $title,
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'running_text' => $running_text,
+          'display' => $display
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
     }
+
+  public function _resultDisplayAntrianLaboratorium()
+  {
+    $date_start = date('Y-m-d', strtotime('-1 month')); 
+    $date = date('Y-m-d');
+
+    $rows = $this->db('permintaan_lab')
+      ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=permintaan_lab.no_rawat')
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder=permintaan_lab.noorder')
+      ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+      ->where('permintaan_lab.tgl_hasil', '0000-00-00')
+      ->where('permintaan_lab.tgl_permintaan', '>=', $date_start)
+      ->where('permintaan_lab.tgl_permintaan', '<=', $date)
+      ->group('permintaan_lab.noorder')
+      ->desc('permintaan_lab.tgl_permintaan')
+      ->toArray();
+    
+    $filteredRows = [];
+    foreach ($rows as $row) {
+      
+      // Tentukan status untuk data yang akan ditampilkan
+      if ($row['tgl_sampel'] == '0000-00-00' && $row['jam_sampel'] == '00:00:00') {
+        $row['status_antrian'] = 'Menunggu';
+        $row['status_class'] = 'label-warning';
+      } elseif ($row['tgl_sampel'] != '0000-00-00' && $row['jam_sampel'] != '00:00:00') {
+        $row['status_antrian'] = 'Diproses';
+        $row['status_class'] = 'label-success';
+      } else {
+        $row['status_antrian'] = 'Diproses';
+        $row['status_class'] = 'label-warning';
+      }
+      
+      $filteredRows[] = $row;
+    }
+    
+    $rows = $filteredRows;
+    
+    return $rows;
+  }
+
+  public function _resultDisplayAntrianRadiologi()
+  {
+    $date_start = date('Y-m-d', strtotime('-1 month'));
+    $date = date('Y-m-d');
+
+    $rows = $this->db('permintaan_radiologi')
+      ->join('dokter', 'dokter.kd_dokter=permintaan_radiologi.dokter_perujuk')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=permintaan_radiologi.no_rawat')
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('permintaan_pemeriksaan_radiologi', 'permintaan_pemeriksaan_radiologi.noorder=permintaan_radiologi.noorder')
+      ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=permintaan_pemeriksaan_radiologi.kd_jenis_prw')
+      ->where('permintaan_radiologi.tgl_hasil', '0000-00-00')
+      ->where('permintaan_radiologi.tgl_permintaan', '>=', $date_start)
+      ->where('permintaan_radiologi.tgl_permintaan', '<=', $date)
+      ->group('permintaan_radiologi.noorder')
+      ->desc('permintaan_radiologi.tgl_permintaan')
+      ->toArray();
+
+    $filteredRows = [];
+    foreach ($rows as $row) {
+      if ($row['tgl_sampel'] == '0000-00-00' && $row['jam_sampel'] == '00:00:00') {
+        $row['status_antrian'] = 'Menunggu';
+        $row['status_class'] = 'label-warning';
+      } elseif ($row['tgl_sampel'] != '0000-00-00' && $row['jam_sampel'] != '00:00:00') {
+        $row['status_antrian'] = 'Diproses';
+        $row['status_class'] = 'label-success';
+      } else {
+        $row['status_antrian'] = 'Diproses';
+        $row['status_class'] = 'label-warning';
+      }
+
+      $filteredRows[] = $row;
+    }
+
+    return $filteredRows;
+  }
 
     public function getDisplayAntrianApotek()
     {
@@ -1729,7 +1966,6 @@ class Site extends SiteModule
         case "simpanloket":
           $this->db('mlite_antrian_loket')
             ->save([
-              'kd' => NULL,
               'type' => 'Loket',
               'noantrian' => $_GET['noantrian'],
               'postdate' => date('Y-m-d'),
@@ -1801,7 +2037,6 @@ class Site extends SiteModule
         case "simpancs":
           $this->db('mlite_antrian_loket')
             ->save([
-              'kd' => NULL,
               'type' => 'CS',
               'noantrian' => $_GET['noantrian'],
               'postdate' => date('Y-m-d'),
@@ -1876,7 +2111,6 @@ class Site extends SiteModule
         case "simpanapotek":
           $this->db('mlite_antrian_loket')
             ->save([
-              'kd' => NULL,
               'type' => 'Apotek',
               'noantrian' => $_GET['noantrian'],
               'no_rkm_medis' => $_POST['no_rkm_medis'],
@@ -1965,7 +2199,7 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
           }
         break;
 
@@ -1982,7 +2216,7 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
           }
         break;
 
@@ -1992,7 +2226,7 @@ class Site extends SiteModule
               if($this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tgl_registrasi', $_POST['tgl_registrasi'])->oneArray()) {
                 $data['status'] = 'exist';
                 $data['result'] = '';
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
               } else {
                 $tanggal = $_POST['tgl_registrasi'];
                 $tentukan_hari = date('D',strtotime($tanggal));
@@ -2014,7 +2248,7 @@ class Site extends SiteModule
                     $data['status'] = 'err';
                     $data['result'] = '';
                 }
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
               }
           }
         break;
@@ -2060,7 +2294,7 @@ class Site extends SiteModule
                     $data['status'] = 'err';
                     $data['result'] = '';
                 }
-                echo json_encode($data);
+                echo json_encode(htmlspecialchars_array($data));
               }
           }
         break;
@@ -2076,7 +2310,7 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
           }
         break;
         case "get-namadokter":
@@ -2091,7 +2325,7 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
           }
         break;
         case "post-registrasi":
@@ -2146,7 +2380,7 @@ class Site extends SiteModule
               $_POST['umurdaftar'] = $umur;
               $_POST['sttsumur'] = $sttsumur;
               $_POST['status_lanjut']   = 'Ralan';
-              $_POST['kd_pj']           = $this->settings->get('anjungan.carabayar_umum');
+              // $_POST['kd_pj']           = $this->settings->get('anjungan.carabayar_umum');
               $_POST['status_bayar']    = 'Belum Bayar';
               $_POST['no_rawat'] = $this->core->setNoRawat($date);
               $_POST['jam_reg'] = date('H:i:s');
@@ -2180,7 +2414,80 @@ class Site extends SiteModule
                   $data['status'] = 'err';
                   $data['result'] = '';
               }
-              echo json_encode($data);
+              echo json_encode(htmlspecialchars_array($data));
+          }
+        break;
+        case "loket-display":
+          $apotek = $this->db('mlite_antrian_loket')
+            ->select('noantrian')
+            ->select('loket')
+            ->where('type', 'Apotek')
+            ->where('postdate', date('Y-m-d'))
+            ->where('status', '>=', 1)
+            ->desc('kd')
+            ->oneArray();
+
+          echo json_encode([
+            'loket' => [
+              'antrian' => (string) $this->settings->get('anjungan.no_antrian_loket'),
+              'counter' => (string) $this->settings->get('anjungan.konter_antrian_loket')
+            ],
+            'cs' => [
+              'antrian' => (string) $this->settings->get('anjungan.no_antrian_cs'),
+              'counter' => (string) $this->settings->get('anjungan.konter_antrian_cs')
+            ],
+            'apotek' => [
+              'antrian' => isset($apotek['noantrian']) ? (string) $apotek['noantrian'] : '',
+              'counter' => isset($apotek['loket']) ? (string) $apotek['loket'] : ''
+            ]
+          ]);
+        break;
+        // FOR DISPLAY
+        case "apotek-display":
+          $rows = $this->_resultDisplayAntrianApotek();  
+          foreach ($rows as $row) {      
+            echo '<li style="padding:10px;">'
+               .  '<span class="noantrian"><b>'. $row['noantrian'] . '</b></span> '. $row['nm_pasien'] . ' - ' . $row['no_rkm_medis'] . ' Resep: ' . $row['jenis_resep'] . ' <span class="pull-right">Status: <b {if: $row.status_resep == "Disiapkan"}style="color:red;"{/if} {if: $row.status_resep == "Diserahkan"}style="color:green;"{/if}>' . $row['status_resep'] . '</b></span><br>'
+               . '</li>'; 
+          }
+        break;
+        case "laboratorium-display":
+          $rows = $this->_resultDisplayAntrianLaboratorium();  
+          foreach ($rows as $row) {      
+           
+            echo '<li style="padding:10px;">'
+               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . ' Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . ' <span class="pull-right">Status: <b class="label ' . $row['status_class'] . '">' . $row['status_antrian'] . '</b></span><br>'
+               . '</li>'; 
+          }
+        break;
+        case "radiologi-display":
+          $rows = $this->_resultDisplayAntrianRadiologi();
+          foreach ($rows as $row) {
+            echo '<li style="padding:10px;">'
+               .  '<button type="button" class="btn btn-lg btn-warning">' . $row['no_reg'] . '</button>' . ' Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . ' <span class="pull-right">Status: <b class="label ' . $row['status_class'] . '">' . $row['status_antrian'] . '</b></span><br>'
+               . '</li>';
+          }
+        break;
+        case "bed-display":
+          $rows = $this->_resultDisplayBed();
+          foreach ($rows as $row) {      
+            echo '<tr>'
+               .  '<td width="30%">' . $row['nm_bangsal'] . '</td>'
+               .  '<td width="20%">' . $row['kelas'] . '</td>'
+               .  '<td>'
+               .  'Jumlah Kosong : ' . $row['kosong']['jumlah'] . ' | Jumlah Terisi : ' . $row['isi']['jumlah']
+               .  '</td>'
+               . '</tr>';
+          }
+        break;
+        case "operasi-display":
+          $rows = $this->_resultDisplayJadwalOperasi();
+          foreach ($rows as $row) {
+            echo '<li style="padding:10px;">'
+               .  'Nama: ' . $row['nm_pasien'] . ', No. RM: ' . $row['no_rkm_medis'] . '<span class="pull-right">Status: <b {if: $row.status == "Selesai"}style="color:red;"{/if}>' . $row['status'] . '</b></span><br>'
+               . '[ Operator : ' . $row['namadok'] . ' ] [ Rujukan Dari : '
+               . '{if: $row.kd_poli == "IGDK"}' . $row['kamar.namabangsal'] . '{elseif: $row.kd_poli == "U0027"}' . $row['kamar.namabangsal'] . '{else}' . $row['namapoli'] . '{/if} ]<br>' 
+               . '</li>';
           }
         break;
       }
@@ -2206,7 +2513,7 @@ class Site extends SiteModule
         'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_poli'),
-        'jam_jaga' => $this->db('jam_jaga')->group('jam_masuk')->toArray()
+        'jam_jaga' => $this->db('jam_jaga')->select('jam_masuk')->select('jam_pulang')->group('jam_masuk')->toArray()
       ]);
 
       $assign = [
@@ -2266,40 +2573,43 @@ class Site extends SiteModule
 
               $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
               $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $_GET['shift'])->oneArray();
-              $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.date('j'), $_GET['shift'])->oneArray();
+              $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.date('j'), $_GET['shift'])->where('bulan', date('m'))->where('tahun', date('Y'))->oneArray();
 
-              $set_keterlambatan  = $this->db('set_keterlambatan')->toArray();
-              $toleransi      = $set_keterlambatan['toleransi'];
-              $terlambat1     = $set_keterlambatan['terlambat1'];
-              $terlambat2     = $set_keterlambatan['terlambat2'];
+              $set_keterlambatan  = $this->db('set_keterlambatan')->oneArray();
+              $toleransi      = $set_keterlambatan['toleransi'] ?? 0;
+              $terlambat1     = $set_keterlambatan['terlambat1'] ?? 0;
+              $terlambat2     = $set_keterlambatan['terlambat2'] ?? 0;
 
-              $valid = $this->db('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
+              $valid = $this->db('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'] ?? '')->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
 
               if($valid){
-                  $this->notify('failure', 'Anda sudah presensi untuk tanggal '.date('Y-m-d'));
+                  echo "Anda sudah presensi untuk tanggal ".date('Y-m-d');
               //}elseif((!empty($idpeg['id']))&&(!empty($jam_jaga['shift']))&&($jadwal_pegawai)&&(!$valid)) {
               }elseif((!empty($idpeg['id']))) {
                   $cek = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
 
                   if(!$cek){
                       if(empty($urlnya)){
-                          $this->notify('failure', 'Pilih shift dulu...!!!!');
+                          echo "Pilih shift dulu...!!!!";
                       }else{
-
+                          
+                          $keterlambatan = '00:00:00';
                           $status = 'Tepat Waktu';
+                          $jam_masuk = $jam_jaga['jam_masuk'] ?? '00:00:00';
+                          $shift_jaga = $jam_jaga['shift'] ?? '';
 
-                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_masuk']))>($toleransi*60)) {
+                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_masuk))>($toleransi*60)) {
                             $status = 'Terlambat Toleransi';
                           }
-                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_masuk']))>($terlambat1*60)) {
+                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_masuk))>($terlambat1*60)) {
                             $status = 'Terlambat I';
                           }
-                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_masuk']))>($terlambat2*60)) {
+                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_masuk))>($terlambat2*60)) {
                             $status = 'Terlambat II';
                           }
 
-                          if(strtotime(date('Y-m-d H:i:s'))-(date('Y-m-d').' '.$jam_jaga['jam_masuk'])>($toleransi*60)) {
-                            $awal  = new \DateTime(date('Y-m-d').' '.$jam_jaga['jam_masuk']);
+                          if((strtotime(date('Y-m-d H:i:s')) - strtotime(date('Y-m-d').' '.$jam_masuk)) > ($toleransi*60)) {
+                            $awal  = new \DateTime(date('Y-m-d').' '.$jam_masuk);
                             $akhir = new \DateTime();
                             $diff = $akhir->diff($awal,true); // to make the difference to be always positive.
                             $keterlambatan = $diff->format('%H:%I:%S');
@@ -2309,7 +2619,7 @@ class Site extends SiteModule
                           $insert = $this->db('temporary_presensi')
                             ->save([
                               'id' => $idpeg['id'],
-                              'shift' => $jam_jaga['shift'],
+                              'shift' => $shift_jaga,
                               'jam_datang' => date('Y-m-d H:i:s'),
                               'jam_pulang' => NULL,
                               'status' => $status,
@@ -2319,13 +2629,15 @@ class Site extends SiteModule
                             ]);
 
                           if($insert) {
-                            $this->notify('success', 'Presensi Masuk jam '.$jam_jaga['jam_masuk'].' '.$status.' '.$keterlambatan);
+                            echo htmlspecialchars("Presensi Masuk jam ".$jam_masuk." ".$status." ".$keterlambatan." telah disimpan", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                           }
                       }
                   }elseif($cek){
 
                       $status = $cek['status'];
-                      if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_pulang']))<0) {
+                      $jam_pulang = $jam_jaga['jam_pulang'] ?? '00:00:00';
+
+                      if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_pulang))<0) {
                         $status = $cek['status'].' & PSW';
                       }
 
@@ -2357,13 +2669,13 @@ class Site extends SiteModule
                               'photo' => $presensi['photo']
                             ]);
                           if($insert) {
-                              $this->notify('success', 'Presensi pulang telah disimpan');
                               $this->db('temporary_presensi')->where('id', $cek['id'])->delete();
+                              echo htmlspecialchars("Presensi Masuk jam ".$presensi['jam_datang']." ".$presensi['status']." ".$presensi['keterlambatan']." telah disimpan", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
                           }
                       }
                   }
               }else{
-                  $this->notify('failure', 'ID Pegawai atau jadwal shift tidak sesuai. Silahkan pilih berdasarkan shift departemen anda!');
+                  echo "ID Pegawai atau jadwal shift tidak sesuai. Silahkan pilih berdasarkan shift departemen anda!";
               }
           }
       }
@@ -2497,6 +2809,7 @@ class Site extends SiteModule
 
     public function getSepMandiriNokaNorm()
     {
+      $dateNow = date('Y-m-d');
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
       $key = $this->consid.$this->secretkey.$tStamp;
@@ -2523,6 +2836,7 @@ class Site extends SiteModule
           $message = $json['metaData']['message'];
           $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
+          $biometrik = '';
 
           if(!empty($json)):
             if ($code != "200") {
@@ -2531,6 +2845,22 @@ class Site extends SiteModule
               if(!empty($stringDecrypt)) {
                 $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
                 $sep_response = json_decode($decompress, true);
+
+                $url = $this->api_url . '/SEP/FingerPrint/Peserta/' . $slug[2] . '/TglPelayanan/'.$dateNow.'';
+                $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+                $json = json_decode($output, true);
+                //echo json_encode(htmlspecialchars_array($json));
+                $code = $json['metaData']['code'];
+                $message = $json['metaData']['message'];
+                $stringDecrypt = stringDecrypt($key, $json['response']);
+                $decompress = '""';
+                if (!empty($stringDecrypt)) {
+                  $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+                }
+                if ($json != null) {
+                  $biometrik = json_decode($decompress, true)['status'];
+                }                
+
               } else {
                 $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi dengan menekan tombol REFRESH";
               }
@@ -2538,6 +2868,7 @@ class Site extends SiteModule
           else:
             $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi dengan menekan tombol REFRESH";
           endif;
+
       }
 
       $title = 'Display SEP Mandiri';
@@ -2560,7 +2891,8 @@ class Site extends SiteModule
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_anjungan'),
         'no_rkm_medis' => $slug[3],
-        'sep_response' => $sep_response
+        'sep_response' => $sep_response, 
+        'biometrik' => $biometrik
       ]);
 
       $assign = [
@@ -2774,6 +3106,7 @@ class Site extends SiteModule
           $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
 
           $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+          $tlp = substr($pasien['no_tlp'], 0, 13);
           $jenisKunjungan = '1';
           $nomorreferensi = $_POST['norujukan'];
           if(isset($_POST['tujuanKunj']) == '2') {
@@ -2785,7 +3118,7 @@ class Site extends SiteModule
               'jenispasien' => 'JKN',
               'nomorkartu' => $pasien['no_peserta'],
               'nik' => $pasien['no_ktp'],
-              'nohp' => $pasien['no_tlp'],
+              'nohp' => $tlp, 
               'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
               'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
               'pasienbaru' => '0',
@@ -2995,7 +3328,7 @@ class Site extends SiteModule
                 'prb' => $_POST['prolanis_prb']
               ]);
             }
-            echo $_POST['sep_no_sep'];
+            echo htmlspecialchars($_POST['sep_no_sep']);
           } else {
             $simpan_sep = $this->db('bridging_sep_internal')->save([
               'no_sep' => $_POST['sep_no_sep'],
@@ -3055,7 +3388,7 @@ class Site extends SiteModule
 
         } else {
 
-          echo $data['metaData']['message'];
+          echo htmlspecialchars($data['metaData']['message'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         }
         exit();
@@ -3319,7 +3652,7 @@ class Site extends SiteModule
         $url = $this->api_url . 'Peserta/nik/' . $nik . '/tglSEP/' . $tglPelayananSEP;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        //echo json_encode($json);
+        //echo json_encode(htmlspecialchars_array($json));
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
         $stringDecrypt = stringDecrypt($key, $json['response']);

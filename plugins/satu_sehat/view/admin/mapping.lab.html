@@ -1,0 +1,206 @@
+<style>
+    .nowrap th, .nowrap td {
+      white-space: nowrap;
+    }
+    .selected {
+        background-color: #d0ebff !important;
+    }    
+</style>
+<h4>Mapping Laboratorium Satu Sehat</h4>
+<form action="{?=url(ADMIN.'/satu_sehat/savelab')?}" method="POST">
+    <input type="hidden" name="id_organisasi_satusehat">
+    <input type="hidden" name="kd_jenis_prw" id="kd_jenis_prw" value="">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Pilih Perawatan</label>
+                        <select name="id_template" id="id_template" class="form-control" data-use-search="true">
+                            {loop: $template_laboratorium}
+                            <option value="{?=isset_or($value.id_template)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}">[{?=isset_or($value.id_template)?}] - {?=isset_or($value.kd_jenis_prw)?} - {?=isset_or($value.Pemeriksaan)?}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <label>Terminologi Loinc Laboratorium</label>
+                            <select id="select_lab" name="select_lab" class="form-control" placeholder="Silahkan cari terminologi..."></select>
+                        </p>
+                        <div id="detail_lab"></div>
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+<div class="col-md-12">
+    <div class="table-responsive no-margin" id="mapping_lab_satu_sehat">
+    <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+        <tr>
+            <th>ID Template</th>
+            <th>Kode Perawatan</th>
+            <th>Nama Perawatan</th>
+            <th>Code</th>
+            <th>Display</th>
+            <th>Sample Code</th>
+            <th>Sample System</th>
+            <th>Sample Display</th>
+        </tr>
+        </thead>
+        <tbody>
+        {loop: $mapping_lab_satu_sehat}
+        <tr class="mapping_lab_satu_sehat"
+        data-id_template="{?=isset_or($value.id_template)?}"
+        >
+            <td>{?=isset_or($value.id_template)?}</td>
+            <td>{?=isset_or($value.kd_jenis_prw)?}</td>
+            <td>{?=isset_or($value.Pemeriksaan)?}</td>
+            <td>{?=isset_or($value.code)?}</td>
+            <td>{?=isset_or($value.display)?}</td>
+            <td>{?=isset_or($value.sampel_code, '-')?}</td>
+            <td>{?=isset_or($value.sampel_system, '-')?}</td>
+            <td>{?=isset_or($value.sampel_display, '-')?}</td>
+        </tr>
+        {/loop}
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+$('.dataTables').DataTable();
+
+$('#mapping_lab_satu_sehat table tbody').on('click', 'tr.mapping_lab_satu_sehat', function() {
+    // Remove selection from other rows
+    $('#mapping_lab_satu_sehat table tbody tr').removeClass('selected');
+
+    // Add selected class to clicked row
+    $(this).addClass('selected');
+
+    // Example: Get data attribute
+    var id_template = $(this).data('id_template');
+    $('#id_template').val(id_template).change();
+    console.log('Selected ID Template:', id_template);
+});
+
+$('body').on('change', '#id_template', function () {
+    var opt = $(this).find('option:selected');
+    $('#kd_jenis_prw').val((opt.data('kd_jenis_prw') || '').toString());
+});
+$('#id_template').trigger('change');
+
+$('input[name="hapus"]').on('click', function (e) {
+    const confirmDelete = confirm('Apakah Anda yakin ingin menghapus data ini?');
+    if (!confirmDelete) {
+        e.preventDefault(); // Batalkan submit jika tidak disetujui
+    }
+});
+
+var strip_tags = function(str) {
+    return (str + '').replace(/<\/?[^>]+(>|$)/g, '')
+};
+var truncate_string = function(str, chars) {
+    if ($.trim(str).length <= chars) {
+        return str;
+    } else {
+        return $.trim(str.substr(0, chars)) + '…';
+    }
+};
+var $select = $('#select_lab');
+$select.selectator({
+    labels: {
+        search: 'Search here...'
+    },
+    load: function (search, callback) {
+      if (search.length < this.minSearchLength) return callback();
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var url = baseURL + '/satu_sehat/lookupmaster?t=' + mlite.token + '&type=loinc_lab&q=' + encodeURIComponent(search);
+      $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) { callback((data || []).slice(0, 100)); },
+        error: function() { callback(); }
+      });
+    },
+    delay: 300,
+    minSearchLength: 3,
+    valueField: 'value',
+    textField: 'text',
+    render: {
+        option: function (_item, escape) {
+            var html = '';
+            html += '<div class="selectator_option_title">' + ((typeof _item.text !== 'undefined') ? _item.text : '') + '</div>';
+            return html;
+        }
+    }
+
+});
+
+$('#select_lab').on('change', function () {
+    var opt = $(this).find('option:selected');
+    var item = opt.data('item_data') || {};
+    var code = (item.code || item.Code || '').toString();
+    var display = (item.display || item.NamaPemeriksaan || '').toString();
+    var system = (item.code_system || item.CodeSystem || 'http://loinc.org').toString();
+
+    if (!code) {
+      $('#detail_lab').html('');
+      return;
+    }
+
+    $('#detail_lab').html(
+      '<p><label>Kode</label><input type="text" name="code" class="form-control" value="' + code + '"></p>' +
+      '<p><label>Nama Pemeriksaan</label><input type="text" name="display" class="form-control" value="' + display + '"></p>' +
+      '<p><label>Code System</label><input type="text" name="code_system" class="form-control" value="' + system + '"></p>' +
+      '<p><label>Sample (SNOMED-CT)</label><select id="sample_pick" class="form-control"></select></p>' +
+      '<input type="hidden" name="sample_code" id="sample_code" value="">' +
+      '<input type="hidden" name="sample_display" id="sample_display" value="">' +
+      '<input type="hidden" name="sample_system" id="sample_system" value="http://snomed.info/sct">'
+    );
+
+    $('#sample_pick').selectator({
+      labels: { search: 'Cari sampel...' },
+      load: function (search, callback) {
+        if (search.length < this.minSearchLength) return callback();
+        var baseURL = mlite.url + '/' + mlite.admin;
+        var url = baseURL + '/satu_sehat/lookupmaster?t=' + mlite.token + '&type=snomed&q=' + encodeURIComponent(search);
+        $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) { callback((data || []).slice(0, 100)); },
+          error: function() { callback(); }
+        });
+      },
+      delay: 300,
+      minSearchLength: 3,
+      valueField: 'value',
+      textField: 'text'
+    });
+
+    $('#sample_pick').on('change', function() {
+      var sopt = $(this).find('option:selected');
+      var sitem = sopt.data('item_data') || {};
+      var scode = (sitem.code || sitem.value || '').toString();
+      var sdisplay = (sitem.display || '').toString();
+      if (!scode) {
+        $('#sample_code').val('');
+        $('#sample_display').val('');
+        $('#sample_system').val('http://snomed.info/sct');
+        return;
+      }
+      $('#sample_code').val(scode);
+      $('#sample_display').val(sdisplay);
+      $('#sample_system').val('http://snomed.info/sct');
+    });
+});
+</script>
+  

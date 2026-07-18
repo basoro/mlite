@@ -25,7 +25,7 @@
         {loop: $pasien}
         <tr>
           <td>
-            <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{$value.no_rkm_medis} <span class="caret"></span></button></span>
+            <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{?=isset_or($value.no_rkm_medis)?} <span class="caret"></span></button></span>
             <ul class="dropdown-menu" role="menu">
               {if: $cek_vclaim}
                 <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynokartu', $value.no_peserta, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[VClaim] Cek Nomor Kartu</a></li>
@@ -38,25 +38,30 @@
               <li class="dropdown-submenu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pendaftaran</a>
                 <ul class="dropdown-menu">
-                  <li><a href="{?=url([ADMIN,'igd','manage'])?}&no_rkm_medis={$value.no_rkm_medis}">IGD / UGD</a></li>
-                  <li><a href="{?=url([ADMIN,'rawat_jalan','manage'])?}&no_rkm_medis={$value.no_rkm_medis}">Poliklinik / Rawat Jalan</a></li>
+                  {if: $this->core->ActiveModule('oral_diagnostic')}
+                  <li><a href="{?=url([ADMIN,'oral_diagnostic','manage'])?}&no_rkm_medis={?=isset_or($value.no_rkm_medis)?}">Oral Diagnostic</a></li>
+                  {/if} 
+                  {if: $this->core->ActiveModule('igd')}
+                  <li><a href="{?=url([ADMIN,'igd','manage'])?}&no_rkm_medis={?=isset_or($value.no_rkm_medis)?}">IGD / UGD</a></li>
+                  {/if}
+                  <li><a href="{?=url([ADMIN,'rawat_jalan','manage'])?}&no_rkm_medis={?=isset_or($value.no_rkm_medis)?}">Poliklinik / Rawat Jalan</a></li>
                 </ul>
               </li>              
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               <li><a href="{?=url([ADMIN, 'pasien', 'folder', $value.no_rkm_medis])?}">Folder Berkas Digital</a></li>
             </ul>
           </td>
-          <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
-          <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}">{$value.tgl_lahir}</td>
-          <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}">{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{?=isset_or($value.nm_pasien)?}</a></td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}">{?=isset_or($value.tgl_lahir)?}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}">{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
           {if: $admin_mode == 'complex'}
-          <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}">{$value.gol_darah}</td>
-          <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}">{$value.pekerjaan}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}">{?=isset_or($value.gol_darah)?}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}">{?=isset_or($value.pekerjaan)?}</td>
           {/if}
-          <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}">{$value.alamat}</td>
-          <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}">{$value.no_tlp}</td>
-          <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}">{$value.tgl_daftar}</td>
-          <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}">{$value.email}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}">{?=isset_or($value.alamat)?}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}">{?=isset_or($value.no_tlp)?}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}">{?=isset_or($value.tgl_daftar)?}</td>
+          <td {if: $mlite_crud_permissions.can_update == 'true'}class="edit"{/if} data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}">{?=isset_or($value.email)?}</td>
         </tr>
         {/loop}
         {else}
@@ -69,7 +74,7 @@
   </div>
   <nav class="row clearfix">
     <div class="col-md-6">
-      <b>Jumlah: {$jumlah_data}</b>
+      <b>Jumlah: {?=isset_or($jumlah_data)?}</b>
     </div>
     <div class="col-md-6">
       <ul class="pagination no-margin pull-right">
@@ -84,7 +89,7 @@
         {else}
         <li class="disabled"><a href="#">‹</a></li>
         {/if}
-        <li class="disabled"><a href="#">Hal : {$halaman} dari {$jml_halaman} Hal</a></li>
+        <li class="disabled"><a href="#">Hal : {?=isset_or($halaman)?} dari {?=isset_or($jml_halaman)?} Hal</a></li>
         {if: $halaman < $jml_halaman}
         <li class="halaman" data-hal="{?=$halaman + 1?}"><a href="#">›</a></li>
         {else}
@@ -93,7 +98,7 @@
         {if: $halaman == $jml_halaman}
         <li class="disabled"><a href="#">&raquo;</a></li>
         {else}
-        <li class="halaman" data-hal="{$jml_halaman}"><a href="#">&raquo;</a></li>
+        <li class="halaman" data-hal="{?=isset_or($jml_halaman)?}"><a href="#">&raquo;</a></li>
         {/if}
       {else}
         {if: $halaman == 1}
@@ -106,7 +111,7 @@
         {else}
         <li class="disabled"><a href="#">‹</a></li>
         {/if}
-        <li class="disabled"><a href="#">Hal : {$halaman} dari {$jml_halaman} Hal</a></li>
+        <li class="disabled"><a href="#">Hal : {?=isset_or($halaman)?} dari {?=isset_or($jml_halaman)?} Hal</a></li>
         {if: $halaman < $jml_halaman}
         <li class="halaman" data-hal="{?=$halaman + 1?}"><a href="#">›</a></li>
         {else}
@@ -115,7 +120,7 @@
         {if: $halaman == $jml_halaman}
         <li class="disabled"><a href="#">&raquo;</a></li>
         {else}
-        <li class="halaman" data-hal="{$jml_halaman}"><a href="#">&raquo;</a></li>
+        <li class="halaman" data-hal="{?=isset_or($jml_halaman)?}"><a href="#">&raquo;</a></li>
         {/if}
       {/if}
       </ul>
@@ -145,7 +150,7 @@
 </div>
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
-  $("#btn_cetak_pdf").click(function() {
+  $(document).on('click', '#btn_cetak_pdf', function() {
     var baseURL = mlite.url + '/' + mlite.admin;
     var url    = baseURL + '/pasien/cetak?t=' + mlite.token;
     var cari = $('input:text[name=cari]').val();
@@ -157,7 +162,7 @@
 
 		return false;
   });
-  $("#btn_export_xls").click(function() {
+  $(document).on('click', '#btn_export_xls', function() {
     alert('btn_export_xls');
     var baseURL = mlite.url + '/' + mlite.admin;
     var url    = baseURL + '/pasien/excel?t=' + mlite.token;

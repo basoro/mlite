@@ -14,7 +14,7 @@ class Admin extends AdminModule
             'Send Message' => 'sendmessage',
             'Send Image' => 'sendimage',
             'Send File' => 'sendfile',
-            'Settings' => 'settings'
+            'Pengaturan' => 'settings'
         ];
     }
 
@@ -28,7 +28,7 @@ class Admin extends AdminModule
           ['name' => 'Send Image', 'url' => url([ADMIN, 'wagateway', 'sendimage']), 'icon' => 'cubes', 'desc' => 'Send Image Test'],
           ['name' => 'Settings', 'url' => url([ADMIN, 'wagateway', 'settings']), 'icon' => 'cubes', 'desc' => 'Settings WA Getaway'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'waapiserver' => $waapiserver, 'waapiphonenumber' => $waapiphonenumber]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules), 'waapiserver' => $waapiserver, 'waapiphonenumber' => $waapiphonenumber]);
     }
 
     public function getWebHook()
@@ -38,14 +38,40 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
-      $wagateway['server'] = $this->settings->get('wagateway.server');
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'wagateway', 'sendmessage']));
+        }
+        $wagateway['server'] = $this->settings->get('wagateway.server');
       $wagateway['token'] = $this->settings->get('wagateway.token');
       $wagateway['phonenumber'] = $this->settings->get('wagateway.phonenumber');
       return $this->draw('settings.html', ['wagateway' => $wagateway]);
     }
 
+    private function isSafeUrl($url) {
+        $parsed = parse_url($url);
+        if (!$parsed || !isset($parsed['scheme']) || strtolower($parsed['scheme']) !== 'https') {
+            return false;
+        }
+        $host = $parsed['host'] ?? '';
+        $ips = gethostbynamel($host);
+        if (!$ips) {
+            return false;
+        }
+        foreach ($ips as $ip) {
+            if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function postSaveSettings()
     {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+            redirect(url([ADMIN, 'wagateway', 'sendmessage']));
+        }
         foreach ($_POST['wagateway'] as $key => $val) {
             $this->settings('wagateway', $key, $val);
         }
@@ -55,16 +81,22 @@ class Admin extends AdminModule
         $settings['email'] = $this->settings->get('settings.email');
 
         $url = "https://mlite.id/wagateway/activated";
-        $curlHandle = curl_init();
-        curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"token=".$wagateway['token']."&body=".$wagateway['phonenumber']."&email=".$settings['email']);
-        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
-        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
-        curl_setopt($curlHandle, CURLOPT_POST, 1);
-        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
-        curl_exec($curlHandle);
-        curl_close($curlHandle);
+        // SSRF protection: validate that the URL is strictly the intended public endpoint
+        if ($url === "https://mlite.id/wagateway/activated" && $this->isSafeUrl($url)) {
+            $curlHandle = curl_init();
+            curl_setopt($curlHandle, CURLOPT_URL, $url);
+            curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+            curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+            curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
+            curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"token=".$wagateway['token']."&body=".$wagateway['phonenumber']."&email=".$settings['email']);
+            curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+            curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+            curl_setopt($curlHandle, CURLOPT_POST, 1);
+            curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
+            curl_exec($curlHandle);
+            curl_close($curlHandle);
+        }
 
         $this->notify('success', 'Pengaturan telah disimpan');
         redirect(url([ADMIN, 'wagateway', 'settings']));
@@ -77,18 +109,31 @@ class Admin extends AdminModule
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimpesan";
+        if (!$this->isSafeUrl($url)) {
+            $this->notify('failure', 'Invalid or insecure WA Gateway URL');
+            return $this->draw('send.message.html');
+        }
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=text&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS, http_build_query([
+            'type' => 'text',
+            'sender' => $waapiphonenumber,
+            'number' => $_POST['number'] ?? '',
+            'message' => $_POST['message'] ?? '',
+            'api_key' => $waapitoken
+        ]));
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
-        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'true') {
+        if(isset($response['status']) && $response['status'] == 'true') {
           $this->notify('success', 'Sukses mengirim pesan');
         } else {
           $this->notify('failure', 'Gagal mengirim pesan');
@@ -104,18 +149,32 @@ class Admin extends AdminModule
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimgambar";
+        if (!$this->isSafeUrl($url)) {
+            $this->notify('failure', 'Invalid or insecure WA Gateway URL');
+            return $this->draw('send.image.html');
+        }
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=image&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS, http_build_query([
+            'type' => 'image',
+            'sender' => $waapiphonenumber,
+            'number' => $_POST['number'] ?? '',
+            'message' => $_POST['message'] ?? '',
+            'url' => $_POST['url'] ?? '',
+            'api_key' => $waapitoken
+        ]));
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
-        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'true') {
+        if(isset($response['status']) && $response['status'] == 'true') {
           $this->notify('success', 'Sukses mengirim gambar');
         } else {
           $this->notify('failure', 'Gagal mengirim gambar');
@@ -131,18 +190,32 @@ class Admin extends AdminModule
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimfile";
+        if (!$this->isSafeUrl($url)) {
+            $this->notify('failure', 'Invalid or insecure WA Gateway URL');
+            return $this->draw('send.file.html');
+        }
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=document&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+        curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS, http_build_query([
+            'type' => 'document',
+            'sender' => $waapiphonenumber,
+            'number' => $_POST['number'] ?? '',
+            'message' => $_POST['message'] ?? '',
+            'url' => $_POST['url'] ?? '',
+            'api_key' => $waapitoken
+        ]));
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
-        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'true') {
+        if(isset($response['status']) && $response['status'] == 'true') {
           $this->notify('success', 'Sukses mengirim dokumen');
         } else {
           $this->notify('failure', 'Gagal mengirim dokumen');

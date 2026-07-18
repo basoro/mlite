@@ -5,14 +5,14 @@
                 <h3 class="panel-title">Kelola Data Barcode</h3>
                 <ul class="nav nav-tabs">
                     <li>
-                        <a href="{$barcode.addURL}" role="tab">Tambah</a>
+                        <a href="{?=isset_or($barcode.addURL)?}" role="tab">Tambah</a>
                     </li>
 				        </ul>
             </div>
             <div class="panel-body">
               <div class="row clearfix">
                 <div class="col col-md-6">
-                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($barcode.totalRecords)?}</h3>
+                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=$barcode.totalRecords?}</h3>
                 </div>
                 <div class="col col-md-6">
                   <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
@@ -40,14 +40,14 @@
             				{if: !empty($barcode.list)}
     								{loop: $barcode.list}
     								<tr>
-    									<td>{$value.id}</td>
-                      <td>{$value.nama}</td>
-    									<td>{$value.barcode}</td>
+    									<td>{?=isset_or($value.id)?}</td>
+                      <td>{?=isset_or($value.nama)?}</td>
+    									<td>{?=isset_or($value.barcode)?}</td>
     									<td class="text-right">
-    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    										<a href="{?=isset_or($value.editURL)?}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
     										</a>
-                        <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+                        <a href="{?=isset_or($value.delURL)?}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
     											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
     										</a>
     									</td>
@@ -59,7 +59,7 @@
     							</tbody>
     						</table>
     					</div>
-					{$barcode.pagination}
+					{?=isset_or($barcode.pagination)?}
             </div>
         </div>
     </div>

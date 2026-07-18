@@ -6,21 +6,21 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Tanggal Masuk</label>
             <div class="col-sm-4">
-              <input type="text" id="tgl_masuk" name="tgl_masuk" class="form-control tanggal" value="{$rawat_inap.kamar_inap.tgl_masuk}">
+              <input type="text" id="tgl_masuk" name="tgl_masuk" class="form-control tanggal" value="{?=isset_or($rawat_inap.kamar_inap.tgl_masuk)?}">
             </div>
             <label for="" class="col-sm-2 control-label">Jam</label>
             <div class="col-sm-3">
-              <input type="text" id="jam_masuk" name="jam_masuk" class="form-control jam" value="{$rawat_inap.kamar_inap.jam_masuk}">
+              <input type="text" id="jam_masuk" name="jam_masuk" class="form-control jam" value="{?=isset_or($rawat_inap.kamar_inap.jam_masuk)?}">
             </div>
           </div>
           <div class="form-group" id="tanggal_keluar">
             <label for="" class="col-sm-3 control-label">Tanggal Keluar</label>
             <div class="col-sm-4">
-              <input type="text" id="tgl_keluar" name="tgl_keluar" class="form-control tanggal" value="{$rawat_inap.kamar_inap.tgl_keluar}">
+              <input type="text" id="tgl_keluar" name="tgl_keluar" class="form-control tanggal" value="{?=isset_or($rawat_inap.kamar_inap.tgl_keluar)?}">
             </div>
             <label for="" class="col-sm-2 control-label">Jam</label>
             <div class="col-sm-3">
-              <input type="text" id="jam_keluar" name="jam_keluar" class="form-control jam" value="{$rawat_inap.kamar_inap.jam_keluar}">
+              <input type="text" id="jam_keluar" name="jam_keluar" class="form-control jam" value="{?=isset_or($rawat_inap.kamar_inap.jam_keluar)?}">
             </div>
           </div>
           <div class="form-group" id="cari_pasien">
@@ -34,13 +34,13 @@
             <div class="col-sm-5">
               <select class="form-control" name="kd_kamar">
                 {loop: $rawat_inap.kamar}
-                <option value="{$value.kd_kamar}"{if: $rawat_inap.kamar_inap.kd_kamar == $value.kd_kamar} selected{/if}>{$value.nm_bangsal} - {$value.kd_kamar}</option>
+                <option value="{?=isset_or($value.kd_kamar)?}"{if: $rawat_inap.kamar_inap.kd_kamar == $value.kd_kamar} selected{/if}>{?=isset_or($value.nm_bangsal)?} - {?=isset_or($value.kd_kamar)?}</option>
                 {/loop}
               </select>
             </div>
             <label for="" class="col-sm-2 control-label">Lama</label>
             <div class="col-sm-2">
-              <input type="text" name="lama" class="form-control" value="{$rawat_inap.kamar_inap.lama}">
+              <input type="text" name="lama" class="form-control" value="{?=isset_or($rawat_inap.kamar_inap.lama)?}">
             </div>
           </div>
           <div class="form-group">
@@ -48,7 +48,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kd_dokter">
                 {loop: $rawat_inap.dokter}
-                <option value="{$value.kd_dokter}"{if: $rawat_inap.kamar_inap.kd_dokter == $value.kd_dokter} selected{/if}>{$value.nm_dokter}</option>
+                <option value="{?=isset_or($value.kd_dokter)?}"{if: $rawat_inap.kamar_inap.kd_dokter == $value.kd_dokter} selected{/if}>{?=isset_or($value.nm_dokter)?}</option>
                 {/loop}
               </select>
             </div>
@@ -58,7 +58,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kd_pj">
                 {loop: $rawat_inap.penjab}
-                <option value="{$value.kd_pj}"{if: $rawat_inap.kamar_inap.kd_pj == $value.kd_pj} selected{/if}>{$value.png_jawab}</option>
+                <option value="{?=isset_or($value.kd_pj)?}"{if: $rawat_inap.kamar_inap.kd_pj == $value.kd_pj} selected{/if}>{?=isset_or($value.png_jawab)?}</option>
                 {/loop}
               </select>
             </div>
@@ -76,32 +76,32 @@
           <div class="form-group">
             <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor RM</label>
             <div class="col-sm-9">
-              <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor rekam medik" value="{$rawat_inap.kamar_inap.no_rkm_medis}" readonly>
+              <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor rekam medik" value="{?=isset_or($rawat_inap.kamar_inap.no_rkm_medis)?}" readonly>
             </div>
           </div>
           <div class="form-group">
             <label for="nama_pasien" class="col-sm-3 control-label">Nama Pasien</label>
             <div class="col-sm-9">
-              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="{$rawat_inap.kamar_inap.nm_pasien}" readonly>
+              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="{?=isset_or($rawat_inap.kamar_inap.nm_pasien)?}" readonly>
             </div>
           </div>
           <div class="form-group">
             <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor Rawat</label>
             <div class="col-sm-9">
-              <input type="text" name="no_rawat" class="form-control" value="{$rawat_inap.kamar_inap.no_rawat}" readonly>
+              <input type="text" name="no_rawat" class="form-control" value="{?=isset_or($rawat_inap.kamar_inap.no_rawat)?}" readonly>
             </div>
           </div>
           <div class="form-group" id="diagnosa_masuk">
             <label for="nama_pasien" class="col-sm-3 control-label">Diagnosa Masuk</label>
             <div class="col-sm-9">
-              <input type="text" name="diagnosa_awal" class="form-control" placeholder="Diagnosa awal" value="{$rawat_inap.kamar_inap.diagnosa_awal}">
+              <input type="text" name="diagnosa_awal" class="form-control" placeholder="Diagnosa awal" value="{?=isset_or($rawat_inap.kamar_inap.diagnosa_awal)?}">
             </div>
           </div>
           <div  id="diagnosa_keluar">
             <div class="form-group">
               <label for="nama_pasien" class="col-sm-3 control-label">Diagnosa Keluar</label>
               <div class="col-sm-9">
-                <input type="text" name="diagnosa_akhir" class="form-control" placeholder="Diagnosa akhir" value="{$rawat_inap.kamar_inap.diagnosa_akhir}">
+                <input type="text" name="diagnosa_akhir" class="form-control" placeholder="Diagnosa akhir" value="{?=isset_or($rawat_inap.kamar_inap.diagnosa_akhir)?}">
               </div>
             </div>
             <div class="form-group">
@@ -109,7 +109,7 @@
               <div class="col-sm-9">
                 <select class="form-control" name="stts_pulang">
                   {loop: $rawat_inap.stts_pulang}
-                  <option value="{$value}"{if: $rawat_inap.kamar_inap.stts_pulang == $value} selected{/if}>{$value}</option>
+                  <option value="{?=isset_or($value)?}"{if: $rawat_inap.kamar_inap.stts_pulang == $value} selected{/if}>{?=isset_or($value)?}</option>
                   {/loop}
                 </select>
               </div>
@@ -122,14 +122,26 @@
   </div>
   <div class="col-md-12 m-b-xl">
     <div class="text-center">
-      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
-      <button type="button" name="button" class="btn btn-info" id="simpan_keluar"><i class="fa fa-trash"></i><span class="hidden-xs"> Keluar</span></button>
-      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-primary" id="simpan" {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_create', 'rawat_inap') == false}disabled{/if}><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-info" id="simpan_keluar" {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'rawat_inap') == false}disabled{/if}><i class="fa fa-trash"></i><span class="hidden-xs"> Keluar</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus" {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_delete', 'rawat_inap') == false}disabled{/if}><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
       <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
     </div>
   </div>
 </div>
 <script type="text/javascript">
+
+  if(window.location.search.indexOf('no_rawat') !== -1) { 
+      let searchParams = new URLSearchParams(window.location.search)
+      $('input:text[name=pasien]').val(searchParams.get('no_rawat'));
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var url    = baseURL + '/rawat_inap/pasien?t=' + mlite.token;
+      var cari = $('input:text[name=pasien]').val();
+      $.post(url, {cari: cari} ,function(data) {
+        $("#pasien").html(data).show();
+      });
+  }
+
   $('select').selectator();
   // ketika inputbox pencarian no rm/nama pasien diisi
   $('input:text[name=pasien]').on('keydown',function(e){

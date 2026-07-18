@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Login - Mini PACS mLITE</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Standard Bootstrap 3 & Assets -->
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/animate.min.css" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Light Theme Variables */
+            --primary-color: #0284c7;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --input-bg: #f8fafc;
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme Variables */
+            --primary-color: #38bdf8;
+            --bg-body: #020617;
+            --bg-card: #0f172a;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #1e293b;
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header img {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .login-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .input-group {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-group-addon-modern {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            z-index: 10;
+        }
+
+        .form-control-modern {
+            width: 100%;
+            height: 48px;
+            padding: 10px 15px 10px 40px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        .form-control-modern:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+            outline: 0;
+            background-color: var(--bg-card);
+        }
+
+        .btn-login {
+            width: 100%;
+            height: 48px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+        }
+
+        .footer-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Hero / Space */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--bg-card);
+            color: var(--text-main);
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+
+<body data-theme="light">
+
+    <div id="themeToggle" class="theme-toggle" title="Ganti Tema">
+        <i class="fa fa-moon-o"></i>
+    </div>
+
+    <div class="login-container animate fadeInDown">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="{?=url()?}/favicon.png" alt="mLITE Logo">
+                <h2>mLITE mini PACS</h2>
+            </div>
+
+            <form action="{?=url([ADMIN])?}/" id="sign_in" method="POST">
+                <div class="form-group">
+                    <label class="form-label">Kode Dokter / Username</label>
+                    <div class="input-group">
+                        <span class="input-group-addon-modern">
+                            <i class="fa fa-user"></i>
+                        </span>
+                        <input type="text" class="form-control-modern" name="username" placeholder="Masukkan username"
+                            required autofocus>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Kata Kunci / Password</label>
+                    <div class="input-group">
+                        <span class="input-group-addon-modern">
+                            <i class="fa fa-lock"></i>
+                        </span>
+                        <input type="password" class="form-control-modern" name="password"
+                            placeholder="Masukkan password" required>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-xs-12">
+                        <label style="font-weight: normal; cursor: pointer; color: var(--text-muted); font-size: 13px;">
+                            <input type="checkbox" name="remember_me" id="remember_me"> Ingat saya
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn-login" name="login" type="submit">MASUK</button>
+            </form>
+
+            <div class="footer-links">
+                &copy; {?=date('Y')?} <a href="https://mlite.id/" target="_blank">mLITE Indonesia</a>
+                <div style="margin-top: 5px; opacity: 0.6; font-size: 11px;">Version V.1.0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Theme Logic (shared with main.html)
+            var savedTheme = localStorage.getItem('pacs-theme') || 'light';
+            applyTheme(savedTheme);
+
+            $('#themeToggle').on('click', function () {
+                var currentTheme = $('body').attr('data-theme');
+                var newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                applyTheme(newTheme);
+            });
+
+            function applyTheme(theme) {
+                $('body').attr('data-theme', theme);
+                localStorage.setItem('pacs-theme', theme);
+
+                var icon = $('#themeToggle i');
+                if (theme === 'dark') {
+                    icon.removeClass('fa-moon-o').addClass('fa-sun-o');
+                } else {
+                    icon.removeClass('fa-sun-o').addClass('fa-moon-o');
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

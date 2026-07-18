@@ -65,8 +65,14 @@ class BaseModule
         return $this->core->db($table);
     }
 
-    protected function notify()
+    /**
+     * Send notification using variadic parameters
+     * Compatible with PHP 8+
+     * 
+     * @param mixed ...$args Arguments to pass to setNotify
+     */
+    protected function notify(...$args): void
     {
-        call_user_func_array([$this->core, 'setNotify'], func_get_args());
+        $this->core->setNotify(...$args);
     }
 }

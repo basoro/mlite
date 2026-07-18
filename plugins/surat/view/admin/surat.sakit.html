@@ -1,0 +1,341 @@
+<style>
+    /* CSS Murni untuk Tampilan Layar */
+    body {
+        background: #f4f7f6;
+        padding: 20px;
+        font-family: 'Times New Roman', Times, serif;
+    }
+
+    .top-action-bar {
+        text-align: left;
+        margin-bottom: 20px;
+        max-width: 210mm;
+        margin: 0 auto 20px auto;
+    }
+    .top-action-bar button {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        padding: 8px 15px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        margin-right: 5px;
+        color: #fff;
+    }
+    .btn-simpan { background-color: #28a745; }
+    .btn-simpan:hover { background-color: #218838; }
+    .btn-cetak { background-color: #007bff; }
+    .btn-cetak:hover { background-color: #0069d9; }
+    .btn-tutup { background-color: #6c757d; }
+    .btn-tutup:hover { background-color: #5a6268; }
+
+    .paper {
+        background: #fff;
+        width: 210mm;
+        min-height: 297mm;
+        padding: 15mm 20mm;
+        margin: 0 auto;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        color: #000;
+        line-height: 1.5;
+        box-sizing: border-box;
+    }
+
+    .kop-header {
+        border-bottom: 4px solid #000;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    .logo-klinik {
+        width: 100px;
+        height: auto;
+    }
+
+    .header-text {
+        text-align: center;
+    }
+    .header-title {
+        font-size: 26px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #164f6b;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+    .header-address {
+        font-size: 14px;
+        margin: 3px 0 0 0;
+    }
+
+    .surat-title-container {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .surat-title {
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: underline;
+        margin: 0 0 5px 0;
+    }
+
+    .content-body {
+        font-size: 15px;
+        text-align: justify;
+    }
+
+    .paragraph-text {
+        margin-top: 30px;
+        text-align: justify;
+        line-height: 2;
+    }
+
+    .input-clean {
+        border: none;
+        background: #f0f0f0;
+        padding: 2px 5px;
+        font-family: 'Times New Roman', Times, serif;
+        border-radius: 4px;
+        font-size: 15px;
+    }
+    .input-clean:focus {
+        background: #fff;
+        outline: 1px dashed #ccc;
+    }
+
+    .print-only { display: none; }
+
+    .ttd-area {
+        margin-top: 60px;
+        float: right;
+        text-align: center;
+        width: 300px;
+        font-size: 15px;
+    }
+
+    @media print {
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+        body {
+            background: #fff;
+            padding: 0;
+            margin: 0;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+        .paper {
+            box-shadow: none;
+            border: none;
+            margin: 0;
+            width: 100%;
+            padding: 15mm 20mm;
+        }
+
+        .top-action-bar, .no-print { display: none !important; }
+
+        .screen-only { display: none !important; }
+        .print-only {
+            display: inline !important;
+            font-weight: bold;
+        }
+        #print_nomor_surat { font-weight: normal !important; }
+
+        .input-clean {
+            background: transparent !important;
+            padding: 0;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none;
+            -webkit-appearance: none;
+        }
+    }
+</style>
+
+<div class="top-action-bar no-print">
+    <button class="btn btn-simpan" onclick="Simpan()">&#9635; Simpan Data</button>
+    <button class="btn btn-cetak" onclick="window.print()">&#128424; Cetak Surat</button>
+    <button class="btn btn-tutup" onclick="window.close()">Tutup</button>
+</div>
+
+<div class="paper">
+    <table class="kop-header" width="100%">
+        <tr>
+            <td width="15%" style="text-align: center; vertical-align: middle;">
+                <img src="{?=url()?}/{$settings.logo}" class="logo-klinik" onerror="this.style.display='none';">
+            </td>
+            <td width="85%" class="header-text">
+                <h1 class="header-title">{$settings.nama_instansi}</h1>
+                <p class="header-address">
+                    {$settings.alamat}, {$settings.kota}, {$settings.propinsi}<br>
+                    Telp: {$settings.nomor_telepon} - Email: {$settings.email}
+                </p>
+            </td>
+        </tr>
+    </table>
+
+    <div class="surat-title-container">
+        <h3 class="surat-title">SURAT KETERANGAN SAKIT</h3>
+        <div style="text-align: center;">
+            Nomor:
+            <input type="text" class="input-clean screen-only" id="nomor_surat" value="{?=!empty($surat.nomor_surat) ? $surat.nomor_surat : $nomor_surat?}" style="width: 200px; text-align: center;" onkeyup="syncPrintText('nomor_surat')">
+            <span class="print-only" id="print_nomor_surat">{?=!empty($surat.nomor_surat) ? $surat.nomor_surat : $nomor_surat?}</span>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <p style="margin-bottom: 20px;">Yang bertanda tangan di bawah ini Dokter {$settings.nama_instansi}, menerangkan bahwa:</p>
+
+        <table width="100%" style="margin-left: 20px; line-height: 1.8;">
+            <tr>
+                <td width="30%">Nama</td>
+                <td width="2%">:</td>
+                <td style="font-weight: bold;">{$pasien.nm_pasien}</td>
+            </tr>
+            <tr>
+                <td>No. Rekam Medis</td>
+                <td>:</td>
+                <td>{$pasien.no_rkm_medis}</td>
+            </tr>
+            <tr>
+                <td>Tanggal Lahir / Umur</td>
+                <td>:</td>
+                <td>{$pasien.tgl_lahir} / {?=hitungUmur($pasien.tgl_lahir)?}</td>
+            </tr>
+            <tr>
+                <td>Jenis Kelamin</td>
+                <td>:</td>
+                <td>{if: $pasien.jk == 'L'}Laki-laki{elseif: $pasien.jk == 'P'}Perempuan{else}-{/if}</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">Alamat</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}</td>
+            </tr>
+        </table>
+
+        <p class="paragraph-text">
+            Berdasarkan hasil pemeriksaan klinis, yang bersangkutan dalam keadaan sakit dengan diagnosa penyakit
+            <input type="text" class="input-clean screen-only" id="diagnosa" value="{?=isset_or($surat.diagnosa)?}" style="width: 300px; border-bottom: 1px dotted #ccc;" onkeyup="syncPrintText('diagnosa')"><span class="print-only" id="print_diagnosa">{?=isset_or($surat.diagnosa)?}</span>,
+            dan perlu istirahat selama
+            <input type="text" class="input-clean screen-only" id="lama_angka" value="{?=isset_or($surat.lama_angka)?}" style="width: 30px; text-align: center; font-weight: bold;" readonly><span class="print-only" id="print_lama_angka">{?=isset_or($surat.lama_angka)?}</span>
+            hari, terhitung mulai tanggal
+            <input type="date" class="input-clean screen-only" id="tanggal_mulai" value="{?=isset_or($surat.tanggal_mulai, date('Y-m-d'))?}" style="font-weight: bold;" onchange="syncPrintText('tanggal_mulai')"><span class="print-only" id="print_tanggal_mulai">{?=isset_or($surat.tanggal_mulai, date('d/m/Y'))?}</span>
+            sampai dengan tanggal
+            <input type="date" class="input-clean screen-only" id="tanggal_selesai" value="{?=isset_or($surat.tanggal_selesai, date('Y-m-d'))?}" style="font-weight: bold;" onchange="syncPrintText('tanggal_selesai')"><span class="print-only" id="print_tanggal_selesai">{?=isset_or($surat.tanggal_selesai, date('d/m/Y'))?}</span>.
+        </p>
+
+        <p style="margin-top: 30px;">Demikianlah surat keterangan ini dibuat dengan sebenarnya untuk digunakan sebagaimana mestinya.</p>
+    </div>
+
+    <div class="ttd-area">
+        {$settings.kota}, {?=date('d F Y')?}<br>
+        Dokter Pemeriksa,
+        <div id="qrcode_dokter" style="margin: 15px auto; width: 80px;"></div>
+        <strong>{$nm_dokter}</strong><br>
+    </div>
+
+    <div style="clear: both;"></div>
+</div>
+
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+
+<script>
+    // QR surat diarahkan ke halaman verifikasi publik
+    function generateQR() {
+        $('#qrcode_dokter').html('');
+        $('#qrcode_dokter').qrcode({
+            text: "{$surat_verifikasi_url}",
+            width: 80,
+            height: 80
+        });
+    }
+
+    // Fungsi Sinkronisasi Input Teks ke Teks Print
+    function syncPrintText(id) {
+        var val = $('#' + id).val();
+
+        if (id === 'tanggal_mulai' || id === 'tanggal_selesai') {
+            if (val) {
+                var d = val.split('-');
+                val = d[2] + '/' + d[1] + '/' + d[0];
+            }
+        }
+
+        $('#print_' + id).text(val);
+
+    }
+
+    $(document).ready(function() {
+        generateQR(); // Eksekusi pertama kali
+
+        // Sinkronisasi data awal
+        syncPrintText('nomor_surat');
+        syncPrintText('diagnosa');
+        syncPrintText('tanggal_mulai');
+        syncPrintText('tanggal_selesai');
+
+        function hitungHari() {
+            var start = new Date($('#tanggal_mulai').val());
+            var end = new Date($('#tanggal_selesai').val());
+
+            if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                var diffTime = end - start;
+                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                if (diffDays < 0) {
+                    alert("Tanggal selesai tidak boleh mundur!");
+                    $('#tanggal_selesai').val($('#tanggal_mulai').val());
+                    $('#lama_angka').val(1);
+                    syncPrintText('tanggal_selesai');
+                } else {
+                    $('#lama_angka').val(diffDays);
+                }
+                $('#print_lama_angka').text($('#lama_angka').val());
+            }
+        }
+
+        $('#tanggal_mulai, #tanggal_selesai').on('change', function() {
+            hitungHari();
+        });
+
+        hitungHari();
+    });
+
+    function Simpan() {
+        var postData = {
+            no_rawat: {?=json_encode($no_rawat)?},
+            nomor_surat: $("#nomor_surat").val(),
+            no_rkm_medis: {?=json_encode($pasien.no_rkm_medis)?},
+            nm_pasien: {?=json_encode($pasien.nm_pasien)?},
+            tgl_lahir: {?=json_encode($pasien.tgl_lahir)?},
+            umur: {?=json_encode(hitungUmur($pasien.tgl_lahir))?},
+            jk: {?=json_encode($pasien.jk)?},
+            alamat: {?=json_encode($pasien.alamat)?},
+            keadaan: "sakit",
+            diagnosa: $("#diagnosa").val(),
+            lama_angka: $("#lama_angka").val(),
+            lama_huruf: "",
+            tanggal_mulai: $("#tanggal_mulai").val(),
+            tanggal_selesai: $("#tanggal_selesai").val(),
+            dokter: {?=json_encode($nm_dokter)?},
+            petugas: {?=json_encode($this->core->getUserInfo('username', $_SESSION['mlite_user']))?}
+        };
+
+        $('.btn-simpan').html('Menyimpan...').attr('disabled', true);
+
+        $.post("{?=url([ADMIN,'rawat_jalan','simpansuratsakit'])?}", postData, function(data) {
+            var res = JSON.parse(data);
+            if(res.status == 'success') {
+                alert('Data Surat Sakit berhasil disimpan!');
+                window.location.reload();
+            } else {
+                alert('Gagal: ' + res.msg);
+                $('.btn-simpan').html('&#9635; Simpan Data').attr('disabled', false);
+            }
+        });
+    }
+</script>

@@ -5,14 +5,14 @@
                 {loop: $sub_modules}
                 <li class="module">
                     <div class="panel panel-default">
-                        <a href="{$value.url}" class="panel-body text-center">
+                        <a href="{?=isset_or($value.url)?}" class="panel-body text-center">
                             <div class="panel-thumb">
-                                <i class="fa fa-{$value.icon}"></i>
+                                <i class="fa fa-{?=isset_or($value.icon)?}"></i>
                                 <div class="desc">
-                                    {$value.desc}
+                                    {?=isset_or($value.desc)?}
                                 </div>
                             </div>
-                            <h4><b>{$value.name}</b></h4>
+                            <h4><b>{?=isset_or($value.name)?}</b></h4>
                         </a>
                     </div>
                 </li>

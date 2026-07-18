@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>mLITE</title>
-    <link rel="icon" href="{?=url()?}/{$settings.logo}" type="image/x-icon">
-    <link href="{?=url()?}/assets/css/{$settings.theme_admin}.min.css" rel="stylesheet">
+    <link rel="icon" href="{?=url()?}/{?=isset_or($settings.logo)?}" type="image/x-icon">
+    <link href="{?=url()?}/assets/css/{?=isset_or($settings.theme_admin)?}.min.css" rel="stylesheet">
     <link href="{?=url()?}/assets/css/animate.min.css" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/style.css')?}" rel="stylesheet">
     <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
@@ -43,7 +43,7 @@
     <style>
       html {
         height: 0;
-        background: url('{?=url()?}/{$settings.wallpaper}') no-repeat center center fixed;
+        background: url('{?=url()?}/{?=isset_or($settings.wallpaper)?}') no-repeat center center fixed;
         -webkit-background-size: cover;
         -moz-background-size: cover;
         -o-background-size: cover;
@@ -57,7 +57,7 @@
         background: transparent;
       }
       .dashboard_wall {
-        position: fixed; bottom: 120px; left: 80px;width:100%;color: {$settings.text_color} !important;
+        position: fixed; bottom: 120px; left: 80px;width:100%;color: {?=isset_or($settings.text_color)?} !important;
       }
       p.title {
         position: absolute; bottom: 30px;left: 140px;font-size:32px; text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
@@ -166,6 +166,43 @@
         }
     }
 
+
+    /* Dropdown menu 2 columns layout */
+    .dropdown-menu.columns-2 {
+        min-width: 400px;
+        padding: 10px 0;
+    }
+
+    .dropdown-menu.columns-2 > li {
+        float: left;
+        width: 50%;
+    }
+
+    .dropdown-menu.columns-2:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    /* Fix submenu positioning in 2-column layout */
+    .dropdown-submenu > .dropdown-menu {
+        left: 100%;
+        margin-top: -6px;
+        margin-left: -1px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 767px) {
+        .dropdown-menu.columns-2 {
+            min-width: 100%;
+        }
+        
+        .dropdown-menu.columns-2 > li {
+            width: 100%;
+            float: none;
+        }
+    }
+
     </style>
 
 </head>
@@ -179,8 +216,8 @@
               <div class="container-fluid">
                   <div class="navbar-header">
                       <a href="#">
-                      <img class="logo" src="{?=url()?}/{$mlite.logo}" alt="">
-                      <span class="navbar-brand truncated"> {$mlite.nama_instansi} </span>
+                      <img class="logo" src="{?=url()?}/{?=isset_or($mlite.logo)?}" alt="">
+                      <span class="navbar-brand truncated"> {?=isset_or($mlite.nama_instansi)?} </span>
                       </a>
                   </div>
                   <ul class="nav navbar-nav navbar-right">
@@ -198,96 +235,165 @@
                 <ul class="dropdown-menu">
                   <li><a href="#" data-toggle="modal" data-target="#tentangModal"> Tentang</a></li>
                   <li class="disabled"><a href="#"> Menu</a></li>
+                  <li role="separator" class="divider"></li>                  
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'main'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {?=isset_or($value.name)?}
+                      </a>
+                      <ul class="dropdown-menu {if: $value.name == 'Master Data'}columns-2{/if}">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{?=isset_or($value.name)?}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{?=isset_or($value.name)?}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
+                  <li role="separator" class="divider"></li>
                   <li><a href="#" data-toggle="modal" data-target="#menuModal"> Login</a></li>
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Layanan</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">IGD</a></li>
-                  <li class="disabled"><a href="#">Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Dokter IGD</a></li>
-                  <li class="disabled"><a href="#">Dokter Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Dokter Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Apotek</a></li>
-                  <li class="disabled"><a href="#">Laporatorium</a></li>
-                  <li class="disabled"><a href="#">Radiologi</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'layanan'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {?=isset_or($value.name)?}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{?=isset_or($value.name)?}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{?=isset_or($value.name)?}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manajemen</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Manajemen Mutu</a></li>
-                  <li class="disabled"><a href="#">Master Data</a></li>
-                  <li class="disabled"><a href="#">Kepegawaian</a></li>
-                  <li class="disabled"><a href="#">Dokter</a></li>
-                  <li class="disabled"><a href="#">Petugas</a></li>
-                  <li class="disabled"><a href="#">WA Gateway</a></li>
-                  <li class="disabled"><a href="#">Presensi Pegawai</a></li>
-                  <li class="disabled"><a href="#">Akun Pegawai</a></li>
-                  <li class="disabled"><a href="#">Data Inventaris</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'manajemen'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {?=isset_or($value.name)?}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{?=isset_or($value.name)?}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{?=isset_or($value.name)?}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Farmasi</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Apotek Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Apotek Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Inventory Obat</a></li>
-                  <li class="disabled"><a href="#">Stok Opname</a></li>
-                  <li class="disabled"><a href="#">Mutasi Obat</a></li>
-                  <li class="disabled"><a href="#">Sirkulasi Obat</a></li>
-                  <li class="disabled"><a href="#">Detail Pemberian Obat</a></li>
-                  <li class="disabled"><a href="#">Darurat Stok</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'farmasi'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {?=isset_or($value.name)?}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{?=isset_or($value.name)?}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{?=isset_or($value.name)?}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Rekan Medik</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Data Pasien</a></li>
-                  <li class="disabled"><a href="#">Verifikasi Digital Klaim</a></li>
-                  <li class="disabled"><a href="#">Verifikasi Obat Kronis</a></li>
-                  <li class="disabled"><a href="#">Data ICD 10</a></li>
-                  <li class="disabled"><a href="#">Data ICD 9</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'rekammedik'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {?=isset_or($value.name)?}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{?=isset_or($value.name)?}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{?=isset_or($value.name)?}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Bridging</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">vClaim BPJS</a></li>
-                  <li class="disabled"><a href="#">Antrol FKTL BPJS</a></li>
-                  <li class="disabled"><a href="#">PCare BPJS</a></li>
-                  <li class="disabled"><a href="#">Antrol FKTP BPJS</a></li>
-                  <li class="disabled"><a href="#">Aplicare BPJS</a></li>
-                  <li class="disabled"><a href="#">iCare BPJS</a></li>
-                  <li class="disabled"><a href="#">Siranap Kemkes</a></li>
-                  <li class="disabled"><a href="#">Satu Sehat Kemkes</a></li>
-                  <li class="disabled"><a href="#">Radiologi Orthanc</a></li>
-                  <li class="disabled"><a href="#">Laborarotium MyLIMS</a></li>
-                </ul>  
-              </li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Laporan</a>
-                <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Jasa Medik Dokter</a></li>
-                  <li class="disabled"><a href="#">Jasa Medik Perawat</a></li>
-                  <li class="disabled"><a href="#">Pembayaran Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Pembayaran Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Kunjungan Rawat Jalan</a></li>
-                  <li class="disabled"><a href="#">Kunjungan Rawat Inap</a></li>
-                  <li class="disabled"><a href="#">Sensus Harian</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'bridging'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {?=isset_or($value.name)?}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{?=isset_or($value.name)?}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{?=isset_or($value.name)?}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Keuangan</a>
                 <ul class="dropdown-menu">
-                  <li class="disabled"><a href="#">Penjualan</a></li>
-                  <li class="disabled"><a href="#">Jurnal Harian</a></li>
-                  <li class="disabled"><a href="#">Posting Jurnal</a></li>
-                  <li class="disabled"><a href="#">Buku Besar</a></li>
-                  <li class="disabled"><a href="#">Cash Flow</a></li>
-                  <li class="disabled"><a href="#">Neraca Rugi Laba</a></li>
+                  {loop: $mlite.nav}
+                  {if: $value.category == 'keuangan'}
+                  <li{if: !empty($value.subnav)} class="dropdown-submenu"{else} class="disabled"{/if}>
+                      {if: !empty($value.subnav)}
+                      <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {?=isset_or($value.name)?}
+                      </a>
+                      <ul class="dropdown-menu">
+                          {loop: $value.subnav}
+                          <li class="disabled"><a href="#" class="dropdown-item">{?=isset_or($value.name)?}</a></li>
+                          {/loop}
+                      </ul>
+                      {else} 
+                      <a class="dropdown-item" href="#">{?=isset_or($value.name)?}</a>
+                      {/if}
+                  </li>
+                  {/if}
+                  {/loop}
                 </ul>  
               </li>
               <li class="dropdown">
@@ -304,14 +410,16 @@
                   <li role="separator" class="divider"></li>
                   <li><a href="{?=url()?}/anjungan/loket" target="_blank">Antrian Loket</a></li>
                   <li><a href="{?=url()?}/anjungan/laboratorium" target="_blank">Antrian Laboratorium</a></li>
+                  <li><a href="{?=url()?}/anjungan/radiologi" target="_blank">Antrian Radiologi</a></li>
                   <li><a href="{?=url()?}/anjungan/apotek" target="_blank">Antrian Apotek</a></li>
                   <li><a href="{?=url()?}/anjungan/poli" target="_blank">Antrian Poliklinik</a></li>
+                  <li><a href="{?=url()?}/anjungan/jadwaloperasi" target="_blank">Jadwal Operasi</a></li>
                   <li><a href="{?=url()?}/jknmobilefktp/display" target="_blank">Display Antrian FKTP</a></li>
                   <li role="separator" class="divider"></li>
                   <li><a href="{?=url()?}/anjungan/poli/all" target="_blank">Antrian Poliklinik Alternatif</a></li>
                   {loop: $mlite.poliklinik}
                     {if: $value.attr == 'selected'}
-                      <li><a href="{?=url()?}/anjungan/poli/{$value.kd_poli}" target="_blank">Antrian {$value.nm_poli}</a></li>
+                      <li><a href="{?=url()?}/anjungan/poli/{?=isset_or($value.kd_poli)?}" target="_blank">Antrian {?=isset_or($value.nm_poli)?}</a></li>
                     {/if}
                   {/loop}  
                 </ul>
@@ -327,25 +435,39 @@
         </div> 
         <div class="container-fluid">
           <ul class="nav navbar-nav">
-            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-home"></i> Menu</a></li>
-            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-users"></i> Pasien</a></li>
-            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-ambulance"></i> IGD</a></li>
-            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-wheelchair"></i> Poliklinik</a></li>
-            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-hotel"></i> Rawat Inap</a></li>
-            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-medkit"></i> Apotek</a></li>
-            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-flask"></i> Laboratorium</a></li>
-            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-film"></i> Radiologi</a></li>
+            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-home text-primary"></i> <span class="text-primary">Menu</span></a></li>
+            {if: $this->core->ActiveModule('pasien')}
+            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-users text-success"></i> <span class="text-success">Pasien</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('igd')}
+            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-ambulance text-danger"></i> <span class="text-danger">IGD</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('rawat_jalan')}
+            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-wheelchair text-warning"></i> <span class="text-warning">Poliklinik</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('rawat_inap')}
+            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-hotel text-info"></i> <span class="text-info">Rawat Inap</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('apotek_ralan')}
+            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-medkit text-success"></i> <span class="text-success">Apotek</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('laboratorium')}
+            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-flask text-warning"></i> <span class="text-warning">Laboratorium</span></a></li>
+            {/if}
+            {if: $this->core->ActiveModule('radiologi')}
+            <li class="menu-icon"><a href="#" class="btn disabled bg-success" style="border-radius: 5px !important;"><i class="fa fa-film text-info"></i> <span class="text-info">Radiologi</span></a></li>
+            {/if}
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="menu-icon"><a href="#" class="btn bg-success" style="border-radius: 5px !important;" data-toggle="modal" data-target="#menuModal" title="Login"><i class="fa fa-key"></i> Login</a></li>
+            <li class="menu-icon"><a href="#" class="btn bg-success" style="border-radius: 5px !important;" data-toggle="modal" data-target="#menuModal" title="Login"><i class="fa fa-key text-danger"></i> <span class="text-danger">Login</span></a></li>
           </ul>
         </div>
       </nav>
 
       <div class="dashboard_wall">
-        <img src="{?=url()?}/{$settings.logo}" class="logo" width="120px" alt="">
-        <p class="title">{$settings.nama_instansi}</p>
-        <p class="alamat">{$settings.alamat} - {$settings.kota} - {$settings.propinsi}</p>
+        <img src="{?=url()?}/{?=isset_or($settings.logo)?}" class="logo" width="120px" alt="">
+        <p class="title">{?=isset_or($settings.nama_instansi)?}</p>
+        <p class="alamat">{?=isset_or($settings.alamat)?} - {?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}</p>
       </div>
 
 
@@ -354,9 +476,9 @@
   <footer class="visible-lg visible-md bg-primary" style="padding-bottom:30px;z-index:1000;">
     <p class="pull-right">
       Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
-      {$mlite.powered}.
+      {?=isset_or($mlite.powered)?}.
     </p>
-    <p><i class="fa fa-fw fa-calendar"></i> <span>{$mlite.tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>Belum login</span></p>
+    <p><i class="fa fa-fw fa-calendar"></i> <span>{?=isset_or($mlite.tanggal)?}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>Belum login</span></p>
   </footer>
 
   <div class="icon-bar hidden-lg hidden-md">
@@ -372,10 +494,23 @@
     <div id="login">
           <div class="panel panel-default">
               <div class="panel-heading">
-                  <img src="{?=url()?}/{$mlite.logo}" alt="logo"> <h2>m<span>LITE</span></h2>
+                  <img src="{?=url()?}/{?=isset_or($mlite.logo)?}" alt="logo"> <h2>m<span>LITE</span></h2>
               </div>
               <div class="panel-body">
           		<form action="{?=url()?}/{?=ADMIN?}/" method="POST">
+                {if: isset($_SESSION['mlite_otp_pending'])}
+                    <h4 class="text-center" style="margin-bottom:20px;">Verifikasi WhatsApp OTP</h4>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-key"></i></div>
+                            <input type="text" name="otp_code" class="form-control" placeholder="6-digit Kode OTP" pattern="\d{6}" title="Masukkan 6 digit angka OTP" required autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" name="verify_otp" class="btn btn-primary btn-block">Verifikasi OTP</button>
+                        <a href="{?=url([ADMIN])?}?cancel_otp=1" class="btn btn-default btn-block" style="margin-top:10px;">Batal (Login Ulang)</a>
+                    </div>
+                {else}
                     	<div class="form-group">
                           <div class="input-group">
                               <div class="input-group-addon"><i class="fa fa-user"></i></div>
@@ -395,11 +530,12 @@
                           </label>
                           <button type="submit" name="login" class="btn btn-primary pull-right">Sign In</button>
                       </div>
+                {/if}
           		</form>
               </div>
           </div>
   		{if: $mlite.notify}
-  		<div id="notify" class="alert-{$mlite.notify.type} animated shake">{$mlite.notify.text}</div>
+  		<div id="notify" class="alert-{?=isset_or($mlite.notify.type)?} animated shake">{?=isset_or($mlite.notify.text)?}</div>
   		{/if}
   	</div>
 </div>
@@ -417,7 +553,7 @@
                   Telegram Group mLITE Indonesia
                   <div class="">
                     <small>
-                      {$mlite.version}
+                      {?=isset_or($mlite.version)?}
                     </small>
                   </div>
                 </h4>
@@ -448,7 +584,7 @@
                   mLITE
                   <div class="">
                     <small>
-                      {$mlite.version}
+                      {?=isset_or($mlite.version)?}
                     </small>
                   </div>
                 </h4>

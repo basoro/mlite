@@ -6,11 +6,11 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Tanggal</label>
             <div class="col-sm-4">
-              <input type="text" id="tgl_registrasi" name="tgl_registrasi" class="form-control tanggal" value="{if: $rawat_jalan.reg_periksa.tgl_registrasi == ''}{?=date('Y-m-d')?}{else}{$rawat_jalan.reg_periksa.tgl_registrasi}{/if}">
+              <input type="text" id="tgl_registrasi" name="tgl_registrasi" class="form-control tanggal" value="{if: $rawat_jalan.reg_periksa.tgl_registrasi == ''}{?=date('Y-m-d')?}{else}{?=isset_or($rawat_jalan.reg_periksa.tgl_registrasi)?}{/if}">
             </div>
             <label for="" class="col-sm-2 control-label">Jam</label>
             <div class="col-sm-3">
-              <input type="text" id="jam_reg" name="jam_reg" class="form-control jam" value="{if: $rawat_jalan.reg_periksa.jam_reg == ''}{?=date('H:i:s')?}{else}{$rawat_jalan.reg_periksa.jam_reg}{/if}">
+              <input type="text" id="jam_reg" name="jam_reg" class="form-control jam" value="{if: $rawat_jalan.reg_periksa.jam_reg == ''}{?=date('H:i:s')?}{else}{?=isset_or($rawat_jalan.reg_periksa.jam_reg)?}{/if}">
             </div>
           </div>
           <div class="form-group">
@@ -24,7 +24,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kd_poli">
                 {loop: $rawat_jalan.poliklinik}
-                <option value="{$value.kd_poli}"{if: $rawat_jalan.reg_periksa.kd_poli == $value.kd_poli} selected{/if}>{$value.nm_poli}</option>
+                <option value="{?=isset_or($value.kd_poli)?}"{if: $rawat_jalan.reg_periksa.kd_poli == $value.kd_poli} selected{/if}>{?=isset_or($value.nm_poli)?}</option>
                 {/loop}
               </select>
             </div>
@@ -34,7 +34,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kd_dokter">
                 {loop: $rawat_jalan.dokter}
-                <option value="{$value.kd_dokter}"{if: $rawat_jalan.reg_periksa.kd_dokter == $value.kd_dokter} selected{/if}>{$value.nm_dokter}</option>
+                <option value="{?=isset_or($value.kd_dokter)?}"{if: $rawat_jalan.reg_periksa.kd_dokter == $value.kd_dokter} selected{/if}>{?=isset_or($value.nm_dokter)?}</option>
                 {/loop}
               </select>
             </div>
@@ -44,7 +44,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kd_pj">
                 {loop: $rawat_jalan.penjab}
-                <option value="{$value.kd_pj}"{if: $rawat_jalan.reg_periksa.kd_pj == $value.kd_pj} selected{/if}>{$value.png_jawab}</option>
+                <option value="{?=isset_or($value.kd_pj)?}"{if: $rawat_jalan.reg_periksa.kd_pj == $value.kd_pj} selected{/if}>{?=isset_or($value.png_jawab)?}</option>
                 {/loop}
               </select>
             </div>
@@ -52,12 +52,12 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">No. Rawat</label>
             <div class="col-sm-4">
-              <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{$rawat_jalan.reg_periksa.no_rawat}" {if: !empty($rawat_jalan.reg_periksa.no_rawat)}disabled{/if}>
+              <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{?=isset_or($rawat_jalan.reg_periksa.no_rawat)?}" {if: !empty($rawat_jalan.reg_periksa.no_rawat)}disabled{/if}>
               <input name="no_rawat_baru" class="form-control" type="hidden" value="" id="no_rawat_baru" >
             </div>
             <label for="" class="col-sm-2 control-label">No. Reg</label>
             <div class="col-sm-3">
-              <input type="text" id="no_reg" name="no_reg" class="form-control" value="{$rawat_jalan.reg_periksa.no_reg}" {if: !empty($rawat_jalan.reg_periksa.no_reg)}disabled{/if}>
+              <input type="text" id="no_reg" name="no_reg" class="form-control" value="{?=isset_or($rawat_jalan.reg_periksa.no_reg)?}" {if: !empty($rawat_jalan.reg_periksa.no_reg)}disabled{/if}>
               <input name="no_reg_baru" class="form-control" type="hidden" value="" id="no_reg_baru" >
             </div>
           </div>
@@ -74,19 +74,19 @@
           <div class="form-group">
             <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor RM</label>
             <div class="col-sm-9">
-              <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor rekam medik" value="{$rawat_jalan.reg_periksa.no_rkm_medis}" readonly>
+              <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor rekam medik" value="{?=isset_or($rawat_jalan.reg_periksa.no_rkm_medis)?}" readonly>
             </div>
           </div>
           <div class="form-group">
             <label for="nama_pasien" class="col-sm-3 control-label">Nama Pasien</label>
             <div class="col-sm-9">
-              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="{$rawat_jalan.reg_periksa.nm_pasien}" readonly>
+              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="{?=isset_or($rawat_jalan.reg_periksa.nm_pasien)?}" readonly>
             </div>
           </div>
           <div class="form-group">
             <label for="tgl_lahir" class="col-sm-3 control-label">Tanggal Lahir</label>
             <div class="col-sm-9">
-              <input type="text" name="tgl_lahir" class="form-control" placeholder="Tanggal Lahir" value="{$rawat_jalan.reg_periksa.tgl_lahir}" readonly>
+              <input type="text" name="tgl_lahir" class="form-control" placeholder="Tanggal Lahir" value="{?=isset_or($rawat_jalan.reg_periksa.tgl_lahir)?}" readonly>
             </div>
           </div>
           <div class="form-group">
@@ -98,7 +98,7 @@
           <div class="form-group">
             <label for="telepon" class="col-sm-3 control-label">Telepon</label>
             <div class="col-sm-9">
-              <input type="text" name="no_tlp" class="form-control" placeholder="Nomor telepon" value="{$rawat_jalan.reg_periksa.no_tlp}" readonly>
+              <input type="text" name="no_tlp" class="form-control" placeholder="Nomor telepon" value="{?=isset_or($rawat_jalan.reg_periksa.no_tlp)?}" readonly>
             </div>
           </div>
           <div id="stts_daftar"></div>
@@ -108,16 +108,16 @@
   </div>
   <div class="col-md-12 m-b-xl">
     <div class="text-center">
-      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
-      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-primary" id="simpan" {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_create', 'rawat_jalan') == false}disabled{/if}><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus" {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_delete', 'rawat_jalan') == false}disabled{/if}><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
       <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
     </div>
   </div>
 </div>
 <script type="text/javascript">
 
-  let searchParams = new URLSearchParams(window.location.search)
   if(window.location.search.indexOf('no_rkm_medis') !== -1) { 
+      let searchParams = new URLSearchParams(window.location.search)
       $('input:text[name=pasien]').val(searchParams.get('no_rkm_medis'));
       var baseURL = mlite.url + '/' + mlite.admin;
       var url    = baseURL + '/rawat_jalan/pasien?t=' + mlite.token;

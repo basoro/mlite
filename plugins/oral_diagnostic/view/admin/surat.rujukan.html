@@ -30,14 +30,14 @@
   function Simpan()
   {
     var url = "{?=url([ADMIN,'oral_diagnostic','simpansuratrujukan'])?}";
-    var no_rawat = "{$no_rawat}";
+    var no_rawat = "{?=isset_or($no_rawat)?}";
     var nomor_surat = $("#nomor_surat").val();
-    var no_rkm_medis = "{$pasien.no_rkm_medis}";
-    var nm_pasien = "{$pasien.nm_pasien}";
-    var tgl_lahir = "{$pasien.tgl_lahir}";
+    var no_rkm_medis = "{?=isset_or($pasien.no_rkm_medis)?}";
+    var nm_pasien = "{?=isset_or($pasien.nm_pasien)?}";
+    var tgl_lahir = "{?=isset_or($pasien.tgl_lahir)?}";
     var umur = "{?=hitungUmur($pasien.tgl_lahir)?}";
-    var jk = "{$pasien.jk}";
-    var alamat = "{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}";
+    var jk = "{?=isset_or($pasien.jk)?}";
+    var alamat = "{?=isset_or($pasien.alamat)?}, {?=isset_or($pasien.nm_kel)?}, {?=isset_or($pasien.nm_kec)?}, {?=isset_or($pasien.nm_kab)?}, {?=isset_or($pasien.nm_prop)?}";
     var kepada = $("#kepada").val();
     var di = $("#di").val();
     var anamnesa = $("#anamnesa").val();
@@ -46,7 +46,7 @@
     var diagnosa = $("#diagnosa").val();
     var terapi = $("#terapi").val();
     var alasan_dirujuk = $("#alasan_dirujuk").val();
-    var dokter = "{$nm_dokter}";
+    var dokter = "{?=isset_or($nm_dokter)?}";
     var petugas = "{?=$this->core->getUserInfo('username', $_SESSION['mlite_user'])?}";
 
     $.post(
@@ -97,12 +97,12 @@
     <thead>
       <tr>
         <th>
-          <img src="{?=url()?}/{$settings.logo}" height="100px" style="margin-right: 20px;" alt="">
+          <img src="{?=url()?}/{?=isset_or($settings.logo)?}" height="100px" style="margin-right: 20px;" alt="">
         </th>
         <th colspan="2" width="100%">
-            <p><span style="font-size: 28px;">{$settings.nama_instansi}</span><br>
-            <span style="font-size: 18px;">Alamat: {$settings.alamat} - {$settings.kota} - {$settings.propinsi}</span><br>
-            <span style="font-size: 18px;">Telepon: {$settings.nomor_telepon} - Email: {$settings.email}</span></p>
+            <p><span style="font-size: 28px;">{?=isset_or($settings.nama_instansi)?}</span><br>
+            <span style="font-size: 18px;">Alamat: {?=isset_or($settings.alamat)?} - {?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}</span><br>
+            <span style="font-size: 18px;">Telepon: {?=isset_or($settings.nomor_telepon)?} - Email: {?=isset_or($settings.email)?}</span></p>
         </th>
       </tr>
       <tr>
@@ -142,12 +142,12 @@
       <tr>
         <td width="200">Nama</td>
         <td> : </td>
-        <td>{$pasien.nm_pasien}</td>
+        <td>{?=isset_or($pasien.nm_pasien)?}</td>
       </tr>
       <tr>
         <td width="200">Tanggal Lahir / Umur</td>
         <td> : </td>
-        <td>{$pasien.tgl_lahir} / {?=hitungUmur($pasien.tgl_lahir)?}</td>
+        <td>{?=isset_or($pasien.tgl_lahir)?} / {?=hitungUmur($pasien.tgl_lahir)?}</td>
       </tr>
       <tr>
         <td width="200">Jenis Kelamin</td>
@@ -157,7 +157,7 @@
       <tr>
         <td width="200">Alamat</td>
         <td> : </td>
-        <td>{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}</td>
+        <td>{?=isset_or($pasien.alamat)?}, {?=isset_or($pasien.nm_kel)?}, {?=isset_or($pasien.nm_kec)?}, {?=isset_or($pasien.nm_kab)?}, {?=isset_or($pasien.nm_prop)?}</td>
       </tr>
       <tr>
         <td colspan="3"><br>Hasil-hasil penatalaksanaan yang telah kami lakukan terhadap pasien tersebut sebagai berikut.</td>
@@ -215,17 +215,17 @@
         <td colspan="2" width="700">
         </td>
         <td width="180">
-          {$settings.kota}, {?=date('Y-m-d')?}<br>
+          {?=isset_or($settings.kota)?}, {?=date('Y-m-d')?}<br>
           Salam Sejawat<br><br>
           <div id="qrcode_dokter" style="margin-top:10px;width:80px;"></div><br>
-          {$nm_dokter}
+          {?=isset_or($nm_dokter)?}
         </td>
       </tr>
   </table>
 </div>
 <script>
   	jQuery('#qrcode_dokter').qrcode({
-  		text	: "Dokter: {$nm_dokter}, SIP: {$sip_dokter}"
+  		text	: "Dokter: {?=isset_or($nm_dokter)?}, SIP: {?=isset_or($sip_dokter)?}"
   	});
 </script>
 <br><br>

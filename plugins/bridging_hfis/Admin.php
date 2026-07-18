@@ -34,15 +34,15 @@ class Admin extends AdminModule
       ['name' => 'Bridging Lihat HFIS', 'url' => url([ADMIN, 'bridging_hfis', 'lihathfis']), 'icon' => 'cubes', 'desc' => 'Bridging HFIS dari SIMRS ke BPJS'],
       ['name' => 'Jadwal Dokter', 'url' => url([ADMIN, 'bridging_hfis', 'jadwaldokter']), 'icon' => 'cubes', 'desc' => 'Bridging HFIS dari SIMRS ke BPJS'],
     ];
-    return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+    return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules)]);
   }
 
   public function getUpdateHfis()
   {
     $this->_addHeaderFiles();
     $dokter = $this->db('maping_dokter_dpjpvclaim')->toArray();
-    $poli = $this->db('maping_poli_bpjs')->group('kd_poli_bpjs')->toArray();
-    return $this->draw('update.hfis.html', ['dokter' => $dokter, 'poli' => $poli]);
+    $poli = $this->db('maping_poli_bpjs')->select('kd_poli_bpjs')->group('kd_poli_bpjs')->toArray();
+    return $this->draw('update.hfis.html', ['dokter' => htmlspecialchars_array($dokter), 'poli' => htmlspecialchars_array($poli)]);
   }
 
   public function postUpdateBridgeHfis()
@@ -139,8 +139,8 @@ class Admin extends AdminModule
 
   public function getLihatHfis()
   {
-    $poli = $this->db('maping_poli_bpjs')->group('kd_poli_bpjs')->toArray();
-    return $this->draw('jadwal.hfis.html', ['poli' => $poli]);
+    $poli = $this->db('maping_poli_bpjs')->select('kd_poli_bpjs')->group('kd_poli_bpjs')->toArray();
+    return $this->draw('jadwal.hfis.html', ['poli' => htmlspecialchars_array($poli)]);
   }
 
   public function anyHfis()
@@ -166,8 +166,11 @@ class Admin extends AdminModule
     if ($json['metadata']['code'] == '200') {
       $response = $decompress;
     }
-    $response = json_decode($response, true);
-    echo json_encode($response);
+    $response = json_decode($response ?? '""', true);
+    if (!is_array($response)) {
+        $response = [];
+    }
+    echo json_encode(htmlspecialchars_array($response));
     exit();
   }
 
@@ -175,7 +178,7 @@ class Admin extends AdminModule
   {
     $poli = $this->db('poliklinik')->where('status', '1')->toArray();
     $dokter = $this->db('dokter')->where('status', '1')->toArray();
-    return $this->draw('jadwal.dokter.html', ['poli' => $poli, 'dokter' => $dokter]);
+    return $this->draw('jadwal.dokter.html', ['poli' => htmlspecialchars_array($poli), 'dokter' => htmlspecialchars_array($dokter)]);
   }
 
   public function postListJadwalDokter()
@@ -196,10 +199,10 @@ class Admin extends AdminModule
       $jadwal['nm_dokter'] = $this->core->getDokterInfo('nm_dokter', $jadwal['kd_dokter']);
       $jadwal['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli', $jadwal['kd_poli']);
       $jadwal['code'] = '200';
-      echo json_encode($jadwal);
+      echo json_encode(htmlspecialchars_array($jadwal));
     } else {
       $notif = ['code' => '404'];
-      echo json_encode($notif);
+      echo json_encode(htmlspecialchars_array($notif));
     }
     exit();
   }

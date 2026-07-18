@@ -12,9 +12,9 @@
         <tbody>
           {if: $obat}
           {loop: $obat}
-          <tr class="pilih_obat" data-kode_brng="{$value.kode_brng}" data-nama_brng="{$value.nama_brng}" data-dasar="{$value.dasar}" data-stok="{$value.stok}" data-stokminimal="{$value.stokminimal}" data-kat="obat">
-            <td>{$value.kode_brng}</td>
-            <td>{$value.nama_brng}</td>
+          <tr class="pilih_obat" data-kode_brng="{?=isset_or($value.kode_brng)?}" data-nama_brng="{?=isset_or($value.nama_brng)?}" data-dasar="{?=isset_or($value.dasar)?}" data-stok="{?=isset_or($value.stok)?}" data-stokminimal="{?=isset_or($value.stokminimal)?}" data-kat="obat">
+            <td>{?=isset_or($value.kode_brng)?}</td>
+            <td>{?=isset_or($value.nama_brng)?}</td>
             <td>Rp. <span class="pull-right">{?= number_format($value.dasar,2,',','.')?}</span></td>
           </tr>
           {/loop}

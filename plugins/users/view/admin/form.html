@@ -2,64 +2,59 @@
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{$users.title}</h3>
+                <h3 class="panel-title">{?=isset_or($users.title)?}</h3>
             </div>
             <div class="panel-body">
     		<form name="user" action="{?=url(ADMIN.'/users/save/'.@$users.form.id)?}" method="POST" enctype="multipart/form-data">
     			<fieldset>
     	            <!--<div class="form-group">
     	                <label>Pengguna</label>
-    	                <input type="text" name="username" class="form-control" required value="{$users.form.username}" />
+    	                <input type="text" name="username" class="form-control" required value="{?=isset_or($users.form.username)?}" />
     	            </div>-->
                   {if: !empty($users.user)}
                   <div class="form-group">
                       <label>Pengguna</label>
                       <select name="username" id="username" class="form-control" data-use-search="true" onchange="document.getElementById('fullname').value=this.options[this.selectedIndex].text.split(' -')[0]">
                           {loop: $users.user}
-                              <option value="{$value.nik}"{if: $users.form.username == $value.nik} selected{/if}>{$value.nama} - {$value.nik}</option>
+                              <option value="{?=isset_or($value.nik)?}"{if: $users.form.username == $value.nik} selected{/if}>{?=isset_or($value.nama)?} - {?=isset_or($value.nik)?}</option>
                           {/loop}
                       </select>
                   </div>
                   {else}
                   <div class="form-group">
     	                <label>Pengguna</label>
-    	                <input type="text" name="username" id="username" class="form-control" placeholder="Nama Pengguna" value="{$users.form.username}" />
+    	                <input type="text" name="username" id="username" class="form-control" placeholder="Nama Pengguna" value="{?=isset_or($users.form.username)?}" />
     	            </div>
                   {/if}
     	            <div class="form-group">
     	                <label>Nama lengkap</label>
-    	                <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Nama lengkap (optional)" value="{$users.form.fullname}" />
+    	                <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Nama lengkap (optional)" value="{?=isset_or($users.form.fullname)?}" />
     	            </div>
 					        <div class="form-group">
     	                <label>Foto</label>
           						<div>
-          							<img src="{$users.avatarURL}" width="96" height="96" class="img-thumbnail" id="photoPreview" style="cursor:pointer;" onclick="$('input[name=photo]').click()" />
+          							<img src="{?=isset_or($users.avatarURL)?}" width="96" height="96" class="img-thumbnail" id="photoPreview" style="cursor:pointer;" onclick="$('input[name=photo]').click()" />
           							<input type="file" name="photo" class="form-control hidden" />
           						</div>
     	            </div>
                   <div class="form-group">
       	                <label>Deskripsi</label>
-      	                <textarea class="form-control" name="description" placeholder="Deskripsi (optional)" rows="6">{$users.form.description}</textarea>
+      	                <textarea class="form-control" name="description" placeholder="Deskripsi (optional)" rows="6">{?=isset_or($users.form.description)?}</textarea>
     	            </div>
     	            <div class="form-group">
     	                <label>Email</label>
-    	                <input type="email" name="email" class="form-control" required value="{$users.form.email}" />
+    	                <input type="email" name="email" class="form-control" required value="{?=isset_or($users.form.email)?}" />
     	            </div>
     	            <div class="form-group">
     	                <label>Kata kunci {if: isset($users.form.id)}<a href="#" id="passwordChange" class="btn btn-default btn-xs">Ubah</a>{/if}</label>
     	                <input type="password" name="password" class="form-control" pattern=".{5,}" title="Kata kunci terlalu pendek" {if: isset($users.form.id)}value="********" placeholder="Kata kunci baru" disabled {else}required{/if}/>
     	            </div>
                   <div class="form-group">
-                      <label>Role</label>
-                      <select name="role" class="form-control">
-                        {if: !empty($users.user)}
+                      <label>Role (Bisa lebih dari satu)</label>
+                      <select name="role[]" class="form-control" multiple>
                         {loop: $users.role}
-                          <option value="{$value}"{if: $value == $users.form.role} selected{/if}>{$value}</option>
+                          <option value="{?=isset_or($value.name)?}" {?=isset_or($value.attr)?}>{?=isset_or($value.name)?}</option>
                         {/loop}
-                        {else}
-                          <option value="pengguna"{if: $users.form.role == 'pengguna'} selected{/if}>Pengguna</option>
-                          <option value="admin"{if: $users.form.role == 'admin'} selected{/if}>Admin</option>
-                        {/if}
                       </select>
                   </div>
                   {if: !empty($users.cap)}
@@ -67,19 +62,39 @@
                       <label>Capability</label>
                       <select name="cap[]" multiple class="form-control">
                         {loop: $users.cap}
-                          <option value="{$value.cap}" {$value.attr}>{$value.nm_cap} - {$value.cap}</option>
+                          <option value="{?=isset_or($value.cap)?}" {?=isset_or($value.attr)?}>{?=isset_or($value.nm_cap)?} - {?=isset_or($value.cap)?}</option>
                         {/loop}
                       </select>
                   </div>
                   {/if}
     	            <div class="form-group">
-    	                <label>Akses</label>
-    	                <select name="access[]" multiple class="form-control" data-keep-open="true" data-use-search="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>
-    	                	{loop: $users.modules}
-    	                	<option value="{$value.dir}" data-font="<i class='fa fa-{$value.icon}'></i>" {$value.attr}>{$value.name}</option>
-    	                	{/loop}
-    	                </select>
-    	            </div>
+                      <label>Akses</label>
+                        <button type="button" id="btnToggleCopyAccess" class="btn btn-success badge">
+                            <i class="fa fa-copy"></i> Copy Akses
+                        </button>
+                        <div id="copyAccessForm" style="display: none; margin-top: 15px; margin-bottom: 15px;">
+                            <h5><strong>Copy Akses dari Pengguna Lain</strong></h5>
+                            <!-- <small class="text-muted">Pilih pengguna yang sudah ada untuk menyalin pengaturan aksesnya.</small> -->
+                            <div class="input-group">
+                                <select id="copyAccessFromUser" class="form-control" data-use-search="true">
+                                    <option value="">-- Pilih Pengguna untuk Disalin Aksesnya --</option>
+                                    {loop: $users.usersForCopy}
+                                        <option value="{$value.id}" data-access="{$value.access}">{$value.fullname} ({$value.username})</option>
+                                    {/loop}
+                                </select>
+                                <span class="input-group-btn">
+                                    <button type="button" id="btnCopyAccess" class="btn btn-info" disabled>
+                                        <i class="fa fa-copy"></i> Salin Akses
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <select name="access[]" id="accessSelect" multiple class="form-control" data-keep-open="true" data-use-search="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>
+                            {loop: $users.modules}
+                            <option value="{$value.dir}" data-font="<i class='fa fa-{$value.icon}'></i>" {$value.attr}>{$value.name}</option>
+                            {/loop}
+                        </select>
+                    </div>
     	            <div class="form-group">
     	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
     	            </div>
@@ -106,4 +121,51 @@
 		$(this).remove();
 		return false;
 	})
+
+	// Tombol copy akses
+    $('#btnToggleCopyAccess').on('click', function() {
+        var copyForm = $('#copyAccessForm');
+        var button = $(this);
+        
+        if (copyForm.is(':visible')) {
+            copyForm.slideUp();
+            button.html('<i class="fa fa-copy"></i> Copy Akses');
+            button.removeClass('btn-warning').addClass('btn-success');
+        } else {
+            copyForm.slideDown();
+            button.html('<i class="fa fa-times"></i> Tutup Copy Akses');
+            button.removeClass('btn-success').addClass('btn-warning');
+        }
+    });
+
+	// Enable/disable Tombol Salin Akses
+    $('#copyAccessFromUser').on('change', function() {
+        var selectedValue = $(this).val();
+        $('#btnCopyAccess').prop('disabled', !selectedValue);
+    });
+
+	// Copy access from selected user
+    $('#btnCopyAccess').on('click', function() {
+        var selectedOption = $('#copyAccessFromUser option:selected');
+        var access = selectedOption.data('access');
+        
+        if(access) {
+            $('#accessSelect option').prop('selected', false);
+            
+            // Check if access is 'all' - select all available modules
+            if(access.trim() === 'all') {
+                $('#accessSelect option').prop('selected', true);
+            } else {
+                // Normal case - select specific modules
+                var accessArray = access.split(',');
+                $.each(accessArray, function(index, value) {
+                    $('#accessSelect option[value="' + value.trim() + '"]').prop('selected', true);
+                });
+            }
+            
+            $('#accessSelect').trigger('change');
+            
+            //alert('Akses berhasil disalin dari pengguna: ' + selectedOption.text());
+        }
+    });
 </script>

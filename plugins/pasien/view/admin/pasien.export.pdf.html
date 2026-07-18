@@ -14,12 +14,12 @@
     <tbody>
         {loop: $pasien}
         <tr>
-        <td>{$value.no_rkm_medis}</td>
-        <td>{$value.nm_pasien}</td>
-        <td>{$value.tgl_lahir}</td>
+        <td>{?=isset_or($value.no_rkm_medis)?}</td>
+        <td>{?=isset_or($value.nm_pasien)?}</td>
+        <td>{?=isset_or($value.tgl_lahir)?}</td>
         <td>{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
-        <td>{$value.alamat}</td>
-        <td>{$value.no_tlp}</td>
+        <td>{?=isset_or($value.alamat)?}</td>
+        <td>{?=isset_or($value.no_tlp)?}</td>
         </tr>
         {/loop}
     </tbody>

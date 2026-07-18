@@ -3,7 +3,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">Pembaruan</div>
             <div class="panel-body">
-                {if: $allow_curl==0}
+                {if: $allow_curl == 0}
                 <div class="well well-sm clearfix" style="margin: 15px 0 15px 0;">
                     <span class="text-danger">Tidak dapat memperbarui sistem dengan konfigurasi CURL. (curl does not exist)</span>
                     <span class="label label-danger pull-right">Check Error</span>
@@ -11,7 +11,7 @@
                 {/if}
                 {if: isset($error)}
                 <div class="well well-sm clearfix" style="margin: 15px 0 15px 0;">
-                    <span class="text-danger">{$error}</span>
+                    <span class="text-danger">{?=isset_or($error)?}</span>
                     <span class="label label-danger pull-right">System Error</span>
                 </div>
                 {/if}
@@ -22,7 +22,7 @@
                 </div>
                 {/if}
                 <p>Terima kasih, perbaruan sistem selalu aman dan up-todate!</p>
-                <p><b>Versi:</b> {$settings.version}</p>
+                <p><b>Versi:</b> {?=isset_or($settings.version)?}</p>
                 {if: $manual_mode}
                     <div class="well well-sm clearfix" style="margin: 15px 0 15px 0;">
                         <span class="text-info"><b>Manual mode enabled.</b> Pleasy copy latest version to base directory. System will detect it automatically.</span>
@@ -59,6 +59,18 @@
                         <input type="submit" class="btn btn-primary" name="check" value="Cek Update" />
                     </form>
                 {/if}
+                <hr>
+                <!-- <h4>Upgrade Lokal</h4>
+                <p class="text-info">Menjalankan skrip <code>systems/upgrade.php</code> secara lokal tanpa mengunduh file dari GitHub.</p>
+                <form method="post" onsubmit="return confirm('Apakah Anda yakin ingin menjalankan upgrade lokal?');">
+                    <input type="submit" class="btn btn-warning" name="upgrade_local" value="Jalankan Upgrade Lokal" />
+                </form>
+                <hr> -->
+                <h4>Nightly Build</h4>
+                <p class="text-warning">Update langsung dari repositori GitHub (branch master). Gunakan dengan resiko sendiri.</p>
+                <form method="post" onsubmit="return confirm('Apakah Anda yakin ingin melakukan update Nightly Build? Ini mungkin tidak stabil.');">
+                    <input type="submit" class="btn btn-danger" name="update_nightly" value="Update Nightly Build" />
+                </form>
             </div>
         </div>
     </div>

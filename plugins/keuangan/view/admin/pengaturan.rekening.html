@@ -14,7 +14,7 @@
                       <label>Akun Rekening</label>
                       <select name="kd_rek" class="form-control" data-use-search="true">
                         {loop: $akunrekening as $akun}
-                          <option value="{$akun.kd_rek}">{$akun.kd_rek} - {$akun.nm_rek}</option>
+                          <option value="{?=isset_or($akun.kd_rek)?}">{?=isset_or($akun.kd_rek)?} - {?=isset_or($akun.nm_rek)?}</option>
                         {/loop}
                       </select>
                   </div>
@@ -35,10 +35,10 @@
             	  <div class="panel-body">
                     {loop: $akunkegiatan}
                     <div class="form-group">
-                        <label class="kegiatan" data-id="{$value.id}" data-kegiatan="{$value.kegiatan}">{?=ucwords(str_replace('_',' ',$value.kegiatan))?}</label>
-                        <select name="kegiatan[{$value.id}]" class="form-control" data-use-search="true">
+                        <label class="kegiatan" data-id="{?=isset_or($value.id)?}" data-kegiatan="{?=isset_or($value.kegiatan)?}">{?=ucwords(str_replace('_',' ',$value.kegiatan))?}</label>
+                        <select name="kegiatan[{?=isset_or($value.id)?}]" class="form-control" data-use-search="true">
                           {loop: $akunrekening as $data}
-                            <option value="{$data.kd_rek}" {if: $data.kd_rek == $value.kd_rek}selected{/if}>{$data.kd_rek} - {$data.nm_rek}</option>
+                            <option value="{?=isset_or($data.kd_rek)?}" {if: $data.kd_rek == $value.kd_rek}selected{/if}>{?=isset_or($data.kd_rek)?} - {?=isset_or($data.nm_rek)?}</option>
                           {/loop}
                         </select>
                     </div>

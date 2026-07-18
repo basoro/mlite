@@ -8,13 +8,13 @@
               <form name="user" action="{?=url(ADMIN.'/inventaris/permintaanperbaikansimpan/'.@$permintaanperbaikan.form.no_permintaan)?}" method="POST" enctype="multipart/form-data">
               <div class="form-group">
                   <label>No. Permintaan</label>
-                  <input type="text" name="no_permintaan" class="form-control" placeholder="Nomor Permintaan" value="{$permintaanperbaikan.form.no_permintaan}" {if: $permintaanperbaikan.form.no_permintaan !=''}readonly{/if}/>
+                  <input type="text" name="no_permintaan" class="form-control" placeholder="Nomor Permintaan" value="{?=isset_or($permintaanperbaikan.form.no_permintaan)?}" {if: $permintaanperbaikan.form.no_permintaan != ''}readonly{/if}/>
               </div>
               <div class="form-group">
                   <label>Data Aset</label>
                   <select name="no_inventaris" class="form-control" data-use-search="true">
                       {loop: $permintaanperbaikan.aset}
-                      <option value="{$value.no_inventaris}" {if: $value.no_inventaris == $permintaanperbaikan.form.no_inventaris}selected{/if}>{$value.nama_barang}</option>
+                      <option value="{?=isset_or($value.no_inventaris)?}" {if: $value.no_inventaris == $permintaanperbaikan.form.no_inventaris}selected{/if}>{?=isset_or($value.nama_barang)?}</option>
                       {/loop}
                   </select>
               </div>
@@ -22,17 +22,17 @@
                   <label>Pemohon Perbaikan</label>
                   <select name="nik" class="form-control" data-use-search="true">
                       {loop: $permintaanperbaikan.pegawai}
-                      <option value="{$value.nik}"{if: $value.nik == $permintaanperbaikan.form.nik}selected{/if}>{$value.nama}</option>
+                      <option value="{?=isset_or($value.nik)?}"{if: $value.nik == $permintaanperbaikan.form.nik}selected{/if}>{?=isset_or($value.nama)?}</option>
                       {/loop}
                   </select>
               </div>
               <div class="form-group">
                   <label>Tanggal</label>
-                  <input type="text" name="tanggal" class="form-control tanggaljam" placeholder="Tanggal" value="{$permintaanperbaikan.form.tanggal}" />
+                  <input type="text" name="tanggal" class="form-control tanggaljam" placeholder="Tanggal" value="{?=isset_or($permintaanperbaikan.form.tanggal)?}" />
               </div>
               <div class="form-group">
                     <label>Deskripsi Kerusakan</label>
-                    <textarea class="form-control" name="deskripsi_kerusakan" placeholder="Deskripsi (optional)" rows="6">{$permintaanperbaikan.form.deskripsi_kerusakan}</textarea>
+                    <textarea class="form-control" name="deskripsi_kerusakan" placeholder="Deskripsi (optional)" rows="6">{?=isset_or($permintaanperbaikan.form.deskripsi_kerusakan)?}</textarea>
               </div>
               <div class="form-group">
                   <input type="submit" name="save" class="btn btn-primary" value="Simpan" />

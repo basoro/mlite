@@ -1,4 +1,81 @@
+<style>
+  .pacs-gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    border: none;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s;
+    z-index: 10;
+    outline: none !important;
+  }
+
+  .pacs-gallery-nav:hover {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .pacs-gallery-prev {
+    left: 0;
+    border-radius: 0 5px 5px 0;
+  }
+
+  .pacs-gallery-next {
+    right: 0;
+    border-radius: 5px 0 0 5px;
+  }
+
+  #pacsViewerImageContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    height: 100%;
+    position: relative;
+  }
+
+  #pacsViewerImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .modal-pacs-dark .modal-content {
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+  }
+
+  .modal-pacs-dark .modal-header {
+    border-bottom: 1px solid #333;
+    padding: 10px 15px;
+  }
+
+  .modal-pacs-dark .close {
+    color: #fff;
+    opacity: 0.8;
+  }
+</style>
 <h4>Rincian Pemeriksaan</h4>
+{if: $billing_parsial_enabled == 'true'}
+<div class="row" style="margin-bottom:10px;">
+  <div class="col-sm-4">
+    <select class="form-control input-sm" id="parsial_metode_rad">
+      <option value="Tunai">Tunai</option>
+      <option value="Transfer">Transfer</option>
+      <option value="QRIS">QRIS</option>
+      <option value="EDC">EDC</option>
+    </select>
+  </div>
+</div>
+{/if}
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
     <thead>
@@ -11,46 +88,84 @@
     <tbody>
       {loop: $periksa_radiologi}
       <tr>
-        <td>{$value.nomor}</td>
+        <td>{?=isset_or($value.nomor)?}</td>
         <td colspan="2">
-          Dokter perujuk: {$value.nm_dokter}<br>
-          Petugas: {$value.nama}<br>
-          Cara bayar: {$value.png_jawab}<br>
-          Tanggal: {$value.tgl_periksa} - {$value.jam}<br>
-          <button type="button" class="btn btn-primary btn-xs hasil_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-status="{$value.status_periksa}"><i class="fa fa-edit"></i><span class="hidden-xs"> Hasil</span></button>
-          <button type="button" name="button" class="btn btn-primary btn-xs cetak_hasil" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-status="{$value.status_periksa}"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></button>
-          <a href="{?=url([ADMIN,'orthanc','bridgingorthanc',convertNorawat($value.no_rawat), strtolower($value.status_periksa)])?}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#orthancModal"><i class="fa fa-edit"></i><span class="hidden-xs"> PACS</span></a>
-          <button type="button" class="btn btn-danger btn-xs {if: $_SESSION['mlite_user'] !='1'}disabled{else}hapus_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-status="{$value.status_periksa}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+          Dokter perujuk: {?=isset_or($value.nm_dokter)?}<br>
+          Petugas: {?=isset_or($value.nama_petugas)?}<br>
+          Cara bayar: {?=isset_or($value.png_jawab)?}<br>
+          Tanggal: {?=isset_or($value.tgl_periksa)?} - {?=isset_or($value.jam)?}<br>
+          <button type="button" class="btn btn-primary btn-xs hasil_radiologi"
+            data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}"
+            data-jam_periksa="{?=isset_or($value.jam)?}" data-status="{?=isset_or($value.status_periksa)?}"><i
+              class="fa fa-edit"></i><span class="hidden-xs"> Hasil</span></button>
+          <button type="button" name="button" class="btn btn-primary btn-xs cetak_hasil"
+            data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}" data-jam_periksa="{?=isset_or($value.jam)?}"
+            data-status="{?=isset_or($value.status_periksa)?}"><i class="fa fa-print"></i><span class="hidden-xs">
+              Cetak</span></button>
+          <a href="{?=url([ADMIN,'orthanc','bridgingorthanc',convertNorawat($value.no_rawat), strtolower($value.status_periksa), $value.tgl_periksa, $value.jam])?}"
+            class="btn btn-info btn-xs" data-toggle="modal" data-target="#orthancModal"><i class="fa fa-edit"></i><span
+              class="hidden-xs"> PACS</span></a>
+          <button type="button"
+            class="btn btn-danger btn-xs {if: $_SESSION['mlite_user'] != '1'}disabled{else}hapus_radiologi{/if}"
+            data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}"
+            data-jam_periksa="{?=isset_or($value.jam)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}"
+            data-status="{?=isset_or($value.status_periksa)?}"><i class="fa fa-trash"></i><span class="hidden-xs">
+              Hapus</span></button>
         </td>
       </tr>
       {if: $value.periksa_radiologi}
-        {loop: $value.periksa_radiologi as $data0}
-        <tr>
-          <td></td>
-          <td>{$data0.nm_perawatan}</td>
-          <td>
-            Rp. <span class="pull-right">{?= number_format($data0.biaya,2,',','.')?}</span>
-          </td>
-        </tr>
-        {/loop}
+      {loop: $value.periksa_radiologi as $data0}
+      <tr>
+        <td></td>
+        <td>{?=isset_or($data0.nm_perawatan)?}</td>
+        <td>
+          Rp. <span class="pull-right">{?= number_format($data0.biaya,2,',','.')?}</span>
+        </td>
+      </tr>
+      {/loop}
       {/if}
       {if: $value.hasil_radiologi}
-        {loop: $value.hasil_radiologi as $data1}
-        <tr>
-          <td></td>
-          <td>{$data1.hasil}</td>
-          <td colspan="2">
-            <button type="button" class="btn btn-danger btn-xs {if: $_SESSION['mlite_user'] !='1'}disabled{else}hapus_hasil_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
-          </td>
-        </tr>
-        {/loop}
-        {loop: $value.gambar_radiologi as $data2}
-        <tr>
-          <td></td>
-          <td colspan="2"><img src="{?=WEBAPPS_URL.'/radiologi/'.$data2.lokasi_gambar?}" height="400px"></td>
-        </tr>
-        {/loop}
+      {loop: $value.hasil_radiologi as $data1}
+      <tr>
+        <td></td>
+        <td>{?=isset_or($data1.hasil)?}</td>
+        <td colspan="2">
+          <button type="button"
+            class="btn btn-danger btn-xs {if: $_SESSION['mlite_user'] != '1'}disabled{else}hapus_hasil_radiologi{/if}"
+            data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}"
+            data-jam_periksa="{?=isset_or($value.jam)?}"><i class="fa fa-trash"></i><span class="hidden-xs">
+              Hapus</span></button>
+        </td>
+      </tr>
+      {/loop}
+      {loop: $value.gambar_radiologi as $data2}
+      <tr>
+        <td></td>
+        <td colspan="2"><img src="{?=WEBAPPS_URL.'/radiologi/'.$data2.lokasi_gambar?}" height="400px"></td>
+      </tr>
+      {/loop}
       {/if}
+      <tr>
+        <td></td>
+        <td colspan="2">
+          <div class="row">
+            <div class="col-sm-4">
+              <div><strong>Terbayar:</strong> Rp. {?= number_format(isset_or($value.parsial_paid,0),2,',','.')?}</div>
+              <div><strong>Sisa:</strong> Rp. {?= number_format(isset_or($value.parsial_remaining,0),2,',','.')?}</div>
+            </div>
+            {if: $billing_parsial_enabled == 'true'}
+            <div class="col-sm-8">
+              <div class="input-group input-group-sm">
+                <input type="text" class="form-control parsial_amount_rad" value="{?= number_format(isset_or($value.parsial_remaining,0),0,',','.')?}" {if: empty($value.parsial_remaining)}disabled{/if}>
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-success bayar_parsial_rad" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" data-tgl_periksa="{?=isset_or($value.tgl_periksa)?}" data-jam="{?=isset_or($value.jam)?}" data-status="{?=isset_or($value.status_periksa)?}" {if: empty($value.parsial_remaining)}disabled{/if}>Bayar Parsial</button>
+                </span>
+              </div>
+            </div>
+            {/if}
+          </div>
+        </td>
+      </tr>
       {/loop}
     </tbody>
     <tfoot>
@@ -61,7 +176,91 @@
     </tfoot>
   </table>
 </div>
+{if: $billing_parsial_enabled == 'true' && isset_or($parsial_history)}
+<h4>Riwayat Pembayaran Parsial</h4>
+<div class="table-responsive no-margin" style="margin-bottom:15px;">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th width="30px;">No</th>
+        <th width="120px;">Tanggal</th>
+        <th width="90px;">Jam</th>
+        <th width="120px;">Metode</th>
+        <th>Jumlah</th>
+        <th width="90px;">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $parsial_history}
+      <tr>
+        <td>{?=$counter?}.</td>
+        <td>{?=isset_or($value.tgl_bayar)?}</td>
+        <td>{?=isset_or($value.jam_bayar)?}</td>
+        <td>{?=isset_or($value.metode)?}</td>
+        <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.jumlah_bayar,0),2,',','.')?}</span></td>
+        <td width="150px;">
+          <a class="btn btn-default btn-xs" target="_blank" href="{?=url([ADMIN,'radiologi','notaparsial'])?}&show=kecil&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Kecil</a>
+          <a class="btn btn-info btn-xs" target="_blank" href="{?=url([ADMIN,'radiologi','notaparsial'])?}&show=besar&pembayaran_id={?=isset_or($value.id)?}"><i class="fa fa-print"></i> Besar</a>
+        </td>
+      </tr>
+      {/loop}
+      {if: empty($parsial_history)}
+      <tr><td colspan="6" class="text-center">Belum ada pembayaran parsial.</td></tr>
+      {/if}
+    </tbody>
+  </table>
+</div>
+{/if}
 <br>
+
+{if: !empty($mini_pacs)}
+<h4>Mini PACS</h4>
+<div class="table-responsive no-margin">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <tbody>
+      {loop: $mini_pacs as $mp}
+      <tr>
+        <td>
+          <h5 style="margin-top:0;"><strong>Study:</strong> {?=isset_or($mp.description)?} / {?=isset_or($mp.modality)?}
+          </h5>
+          <div style="display:flex; flex-wrap: wrap; gap: 15px;">
+            {loop: $mp.series as $s}
+            {loop: $s.instances as $ins}
+            <div style="text-align: center;">
+              <a href="#" data-url="{?=url([ADMIN,'api','mini_pacs','instancejpg',$ins.id])?}" class="open_viewer_modal"
+                data-gallery="study-{?=isset_or($mp.id)?}">
+                <div
+                  style="width: 100px; height: 100px; background-color: #333; color: white; display:flex; align-items:center; justify-content:center; border: 2px solid #555; border-radius: 4px; margin-bottom: 5px; overflow:hidden;"
+                  title="View in PACS">
+                  {if: file_exists(UPLOADS.'/pacs/'.$ins.sop_instance_uid.'_thumb.jpg')}
+                  <img src="{?=url('uploads/pacs/'.$ins.sop_instance_uid.'_thumb.jpg')?}"
+                    style="width: 100%; height: 100%; object-fit: cover;">
+                  {else}
+                  <img src="{?=url([ADMIN,'api','mini_pacs','instancejpg',$ins.id])?}"
+                    style="width: 100%; height: 100%; object-fit: cover;"
+                    onerror="this.onerror=null; this.style.display='none'; $(this).parent().append('<i class=\'fa fa-picture-o fa-3x\' style=\'color: #4bd396;\'></i>');">
+                  {/if}
+                </div>
+              </a>
+              <!-- <br>
+              <button class="btn btn-xs btn-primary send_dicom_router" data-id="{?=isset_or($ins.id)?}"><i
+                  class="fa fa-share-square-o"></i> Kirim ke Dicom Router</button>
+              <br>
+              <button class="btn btn-xs btn-success btn-send-satusehat" data-id="{?=isset_or($mp.id)?}"
+                style="margin-top: 5px;"><i class="fa fa-cloud-upload"></i> Kirim ke Satu Sehat</button> -->
+            </div>
+            {/loop}
+            {/loop}
+          </div>
+        </td>
+      </tr>
+      {/loop}
+    </tbody>
+  </table>
+</div>
+<br>
+{/if}
+
 <h4>e-Radiologi</h4>
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
@@ -76,27 +275,232 @@
     <tbody>
       {loop: $radiologi}
       <tr>
-        <td>{$value.nm_dokter}</td>
-        <td>{$value.noorder}</td>
-        <td>{$value.tgl_permintaan} {$value.jam_permintaan}</td>
+        <td>{?=isset_or($value.nm_dokter)?}</td>
+        <td>{?=isset_or($value.noorder)?}</td>
+        <td>{?=isset_or($value.tgl_permintaan)?} {?=isset_or($value.jam_permintaan)?}</td>
         <td>
-          <!--<button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>-->
-          <button type="button" name="button" class="btn btn-xs btn-warning cetak_permintaan"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></button>
+          <!--<button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel  !=  '0000-00-00' || $value.jam_sampel  !=  '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_permintaan="{?=isset_or($value.tgl_permintaan)?}" data-jam_permintaan="{?=isset_or($value.jam_permintaan)?}" data-noorder="{?=isset_or($value.noorder)?}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>-->
+          <button type="button" name="button" class="btn btn-xs btn-warning cetak_permintaan"><i
+              class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></button>
           <!-- <button type="button" name="button" class="btn btn-xs btn-info nota_rad"><i class="fa fa-money"></i><span class="hidden-xs"> Nota</span></button> -->
-          <button type="button" class="btn btn-success btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}validasi_permintaan_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-check"></i><span class="hidden-xs"> Validasi</span></button>
+          {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'radiologi') == true}
+          <button type="button"
+            class="btn btn-success btn-xs {if: $value.tgl_sampel  !=  '0000-00-00' || $value.jam_sampel  !=  '00:00:00'}disabled{else}validasi_permintaan_radiologi{/if}"
+            data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_permintaan="{?=isset_or($value.tgl_permintaan)?}"
+            data-jam_permintaan="{?=isset_or($value.jam_permintaan)?}" data-noorder="{?=isset_or($value.noorder)?}"><i
+              class="fa fa-check"></i><span class="hidden-xs"> Validasi</span></button>
+          <button type="button"
+            class="btn btn-success btn-xs {if: $value.tgl_hasil  !=  '0000-00-00' || $value.jam_hasil  !=  '00:00:00'}disabled{else}validasi_hasil_radiologi{/if}"
+            data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_permintaan="{?=isset_or($value.tgl_permintaan)?}"
+            data-jam_permintaan="{?=isset_or($value.jam_permintaan)?}" data-noorder="{?=isset_or($value.noorder)?}"><i
+              class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+          {/if}
         </td>
       </tr>
       <tr>
         <th colspan="3">Nama Pemeriksaan</th>
         <th>Status Bayar</th>
       </tr>
-        {loop: $value.permintaan_pemeriksaan_radiologi as $data}
-        <tr>
-          <td colspan="3">{$data.nm_perawatan}</td>
-          <td>{$data.stts_bayar}</td>
-        </tr>
-        {/loop}
+      {loop: $value.permintaan_pemeriksaan_radiologi as $data}
+      <tr>
+        <td colspan="3">{?=isset_or($data.nm_perawatan)?}</td>
+        <td>{?=isset_or($data.stts_bayar)?}</td>
+      </tr>
+      {/loop}
       {/loop}
     </tbody>
   </table>
 </div>
+
+<div class="modal fade modal-pacs-dark" id="pacsViewerModal" tabindex="-1" role="dialog"
+  aria-labelledby="pacsViewerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" style="width: 95vw; height: 95vh; margin: 2.5vh auto;" role="document">
+    <div class="modal-content" style="height: 100%;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="pacsViewerModalLabel">Mini PACS Viewer <small id="pacsGalleryCounter"
+            style="color: #aaa; margin-left: 10px;"></small></h4>
+      </div>
+      <div class="modal-body" style="padding: 0; height: calc(100% - 50px);">
+        <div id="pacsViewerImageContainer">
+          <button type="button" class="pacs-gallery-nav pacs-gallery-prev" id="prevPacsBtn"><i
+              class="fa fa-chevron-left"></i></button>
+          <img id="pacsViewerImage" src="" style="display:none;">
+          <iframe id="pacsViewerIframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+          <button type="button" class="pacs-gallery-nav pacs-gallery-next" id="nextPacsBtn"><i
+              class="fa fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="satusehatModal" tabindex="-1" role="dialog" aria-labelledby="satusehatModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="satusehatModalLabel">Respon Satu Sehat</h4>
+      </div>
+      <div class="modal-body">
+        <h5><strong>Respon DICOM (STOW-RS)</strong></h5>
+        <pre><code id="satusehatDicomResponse"></code></pre>
+        <hr>
+        <h5><strong>Respon FHIR (ImagingStudy)</strong></h5>
+        <pre><code id="satusehatFhirResponse"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var pacsGallery = {
+    images: [],
+    currentIndex: 0
+  };
+
+  function updatePacsGallery() {
+    if (pacsGallery.images.length <= 1) {
+      $("#prevPacsBtn, #nextPacsBtn, #pacsGalleryCounter").hide();
+    } else {
+      $("#prevPacsBtn, #nextPacsBtn, #pacsGalleryCounter").show();
+      $("#pacsGalleryCounter").text("(" + (pacsGallery.currentIndex + 1) + " / " + pacsGallery.images.length + ")");
+    }
+
+    var currentUrl = pacsGallery.images[pacsGallery.currentIndex];
+
+    // Check if it's an image endpoint
+    if (currentUrl.indexOf('instancejpg') !== -1) {
+      $("#pacsViewerIframe").hide().attr("src", "");
+      $("#pacsViewerImage").show().attr("src", currentUrl);
+    } else {
+      $("#pacsViewerImage").hide().attr("src", "");
+      $("#pacsViewerIframe").show().attr("src", currentUrl);
+    }
+  }
+
+  $("#rincian").off("click", ".open_viewer_modal").on("click", ".open_viewer_modal", function (event) {
+    event.preventDefault();
+    var studyId = $(this).attr("data-gallery");
+    var currentUrl = $(this).attr("data-url");
+
+    // Re-collect images in same gallery
+    pacsGallery.images = [];
+    $('.open_viewer_modal[data-gallery="' + studyId + '"]').each(function () {
+      pacsGallery.images.push($(this).attr("data-url"));
+    });
+
+    pacsGallery.currentIndex = pacsGallery.images.indexOf(currentUrl);
+    if (pacsGallery.currentIndex === -1) pacsGallery.currentIndex = 0;
+
+    updatePacsGallery();
+    $("#pacsViewerModal").modal('show');
+  });
+
+  $("#prevPacsBtn").on("click", function () {
+    if (pacsGallery.currentIndex > 0) {
+      pacsGallery.currentIndex--;
+      updatePacsGallery();
+    } else {
+      pacsGallery.currentIndex = pacsGallery.images.length - 1;
+      updatePacsGallery();
+    }
+  });
+
+  $("#nextPacsBtn").on("click", function () {
+    if (pacsGallery.currentIndex < pacsGallery.images.length - 1) {
+      pacsGallery.currentIndex++;
+      updatePacsGallery();
+    } else {
+      pacsGallery.currentIndex = 0;
+      updatePacsGallery();
+    }
+  });
+
+  $(document).on("keydown", function (e) {
+    if ($("#pacsViewerModal").is(":visible")) {
+      if (e.keyCode === 37) { // Left
+        $("#prevPacsBtn").click();
+      } else if (e.keyCode === 39) { // Right
+        $("#nextPacsBtn").click();
+      }
+    }
+  });
+
+  $('#pacsViewerModal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+    $("#pacsViewerIframe").attr("src", "");
+    $("#pacsViewerImage").attr("src", "");
+  });
+
+  $("#rincian").off("click", ".send_dicom_router").on("click", ".send_dicom_router", function (event) {
+    event.preventDefault();
+    var instance_id = $(this).attr("data-id");
+    var btn = $(this);
+    var oldHtml = btn.html();
+    btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Mengirim...');
+
+    $.post(mlite.url + "/" + mlite.admin + "/mini_pacs/apisend/" + instance_id + "?t=" + mlite.token, function (response) {
+      btn.prop('disabled', false).html(oldHtml);
+      try {
+        var res = typeof response === 'string' ? JSON.parse(response) : response;
+        if (res.status === 'success') {
+          bootbox.alert({
+            title: "Pengiriman DICOM Berhasil",
+            message: "Proses C-STORE ke Router telah djalankan<br><div style='max-height: 200px; overflow-y: auto; background:#333; color:#fff; padding:10px; border-radius:4px; font-family:monospace; margin-top:10px; font-size:12px; white-space:pre-wrap;'>" + res.log + "</div>"
+          });
+        } else {
+          bootbox.alert("Gagal: " + res.message);
+        }
+      } catch (e) {
+        bootbox.alert("Pesan sukses dari server, namun format tidak valid.");
+      }
+    }).fail(function () {
+      btn.prop('disabled', false).html(oldHtml);
+      bootbox.alert("Koneksi gagal saat menghubungi server PACS.");
+    });
+  });
+
+  $("#rincian").off("click", ".btn-send-satusehat").on("click", ".btn-send-satusehat", function (e) {
+    e.preventDefault();
+    var id = $(this).data("id");
+    alert(id);
+    if (confirm("Kirim DICOM ke Satu Sehat?")) {
+      var btn = $(this);
+      var oText = '<i class="fa fa-cloud-upload"></i> Kirim ke Satu Sehat'; // fixed fallback
+      btn.html('<i class="fa fa-spinner fa-spin"></i> Loading...').prop("disabled", true);
+
+      $.ajax({
+        url: mlite.url + "/" + mlite.admin + "/mini_pacs/satusehat/" + id + "?t=" + mlite.token,
+        type: "GET",
+        dataType: "json",
+        success: function (res) {
+          btn.html(oText).prop("disabled", false);
+          if (res.status === "success" || res.status === "duplicate") {
+            $("#satusehatDicomResponse").text(res.dicom_raw || "");
+            $("#satusehatFhirResponse").text(res.fhir_raw || "");
+
+            if (res.status === "duplicate") {
+              $("#satusehatModalLabel").html('Respon Satu Sehat <span class="label label-warning">Duplicate DICOM</span>');
+            } else {
+              $("#satusehatModalLabel").html('Respon Satu Sehat <span class="label label-success">Success</span>');
+            }
+            $("#satusehatModal").modal("show");
+          } else {
+            bootbox.alert("Gagal: " + res.message);
+          }
+        },
+        error: function () {
+          btn.html(oText).prop("disabled", false);
+          bootbox.alert("Terjadi kesalahan saat mengirim ke Satu Sehat. Silakan cek network console.");
+        }
+      });
+    }
+  });
+
+</script>

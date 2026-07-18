@@ -134,6 +134,27 @@
       footer a, footer a:hover {
         color: #fff;
       }
+/* .modal-transparent */
+.modal-transparent {
+  background: transparent;
+}
+.modal-transparent .modal-content {
+  background: transparent;
+}
+.modal-backdrop.modal-backdrop-transparent {
+  background: #ffffff;
+}
+.modal-backdrop.modal-backdrop-transparent.in {
+  opacity: .9;
+  filter: alpha(opacity=90);
+}      
+.modal-body {
+  display: flex;
+  justify-content: center; /* horizontal center */
+  align-items: center;     /* vertical center */
+  height: 100%;
+}
+
     </style>
 </head>
 <body>
@@ -176,6 +197,40 @@
     </div>
   </div>
   <br>
+  <div class="modal fade" id="biometrikModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-full" role="document">
+      <div class="modal-content" style="background: transparent !important;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Biometrik BPJS Kesehatan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times; Tutup</span>
+          </button>
+        </div>
+        <div class="modal-body ">
+          <div class="container">
+            <div class="card-deck mb-3 text-center">
+              <div class="card mb-4 shadow-sm" onclick="openFingerprint()">
+                <div class="card-body btn btn-lg btn-success">
+                  <ul class="list-unstyled mt-3 mb-4">
+                    <span style="font-size: 100px; color: white;"><i class="fa fa-thumbs-o-up"></i></span>
+                  </ul>
+                  <a href="#" style="text-decoration: none; color: white;"><h1 class="display-4">FINGER PRINT</h1></a>
+                </div>
+              </div>
+              <div class="card mb-4 shadow-sm" onclick="openFrista()">
+                <div class="card-body btn btn-lg btn-danger">
+                  <ul class="list-unstyled mt-3 mb-4">
+                    <span style="font-size: 100px; color: white;"><i class="fa fa-video-camera"></i></span>
+                  </ul>
+                  <h1 class="display-4">FRISTA</h1>
+                </div>
+              </div>
+            </div>
+          </div>        
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="pricing-header mt-5 px-3 py-3 pt-md-3 pb-md-2 mx-auto text-center text-danger bg-white">
     <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
   </div>
@@ -198,6 +253,54 @@
   <script src="{?=url(MODULES)?}/anjungan/js/jquery-ui-custom.min.js"></script>
   <script src="{?=url(MODULES)?}/anjungan/js/jquery.keyboard.js"></script>
   <script src="{?=url(MODULES)?}/anjungan/js/jquery.mousewheel.js"></script>
+  <script>
+  {if: $biometrik == 'Peserta belum melakukan validasi finger print'}
+    $('#biometrikModal').modal('show');
+    $(".modal-backdrop").addClass("modal-backdrop-transparent");
+  {/if}  
+  </script>
+<script>
+  async function openFingerprint() {
+    var noka = '{?=parseUrl()[2]?}';
+    const response = await fetch(`http://localhost:3000/?app=finger`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        username: "{?=$this->core->settings->get('settings.username_fp')?}",
+        password: "{?=$this->core->settings->get('settings.password_fp')?}",
+        card_number: noka,
+        exit: true, // wait window for exit (optional, default false)
+        wait: 2_000 // wait for login to completed (optional, default 3_593)
+      })
+    });
+  
+    if (response.ok) {
+      // Response OK setelah jendela aplikasi sidik jari ditutup
+    } else {
+      const result = await response.json();
+      alert(result.message);
+    }
+  } 
+  async function openFrista() {
+    var noka = '{?=parseUrl()[2]?}';
+    const response = await fetch(`http://localhost:3000/?app=frista`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        username: "{?=$this->core->settings->get('settings.username_frista')?}",
+        password: "{?=$this->core->settings->get('settings.password_frista')?}",
+        card_number: noka,
+        exit: true, // wait window for exit (optional, default false)
+        wait: 2_000 // wait for login to completed (optional, default 3_593)
+      })
+    });
+  
+    if (response.ok) {
+      // Response OK setelah jendela aplikasi sidik jari ditutup
+    } else {
+      const result = await response.json();
+      alert(result.message);
+    }
+  } 
+  </script>  
   <script type="text/javascript">
   function showTime() {
       var a_p = "";

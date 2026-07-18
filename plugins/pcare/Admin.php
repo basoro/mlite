@@ -7,6 +7,16 @@ use LZCompressor\LZString;
 
 class Admin extends AdminModule
 {
+  private $usernamePcare;
+  private $passwordPcare;
+  private $kdAplikasi;
+  private $consumerID;
+  private $consumerSecret;
+  private $consumerUserKey;
+  private $api_url;
+  private $api_url_antrol;
+  private $api_url_icare;
+  private $assign;
 
   public function init()
   {
@@ -19,7 +29,7 @@ class Admin extends AdminModule
     $this->api_url = $this->settings->get('pcare.PCareApiUrl');
     $this->api_url_antrol = 'https://apijkn.bpjs-kesehatan.go.id/antreanfktp/';
     $this->api_url_icare = 'https://apijkn.bpjs-kesehatan.go.id/wsIHS/api/pcare/validate';
-    if (strpos($this->api_url, 'dev') !== false) { 
+    if ($this->api_url !== null && strpos($this->api_url, 'dev') !== false) { 
       $this->api_url_antrol = 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanfktp_dev/';
       $this->api_url_icare = 'https://apijkn-dev.bpjs-kesehatan.go.id/ihs_dev/api/pcare/validate';
     }  
@@ -45,28 +55,63 @@ class Admin extends AdminModule
           'Status Pulang' => 'refstatuspulang',
           'Kelompok' => 'refkelompok',
           'Spesialis' => 'refspesialis',
-          'Settings' => 'settings'
+          'Pengaturan' => 'settings',
       ];
   }
 
   public function getManage()
   {
       $parsedown = new \Systems\Lib\Parsedown();
-      $readme_file = MODULES.'/pcare/Help.md';
+      $readme_file = MODULES.'/pcare/README.md';
       $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
       return $this->draw('manage.html', ['readme' => $readme]);
   }
 
   public function getSettings()
   {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'pcare', 'manage']));
+      }
       $this->_addHeaderFiles();
       $this->assign['title'] = 'Pengaturan PCare';
-      $this->assign['pcare'] = htmlspecialchars_array($this->settings('pcare'));
-      return $this->draw('settings.html', ['settings' => $this->assign]);
+      
+      // Default settings untuk pcare
+      $defaultSettings = [
+          'usernamePcare' => '',
+          'passwordPcare' => '',
+          'consumerID' => '',
+          'consumerSecret' => '',
+          'consumerUserKey' => '',
+          'consumerUserKeyAntrol' => '',
+          'PCareApiUrl' => '',
+          'kode_fktp' => '',
+          'nama_fktp' => '',
+          'kode_kabupatenkota' => '',
+          'kabupatenkota' => '',
+          'wilayah' => '',
+          'cabang' => ''
+      ];
+      
+      // Ambil settings dari database
+      $dbSettings = $this->settings('pcare');
+      if (!is_array($dbSettings)) {
+          $dbSettings = [];
+      }
+      
+      // Gabungkan default settings dengan database settings
+      $pcareSettings = array_merge($defaultSettings, $dbSettings);
+      
+      $this->assign['pcare'] = htmlspecialchars_array($pcareSettings);
+      return $this->draw('settings.html', ['settings' => htmlspecialchars_array($this->assign)]);
   }
 
   public function postSaveSettings()
   {
+      if ($this->core->getUserInfo('role') != 'admin') {
+          $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
+          redirect(url([ADMIN, 'pcare', 'manage']));
+      }
       foreach ($_POST['pcare'] as $key => $val) {
           $this->settings('pcare', $key, $val);
       }
@@ -88,7 +133,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'diagnosa/'.$keyword.'/0/500';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -130,7 +175,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'dokter/0/500';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -172,7 +217,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'kesadaran/';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -214,7 +259,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'alergi/jenis/'.$jenis;
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      // echo json_encode($json);
+      // echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -256,7 +301,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'prognosa';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -299,7 +344,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'kunjungan/'.$keyword.'/'.$param;
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -369,12 +414,12 @@ class Admin extends AdminModule
     ];
 
     $data = json_encode($data);
-    //echo $data;
+    //// echo $data;
 
     $url = $this->api_url . 'kunjungan';
     $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
@@ -445,12 +490,12 @@ class Admin extends AdminModule
     ];
 
     $data = json_encode($data);
-    //echo $data;
+    //// echo $data;
 
     $url = $this->api_url . 'kunjungan';
     $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
@@ -491,7 +536,7 @@ class Admin extends AdminModule
     $url = $this->api_url.'kunjungan/'.$noKunjungan;
     $output = PcareService::delete($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);   
     $json = json_decode($output, true);
-    echo json_encode($json);
+    echo json_encode(htmlspecialchars_array($json));
 
       // $code = $json['metaData']['code'];
       // $message = $json['metaData']['message'];
@@ -534,7 +579,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'peserta/'.$noKartu;
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -571,7 +616,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'peserta/'.$jeniskartu.'/'.$nomor;
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -613,7 +658,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'poli/fktp/0/500';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -655,7 +700,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'provider/0/500';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -697,7 +742,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'statuspulang/rawatInap/'.$status;
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -756,12 +801,12 @@ class Admin extends AdminModule
     ];
 
     $data = json_encode($data);
-    //echo $data;
+    //// echo $data;
 
     $url = $this->api_url . 'pendaftaran';
     $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
@@ -800,7 +845,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'pendaftaran/noUrut/'.$noUrut.'/tglDaftar/'.$tglDaftar;
     $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
@@ -839,7 +884,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'pendaftaran/tglDaftar/'.$tglDaftar.'/0/500';
     $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
@@ -878,7 +923,7 @@ class Admin extends AdminModule
     $url = $this->api_url . 'pendaftaran/peserta/'.$noKartu.'/tglDaftar/'.$tglDaftar.'/noUrut/'.$noUrut.'/kdPoli/'.$kdPoli;
     $output = PcareService::delete($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
@@ -923,7 +968,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'spesialis/';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -960,7 +1005,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'spesialis/'.$subspesialis.'/subspesialis';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -997,7 +1042,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'spesialis/sarana';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1034,7 +1079,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'spesialis/rujuk/subspesialis/'.$subspesialis.'/sarana/'.$sarana.'/tglEstRujuk/'.$date;
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1071,7 +1116,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'spesialis/khusus';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1114,7 +1159,7 @@ class Admin extends AdminModule
       }
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1157,7 +1202,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'tindakan/kunjungan/'.$noKunjungan;
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1194,7 +1239,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'tindakan/kdTkp/'.$kdTkp.'/0/500';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1238,12 +1283,12 @@ class Admin extends AdminModule
       ];
 
       $data = json_encode($data);
-      //echo $data;
+      //// echo $data;
 
       $url = $this->api_url . 'tindakan';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      echo json_encode($json);
+      echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1287,12 +1332,12 @@ class Admin extends AdminModule
       ];
 
       $data = json_encode($data);
-      //echo $data;
+      //// echo $data;
 
       $url = $this->api_url . 'tindakan';
       $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1329,7 +1374,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'tindakan/'.$kdTindakanSK.'/kunjungan/'.$noKunjungan;
       $output = PcareService::delete($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1372,7 +1417,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'obat/dpho/'.$dpho.'/0/500';
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1421,12 +1466,12 @@ class Admin extends AdminModule
       ];
 
       $data = json_encode($data);
-      echo $data;
+      // echo $data;
 
       $url = $this->api_url . 'obat/kunjungan';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      echo json_encode($json);
+      echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1463,7 +1508,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'obat/'.$kdObatSK.'/kunjungan/'.$noKunjungan;
       $output = PcareService::delete($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1579,7 +1624,7 @@ class Admin extends AdminModule
     $url = $this->api_url.'tindakan/kunjungan/'.$nomor_kunjungan;
     $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    // echo json_encode($json);
+    // echo json_encode(htmlspecialchars_array($json));
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
@@ -1926,7 +1971,7 @@ class Admin extends AdminModule
     $url = $this->api_url.'obat/kunjungan/'.$nomor_kunjungan;
     $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    //echo json_encode(htmlspecialchars_array($json));
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
@@ -2014,7 +2059,7 @@ class Admin extends AdminModule
       $url = $this->api_url . 'pendaftaran';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      // echo json_encode($json);
+      // echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -2031,13 +2076,13 @@ class Admin extends AdminModule
               "message": "' . $message . '"
             },
             "response": ' . $decompress . '}';
-          // echo $data;
+          // // echo $data;
           $data = json_decode($data, true);
           $noUrut = $data['response']['message'];
-          echo $noUrut;
+          echo htmlspecialchars($noUrut, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         } else {
-            //echo json_encode($json);
-            echo $message;
+            //echo json_encode(htmlspecialchars_array($json));
+            echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         }        
       } else {
           echo '{
@@ -2091,7 +2136,7 @@ class Admin extends AdminModule
       ];
 
       $data = json_encode($data);
-      echo $data;
+      // echo $data;
 
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
@@ -2100,7 +2145,7 @@ class Admin extends AdminModule
       $url = $this->api_url . 'kunjungan/V1';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      // echo json_encode($json);
+      // echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -2117,13 +2162,13 @@ class Admin extends AdminModule
               "message": "' . $message . '"
             },
             "response": ' . $decompress . '}';
-          // echo $data;
+          // // echo $data;
           $data = json_decode($data, true);
           $noKunjungan = $data['response'][0]['message'];
-          echo $noKunjungan;
+          echo htmlspecialchars($noKunjungan, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         } else {
-            //echo json_encode($json);
-            echo $message;
+            //echo json_encode(htmlspecialchars_array($json));
+            echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         }
 
       } else {
@@ -2193,7 +2238,7 @@ class Admin extends AdminModule
       $url = $this->api_url . 'kunjungan/V1';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      // echo json_encode($json);
+      // echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -2210,14 +2255,14 @@ class Admin extends AdminModule
               "message": "' . $message . '"
             },
             "response": ' . $decompress . '}';
-          // echo $data;
+          // // echo $data;
           $data = json_decode($data, true);
           $noKunjungan = $data['response'][0]['message'];
-          echo $noKunjungan;
+          echo htmlspecialchars($noKunjungan, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         } else {
-            //echo json_encode($json);
+            //echo json_encode(htmlspecialchars_array($json));
             // echo $data_test;
-            echo $message;
+            echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         }
 
       } else {
@@ -2284,7 +2329,7 @@ class Admin extends AdminModule
       $url = $this->api_url . 'kunjungan/V1';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      // echo json_encode($json);
+      // echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -2301,13 +2346,13 @@ class Admin extends AdminModule
               "message": "' . $message . '"
             },
             "response": ' . $decompress . '}';
-          // echo $data;
+          // // echo $data;
           $data = json_decode($data, true);
           $noKunjungan = $data['response'][0]['message'];
-          echo $noKunjungan;
+          echo htmlspecialchars($noKunjungan, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         } else {
-            //echo json_encode($json);
-            echo $message;
+            //echo json_encode(htmlspecialchars_array($json));
+            echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
         }
           
       } else {
@@ -2490,13 +2535,13 @@ class Admin extends AdminModule
       $url = $this->api_url . 'kunjungan/V1';
       $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      // echo json_encode($json);
+      // echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
       if ($json != null) {
-        //echo json_encode($json);
-        echo $message;
+        //echo json_encode(htmlspecialchars_array($json));
+        echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
       } else {
           echo '{
               "metaData": {
@@ -2563,13 +2608,13 @@ class Admin extends AdminModule
       $url = $this->api_url . 'kunjungan/V1';
       $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
       if ($json != null) {
-        //echo json_encode($json);
-        echo $message;
+        //echo json_encode(htmlspecialchars_array($json));
+        echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
       } else {
           echo '{
               "metaData": {
@@ -2634,13 +2679,13 @@ class Admin extends AdminModule
       $url = $this->api_url . 'kunjungan/V1';
       $output = PcareService::put($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
       if ($json != null) {
-        //echo json_encode($json);
-        echo $message;
+        //echo json_encode(htmlspecialchars_array($json));
+        echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
       } else {
           echo '{
               "metaData": {
@@ -2728,7 +2773,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'kelompok/club/'.$kode;
       $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      //echo json_encode(htmlspecialchars_array($json));
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];

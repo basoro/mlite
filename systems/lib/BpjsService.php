@@ -15,7 +15,7 @@ class BpjsService
         return self::request2('POST', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function postAplicare($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
+    public static function postAplicare($url, $datafields = [], $consid = '', $secretkey = '', $user_key = '', $time_stamp = '')
     {
         return self::requestAplicare('POST', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
@@ -68,7 +68,7 @@ class BpjsService
 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $output = curl_exec($ch);
         self::$lastStatus = curl_error($ch);
@@ -109,7 +109,7 @@ class BpjsService
 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $output = curl_exec($ch);
         self::$lastStatus = curl_error($ch);
@@ -152,7 +152,7 @@ class BpjsService
 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $output = curl_exec($ch);
         self::$lastStatus = curl_error($ch);

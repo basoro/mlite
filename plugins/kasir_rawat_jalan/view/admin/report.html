@@ -1,0 +1,142 @@
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">Laporan Kasir</h3>
+  </div>
+  <div class="panel-body">
+    <form method="get" action="{?= url([ADMIN,'kasir_rawat_jalan','report']) ?}">
+      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Mulai</label>
+          <input type="text" class="form-control tanggal_jam" name="awal" value="{?=isset_or($awal)?}">
+        </div>
+        <div class="col-md-4">
+          <label>Selesai</label>
+          <input type="text" class="form-control tanggal_jam" name="akhir" value="{?=isset_or($akhir)?}">
+        </div>
+        <div class="col-md-4">
+          <label>&nbsp;</label>
+          <div>
+            <button type="submit" class="btn btn-primary">Terapkan</button>
+            <a class="btn btn-default" href="{?= url([ADMIN,'kasir_rawat_jalan','reportexport']) ?}&awal={?=isset_or($awal)?}&akhir={?=isset_or($akhir)?}">Export CSV</a>
+            <button type="button" class="btn btn-warning" onclick="printContent('laporan')">Cetak</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <hr>
+    <div id="kop_print" style="display:none;">
+      <div style="width:960px;">
+        <table style="width:100%;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">
+                <img src="{?=url()?}/{?=isset_or($settings.logo)?}" height="80px" style="margin-right: 20px;" alt="">
+              </th>
+              <th style="text-align:left;" width="100%">
+                  <p style="margin:0;">
+                    <span style="font-size: 22px;">{?=isset_or($settings.nama_instansi)?}</span><br>
+                    <span style="font-size: 14px;">Alamat: {?=isset_or($settings.alamat)?} - {?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}</span><br>
+                    <span style="font-size: 14px;">Telepon: {?=isset_or($settings.nomor_telepon)?} - Email: {?=isset_or($settings.email)?}</span>
+                  </p>
+              </th>
+            </tr>
+            <tr>
+              <th colspan="2">
+                <hr style="border-bottom: 2px solid #000;padding-top:3px;">
+              </th>
+            </tr>
+            <tr>
+              <th colspan="2">
+                <div style="text-align:center;font-size:16px;margin:10px 0 0 0;"><b>LAPORAN KASIR RAWAT JALAN</b></div>
+                <div style="text-align:center;font-size:13px;margin:4px 0 10px 0;">Periode {?=isset_or($awal)?} s/d {?=isset_or($akhir)?}</div>
+              </th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+    <div id="laporan">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID Kasir</th>
+          <th>Nama Kasir</th>
+          <th>Transaksi</th>
+          <th>Total</th>
+          <th>Mulai</th>
+          <th>Selesai</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <hr>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Kode Faktur</th>
+          <th>No. Rawat</th>
+          <th>Kasir</th>
+          <th>Total Bayar</th>
+          <th>Waktu</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody id="details"></tbody>
+    </table>
+    </div>
+    <script>
+      (function(){
+        var data = {?= json_encode($rows) ?};
+        var tbody = document.getElementById('rows');
+        if (Array.isArray(data)) {
+          data.forEach(function(r){
+            var tr = document.createElement('tr');
+            var total = Number(r.total || 0);
+            tr.innerHTML = '<td>'+ (r.id_user || '') +'</td>'+
+                           '<td>'+ (r.nama_kasir || '') +'</td>'+
+                           '<td>'+ (r.transaksi || 0) +'</td>'+
+                           '<td>'+ total.toLocaleString('id-ID',{minimumFractionDigits:2, maximumFractionDigits:2}) +'</td>'+
+                           '<td>'+ (r.mulai || '') +'</td>'+
+                           '<td>'+ (r.selesai || '') +'</td>';
+            tbody.appendChild(tr);
+          });
+        }
+        var details = {?= json_encode($details ?? []) ?};
+        var dtbody = document.getElementById('details');
+        if (Array.isArray(details)) {
+          details.forEach(function(d){
+            var tr = document.createElement('tr');
+            var bayar = Number(d.jumlah_harus_bayar || 0);
+            tr.innerHTML = '<td>'+ (d.kd_billing || '') +'</td>'+
+                           '<td>'+ (d.no_rawat || '') +'</td>'+
+                           '<td>'+ (d.nama_kasir || '') +'</td>'+
+                           '<td>'+ bayar.toLocaleString('id-ID',{minimumFractionDigits:2, maximumFractionDigits:2}) +'</td>'+
+                           '<td>'+ (d.waktu || '') +'</td>'+
+                           '<td>'+ (d.keterangan || '') +'</td>';
+            dtbody.appendChild(tr);
+          });
+        }
+      })();
+
+      function printContent(el){
+        var restore = document.body.innerHTML;
+        var kop = document.getElementById('kop_print') ? document.getElementById('kop_print').innerHTML : '';
+        var content = document.getElementById(el).innerHTML;
+        document.body.innerHTML = kop + content;
+        window.print();
+        document.body.innerHTML = restore;
+      }
+    </script>
+    <script type="text/javascript">
+      $(function () {
+          $('.tanggal_jam').datetimepicker({
+            defaultDate: '{?=date('Y-m-d H:i:s')?}',
+            format: 'YYYY-MM-DD HH:mm:ss',
+            locale: 'id'
+          });
+      });
+    </script>    
+  </div>
+</div>

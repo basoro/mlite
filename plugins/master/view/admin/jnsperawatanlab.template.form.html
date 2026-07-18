@@ -11,7 +11,7 @@
           <input type="text" id="kd_jenis_prw" name="kd_jenis_prw" class="form-control" value="{$kd_jenis_prw}" readonly>
         </div>
       </div>
-      {if: $id_template !=''}
+      {if: $id_template != ''}
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">ID Template</label>
         <div class="col-sm-9">
@@ -22,91 +22,91 @@
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">Pemeriksaan</label>
         <div class="col-sm-9">
-          <input type="text" name="Pemeriksaan" class="form-control" value="{$template.Pemeriksaan}">
+          <input type="text" name="Pemeriksaan" class="form-control" value="{?=isset_or($template.Pemeriksaan, '')?}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">Satuan</label>
         <div class="col-sm-9">
-          <input type="text" name="satuan" class="form-control" value="{$template.satuan}">
+          <input type="text" name="satuan" class="form-control" value="{?=isset_or($template.satuan, '')?}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">N. Rujukan. LD</label>
         <div class="col-sm-9">
-          <input type="text" name="nilai_rujukan_ld" class="form-control" value="{$template.nilai_rujukan_ld}">
+          <input type="text" name="nilai_rujukan_ld" class="form-control" value="{?=isset_or($template.nilai_rujukan_ld, '')?}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">N. Rujukan LA</label>
         <div class="col-sm-9">
-          <input type="text" name="nilai_rujukan_la" class="form-control" value="{$template.nilai_rujukan_la}">
+          <input type="text" name="nilai_rujukan_la" class="form-control" value="{?=isset_or($template.nilai_rujukan_la, '')?}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">N. Rujukan PD</label>
         <div class="col-sm-9">
-          <input type="text" name="nilai_rujukan_pd" class="form-control" value="{$template.nilai_rujukan_pd}">
+          <input type="text" name="nilai_rujukan_pd" class="form-control" value="{?=isset_or($template.nilai_rujukan_pd, '')?}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">N. Rujukan PA</label>
         <div class="col-sm-9">
-          <input type="text" name="nilai_rujukan_pa" class="form-control" value="{$template.nilai_rujukan_pa}">
+          <input type="text" name="nilai_rujukan_pa" class="form-control" value="{?=isset_or($template.nilai_rujukan_pa, '')?}">
         </div>
       </div>
       <div class="form-group hidden">
         <label for="" class="col-sm-3 control-label">Bagian RS</label>
         <div class="col-sm-9">
-          <input type="text" name="bagian_rs" class="form-control" value="0">
+          <input type="text" name="bagian_rs" class="form-control" value="{?=isset_or($template.bagian_rs, '0')?}">
         </div>
       </div>
       <div class="form-group hidden">
         <label for="" class="col-sm-3 control-label">BHP</label>
         <div class="col-sm-9">
-          <input type="text" name="bhp" class="form-control" value="0">
+          <input type="text" name="bhp" class="form-control" value="{?=isset_or($template.bhp, '0')?}">
         </div>
       </div>
       <div class="form-group hidden">
         <label for="" class="col-sm-3 control-label">Tarif Perujuk</label>
         <div class="col-sm-9">
-          <input type="text" name="bagian_perujuk" class="form-control" value="0">
+          <input type="text" name="bagian_perujuk" class="form-control" value="{?=isset_or($template.bagian_perujuk, '0')?}">
         </div>
       </div>
       <div class="form-group hidden">
         <label for="" class="col-sm-3 control-label">Tarif Dokter</label>
         <div class="col-sm-9">
-          <input type="text" name="bagian_dokter" class="form-control" value="0">
+          <input type="text" name="bagian_dokter" class="form-control" value="{?=isset_or($template.bagian_dokter, '0')?}">
         </div>
       </div>
       <div class="form-group hidden">
         <label for="" class="col-sm-3 control-label">Tarif Petugas</label>
         <div class="col-sm-9">
-          <input type="text" name="bagian_laborat" class="form-control" value="0">
+          <input type="text" name="bagian_laborat" class="form-control" value="{?=isset_or($template.bagian_laborat, '0')?}">
         </div>
       </div>
       <div class="form-group hidden">
         <label for="" class="col-sm-3 control-label">KSO</label>
         <div class="col-sm-9">
-          <input type="text" name="kso" class="form-control" value="0">
+          <input type="text" name="kso" class="form-control" value="{?=isset_or($template.kso, '0')?}">
         </div>
       </div>
       <div class="form-group hidden">
         <label for="" class="col-sm-3 control-label">Manajemen</label>
         <div class="col-sm-9">
-          <input type="text" name="menejemen" class="form-control" value="0">
+          <input type="text" name="menejemen" class="form-control" value="{?=isset_or($template.menejemen, '0')?}">
         </div>
       </div>
       <div class="form-group hidden">
         <label for="" class="col-sm-3 control-label">Biaya Item</label>
         <div class="col-sm-9">
-          <input type="text" name="biaya_item" class="form-control" value="0">
+          <input type="text" name="biaya_item" class="form-control" value="{?=isset_or($template.biaya_item, '0')?}">
         </div>
       </div>
       <div class="form-group">
         <label for="" class="col-sm-3 control-label">No. Urut</label>
         <div class="col-sm-9">
-          <input type="text" name="urut" class="form-control" value="{$template.urut}">
+          <input type="text" name="urut" class="form-control" value="{?=isset_or($template.urut, '0')?}">
         </div>
       </div>
     </form>

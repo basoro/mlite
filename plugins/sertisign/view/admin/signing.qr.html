@@ -1,0 +1,70 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">TTE QR Multi Visual</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{?=url(ADMIN.'/sertisign/signingqr')?}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Dokumen PDF</label>
+                        <input type="file" name="document" class="form-control" accept="application/pdf" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Signer (JSON Format)</label>
+                        <textarea name="signer" class="form-control" rows="5" required>[
+  {
+    "identifier": "sertisign-poa2-snbx@yopmail.com",
+    "keyword": "#1A",
+    "qrValue": "TTE oleh sertisign-poa2-snbx@yopmail.com",
+    "pin": "1234"
+  }
+]</textarea>
+                        <p class="help-block">Format JSON: [{"identifier": "email", "keyword": "...", "qrValue": "...", "pin": "..."}]</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Width (px)</label>
+                                <input type="text" name="w" class="form-control" value="50" required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Height (px)</label>
+                                <input type="text" name="h" class="form-control" value="50" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Halaman</label>
+                        <select name="page" class="form-control">
+                            <option value="first">Pertama</option>
+                            <option value="last">Terakhir</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Flagging (Optional JSON)</label>
+                        <textarea name="flagging" class="form-control" rows="3">[{"flag1": "Info Dokumen"}]</textarea>
+                    </div>
+                    <div class="row">
+                         <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Page Number (Optional)</label>
+                                <input type="text" name="pageNumber" class="form-control" />
+                            </div>
+                         </div>
+                         <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Page Range (Optional)</label>
+                                <input type="text" name="pageRange" class="form-control" placeholder="e.g. 2-5" />
+                            </div>
+                         </div>
+                    </div>
+
+                    <input type="submit" class="btn btn-primary" value="Proses TTE" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

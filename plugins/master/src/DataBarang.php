@@ -19,10 +19,11 @@ class DataBarang
       $totalRecords = $this->db('databarang')
         ->select('kode_brng')
         ->toArray();
-      $offset         = 30;
+      $offset         = 10;
       $return['halaman']    = 1;
-      $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
-      $return['jumlah_data']    = count($totalRecords);
+      $totalRecordsCount = is_array($totalRecords) ? count($totalRecords) : 0;
+      $return['jml_halaman']    = ceil($totalRecordsCount / $offset);
+      $return['jumlah_data']    = $totalRecordsCount;
 
       $return['list'] = $this->db('databarang')
         ->select([
@@ -117,10 +118,11 @@ class DataBarang
         $totalRecords = $this->db('databarang')
           ->select('kode_brng')
           ->toArray();
-        $offset         = 30;
+        $offset         = 10;
         $return['halaman']    = 1;
-        $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
-        $return['jumlah_data']    = count($totalRecords);
+        $totalRecordsCount = is_array($totalRecords) ? count($totalRecords) : 0;
+        $return['jml_halaman']    = ceil($totalRecordsCount / $offset);
+        $return['jumlah_data']    = $totalRecordsCount;
 
         $return['list'] = $this->db('databarang')
           ->select([
@@ -202,7 +204,7 @@ class DataBarang
             ->offset(0)
             ->limit($perpage)
             ->toArray();
-          $jumlah_data = count($return['list']);
+          $jumlah_data = is_array($return['list']) ? count($return['list']) : 0;
           $jml_halaman = ceil($jumlah_data / $offset);
         }
         if(isset($_POST['halaman'])){
@@ -268,12 +270,11 @@ class DataBarang
 
     public function postMaxId()
     {
-      $max_id = $this->db('databarang')->select(['kode_brng' => 'ifnull(MAX(CONVERT(RIGHT(kode_brng,5),signed)),0)'])->oneArray();
-      if(empty($max_id['kode_brng'])) {
-        $max_id['kode_brng'] = '00000';
-      }
-      $_next_max_id = sprintf('%05s', ($max_id['kode_brng'] + 1));
-      $next_max_id = 'B'.$_next_max_id;
+      $urut = $this->db('databarang')
+          ->nextRightNumber('kode_brng', 5);
+
+      $next_max_id = 'B' . sprintf('%05d', $urut);
+
       echo $next_max_id;
       exit();
     }

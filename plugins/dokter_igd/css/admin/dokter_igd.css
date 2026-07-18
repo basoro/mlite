@@ -126,3 +126,309 @@
   width: 50%;
   text-align: center;
 }
+
+
+/* CSS untuk Triase IGD */
+
+/* Styling untuk kategori triase */
+.triase-merah {
+  background-color: #d9534f !important;
+  color: white !important;
+  font-weight: bold;
+  border: 2px solid #c9302c !important;
+}
+
+.triase-kuning {
+  background-color: #f0ad4e !important;
+  color: white !important;
+  font-weight: bold;
+  border: 2px solid #eea236 !important;
+}
+
+.triase-hijau {
+  background-color: #5cb85c !important;
+  color: white !important;
+  font-weight: bold;
+  border: 2px solid #4cae4c !important;
+}
+
+.triase-hitam {
+  background-color: #333 !important;
+  color: white !important;
+  font-weight: bold;
+  border: 2px solid #222 !important;
+}
+
+/* Auto-calculated indicator untuk skala triase */
+.auto-calculated {
+  border: 2px solid #007bff !important;
+  background-color: #e7f3ff !important;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Styling untuk form triase */
+#triase_igd {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+#triase_igd .form-group {
+  margin-bottom: 15px;
+}
+
+#triase_igd .control-label {
+  font-weight: bold;
+  color: #333;
+}
+
+#triase_igd .text-danger {
+  color: #d9534f;
+}
+
+/* Styling untuk readonly fields */
+#triase_igd input[readonly] {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* Styling untuk total GCS */
+#total_gcs {
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  background-color: #e8f4fd !important;
+  border: 2px solid #007bff !important;
+}
+
+/* Styling untuk kategori select options */
+select[name="kategori"] option[value="Merah"] {
+  background-color: #d9534f;
+  color: white;
+}
+
+select[name="kategori"] option[value="Kuning"] {
+  background-color: #f0ad4e;
+  color: white;
+}
+
+select[name="kategori"] option[value="Hijau"] {
+  background-color: #5cb85c;
+  color: white;
+}
+
+select[name="kategori"] option[value="Hitam"] {
+  background-color: #333;
+  color: white;
+}
+
+/* Styling untuk help text */
+.help-block {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.help-block.text-info {
+  color: #31708f;
+}
+
+/* Styling untuk tombol aksi */
+#triase_igd .btn {
+  margin-right: 5px;
+}
+
+#btn_simpan_triase {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+
+#btn_view_triase {
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
+/* Styling untuk modal triase view */
+#modal_view_triase .modal-dialog {
+  width: 90%;
+  max-width: 1000px;
+}
+
+#modal_view_triase .modal-body {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Styling untuk triase view content */
+#triase_view_content .table {
+  margin-bottom: 10px;
+}
+
+#triase_view_content .table td {
+  padding: 8px;
+  vertical-align: middle;
+}
+
+#triase_view_content .label {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+#triase_view_content .well {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #triase_igd .col-md-6,
+  #triase_igd .col-md-4 {
+    margin-bottom: 15px;
+  }
+  
+  #triase_igd .control-label {
+    text-align: left;
+    margin-bottom: 5px;
+  }
+  
+  #modal_view_triase .modal-dialog {
+    width: 95%;
+    margin: 10px auto;
+  }
+}
+
+/* Print styles */
+@media print {
+  #triase_igd .btn,
+  #modal_view_triase .modal-header,
+  #modal_view_triase .modal-footer {
+    display: none !important;
+  }
+  
+  #triase_view_content {
+    background: white !important;
+    color: black !important;
+  }
+  
+  #triase_view_content .table {
+    border-collapse: collapse;
+  }
+  
+  #triase_view_content .table td,
+  #triase_view_content .table th {
+    border: 1px solid #000 !important;
+    padding: 5px !important;
+  }
+}
+
+/* Animation untuk auto-calculated fields */
+.auto-calculated {
+  animation: pulse-blue 2s infinite;
+}
+
+@keyframes pulse-blue {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+  }
+}
+
+/* Styling untuk loading spinner */
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Styling untuk alert messages */
+.alert {
+  margin-top: 10px;
+  padding: 10px 15px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.alert-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+
+.alert-success {
+  color: #3c763d;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+
+/* Styling untuk form validation */
+.has-error .form-control {
+  border-color: #a94442;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+.has-error .form-control:focus {
+  border-color: #843534;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px #ce8483;
+}
+
+/* Styling untuk required fields indicator */
+.text-danger {
+  color: #d9534f !important;
+}
+
+/* Hover effects */
+#triase_igd .btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+/* Focus styles untuk accessibility */
+#triase_igd .form-control:focus {
+  border-color: #66afe9;
+  outline: 0;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+/* Styling untuk disabled elements */
+#triase_igd .form-control:disabled,
+#triase_igd .form-control[readonly] {
+  background-color: #f5f5f5;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* Custom scrollbar untuk modal */
+#modal_view_triase .modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+#modal_view_triase .modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+#modal_view_triase .modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+#modal_view_triase .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

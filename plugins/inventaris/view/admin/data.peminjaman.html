@@ -20,7 +20,7 @@
                     <label>Nomor Inventaris</label>
                     <select name="no_inventaris" id="no_inventaris" class="form-control" data-use-search="true">
                         {loop: $inventaris}
-                        <option value="{$value.no_inventaris}">{$value.nama_barang}</option>
+                        <option value="{?=isset_or($value.no_inventaris)?}">{?=isset_or($value.nama_barang)?}</option>
                         {/loop}
                     </select>
                 </div>
@@ -44,7 +44,7 @@
                     <label>Petugas</label>
                     <select name="nip" id="nip" class="form-control" data-use-search="true">
                         {loop: $pegawai}
-                        <option value="{$value.nik}">{$value.nama}</option>
+                        <option value="{?=isset_or($value.nik)?}">{?=isset_or($value.nama)?}</option>
                         {/loop}
                     </select>
                 </div>
@@ -87,24 +87,24 @@
         <tbody>
           {loop: $inventaris_peminjaman}
           <tr class="peminjaman"
-          data-peminjam="{$value.peminjam}"
-          data-tlp="{$value.tlp}"
-          data-no_inventaris="{$value.no_inventaris}"
-          data-tgl_pinjam="{$value.tgl_pinjam}"
-          data-tgl_kembali="{$value.tgl_kembali}"
-          data-nip="{$value.nip}"
-          data-status_pinjam="{$value.status_pinjam}"
+          data-peminjam="{?=isset_or($value.peminjam)?}"
+          data-tlp="{?=isset_or($value.tlp)?}"
+          data-no_inventaris="{?=isset_or($value.no_inventaris)?}"
+          data-tgl_pinjam="{?=isset_or($value.tgl_pinjam)?}"
+          data-tgl_kembali="{?=isset_or($value.tgl_kembali)?}"
+          data-nip="{?=isset_or($value.nip)?}"
+          data-status_pinjam="{?=isset_or($value.status_pinjam)?}"
           >
-            <td>{$value.peminjam}</td>
-            <td>{$value.tlp}</td>
-            <td>{$value.no_inventaris}</td>
-            <td>{$value.kode_barang}</td>
-            <td>{$value.nama_barang}</td>
-            <td>{$value.tgl_pinjam}</td>
-            <td>{$value.tgl_kembali}</td>
-            <td>{$value.nip}</td>
-            <td>{$value.nama}</td>
-            <td>{$value.status_pinjam}</td>
+            <td>{?=isset_or($value.peminjam)?}</td>
+            <td>{?=isset_or($value.tlp)?}</td>
+            <td>{?=isset_or($value.no_inventaris)?}</td>
+            <td>{?=isset_or($value.kode_barang)?}</td>
+            <td>{?=isset_or($value.nama_barang)?}</td>
+            <td>{?=isset_or($value.tgl_pinjam)?}</td>
+            <td>{?=isset_or($value.tgl_kembali)?}</td>
+            <td>{?=isset_or($value.nip)?}</td>
+            <td>{?=isset_or($value.nama)?}</td>
+            <td>{?=isset_or($value.status_pinjam)?}</td>
           </tr>
           {/loop}
         </tbody>

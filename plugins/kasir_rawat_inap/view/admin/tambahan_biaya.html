@@ -15,8 +15,8 @@
           </tr>
           {if: $tambahan_biaya}
           {loop: $tambahan_biaya}
-          <tr class="pilih_tambahan_biaya" data-nama_biaya="{$value.nama_biaya}" data-besar_biaya="{$value.besar_biaya}" data-kat="tambahan_biaya">
-            <td>{$value.nama_biaya}</td>
+          <tr class="pilih_tambahan_biaya" data-nama_biaya="{?=isset_or($value.nama_biaya)?}" data-besar_biaya="{?=isset_or($value.besar_biaya)?}" data-kat="tambahan_biaya">
+            <td>{?=isset_or($value.nama_biaya)?}</td>
             <td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
           </tr>
           {/loop}

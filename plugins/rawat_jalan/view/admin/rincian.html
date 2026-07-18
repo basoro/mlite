@@ -13,29 +13,29 @@
     <tbody>
       {loop: $rawat_jl_dr}
       <tr>
-        <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
-        <td>{$value.nm_perawatan}</td>
+        <td>{?=isset_or($value.tgl_perawatan)?} {?=isset_or($value.jam_rawat)?}</td>
+        <td>{?=isset_or($value.nm_perawatan)?}</td>
         <td>Dokter</td>
         <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-        <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
+        <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" data-tgl_perawatan="{?=isset_or($value.tgl_perawatan)?}" data-jam_rawat="{?=isset_or($value.jam_rawat)?}" data-provider="{?=isset_or($value.provider)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
       </tr>
       {/loop}
       {loop: $rawat_jl_pr}
       <tr>
-        <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
-        <td>{$value.nm_perawatan}</td>
+        <td>{?=isset_or($value.tgl_perawatan)?} {?=isset_or($value.jam_rawat)?}</td>
+        <td>{?=isset_or($value.nm_perawatan)?}</td>
         <td>Perawat</td>
         <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-        <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
+        <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" data-tgl_perawatan="{?=isset_or($value.tgl_perawatan)?}" data-jam_rawat="{?=isset_or($value.jam_rawat)?}" data-provider="{?=isset_or($value.provider)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
       </tr>
       {/loop}
       {loop: $rawat_jl_drpr}
       <tr>
-        <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
-        <td>{$value.nm_perawatan}</td>
+        <td>{?=isset_or($value.tgl_perawatan)?} {?=isset_or($value.jam_rawat)?}</td>
+        <td>{?=isset_or($value.nm_perawatan)?}</td>
         <td>Dokter & Perawat</td>
         <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-        <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
+        <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-kd_jenis_prw="{?=isset_or($value.kd_jenis_prw)?}" data-tgl_perawatan="{?=isset_or($value.tgl_perawatan)?}" data-jam_rawat="{?=isset_or($value.jam_rawat)?}" data-provider="{?=isset_or($value.provider)?}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
       </tr>
       {/loop}
     </tbody>

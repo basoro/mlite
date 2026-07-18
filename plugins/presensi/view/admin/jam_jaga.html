@@ -1,0 +1,76 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Data Jam Jaga</h3>
+                <ul class="nav nav-tabs">
+                    <li class="{if: empty($jamjaga.getStatus)}active{/if}">
+                        <a href="{?=url(ADMIN.'/presensi/jamjaga')?}" role="tab">Jam Jaga</a>
+                    </li>
+                    <!-- <li class="{if: !empty($jamjaga.getStatus)}active{/if}">
+                        <a href="{?=url(ADMIN.'/master/petugas?status=0')?}" role="tab">Tidak Aktif</a>
+                    </li> -->
+                    <!-- <li>
+                        <a href="{?=isset_or($jamjaga.printURL)?}" target="_blank" role="tab">Cetak</a>
+                    </li> -->
+                    <li class="{if: !empty($jamjaga.addUrl)}active{/if}">
+                        <a href="{?=isset_or($jamjaga.addURL)?}" role="tab">Tambah</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="panel-body">
+              <div class="row clearfix">
+                <div class="col col-md-6">
+                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=$jamjaga.totalRecords?}</h3>
+                </div>
+                <div class="col col-md-6">
+                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                      <div class="input-group">
+                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
+                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                          <span class="input-group-btn">
+                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                          </span>
+                      </div>
+                  </form>
+                </div>
+              </div>
+    				<div class="table-responsive no-margin">
+    				    <table class="table table-striped no-margin">
+    					    <thead>
+    						    <tr>
+    							    <th>Departemen</th>
+    								<th>Shift</th>
+                                    <th>Jam Masuk</th>
+                                    <th>Jam Pulang</th>
+    								<th class="text-right">Aksi</th>
+    							</tr>
+    						</thead>
+    						<tbody>
+        						{if: !empty($jamjaga.list)}
+								{loop: $jamjaga.list}
+    								<tr>
+    									<td>{?=isset_or($value.dep_id)?}</td>
+    									<td>{?=isset_or($value.shift)?}</td>
+                                        <td>{?=isset_or($value.jam_masuk)?}</td>
+                                        <td>{?=isset_or($value.jam_pulang)?}</td>
+    									<td class="text-right">
+                                            <a href="{?=url([ADMIN, 'presensi', 'jagadel', isset_or($value.no_id, '')])?}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+      										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr>
+                                        <td colspan="4" class="text-center">Kosong</td>
+                                    </tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+					{?=isset_or($jamjaga.pagination)?}
+            </div>
+        </div>
+    </div>
+</div>

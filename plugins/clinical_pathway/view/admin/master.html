@@ -1,0 +1,109 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Form Master Clinical Pathway</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{?=url([ADMIN, 'clinical_pathway', 'savemaster'])?}" method="POST">
+          <input type="hidden" name="id" value="{?=isset_or($selected.id)?}">
+          <div class="form-group">
+            <label>Kode CP</label>
+            <input type="text" name="kode_cp" class="form-control" value="{?=isset_or($selected.kode_cp)?}" required>
+          </div>
+          <div class="form-group">
+            <label>Nama Clinical Pathway</label>
+            <input type="text" name="nama_cp" class="form-control" value="{?=isset_or($selected.nama_cp)?}" required>
+          </div>
+          <div class="form-group">
+            <label>Jenis Layanan</label>
+            <select name="jenis_layanan" class="form-control">
+              <option value="Ranap" {if: isset_or($selected.jenis_layanan) == 'Ranap'}selected{/if}>Rawat Inap</option>
+              <option value="Ralan" {if: isset_or($selected.jenis_layanan) == 'Ralan'}selected{/if}>Rawat Jalan</option>
+            </select>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Target LOS</label>
+                <input type="number" name="target_los" class="form-control" value="{?=isset_or($selected.target_los, 0)?}">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label>Confidence Score</label>
+                <input type="number" step="0.01" name="confidence_score" class="form-control" value="{?=isset_or($selected.confidence_score, 0)?}">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Target Tarif</label>
+            <input type="number" step="0.01" name="target_tarif" class="form-control" value="{?=isset_or($selected.target_tarif, 0)?}">
+          </div>
+          <div class="form-group">
+            <label>Catatan Evidence</label>
+            <textarea name="evidence_note" class="form-control" rows="3">{?=isset_or($selected.evidence_note)?}</textarea>
+          </div>
+          <div class="form-group">
+            <label>Catatan Guideline</label>
+            <textarea name="guideline_note" class="form-control" rows="3">{?=isset_or($selected.guideline_note)?}</textarea>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select name="aktif" class="form-control">
+              <option value="Ya" {if: isset_or($selected.aktif, 'Ya') == 'Ya'}selected{/if}>Aktif</option>
+              <option value="Tidak" {if: isset_or($selected.aktif) == 'Tidak'}selected{/if}>Nonaktif</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">{if: isset_or($selected.id)}Perbarui Master CP{else}Simpan Master CP{/if}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Daftar Master Clinical Pathway</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+          <table class="table table-striped table-bordered dataTables" width="100%">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>Nama</th>
+                <th>Layanan</th>
+                <th>LOS</th>
+                <th>Diagnosis</th>
+                <th>Aktivitas</th>
+                <th>Confidence</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $rows}
+              <tr>
+                <td>{?=isset_or($value.kode_cp)?}</td>
+                <td>{?=isset_or($value.nama_cp)?}</td>
+                <td>{?=isset_or($value.jenis_layanan)?}</td>
+                <td>{?=isset_or($value.target_los)?}</td>
+                <td>{?=isset_or($value.total_diagnosis)?}</td>
+                <td>{?=isset_or($value.total_activity)?}</td>
+                <td>{?=isset_or($value.confidence_score)?}</td>
+                <td>{?=isset_or($value.aktif)?}</td>
+                <td class="cp-action-col">
+                  <a href="{?=url([ADMIN, 'clinical_pathway', 'master'])?}&id={$value.id}" class="btn btn-xs btn-default">Edit</a>
+                  <a href="{?=url([ADMIN, 'clinical_pathway', 'template'])?}&cp_id={$value.id}" class="btn btn-xs btn-primary">Template</a>
+                  <a href="{?=url([ADMIN, 'clinical_pathway', 'mapping'])?}&cp_id={$value.id}" class="btn btn-xs btn-info">ICD</a>
+                  <a href="{?=url([ADMIN, 'clinical_pathway', 'generator'])?}&cp_id={$value.id}" class="btn btn-xs btn-success">Generator</a>
+                </td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

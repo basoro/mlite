@@ -29,22 +29,15 @@
               {/if}
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <li><a href="{?=url([ADMIN,'triase','manage'])?}&no_rawat={$value.no_rawat}">Triase Pasien</a></li>
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAPIE & Pemeriksaan</a></li>
-              <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
-              <li class="dropdown-submenu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Penilaian Keperawatan</a>
-                <ul class="dropdown-menu">
-                  <li><a href="{?=url([ADMIN,'penilaian_keperawatan_ralan','manage'])?}&no_rawat={$value.no_rawat}">Keperawatan Umum</a></li>
-                  <li><a href="{?=url([ADMIN,'penilaian_keperawatan_gigi','manage'])?}&no_rawat={$value.no_rawat}">Keperawatan Gigi</a></li>
-                </ul>
-              </li>
+              <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Tindakan</a></li>
+              {? \Systems\Lib\Event::call('rsgmgha.dropdown_menu', [$value]) ?}
+              <li><a href="#triase_igd" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Triase IGD</a></li>
+              <li><a href="{?=url([ADMIN,'igd','lokalis', convertNorawat($value.no_rawat)])?}"  data-toggle="modal" data-target="#lokalisModal">Status Lokalis</a></li>
               {/if}
               <li class="dropdown-submenu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
                 <ul class="dropdown-menu">
-                  <li><a href="#cover_rm" data-no_rkm_medis="{$value.no_rkm_medis}">Cover Rekam Medis</a></li>
-                  <li><a href="#identitas_pasien" data-no_rkm_medis="{$value.no_rkm_medis}">Identitas Pasien</a></li>
                   <li><a href="{?=url([ADMIN,'igd','persetujuanumum',$value.no_rkm_medis])?}" target="_blank">Persetujuan Umum</a></li>
                   <li><a href="{?=url([ADMIN,'igd','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
                   <li><a href="{?=url([ADMIN,'igd','suratsehat',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sehat</a></li>
@@ -52,12 +45,9 @@
                 </ul>
               </li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <li><a href="{?=url([ADMIN,'peta_mukosa_rongga_mulut','manage'])?}&no_rawat={$value.no_rawat}">Peta Mukosa Oral</a></li>
-              <li><a href="{?=url([ADMIN,'penilaian_ulang_nyeri','manage'])?}&no_rawat={$value.no_rawat}">Penilaian Ulang Nyeri</a></li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
-              <li><a href="{?=url([ADMIN,'dokter_igd','lokalis'])?}"  data-toggle="modal" data-target="#lokalisModal">Status Lokalis</a></li>
               {/if}
             </ul>
           </td>
@@ -85,7 +75,7 @@
                 disabled
                 {/if}
               ><span class="fa fa-send"></span> BPJS</button>
-              {if: $value.no_sep !=''}
+              {if: $value.no_sep != ''}
               <a href="{?=url([ADMIN, 'igd', 'sepdetail', $value.no_sep])?}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#sepModal"><span class="fa fa-eye"></span></a>
               {/if}
               </div>
@@ -155,31 +145,9 @@
 
 		return false;
   });
-  
-  $('a[href="#cover_rm"]').click(function(event){
-    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var loadURL =  baseURL + '/jasper/coverrm/' + no_rkm_medis + '?t=' + mlite.token;
-    $("#modal_cetak_cover_rm").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
-
-    return false;
-
-  });
-
-  $('a[href="#identitas_pasien"]').click(function(event){
-    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var loadURL =  baseURL + '/jasper/identitaspasien/' + no_rkm_medis + '?t=' + mlite.token;
-    $("#modal_cetak_identitas_pasien").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
-
-    return false;
-
-  });  
 </script>
 <script type="text/javascript">
-  $('a[href="#soap"]').click(function(event){
+  $(document).on('click', 'a[href="#soap"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -208,7 +176,7 @@
     });
   });
 
-  $('a[href="#layanan_obat"]').click(function(event){
+  $(document).on('click', 'a[href="#layanan_obat"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -232,7 +200,7 @@
     });
   });
 
-  $('a[href="#berkas_digital"]').click(function(event){
+  $(document).on('click', 'a[href="#berkas_digital"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -257,7 +225,43 @@
     });
   });
 
-  $('a[href="#status_rawat"]').click(function(event){
+  $(document).on('click', 'a[href="#triase_igd"]', function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    console.log('Triase IGD clicked from display.html');
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    var tgl_registrasi = $(this).attr("data-tgl_registrasi");
+
+    $("#display").hide();
+    $("#form").hide();
+    $("#form_rincian").hide();
+    $("#form_soap").hide();
+    $("#form_assesment").hide();
+    $("#notif").hide();
+
+    // Hide button Periode Rawat saat triase terbuka
+    $('.btn-group.pull-right').hide();
+    console.log('Button Periode Rawat hidden');
+
+    var url = baseURL + '/igd/triaseigd?t=' + mlite.token;
+    $.post(url, {
+      no_rawat: no_rawat,
+      no_rkm_medis: no_rkm_medis,
+      nm_pasien: nm_pasien,
+      tgl_registrasi: tgl_registrasi
+    }, function(data) {
+      $("#triase_igd").html(data).show();
+    }).fail(function(xhr, status, error) {
+      console.error('Error loading triase form:', error);
+      alert('Gagal memuat form triase: ' + error);
+      $("#display").show();
+    });
+  });
+
+  $(document).on('click', 'a[href="#status_rawat"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/igd/statusrawat?t=' + mlite.token;
@@ -325,7 +329,7 @@
         }
     });
   });
-  $('a[href="#status_lanjut"]').click(function(event){
+  $(document).on('click', 'a[href="#status_lanjut"]', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/igd/statuslanjut?t=' + mlite.token;
@@ -336,8 +340,8 @@
         + '<div class="form-group">'
         + '<label for="status_keluar">Pilih Status Lanjut</label>'
         + '<select name="status_lanjut" id="status_lanjut" class="form-control" data-use-dimmer="false">'
-        + '<option value="ralan">Rawat Jalan</option>'
-        + '<option value="ranap">Rawat Inap</option>'
+        + '<option value="Ralan">Rawat Jalan</option>'
+        + '<option value="Ranap">Rawat Inap</option>'
         + '</select>'
         + '</div>'
         + '';
@@ -372,12 +376,20 @@
               no_rawat: no_rawat,
               status_lanjut: status_lanjut
             } ,function(data) {
-              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-              $("#display").load(baseURL + '/igd/display?t=' + mlite.token);
-              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-              "Status lanjut pasien telah disimpan!"+
-              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-              "</div>").show();
+              // Tampilkan notifikasi sukses
+              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+                "Status lanjut pasien telah disimpan!" +
+                "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+                "</div>").show();
+              
+              // Kondisi redirect berdasarkan status_lanjut
+              if (status_lanjut == 'Ranap') {
+                // redirect ke plugins/rawat_inap setelah menyimpan status lanjut
+                window.location.href = baseURL + '/rawat_inap/manage?t=' + mlite.token + '&no_rawat=' + no_rawat;
+              } else {
+                // reload display IGD untuk status lainnya
+                $("#display").load(baseURL + '/igd/display?t=' + mlite.token);
+              }
             });
           }
         }

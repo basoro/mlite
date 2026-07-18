@@ -38,8 +38,8 @@
 		<div id="laporan">
 			<center>
 				<header>
-					<h3>{$settings.nama_instansi}</h3>
-					<p style="margin-top:-10px;">{$settings.alamat}</p>
+					<h3>{?=isset_or($settings.nama_instansi)?}</h3>
+					<p style="margin-top:-10px;">{?=isset_or($settings.alamat)?}</p>
 					<hr style="margin-top:0;">
 					<p>
             <b>Laporan Jurnal Harian</b><br>
@@ -67,12 +67,12 @@
             <tbody>
               {loop: $jurnalharian}
               <tr>
-                <td>{$value.tgl_jurnal}</td>
-                <td>{$value.no_jurnal}</td>
-                <td>{$value.no_bukti}</td>
-                <td>{$value.kd_rek} - {$value.nm_rek}</td>
-                <td>{$value.keterangan}</td>
-                <td>{$value.jenis}</td>
+                <td>{?=isset_or($value.tgl_jurnal)?}</td>
+                <td>{?=isset_or($value.no_jurnal)?}</td>
+                <td>{?=isset_or($value.no_bukti)?}</td>
+                <td>{?=isset_or($value.kd_rek)?} - {?=isset_or($value.nm_rek)?}</td>
+                <td>{?=isset_or($value.keterangan)?}</td>
+                <td>{?=isset_or($value.jenis)?}</td>
 								<td><span class="pull-right">{?= number_format($value.debet,2,',','.')?}</span></td>
                 <td><span class="pull-right">{?= number_format($value.kredit,2,',','.')?}</span></td>
               </tr>

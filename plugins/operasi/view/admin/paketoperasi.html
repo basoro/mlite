@@ -3,6 +3,7 @@
     white-space: nowrap;
   }
 </style>
+{if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
 <form action="{?=url(ADMIN.'/operasi/savepaketoperasi')?}" method="POST">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -23,7 +24,7 @@
                         <label>Ketegori</label>
                         <select name="kategori" id="kategori" class="form-control" data-use-search="true">
                           {loop: $kategori}
-                            <option value="{$value}">{$value}</option>
+                            <option value="{?=isset_or($value)?}">{?=isset_or($value)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -31,7 +32,7 @@
                         <label>Penanggung Jawab</label>
                         <select name="kd_pj" id="kd_pj" class="form-control" data-use-search="true">
                           {loop: $penjab}
-                            <option value="{$value.kd_pj}">{$value.png_jawab}</option>
+                            <option value="{?=isset_or($value.kd_pj)?}">{?=isset_or($value.png_jawab)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -39,7 +40,7 @@
                         <label>Kelas</label>
                         <select name="kelas" id="kelas" class="form-control" data-use-search="true">
                           {loop: $kelas}
-                            <option value="{$value}">{$value}</option>
+                            <option value="{?=isset_or($value)?}">{?=isset_or($value)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -178,6 +179,7 @@
         </div>
     </div>
 </form>
+{/if}
 <div class="row">
   <div class="col-md-12">
     <div class="table-responsive no-margin" id="paketoperasi">
@@ -223,75 +225,75 @@
         <tbody>
           {loop: $paketoperasi}
           <tr class="paketoperasi"
-          data-kode_paket="{$value.kode_paket}"
-          data-nm_perawatan="{$value.nm_perawatan}"
-          data-kategori="{$value.kategori}"
-          data-kd_pj="{$value.kd_pj}"
-          data-kelas="{$value.kelas}"
-          data-status="{$value.status}"
-          data-operator1="{$value.operator1}"
-          data-operator2="{$value.operator2}"
-          data-operator3="{$value.operator3}"
-          data-asisten_operator1="{$value.asisten_operator1}"
-          data-asisten_operator2="{$value.asisten_operator2}"
-          data-asisten_operator3="{$value.asisten_operator3}"
-          data-instrumen="{$value.instrumen}"
-          data-dokter_pjanak="{$value.dokter_pjanak}"
-          data-dokter_anak="{$value.dokter_anak}"
-          data-perawaat_resusitas="{$value.perawaat_resusitas}"
-          data-dokter_anestesi="{$value.dokter_anestesi}"
-          data-asisten_anestesi="{$value.asisten_anestesi}"
-          data-asisten_anestesi2="{$value.asisten_anestesi2}"
-          data-bidan="{$value.bidan}"
-          data-bidan2="{$value.bidan2}"
-          data-bidan3="{$value.bidan3}"
-          data-perawat_luar="{$value.perawat_luar}"
-          data-sewa_ok="{$value.sewa_ok}"
-          data-alat="{$value.alat}"
-          data-akomodasi="{$value.akomodasi}"
-          data-bagian_rs="{$value.bagian_rs}"
-          data-omloop="{$value.omloop}"
-          data-omloop2="{$value.omloop2}"
-          data-omloop3="{$value.omloop3}"
-          data-omloop4="{$value.omloop4}"
-          data-omloop5="{$value.omloop5}"
-          data-sarpras="{$value.sarpras}"
-          data-dokter_umum="{$value.dokter_umum}"
+          data-kode_paket="{?=isset_or($value.kode_paket)?}"
+          data-nm_perawatan="{?=isset_or($value.nm_perawatan)?}"
+          data-kategori="{?=isset_or($value.kategori)?}"
+          data-kd_pj="{?=isset_or($value.kd_pj)?}"
+          data-kelas="{?=isset_or($value.kelas)?}"
+          data-status="{?=isset_or($value.status)?}"
+          data-operator1="{?=isset_or($value.operator1)?}"
+          data-operator2="{?=isset_or($value.operator2)?}"
+          data-operator3="{?=isset_or($value.operator3)?}"
+          data-asisten_operator1="{?=isset_or($value.asisten_operator1)?}"
+          data-asisten_operator2="{?=isset_or($value.asisten_operator2)?}"
+          data-asisten_operator3="{?=isset_or($value.asisten_operator3)?}"
+          data-instrumen="{?=isset_or($value.instrumen)?}"
+          data-dokter_pjanak="{?=isset_or($value.dokter_pjanak)?}"
+          data-dokter_anak="{?=isset_or($value.dokter_anak)?}"
+          data-perawaat_resusitas="{?=isset_or($value.perawaat_resusitas)?}"
+          data-dokter_anestesi="{?=isset_or($value.dokter_anestesi)?}"
+          data-asisten_anestesi="{?=isset_or($value.asisten_anestesi)?}"
+          data-asisten_anestesi2="{?=isset_or($value.asisten_anestesi2)?}"
+          data-bidan="{?=isset_or($value.bidan)?}"
+          data-bidan2="{?=isset_or($value.bidan2)?}"
+          data-bidan3="{?=isset_or($value.bidan3)?}"
+          data-perawat_luar="{?=isset_or($value.perawat_luar)?}"
+          data-sewa_ok="{?=isset_or($value.sewa_ok)?}"
+          data-alat="{?=isset_or($value.alat)?}"
+          data-akomodasi="{?=isset_or($value.akomodasi)?}"
+          data-bagian_rs="{?=isset_or($value.bagian_rs)?}"
+          data-omloop="{?=isset_or($value.omloop)?}"
+          data-omloop2="{?=isset_or($value.omloop2)?}"
+          data-omloop3="{?=isset_or($value.omloop3)?}"
+          data-omloop4="{?=isset_or($value.omloop4)?}"
+          data-omloop5="{?=isset_or($value.omloop5)?}"
+          data-sarpras="{?=isset_or($value.sarpras)?}"
+          data-dokter_umum="{?=isset_or($value.dokter_umum)?}"
           >
-            <td>{$value.kode_paket}</td>
-            <td>{$value.nm_perawatan}</td>
-            <td>{$value.kategori}</td>
-            <td>{$value.kelas}</td>
-            <td>{$value.png_jawab}</td>
+            <td>{?=isset_or($value.kode_paket)?}</td>
+            <td>{?=isset_or($value.nm_perawatan)?}</td>
+            <td>{?=isset_or($value.kategori)?}</td>
+            <td>{?=isset_or($value.kelas)?}</td>
+            <td>{?=isset_or($value.png_jawab)?}</td>
             <td>{if: $value.status == '1'}Aktif{else}Non Aktif{/if}</td>
-            <td>{$value.operator1}</td>
-            <td>{$value.operator2}</td>
-            <td>{$value.operator3}</td>
-            <td>{$value.asisten_operator1}</td>
-            <td>{$value.asisten_operator2}</td>
-            <td>{$value.asisten_operator3}</td>
-            <td>{$value.instrumen}</td>
-            <td>{$value.dokter_pjanak}</td>
-            <td>{$value.dokter_anak}</td>
-            <td>{$value.perawaat_resusitas}</td>
-            <td>{$value.dokter_anestesi}</td>
-            <td>{$value.asisten_anestesi}</td>
-            <td>{$value.asisten_anestesi2}</td>
-            <td>{$value.bidan}</td>
-            <td>{$value.bidan2}</td>
-            <td>{$value.bidan3}</td>
-            <td>{$value.perawat_luar}</td>
-            <td>{$value.sewa_ok}</td>
-            <td>{$value.alat}</td>
-            <td>{$value.akomodasi}</td>
-            <td>{$value.bagian_rs}</td>
-            <td>{$value.omloop}</td>
-            <td>{$value.omloop2}</td>
-            <td>{$value.omloop3}</td>
-            <td>{$value.omloop4}</td>
-            <td>{$value.omloop5}</td>
-            <td>{$value.sarpras}</td>
-            <td>{$value.dokter_umum}</td>
+            <td>{?=isset_or($value.operator1)?}</td>
+            <td>{?=isset_or($value.operator2)?}</td>
+            <td>{?=isset_or($value.operator3)?}</td>
+            <td>{?=isset_or($value.asisten_operator1)?}</td>
+            <td>{?=isset_or($value.asisten_operator2)?}</td>
+            <td>{?=isset_or($value.asisten_operator3)?}</td>
+            <td>{?=isset_or($value.instrumen)?}</td>
+            <td>{?=isset_or($value.dokter_pjanak)?}</td>
+            <td>{?=isset_or($value.dokter_anak)?}</td>
+            <td>{?=isset_or($value.perawaat_resusitas)?}</td>
+            <td>{?=isset_or($value.dokter_anestesi)?}</td>
+            <td>{?=isset_or($value.asisten_anestesi)?}</td>
+            <td>{?=isset_or($value.asisten_anestesi2)?}</td>
+            <td>{?=isset_or($value.bidan)?}</td>
+            <td>{?=isset_or($value.bidan2)?}</td>
+            <td>{?=isset_or($value.bidan3)?}</td>
+            <td>{?=isset_or($value.perawat_luar)?}</td>
+            <td>{?=isset_or($value.sewa_ok)?}</td>
+            <td>{?=isset_or($value.alat)?}</td>
+            <td>{?=isset_or($value.akomodasi)?}</td>
+            <td>{?=isset_or($value.bagian_rs)?}</td>
+            <td>{?=isset_or($value.omloop)?}</td>
+            <td>{?=isset_or($value.omloop2)?}</td>
+            <td>{?=isset_or($value.omloop3)?}</td>
+            <td>{?=isset_or($value.omloop4)?}</td>
+            <td>{?=isset_or($value.omloop5)?}</td>
+            <td>{?=isset_or($value.sarpras)?}</td>
+            <td>{?=isset_or($value.dokter_umum)?}</td>
           </tr>
           {/loop}
         </tbody>

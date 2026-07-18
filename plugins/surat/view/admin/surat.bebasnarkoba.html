@@ -1,0 +1,296 @@
+<style>
+  body {
+    margin: 0 60px 40px 80px;
+    font-size: 16px;
+    font-family: georgia;
+  }
+  input, textarea {
+    font-size: 16px;
+    font-family: georgia;
+  }
+  @media print {
+    font-size: 14px;
+    font-family: georgia;
+  }
+  @media print {
+    #saveButton, #printPageButton {
+      display: none;
+    }
+    textarea {
+      border: none;
+      resize: none;
+    }
+    #saveNotification {
+      display: none !important;
+    }
+  }
+  .signature-qr {
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 12px 0 8px;
+  }
+  .signature-qr-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 12px auto 8px;
+  }
+  .signature-qr-item {
+    text-align: center;
+  }
+  .signature-qr-item .signature-qr {
+    margin: 0 auto 6px;
+  }
+  .signature-doctor-name {
+    text-align: center;
+  }
+  .save-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: none;
+    min-width: 220px;
+    max-width: 320px;
+    padding: 12px 16px;
+    border: 1px solid #000;
+    background: #f5f5f5;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    z-index: 9999;
+  }
+  .save-notification.is-visible {
+    display: block;
+  }
+  .save-notification.is-info {
+    background: #eef3f8;
+  }
+  .save-notification.is-success {
+    background: #e8f6ea;
+  }
+  .save-notification.is-error {
+    background: #fbeaea;
+  }
+</style>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+<script>
+  var nomorSuratTersimpan = {?=json_encode(!empty($nomor_surat_tersimpan))?};
+
+  function showSaveNotification(message, type)
+  {
+    var notification = $("#saveNotification");
+    notification
+      .removeClass("is-info is-success is-error")
+      .addClass("is-visible is-" + type)
+      .text(message);
+  }
+
+  function setSaveButtonState(isSaving)
+  {
+    var saveButton = $("#saveButton");
+    saveButton.prop("disabled", isSaving);
+    saveButton.html(isSaving ? "Menyimpan..." : "&#9635; Simpan");
+  }
+
+  function Cetak()
+  {
+      if (nomorSuratTersimpan) {
+        window.print();
+        return;
+      }
+
+      Simpan(function(success) {
+        if (success) {
+          nomorSuratTersimpan = true;
+          window.print();
+        }
+      }, true);
+  }
+  function Simpan(callback, silentMode)
+  {
+    callback = typeof callback === "function" ? callback : function () {};
+    silentMode = !!silentMode;
+    var url = "{?=url([ADMIN,'surat','simpansuratbebasnarkoba'])?}";
+    var no_rawat = "{$no_rawat}";
+    var nomor_surat = $("#nomor_surat").val();
+    var no_rkm_medis = "{$pasien.no_rkm_medis}";
+    var nm_pasien = "{$pasien.nm_pasien}";
+    var tgl_lahir = "{$pasien.tgl_lahir}";
+    var umur = "{?=hitungUmur($pasien.tgl_lahir)?}";
+    var jk = "{$pasien.jk}";
+    var alamat = "{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}";
+    var tanggal = $("#tanggal").val();
+    var hasil_pemeriksaan = $("#hasil_pemeriksaan").val();
+    var keperluan = $("#keperluan").val();
+    var dokter = "{$nm_dokter}";
+    var petugas = "{?=$this->core->getUserInfo('username', $_SESSION['mlite_user'])?}";
+
+    if (!silentMode) {
+      showSaveNotification("Menyimpan surat...", "info");
+      setSaveButtonState(true);
+    }
+
+    $.ajax({
+      type: "POST",
+      url: url,
+      dataType: "json",
+      data: {
+        nomor_surat: nomor_surat,
+        no_rawat: no_rawat,
+        no_rkm_medis: no_rkm_medis,
+        nm_pasien: nm_pasien,
+        tgl_lahir: tgl_lahir,
+        umur: umur,
+        jk: jk,
+        alamat: alamat,
+        tanggal: tanggal,
+        hasil_pemeriksaan: hasil_pemeriksaan,
+        keperluan: keperluan,
+        dokter: dokter,
+        petugas: petugas
+      },
+      success: function(data) {
+        if (data.status == 'success') {
+          nomorSuratTersimpan = true;
+          if (!silentMode) {
+            showSaveNotification("Surat berhasil disimpan.", "success");
+          }
+          callback(true, data);
+          return;
+        }
+
+        if (data.status == 'error') {
+          if (!silentMode) {
+            showSaveNotification(data.msg, "error");
+          }
+          callback(false, data);
+        }
+      },
+      error: function() {
+        if (!silentMode) {
+          showSaveNotification("Gagal menyimpan surat. Coba lagi.", "error");
+        }
+        callback(false, null);
+      },
+      complete: function() {
+        if (!silentMode) {
+          setSaveButtonState(false);
+        }
+      }
+    });
+  }
+  function auto_grow(element) {
+    element.style.height = "5px";
+    element.style.height = (element.scrollHeight) + "px";
+  }
+</script>
+
+<div id="saveNotification" class="save-notification" role="status" aria-live="polite"></div>
+<div style="width:960px;">
+  <table>
+    <thead>
+      <tr>
+        <th>
+          <img src="{?=url()?}/{$settings.logo}" height="100px" style="margin-right: 20px;" alt="">
+        </th>
+        <th colspan="2" width="100%">
+            <p><span style="font-size: 28px;">{$settings.nama_instansi}</span><br>
+            <span style="font-size: 18px;">Alamat: {$settings.alamat} - {$settings.kota} - {$settings.propinsi}</span><br>
+            <span style="font-size: 18px;">Telepon: {$settings.nomor_telepon} - Email: {$settings.email}</span></p>
+        </th>
+      </tr>
+      <tr>
+        <th colspan="3">
+          <hr style="border-bottom: 2px solid #000;padding-top:3px;">
+        </th>
+      </tr>
+    </thead>
+  </table>
+  <center>
+    <h2 style="margin-bottom:0px !important;border-bottom: 2px solid #000;width:480px;">SURAT KETERANGAN BEBAS NARKOBA</h2>
+    Nomor: <input type="text" class="form-control" id="nomor_surat" value="{?=!empty($surat.nomor_surat) ? $surat.nomor_surat : $nomor_surat?}" readonly style="width: 220px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"><br><br>
+  </center>
+  <br><br>
+  <table>
+    <tbody>
+      <tr>
+        <td colspan="3" width="100%">
+          Yang bertanda tangan di bawah ini Dokter {$settings.nama_instansi}, menerangkan bahwa;<br><br>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <tbody>
+      <tr>
+        <td width="200">Nama</td>
+        <td> : </td>
+        <td>{$pasien.nm_pasien}</td>
+      </tr>
+      <tr>
+        <td width="200">No. Rekam Medis</td>
+        <td> : </td>
+        <td>{$pasien.no_rkm_medis}</td>
+      </tr>
+      <tr>
+        <td width="200">Tanggal Lahir / Umur</td>
+        <td> : </td>
+        <td>{$pasien.tgl_lahir} / {?=hitungUmur($pasien.tgl_lahir)?}</td>
+      </tr>
+      <tr>
+        <td width="200">Jenis Kelamin</td>
+        <td> : </td>
+        <td>{if: $pasien.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+      </tr>
+      <tr>
+        <td width="200">Alamat</td>
+        <td> : </td>
+        <td>{$pasien.alamat}, {$pasien.nm_kel}, {$pasien.nm_kec}, {$pasien.nm_kab}, {$pasien.nm_prop}</td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <br>
+          Berdasarkan hasil pemeriksaan narkoba yang dilakukan pada tanggal
+          <input type="date" class="form-control" name="tanggal" id="tanggal" value="{?=isset_or($surat.tanggal, date('Y-m-d'))?}" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;">,
+          pasien dinyatakan
+          <textarea name="hasil_pemeriksaan" id="hasil_pemeriksaan" cols="60" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)">{?=isset_or($surat.hasil_pemeriksaan, 'Negatif narkoba')?}</textarea>.
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <br>
+          Surat keterangan ini dipergunakan untuk
+          <input type="text" class="form-control" name="keperluan" id="keperluan" value="{?=isset_or($surat.keperluan)?}" style="width: 400px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;">.
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3"><br>Demikian surat keterangan ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana mestinya.</td>
+      </tr>
+    </tbody>
+  </table>
+  <br><br>
+  <table>
+      <tr>
+        <td colspan="2" width="700">
+        </td>
+        <td width="180"><br><br>
+          {$settings.kota}, {?=date('Y-m-d')?}<br><br>
+          <div class="signature-qr-row">
+            <div class="signature-qr-item">
+              <div id="qrcode_verifikasi" class="signature-qr"></div>
+            </div>
+          </div>
+          <div class="signature-doctor-name">{$nm_dokter}</div>
+        </td>
+      </tr>
+  </table>
+</div>
+<script>
+  jQuery('#qrcode_verifikasi').qrcode({
+    text : {?=json_encode($surat_verifikasi_url)?}
+  });
+</script>
+<br><br>
+<button id="saveButton" onclick="Simpan()">&#9635; Simpan</button> <button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>

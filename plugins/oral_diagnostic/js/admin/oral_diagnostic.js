@@ -8,6 +8,20 @@ $("#notif").hide();
 $('#provider').hide();
 $('#aturan_pakai').hide();
 
+// Inisialisasi jam_rawat saat halaman dibuka
+$(function(){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var $jr = $('input:text[name=jam_rawat]').last();
+  if ($jr.length) {
+    $jr.focus();
+    if (!$jr.val()) {
+      $.post(baseURL + '/oral_diagnostic/cekwaktu?t=' + mlite.token, {}, function(data){
+        $jr.val(data);
+      });
+    }
+  }
+});
+
 // tombol buka form diklik
 $("#index").on('click', '#bukaform', function(){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -39,7 +53,9 @@ $("#form").on("click","#no_rawat", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/oral_diagnostic/maxid?t=' + mlite.token;
+  var tgl_registrasi = $('#tgl_registrasi').val();
   $.post(url, {
+    tgl_registrasi: tgl_registrasi
   } ,function(data) {
     $("#no_rawat").val(data);
   });
@@ -49,10 +65,12 @@ $("#form").on("click","#no_reg", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/oral_diagnostic/maxantrian?t=' + mlite.token;
+  var tgl_registrasi = $('#tgl_registrasi').val();
   var kd_poli = $('select[name=kd_poli]').val();
 
   $.post(url, {
-    kd_poli: kd_poli
+    kd_poli: kd_poli,
+    tgl_registrasi: tgl_registrasi  
   } ,function(data) {
     $("#no_reg").val(data);
   });
@@ -81,9 +99,6 @@ $("#form").on("click", "#simpan", function(event){
 
   if(no_rkm_medis == '') {
     alert('Data pasien rawat masih kosong! Silahkan pilih pasien.')
-  }
-  if(!(stts_daftar == 'Baru' || stts_daftar == 'Lama' || stts_daftar == '-')) {
-    bootbox.alert("Ada tagihan belum diselesaikan. Silahkan hubungi kasir atau admin!");
   } else {
     $.post(url,{
       no_rawat: no_rawat,
@@ -96,7 +111,7 @@ $("#form").on("click", "#simpan", function(event){
       stts_daftar: stts_daftar
     },function(data) {
       console.log(data);
-      data = JSON.parse(data);
+    }, 'json').done(function(data){
       if(data.status == 'success') {
         if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
           let payload = {
@@ -199,7 +214,6 @@ $("#display").on("click", ".sep", function(event){
   var url = baseURL + '/vclaim/bynokartu/' + no_peserta + '/{?=date('Y-m-d')?}?t=' + mlite.token;
 
   $.get(url,function(data) {
-    var data = JSON.parse(data);
     var json_obj = [data];
     if(!json_obj[0]) {
       alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
@@ -245,7 +259,7 @@ $("#display").on("click", ".sep", function(event){
     } else {
       alert(json_obj[0].metaData.message);
     }
-  });
+  }, 'json');
 
   $('input:text[name=sep_no_rawat]').val(no_rawat);
   $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
@@ -774,6 +788,11 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
       // tampilkan data
       $("#rincian").html(data).show();
     });
+    $.post(baseURL + '/oral_diagnostic/cekwaktu?t=' + mlite.token, {
+    } ,function(data) {
+      $("#form_rincian #rincian_jam_reg").val(data);
+      $('input:text[name=jam_rawat]').last().val(data).focus();
+    });
     $('input:hidden[name=kd_jenis_prw]').val("");
     $('input:text[name=nm_perawatan]').val("");
     $('input:hidden[name=kat]').val("");
@@ -782,6 +801,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=nama_provider2]').val("");
     $('input:text[name=kode_provider]').val("");
     $('input:text[name=kode_provider2]').val("");
+    $('input:text[name=jam_rawat]').last().val("");
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -996,13 +1016,49 @@ $("#form_soap").on("click","#jam_rawat", function(event){
       $("#jam_rawat").val(data);
     });
 });
+   
+$("#form_soap").on("click","#odontogram", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var id_pasien = $('input:text[name=no_rkm_medis]').val();
+  var loadURL =  baseURL + '/rawat_jalan/odontogram/' + id_pasien + '?t=' + mlite.token;
+
+  var modal = $('#odontogramModal');
+  var modalContent = $('#odontogramModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});
+
+$("#form_soap").on("click",".assesment", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+
+  var modal = $('#assesmentModal');
+  var modalContent = $('#assesmentModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      // Load form assessment dengan data pasien
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/oral_diagnostic/assessment/' + set_no_rawat + '?t=' + mlite.token, function() {
+        // Load data assessment yang sudah ada
+        $('.tampildata_assessment').load(baseURL + '/oral_diagnostic/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+      });
+  }).modal();
+  return false;
+});
 
 {if: $mlite.websocket == 'ya'}
 
   {if: $mlite.websocket_proxy != ''}
     var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
   {else}
-    var URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+    var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
   {/if}
 
   var ws = new WebSocket(URL_WEBSOCKET);

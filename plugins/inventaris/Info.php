@@ -4,8 +4,9 @@ return [
     'name'          =>  'Inventaris',
     'description'   =>  'Modul inventaris, pemeliharana dan perbaikan untuk mLITE',
     'author'        =>  'Basoro',
+    'category'      =>  'manajemen', 
     'version'       =>  '1.0',
-    'compatibility' =>  '5.*.*',
+    'compatibility' =>  '6.*.*',
     'icon'          =>  'cog',
     'install'       =>  function () use ($core) {
     },

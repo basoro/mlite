@@ -84,19 +84,19 @@
         <tbody>
           {loop: $inventaris_produsen}
           <tr class="inventarisprodusen"
-          data-kode_produsen="{$value.kode_produsen}"
-          data-nama_produsen="{$value.nama_produsen}"
-          data-alamat_produsen="{$value.alamat_produsen}"
-          data-no_telp="{$value.no_telp}"
-          data-email="{$value.email}"
-          data-website_produsen="{$value.website_produsen}"
+          data-kode_produsen="{?=isset_or($value.kode_produsen)?}"
+          data-nama_produsen="{?=isset_or($value.nama_produsen)?}"
+          data-alamat_produsen="{?=isset_or($value.alamat_produsen)?}"
+          data-no_telp="{?=isset_or($value.no_telp)?}"
+          data-email="{?=isset_or($value.email)?}"
+          data-website_produsen="{?=isset_or($value.website_produsen)?}"
           >
-            <td>{$value.kode_produsen}</td>
-            <td>{$value.nama_produsen}</td>
-            <td>{$value.alamat_produsen}</td>
-            <td>{$value.no_telp}</td>
-            <td>{$value.email}</td>
-            <td>{$value.website_produsen}</td>
+            <td>{?=isset_or($value.kode_produsen)?}</td>
+            <td>{?=isset_or($value.nama_produsen)?}</td>
+            <td>{?=isset_or($value.alamat_produsen)?}</td>
+            <td>{?=isset_or($value.no_telp)?}</td>
+            <td>{?=isset_or($value.email)?}</td>
+            <td>{?=isset_or($value.website_produsen)?}</td>
           </tr>
           {/loop}
         </tbody>

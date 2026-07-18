@@ -39,12 +39,16 @@
 		<div id="laporan">
 			<center>
 				<header>
-					<h3>{$settings.nama_instansi}</h3>
-					<p style="margin-top:-10px;">{$settings.alamat}</p>
+					<h3>{?=isset_or($settings.nama_instansi)?}</h3>
+					<p style="margin-top:-10px;">{?=isset_or($settings.alamat)?}</p>
 					<hr style="margin-top:0;">
 					<p>
             <b>Laporan Arus Kas</b><br>
-            Tahun Anggaran {?=date('Y')?}
+            {if: isset($tgl_awal) && isset($tgl_akhir)}
+            Periode {?=date('d-m-Y', strtotime($tgl_awal))?} s/d {?=date('d-m-Y', strtotime($tgl_akhir))?}
+            {else}
+            Periode {?=date('d-m-Y')?}
+            {/if}
           </p>
 				</header>
 				<div class="">
@@ -53,14 +57,14 @@
               <tr>
                 <th width="50px">No.</th>
                 <th>Uraian Arus Kas</th>
-                <th width="160px"><span class="pull-right">{?=date('Y')?}</span></th>
-                <th width="160px"><span class="pull-right">{?=date('Y')-1?}</span></th>
+                <th width="160px"><span class="pull-right">Periode Ini</span></th>
+                <th width="160px"><span class="pull-right">Tahun Lalu</span></th>
               </tr>
             </thead>
             <tbody>
               {loop: $aruskas}
               <tr>
-                <td><b>{$value.nomor}</b></td>
+                <td><b>{?=isset_or($value.nomor)?}</b></td>
                 <td colspan="3"><b>
                   {?=strtoupper($value.arus_kas)?}
                 </b></td>
@@ -72,7 +76,7 @@
                 {loop: $value.jurnal_masuk as $data}
                 <tr>
                   <td></td>
-                  <td>&nbsp;&nbsp;&nbsp;&nbsp;{$data.nm_rek}</td>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;{?=isset_or($data.nm_rek)?}</td>
                   <td><span class="pull-right">{?= number_format($data.kredit_all,2,',','.')?}</span></td>
                   <td><span class="pull-right">{?= number_format($data.saldo_awal,2,',','.')?}</span></td>
                 </tr>
@@ -90,7 +94,7 @@
                 {loop: $value.jurnal_keluar as $data}
                 <tr>
                   <td></td>
-                  <td>&nbsp;&nbsp;&nbsp;&nbsp;{$data.nm_rek}</td>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;{?=isset_or($data.nm_rek)?}</td>
                   <td><span class="pull-right">{?= number_format($data.debet_all,2,',','.')?}</span></td>
                   <td><span class="pull-right">{?= number_format($data.saldo_awal,2,',','.')?}</span></td>
                 </tr>
@@ -103,7 +107,7 @@
                 </tr>
                 <tr>
                   <td></td>
-                  <td align="right"><b>Netto {$value.arus_kas} ({$value.nomor})</b></td>
+                  <td align="right"><b>Netto {?=isset_or($value.arus_kas)?} ({?=isset_or($value.nomor)?})</b></td>
                   <td><span class="pull-right">{?= number_format($value.total_masuk - $value.total_keluar,2,',','.')?}</span></td>
                   <td><span class="pull-right">{?= number_format($value.total_saldo_awal_masuk - $value.total_saldo_awal_keluar,2,',','.')?}</span></td>
                 </tr>
@@ -119,14 +123,14 @@
               <tr>
                 <th></th>
                 <th style="text-align:right">Saldo Awal Kas dan Setara Kas</th>
-                <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
                 <th><span class="pull-right">{?= number_format($jumlah_total_saldo,2,',','.')?}</span></th>
+                <th></th>
               </tr>
               <tr>
                 <th></th>
                 <th style="text-align:right">Saldo Akhir Kas dan Setara Kas</th>
-                <th><span class="pull-right">{?= number_format(($masuk_all - $keluar_all) + ($jumlah_total_saldo + $saldo_keluar),2,',','.')?}</span></th>
-                <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
+                <th><span class="pull-right">{?= number_format(($masuk_all - $keluar_all) + $jumlah_total_saldo,2,',','.')?}</span></th>
+                <th></th>
               </tr>
             </tfoot>
           </table>

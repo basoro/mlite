@@ -1,0 +1,699 @@
+<div id="mapping" class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Pemetaan LOINC/SNOMED</h3>
+    </div>
+    <div class="panel-body">
+        <div class="margin-bottom-20">
+            <div class="alert alert-info no-margin">Pemetaan Lab dan Radiologi mengambil referensi dari plugin Satu Sehat.</div>
+        </div>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium (LOINC)</a></li>
+            <li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi (LOINC/SNOMED)</a></li>
+            <li role="presentation"><a href="#proc" aria-controls="proc" role="tab" data-toggle="tab">Tindakan Rawat Jalan (SNOMED-CT)</a></li>
+            <li role="presentation"><a href="#proc-ranap" aria-controls="proc-ranap" role="tab" data-toggle="tab">Tindakan Rawat Inap (SNOMED-CT)</a></li>
+            <li role="presentation"><a href="#operasi" aria-controls="operasi" role="tab" data-toggle="tab">Operasi (SNOMED-CT)</a></li>
+        </ul>
+
+        <div class="tab-content" style="margin-top: 20px;">
+            <!-- Tab Lab -->
+            <div role="tabpanel" class="tab-pane active" id="lab">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>SIMRS Master (Pemeriksaan)</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $lab}
+                            <tr id="lab-{$value.id_template}" data-nama-pemeriksaan="{$value.Pemeriksaan}">
+                                <td>{$value.Pemeriksaan}</td>
+                                <td>
+                                    <input type="hidden" class="loinc-code" value="{$value.loinc_code}">
+                                    <input type="hidden" class="loinc-display" value="{$value.loinc_display}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="lab" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="lab" style="display:none;">Hapus</button>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Rad -->
+            <div role="tabpanel" class="tab-pane" id="rad">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>SIMRS Master (Radiologi)</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $rad}
+                            <tr id="rad-{$value.kd_jenis_prw}" data-nama-pemeriksaan="{$value.nm_perawatan}">
+                                <td>{$value.nm_perawatan}</td>
+                                <td>
+                                    <input type="hidden" class="standard-code" value="{$value.standard_code}">
+                                    <input type="hidden" class="standard-display" value="{$value.standard_display}">
+                                    <input type="hidden" class="select-system" value="{?=isset_or($value.system, '')?}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="rad" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="rad" style="display:none;">Hapus</button>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Proc -->
+            <div role="tabpanel" class="tab-pane" id="proc">
+                <div class="table-responsive" style="overflow-x: visible;">
+                    <table class="table table-striped table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>SIMRS Master (Tindakan)</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $proc}
+                            <tr id="proc-{$value.kd_jenis_prw}" data-nama-tindakan="{$value.nm_perawatan}">
+                                <td>{$value.nm_perawatan}</td>
+                                <td>
+                                    <input type="hidden" class="snomed-code" value="{$value.snomed_code}">
+                                    <input type="hidden" class="snomed-display" value="{$value.snomed_display}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="proc" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="proc" style="display:none;">Hapus</button>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="proc-ranap">
+                <div class="table-responsive" style="overflow-x: visible;">
+                    <table class="table table-striped table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>SIMRS Master (Tindakan Rawat Inap)</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $proc_ranap}
+                            <tr id="proc-ranap-{$value.kd_jenis_prw}" data-nama-tindakan="{$value.nm_perawatan}">
+                                <td>{$value.nm_perawatan}</td>
+                                <td>
+                                    <input type="hidden" class="snomed-code" value="{$value.snomed_code}">
+                                    <input type="hidden" class="snomed-display" value="{$value.snomed_display}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="proc_ranap" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="proc_ranap" style="display:none;">Hapus</button>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="operasi">
+                <div class="table-responsive" style="overflow-x: visible;">
+                    <table class="table table-striped table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>SIMRS Master (Tindakan Operasi)</th>
+                                <th>Detail Mapping (LOINC/SNOMED)</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $operasi}
+                            <tr id="operasi-{$value.kode_paket}" data-nama-tindakan="{$value.nm_perawatan}">
+                                <td>[{$value.kode_paket}] {$value.nm_perawatan}</td>
+                                <td>
+                                    <input type="hidden" class="snomed-code" value="{$value.snomed_code}">
+                                    <input type="hidden" class="snomed-display" value="{$value.snomed_display}">
+                                    <input type="hidden" class="master-device-id" value="{?=isset_or($value.master_device_id, '')?}">
+                                    <input type="hidden" class="focal-device-code" value="{$value.focal_device_code}">
+                                    <input type="hidden" class="focal-device-display" value="{$value.focal_device_display}">
+                                    <input type="hidden" class="focal-device-action" value="{$value.focal_device_action}">
+                                    <div class="mapping-detail mapping-summary"></div>
+                                    <button type="button" class="btn btn-default btn-xs btn-open-mapping" data-context="operasi" style="margin-top:6px;">
+                                        <i class="fa fa-link"></i> Mapping
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-danger btn-delete-mapping" data-context="operasi" style="display:none;">Hapus</button>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mappingDetailModal" tabindex="-1" role="dialog" aria-labelledby="mappingDetailModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" id="mappingDetailModalLabel">Mapping Detail</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modal-context">
+                <div class="form-group">
+                    <label>Tindakan/Pemeriksaan</label>
+                    <input type="text" class="form-control" id="modal-target-name" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Pilih Kode (Cari)</label>
+                    <select id="modal-ai-primary-select" class="form-control input-sm">
+                        <option value="">-- Cari & pilih --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kode Mapping</label>
+                    <input type="text" class="form-control input-sm" id="modal-primary-code">
+                </div>
+                <div class="form-group">
+                    <label>Display Mapping</label>
+                    <input type="text" class="form-control input-sm" id="modal-primary-display">
+                </div>
+                <div class="form-group" id="modal-system-group" style="display:none;">
+                    <label>System</label>
+                    <select id="modal-primary-system" class="form-control input-sm">
+                        <option value="http://loinc.org">LOINC</option>
+                        <option value="http://snomed.info/sct">SNOMED-CT</option>
+                    </select>
+                </div>
+
+                <div id="modal-focal-section" style="display:none;">
+                    <hr>
+                    <div class="form-group">
+                        <label>Master Device</label>
+                        <select id="modal-master-device-select" class="form-control input-sm">
+                            <option value="">-- Pilih Master Device --</option>
+                            {loop: $devices}
+                            <option value="{$value.id}" data-device-id="{$value.device_id}" data-display="{$value.nama_alkes}" data-kategori="{$value.kategori}">{$value.nama_alkes} ({$value.device_id})</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Focal Device (Cari)</label>
+                        <select id="modal-ai-focal-select" class="form-control input-sm">
+                            <option value="">-- Cari & pilih --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Focal Device Code</label>
+                        <input type="text" class="form-control input-sm" id="modal-focal-code">
+                    </div>
+                    <div class="form-group">
+                        <label>Focal Device Display</label>
+                        <input type="text" class="form-control input-sm" id="modal-focal-display">
+                    </div>
+                    <div class="form-group">
+                        <label>Aksi FocalDevice</label>
+                        <select id="modal-focal-action" class="form-control input-sm">
+                            <option value="">-- Aksi FocalDevice --</option>
+                            <option value="implanted">Alat ditanam permanen</option>
+                            <option value="explanted">Alat dikeluarkan</option>
+                            <option value="removed">Alat dilepas</option>
+                            <option value="replaced">Alat diganti</option>
+                            <option value="adjusted">Alat disesuaikan</option>
+                            <option value="inspected">Alat diperiksa</option>
+                            <option value="repaired">Alat diperbaiki</option>
+                            <option value="inserted">Alat dimasukkan</option>
+                        <option value="analyze">Alat dianalisis</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn-clear-mapping-modal" class="btn btn-warning">Kosongkan</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                <button type="button" id="btn-save-mapping-modal" class="btn btn-primary">Simpan Mapping</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function() {
+    $('.datatable').DataTable();
+    var activeRow = null;
+    var lookupEndpoint = "{?=url([ADMIN, 'bpjs_emr', 'lookupcoding'])?}";
+    var actionLabelMap = {
+        implanted: 'Alat ditanam permanen', explanted: 'Alat dikeluarkan', removed: 'Alat dilepas',
+        replaced: 'Alat diganti', adjusted: 'Alat disesuaikan', inspected: 'Alat diperiksa',
+        repaired: 'Alat diperbaiki', inserted: 'Alat dimasukkan', analyze: 'Alat dianalisis'
+    };
+
+    function buildLookupUrl(context, q) {
+        var joiner = lookupEndpoint.indexOf('?') === -1 ? '?' : '&';
+        return lookupEndpoint + joiner + 'context=' + encodeURIComponent(context) + '&q=' + encodeURIComponent(q || '');
+    }
+
+    var $primarySelect = $('#modal-ai-primary-select');
+    if ($primarySelect.data('selectator')) {
+        $primarySelect.selectator('destroy');
+    }
+    $primarySelect.selectator({
+        labels: { search: 'Cari kode...' },
+        useSearch: true,
+        load: function (search, callback) {
+            if (search.length < this.minSearchLength) return callback();
+            var ctx = $('#modal-context').val() || '';
+            $.ajax({
+                url: buildLookupUrl(ctx, search),
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) { callback((data || []).slice(0, 100)); },
+                error: function() { callback(); }
+            });
+        },
+        delay: 300,
+        minSearchLength: 3,
+        valueField: 'key',
+        textField: 'text'
+    });
+
+    var $focalSelect = $('#modal-ai-focal-select');
+    if ($focalSelect.data('selectator')) {
+        $focalSelect.selectator('destroy');
+    }
+    $focalSelect.selectator({
+        labels: { search: 'Cari focal device...' },
+        useSearch: true,
+        load: function (search, callback) {
+            if (search.length < this.minSearchLength) return callback();
+            $.ajax({
+                url: buildLookupUrl('snomed', search),
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) { callback((data || []).slice(0, 100)); },
+                error: function() { callback(); }
+            });
+        },
+        delay: 300,
+        minSearchLength: 3,
+        valueField: 'key',
+        textField: 'text'
+    });
+
+    function isFocalContext(c) { return c === 'lab' || c === 'rad' || c === 'proc' || c === 'proc_ranap' || c === 'operasi'; }
+    function getPrimaryLabel(c) { return c === 'lab' ? 'LOINC' : (c === 'rad' ? 'Kode Radiologi' : 'SNOMED'); }
+    function getRowName(row, c) { return (c === 'lab' || c === 'rad') ? (row.data('nama-pemeriksaan') || $.trim(row.find('td:first').text())) : (row.data('nama-tindakan') || $.trim(row.find('td:first').text())); }
+    function getPrimaryCode(row, c) { return c === 'lab' ? row.find('.loinc-code').val() : (c === 'rad' ? row.find('.standard-code').val() : row.find('.snomed-code').val()); }
+    function getPrimaryDisplay(row, c) { return c === 'lab' ? row.find('.loinc-display').val() : (c === 'rad' ? row.find('.standard-display').val() : row.find('.snomed-display').val()); }
+    function setPrimary(row, c, code, display, system) {
+        if (c === 'lab') { row.find('.loinc-code').val(code); row.find('.loinc-display').val(display); }
+        else if (c === 'rad') { row.find('.standard-code').val(code); row.find('.standard-display').val(display); row.find('.select-system').val(system || ''); }
+        else { row.find('.snomed-code').val(code); row.find('.snomed-display').val(display); }
+    }
+
+    function hasMappingData(row, c) {
+        var hasPrimary = $.trim(getPrimaryCode(row, c) || '') !== '';
+        if (!isFocalContext(c)) {
+            return hasPrimary;
+        }
+        var hasMaster = $.trim(row.find('.master-device-id').val() || '') !== '';
+        var hasFocal = $.trim(row.find('.focal-device-code').val() || '') !== '' ||
+            $.trim(row.find('.focal-device-display').val() || '') !== '' ||
+            $.trim(row.find('.focal-device-action').val() || '') !== '';
+        return hasPrimary || hasFocal || hasMaster;
+    }
+
+    function resolveMasterDeviceText(masterDeviceId, fCode, fDisplay) {
+        var masterId = $.trim(masterDeviceId || '');
+        var code = $.trim(fCode || '');
+        var display = $.trim(fDisplay || '');
+        var text = '-';
+        var matched = null;
+
+        if (masterId) {
+            matched = $('#modal-master-device-select option[value="' + masterId + '"]');
+            if (matched.length) {
+                text = (matched.data('display') || '').toString().trim() || display || code || '-';
+            }
+        }
+
+        if (code) {
+            matched = $('#modal-master-device-select option[data-device-id="' + code + '"]');
+            if (matched.length) {
+                text = (matched.data('display') || '').toString().trim() || code;
+            }
+        }
+
+        // Fallback: try matching by display when focal code is not device_id
+        if (text === '-' && display) {
+            $('#modal-master-device-select option').each(function() {
+                var optDisplay = ($(this).data('display') || '').toString().trim();
+                if (optDisplay && optDisplay.toLowerCase() === display.toLowerCase()) {
+                    text = optDisplay;
+                    return false;
+                }
+            });
+        }
+
+        // Last fallback: show focal display/code so summary is still visible
+        if (text === '-') {
+            text = display || code || '-';
+        }
+        return text;
+    }
+
+    function syncMasterDeviceSelect(masterDeviceId, fCode, fDisplay) {
+        var masterId = $.trim(masterDeviceId || '');
+        var code = $.trim(fCode || '');
+        var display = $.trim(fDisplay || '');
+        var select = $('#modal-master-device-select');
+
+        if (masterId && select.find('option[value="' + masterId + '"]').length) {
+            select.val(masterId);
+            return;
+        }
+
+        if (code && select.find('option[data-device-id="' + code + '"]').length) {
+            select.val(select.find('option[data-device-id="' + code + '"]').first().val());
+            return;
+        }
+
+        if (display) {
+            var matchedValue = '';
+            select.find('option').each(function() {
+                var optDisplay = ($(this).data('display') || '').toString().trim();
+                if (optDisplay && optDisplay.toLowerCase() === display.toLowerCase()) {
+                    matchedValue = $(this).val();
+                    return false;
+                }
+            });
+            select.val(matchedValue);
+            return;
+        }
+
+        select.val('');
+    }
+
+    function updateSummary(row, c) {
+        var code = $.trim(getPrimaryCode(row, c) || ''), display = $.trim(getPrimaryDisplay(row, c) || '');
+        var lines = [];
+        if (code) {
+            lines.push('<div><strong>' + getPrimaryLabel(c) + ':</strong> ' + code + ' - ' + (display || '-') + '</div>');
+            if (c === 'rad') {
+                lines.push('<div><strong>System:</strong> ' + ($.trim(row.find('.select-system').val() || '') || '-') + '</div>');
+            }
+        } else {
+            lines.push('<div class="text-muted">Belum ada mapping kode.</div>');
+        }
+        if (isFocalContext(c)) {
+            var masterId = $.trim(row.find('.master-device-id').val() || '');
+            var fCode = $.trim(row.find('.focal-device-code').val() || '');
+            var fDisplay = $.trim(row.find('.focal-device-display').val() || '');
+            var fAction = $.trim(row.find('.focal-device-action').val() || '');
+            if (masterId || fCode || fDisplay || fAction) {
+                var masterText = resolveMasterDeviceText(masterId, fCode, fDisplay);
+                lines.push('<div><strong>Focal Device:</strong> ' + (fCode ? (fCode + ' - ' + (fDisplay || '-')) : '-') + '</div>');
+                lines.push('<div><strong>Master Device:</strong> ' + masterText + '</div>');
+                lines.push('<div><strong>Aksi Focal:</strong> ' + (actionLabelMap[fAction] || fAction || '-') + '</div>');
+            }
+        }
+        row.find('.mapping-summary').html(lines.join(''));
+        var button = row.find('.btn-open-mapping');
+        button.html('<i class="fa fa-link"></i> ' + (code ? 'Ubah Mapping' : 'Mapping'));
+        row.find('.btn-delete-mapping').toggle(hasMappingData(row, c));
+    }
+
+    function appendUniqueOption(select, key, text, attrs) {
+        var opt = $('<option>', { value: key, text: text });
+        $.each(attrs || {}, function(k, v) { opt.attr('data-' + k, v || ''); });
+        select.append(opt);
+    }
+
+    function filterMasterDeviceByContext(context) {
+        var kategori = context === 'lab' ? 'laboratorium' : (context === 'rad' ? 'radiologi' : 'tindakan');
+        $('#modal-master-device-select option').each(function(index) {
+            if (index === 0) {
+                $(this).show();
+                return;
+            }
+            var itemKategori = ($(this).data('kategori') || '').toString().toLowerCase();
+            $(this).toggle(itemKategori === kategori);
+        });
+    }
+
+    function resetLookupSelect(selectEl, placeholderText, currentKey, currentText) {
+        selectEl.empty();
+        selectEl.append($('<option>', { value: '', text: placeholderText }));
+        if (currentKey) {
+            selectEl.append($('<option>', { value: currentKey, text: currentText || currentKey }).prop('selected', true));
+        }
+        if (selectEl.data('selectator')) {
+            selectEl.selectator('refresh');
+        }
+    }
+
+    $('.btn-open-mapping').on('click', function() {
+        activeRow = $(this).closest('tr');
+        var ctx = $(this).data('context');
+        $('#modal-context').val(ctx);
+        $('#modal-target-name').val(getRowName(activeRow, ctx));
+        var currentPrimaryCode = $.trim(getPrimaryCode(activeRow, ctx) || '');
+        var currentPrimaryDisplay = $.trim(getPrimaryDisplay(activeRow, ctx) || '');
+        $('#modal-primary-code').val(currentPrimaryCode);
+        $('#modal-primary-display').val(currentPrimaryDisplay);
+        $('#modal-system-group').toggle(ctx === 'rad');
+        var currentSystem = $.trim(activeRow.find('.select-system').val() || '');
+        if (ctx === 'rad') {
+            currentSystem = currentSystem || 'http://loinc.org';
+            $('#modal-primary-system').val(currentSystem);
+        } else {
+            $('#modal-primary-system').val('http://loinc.org');
+        }
+        var primaryKey = '';
+        if (currentPrimaryCode) {
+            if (ctx === 'lab') primaryKey = currentPrimaryCode + '|http://loinc.org';
+            else if (ctx === 'rad') primaryKey = currentPrimaryCode + '|' + (currentSystem || 'http://loinc.org');
+            else primaryKey = currentPrimaryCode + '|http://snomed.info/sct';
+        }
+        var primaryText = currentPrimaryCode ? ('[' + currentPrimaryCode + '] ' + (currentPrimaryDisplay || currentPrimaryCode)) : '';
+        resetLookupSelect($('#modal-ai-primary-select'), '-- Cari & pilih --', primaryKey, primaryText);
+
+        $('#modal-focal-section').show();
+        filterMasterDeviceByContext(ctx);
+        var currentMasterDeviceId = $.trim(activeRow.find('.master-device-id').val() || '');
+        var currentFocalCode = $.trim(activeRow.find('.focal-device-code').val() || '');
+        var currentFocalDisplay = $.trim(activeRow.find('.focal-device-display').val() || '');
+        var focalKey = currentFocalCode ? (currentFocalCode + '|http://snomed.info/sct') : '';
+        var focalText = currentFocalCode ? ('[' + currentFocalCode + '] ' + (currentFocalDisplay || currentFocalCode)) : '';
+        resetLookupSelect($('#modal-ai-focal-select'), '-- Cari & pilih --', focalKey, focalText);
+        syncMasterDeviceSelect(currentMasterDeviceId, currentFocalCode, currentFocalDisplay);
+        $('#modal-focal-code').val(currentFocalCode);
+        $('#modal-focal-display').val(currentFocalDisplay);
+        $('#modal-focal-action').val($.trim(activeRow.find('.focal-device-action').val() || ''));
+        $('#mappingDetailModal').modal('show');
+    });
+
+    $('#modal-ai-primary-select').on('change', function() {
+        var opt = $(this).find('option:selected');
+        var item = opt.data('item_data') || {};
+        var code = (item.code || '').toString();
+        var display = (item.display || '').toString();
+        var system = (item.system || '').toString();
+
+        if (!code) {
+            var val = (opt.val() || '').toString();
+            var parts = val.split('|');
+            code = (parts[0] || '').toString();
+            system = (parts[1] || '').toString();
+            display = (opt.text() || '').toString().replace(/^\[[^\]]+\]\s*/, '');
+        }
+
+        $('#modal-primary-code').val(code);
+        $('#modal-primary-display').val(display);
+        if ($('#modal-context').val() === 'rad' && system) {
+            $('#modal-primary-system').val(system);
+        }
+    });
+
+    $('#modal-master-device-select').on('change', function() {
+        var selected = $(this).find('option:selected');
+        $('#modal-focal-code').val($.trim((selected.data('device-id') || '').toString()));
+        $('#modal-focal-display').val($.trim((selected.data('display') || '').toString()));
+    });
+
+    $('#modal-ai-focal-select').on('change', function() {
+        var opt = $(this).find('option:selected');
+        var item = opt.data('item_data') || {};
+        var code = (item.code || '').toString();
+        var display = (item.display || '').toString();
+        if (!code) {
+            var val = (opt.val() || '').toString();
+            var parts = val.split('|');
+            code = (parts[0] || '').toString();
+            display = (opt.text() || '').toString().replace(/^\[[^\]]+\]\s*/, '');
+        }
+        $('#modal-focal-code').val(code);
+        $('#modal-focal-display').val(display);
+    });
+
+    $('#btn-clear-mapping-modal').on('click', function() {
+        $('#modal-primary-code, #modal-primary-display, #modal-focal-code, #modal-focal-display').val('');
+        $('#modal-primary-system, #modal-focal-action, #modal-master-device-select').val('');
+        resetLookupSelect($('#modal-ai-primary-select'), '-- Cari & pilih --', '', '');
+        resetLookupSelect($('#modal-ai-focal-select'), '-- Cari & pilih --', '', '');
+    });
+
+    $('#btn-save-mapping-modal').on('click', function() {
+        if (!activeRow) return;
+        var ctx = $('#modal-context').val();
+        setPrimary(activeRow, ctx, $.trim($('#modal-primary-code').val() || ''), $.trim($('#modal-primary-display').val() || ''), $.trim($('#modal-primary-system').val() || ''));
+        activeRow.find('.master-device-id').val($.trim($('#modal-master-device-select').val() || ''));
+        activeRow.find('.focal-device-code').val($.trim($('#modal-focal-code').val() || ''));
+        activeRow.find('.focal-device-display').val($.trim($('#modal-focal-display').val() || ''));
+        activeRow.find('.focal-device-action').val($.trim($('#modal-focal-action').val() || ''));
+        persistMappingRow(activeRow, ctx, function() {
+            updateSummary(activeRow, ctx);
+            $('#mappingDetailModal').modal('hide');
+            alert('Mapping berhasil disimpan.');
+        });
+    });
+
+    function persistMappingRow(row, ctx, onSuccess) {
+        var endpoint = '';
+        var payload = { t: "{?=$_SESSION['token']?}" };
+        if (ctx === 'lab') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingLab'])?}";
+            payload.id_template = row.attr('id').replace('lab-', '');
+            payload.loinc_code = row.find('.loinc-code').val() || '';
+            payload.loinc_display = row.find('.loinc-display').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
+        } else if (ctx === 'rad') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingRad'])?}";
+            payload.kd_jenis_prw = row.attr('id').replace('rad-', '');
+            payload.standard_code = row.find('.standard-code').val() || '';
+            payload.standard_display = row.find('.standard-display').val() || '';
+            payload.system = row.find('.select-system').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
+        } else if (ctx === 'proc') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingProc'])?}";
+            payload.kd_jenis_prw = row.attr('id').replace('proc-', '');
+            payload.snomed_code = row.find('.snomed-code').val() || '';
+            payload.snomed_display = row.find('.snomed-display').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
+        } else if (ctx === 'proc_ranap') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingProcRanap'])?}";
+            payload.kd_jenis_prw = row.attr('id').replace('proc-ranap-', '');
+            payload.snomed_code = row.find('.snomed-code').val() || '';
+            payload.snomed_display = row.find('.snomed-display').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
+        } else if (ctx === 'operasi') {
+            endpoint = "{?=url([ADMIN, 'bpjs_emr', 'saveMappingOperasi'])?}";
+            payload.kode_paket = row.attr('id').replace('operasi-', '');
+            payload.snomed_code = row.find('.snomed-code').val() || '';
+            payload.snomed_display = row.find('.snomed-display').val() || '';
+            payload.master_device_id = row.find('.master-device-id').val() || '';
+            payload.focal_device_code = row.find('.focal-device-code').val() || '';
+            payload.focal_device_display = row.find('.focal-device-display').val() || '';
+            payload.focal_device_action = row.find('.focal-device-action').val() || '';
+        }
+
+        $.post(endpoint, payload, function(res) {
+            if (res == '1') {
+                if (typeof onSuccess === 'function') onSuccess();
+            } else {
+                alert('Gagal menyimpan mapping.');
+            }
+        }).fail(function() {
+            alert('Terjadi kesalahan saat menyimpan mapping.');
+        });
+    }
+
+    function clearRowMapping(row, ctx) {
+        setPrimary(row, ctx, '', '', '');
+        row.find('.master-device-id').val('');
+        row.find('.focal-device-code').val('');
+        row.find('.focal-device-display').val('');
+        row.find('.focal-device-action').val('');
+    }
+
+    $('#lab tbody tr').each(function() { updateSummary($(this), 'lab'); });
+    $('#rad tbody tr').each(function() { updateSummary($(this), 'rad'); });
+    $('#proc tbody tr').each(function() { updateSummary($(this), 'proc'); });
+    $('#proc-ranap tbody tr').each(function() { updateSummary($(this), 'proc_ranap'); });
+    $('#operasi tbody tr').each(function() { updateSummary($(this), 'operasi'); });
+
+    $('.btn-delete-mapping').on('click', function() {
+        var row = $(this).closest('tr');
+        var ctx = $(this).data('context');
+        clearRowMapping(row, ctx);
+        persistMappingRow(row, ctx, function() {
+            updateSummary(row, ctx);
+            alert('Mapping berhasil dihapus.');
+        });
+    });
+});
+</script>

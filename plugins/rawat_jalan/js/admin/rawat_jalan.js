@@ -9,6 +9,20 @@ $('#provider').hide();
 $('#aturan_pakai').hide();
 $("#form_kontrol").hide();
 
+// Inisialisasi jam_rawat saat halaman dibuka
+$(function(){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var $jr = $('input:text[name=jam_rawat]').last();
+  if ($jr.length) {
+    $jr.focus();
+    if (!$jr.val()) {
+      $.post(baseURL + '/rawat_jalan/cekwaktu?t=' + mlite.token, {}, function(data){
+        $jr.val(data);
+      });
+    }
+  }
+});
+
 // tombol buka form diklik
 $("#index").on('click', '#bukaform', function(){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -40,7 +54,9 @@ $("#form").on("click","#no_rawat", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/rawat_jalan/maxid?t=' + mlite.token;
+  var tgl_registrasi = $('#tgl_registrasi').val();
   $.post(url, {
+    tgl_registrasi: tgl_registrasi
   } ,function(data) {
     $("#no_rawat").val(data);
   });
@@ -50,12 +66,14 @@ $("#form").on("click","#no_reg", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/rawat_jalan/maxantrian?t=' + mlite.token;
+  var tgl_registrasi = $('#tgl_registrasi').val();
   var kd_poli = $('select[name=kd_poli]').val();
   var kd_dokter = $('select[name=kd_dokter]').val();
 
   $.post(url, {
     kd_poli: kd_poli,
-    kd_dokter: kd_dokter
+    kd_dokter: kd_dokter,
+    tgl_registrasi: tgl_registrasi
   } ,function(data) {
     if(data == '888888') {
       alert('Kuota pendaftaran sudah terpenuhi.\nSilahkan pilih tanggal lain atau pilih dokter lain.');
@@ -160,6 +178,7 @@ $("#display").on("click",".riwayat_perawatan", function(event){
 
 // ketika baris data diklik
 $("#display").on("click", ".edit", function(event){
+  {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'rawat_jalan') == true}
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/rawat_jalan/form?t=' + mlite.token;
@@ -175,6 +194,7 @@ $("#display").on("click", ".edit", function(event){
       $('input:hidden[name=stts_daftar]').val(get_stts_daftar);
     });
   });
+  {/if}
 });
 
 // ketika tombol hapus ditekan
@@ -230,6 +250,7 @@ $("#display").on("click", ".sep", function(event){
       $('#no_kartu_peserta').text(json_obj[0].response.peserta.noKartu);
       $('#no_mr_peserta').text(no_rkm_medis);
       $('#nik_peserta').text(json_obj[0].response.peserta.nik);
+      $('#prov_umum_peserta').text(json_obj[0].response.peserta.provUmum.nmProvider);
       $('#tgl_lahir_peserta').text(json_obj[0].response.peserta.tglLahir);
       $('#status_peserta').text(json_obj[0].response.peserta.statusPeserta.keterangan);
       $('#jenis_peserta').text(json_obj[0].response.peserta.jenisPeserta.keterangan);
@@ -434,8 +455,8 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     event.preventDefault();
 
     var no_rawat        = $('input:text[name=no_rawat]').val();
-    var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-    var jam_rawat       = $('input:text[name=jam_rawat]').val();
+    var tgl_perawatan   = $('#soap_tgl_perawatan').val();
+    var jam_rawat       = $('#soap_jam_rawat').val();
     var suhu_tubuh      = $('input:text[name=suhu_tubuh]').val();
     var tensi           = $('input:text[name=tensi]').val();
     var nadi            = $('input:text[name=nadi]').val();
@@ -829,6 +850,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
+  var jml_tindakan    = $('input:text[name=jml_tindakan]').val();
 
   var url = baseURL + '/rawat_jalan/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
@@ -841,7 +863,8 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   biaya          : biaya,
   aturan_pakai   : aturan_pakai,
   kat            : kat,
-  jml            : jml
+  jml            : jml, 
+  jml_tindakan   : jml_tindakan
   }, function(data) {
 
     // tampilkan data
@@ -852,6 +875,11 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
       // tampilkan data
       $("#rincian").html(data).show();
     });
+    $.post(baseURL + '/rawat_jalan/cekwaktu?t=' + mlite.token, {
+    } ,function(data) {
+      $("#form_rincian #rincian_jam_reg").val(data);
+      $('input:text[name=jam_rawat]').last().val(data).focus();
+    });
     $('input:hidden[name=kd_jenis_prw]').val("");
     $('input:text[name=nm_perawatan]').val("");
     $('input:hidden[name=kat]').val("");
@@ -860,6 +888,8 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=nama_provider2]').val("");
     $('input:text[name=kode_provider]').val("");
     $('input:text[name=kode_provider2]').val("");
+    $('input:text[name=jam_rawat]').last().val("");
+    $('input:text[name=jml_tindakan]').val("");
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -1127,12 +1157,231 @@ $("#form_soap").on("click","#odontogram", function(event){
   return false;
 });
 
+$("#form_soap").on("click",".assesment", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+
+  var modal = $('#assesmentModal');
+  var modalContent = $('#assesmentModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      // Load form assessment dengan data pasien
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_jalan/assessment/' + set_no_rawat + '?t=' + mlite.token, function() {
+        // Load data assessment yang sudah ada
+        $('.tampildata_assessment').load(baseURL + '/rawat_jalan/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+      });
+  }).modal();
+  return false;
+});
+
+// Handler untuk assessment di display juga
+$("#display").on("click",".assesment", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+
+  var modal = $('#assesmentModal');
+  var modalContent = $('#assesmentModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      // Load form assessment dengan data pasien
+      var set_no_rawat = no_rawat.replace(/\//g, '');
+      modalContent.load(baseURL + '/rawat_jalan/assessment/' + set_no_rawat + '?t=' + mlite.token, function() {
+        // Load data assessment yang sudah ada
+        $('.tampildata_assessment').load(baseURL + '/rawat_jalan/assessmenttampil/' + set_no_rawat + '?t=' + mlite.token);
+      });
+  }).modal();
+  return false;
+});
+
+// Event delegation untuk rujuk internal - bekerja untuk elemen dinamis
+$(document).on('click', 'a[href="#rujuk_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var url = baseURL + '/rawat_jalan/rujukaninternal?t=' + mlite.token;
+  var url_get = baseURL + '/rawat_jalan/getrujukaninternal?t=' + mlite.token;
+
+  $.post(url_get, {no_rawat: no_rawat}, function(data) {
+    var rujukan = JSON.parse(data);
+    var kd_poli_val = '';
+    var kd_dokter_val = '';
+    var isi_rujukan_val = '';
+    var jawab_rujukan_val = '';
+    var disabled_attr = '';
+
+    if(rujukan) {
+        kd_poli_val = rujukan.kd_poli;
+        kd_dokter_val = rujukan.kd_dokter;
+        isi_rujukan_val = rujukan.isi_rujukan;
+        jawab_rujukan_val = rujukan.jawab_rujukan;
+        disabled_attr = ' disabled';
+    }
+
+    var rujuk_internal = ''
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Pilih Poli</label>'
+        + '<select name="kd_poli" id="kd_poli" class="form-control" data-use-dimmer="false">'
+        + '{loop: $mlite.poliklinik}'
+        + '<option value="{$value.kd_poli}">{$value.nm_poli}</option>'
+        + '{/loop}'
+        + '</select>'
+        + '</div>'
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Pilih Dokter</label>'
+        + '<select name="kd_dokter" id="kd_dokter" class="form-control" data-use-dimmer="false">'
+        + '{loop: $mlite.dokter}'
+        + '<option value="{$value.kd_dokter}">{$value.nm_dokter}</option>'
+        + '{/loop}'
+        + '</select>'
+        + '</div>'
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Isi Rujukan</label>'
+        + '<textarea name="isi_rujukan" id="isi_rujukan" class="form-control" rows="6">' + isi_rujukan_val + '</textarea>'
+        + '</div>'
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Jawab Rujukan</label>'
+        + '<textarea name="jawab_rujukan" id="jawab_rujukan" class="form-control" rows="6" ' + disabled_attr + '>' + jawab_rujukan_val + '</textarea>'
+        + '</div>'
+        + '';
+
+    // tampilkan dialog konfirmasi
+    bootbox.dialog({
+      message: rujuk_internal,
+      title: 'Rujuk Internal',
+      buttons: {
+        main: {
+          label: 'Simpan',
+          className: 'btn-primary',
+          callback() {
+            var kd_poli = $('#kd_poli').val();
+            var kd_dokter = $('#kd_dokter').val();
+            var isi_rujukan = $('#isi_rujukan').val();
+            var jawab_rujukan = $('#jawab_rujukan').val();  
+            $.post(url, {
+              no_rawat: no_rawat,
+              kd_poli: kd_poli,
+              kd_dokter: kd_dokter,
+              isi_rujukan: isi_rujukan,
+              jawab_rujukan: jawab_rujukan,
+            } ,function(data) {
+              var data = JSON.parse(data);
+              alert(data.message);
+              // Reload display setelah simpan
+              $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+            });
+          }
+        }
+      }
+    });
+
+    // Set values for selects if they exist
+    if(kd_poli_val) {
+        $('#kd_poli').val(kd_poli_val);
+    }
+    if(kd_dokter_val) {
+        $('#kd_dokter').val(kd_dokter_val);
+    }
+
+    $('select').not(':disabled').selectator();
+  });
+
+  event.stopPropagation();
+  return false;
+});
+
+// Event delegation untuk edit rujukan internal
+$(document).on('click', 'a[href="#jawab_rujukan_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var dokter_tujuan = $(this).attr("data-dokter_tujuan");
+  var poli_tujuan = $(this).attr("data-poli_tujuan");
+  var keterangan = $(this).attr("data-keterangan");
+  var keterangan_jawab = $(this).attr("data-keterangan_jawab");
+  var url = baseURL + '/rawat_jalan/editrujukaninternal?t=' + mlite.token;
+  var edit_rujukan_internal = ''
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Poli Tujuan</label>'
+      + '<input type="text" value="' + poli_tujuan + '" class="form-control" readonly>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Dokter Tujuan</label>'
+      + '<input type="text" value="' + dokter_tujuan + '" class="form-control" readonly>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Isi Rujukan</label>'
+      + '<textarea name="isi_rujukan" id="isi_rujukan" class="form-control" rows="6" readonly> ' + keterangan + ' </textarea>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label for="status_keluar">Jawab Rujukan</label>'
+      + '<textarea name="jawab_rujukan" id="jawab_rujukan" class="form-control" rows="6" required> ' + keterangan_jawab + ' </textarea>'
+      + '</div>'
+      + '';
+
+  // tampilkan dialog konfirmasi
+  bootbox.dialog({
+    message: edit_rujukan_internal,
+    title: 'Jawab Rujukan Internal',
+    buttons: {
+      main: {
+        label: 'Update',
+        className: 'btn-primary',
+        callback() {
+          var jawab_rujukan = $('#jawab_rujukan').val();
+          $.post(url, {
+            no_rawat: no_rawat,
+            jawab_rujukan: jawab_rujukan,
+          } ,function(data) {
+            var data = JSON.parse(data);
+            alert(data.message);
+            // Reload display setelah update
+            $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+          });
+        }
+      }
+    }
+  });
+  $('select').selectator();
+  event.stopPropagation();
+  return false;
+});
+
+// Event delegation untuk hapus rujukan internal
+$(document).on('click', 'a[href="#hapus_rujukan_internal"]', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat");
+  var url = baseURL + '/rawat_jalan/hapusrujukaninternal?t=' + mlite.token;
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus rujukan internal ini?", function(result){
+    if (result){
+      $.post(url, {
+        no_rawat: no_rawat
+      } ,function(data) {
+        // console.log(data);
+        var data = JSON.parse(data);
+        alert(data.message);
+        // Reload display setelah hapus
+        $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+      });
+    }
+  });
+  event.stopPropagation();
+  return false;
+});
+
 {if: $mlite.websocket == 'ya'}
 
   {if: $mlite.websocket_proxy != ''}
     var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
   {else}
-    var URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+    var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
   {/if}
 
   var ws = new WebSocket(URL_WEBSOCKET);

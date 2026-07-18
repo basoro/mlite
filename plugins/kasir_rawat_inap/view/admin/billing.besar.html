@@ -31,25 +31,25 @@
 		<table  rules='rows' width="700px" style="font-size: 11px;font-family: verdana, sans-serif;">
 			<tr>
 			<td colspan="3">
-				<strong style="font-size: 15pt;" >{$settings.nama_instansi}</strong>
+				<strong style="font-size: 15pt;" >{?=isset_or($settings.nama_instansi)?}</strong>
 			</td>
 			</tr>
 			<tr>
 			<td width="80px">
-				<img width="70px" src='{?=url()?}/{$settings.logo}' />
+				<img width="70px" src='{?=url()?}/{?=isset_or($settings.logo)?}' />
 			</td>
 			<td>
 				<p style="font-size: 10px;">
-				{$settings.alamat}<br>
-				 Telp : {$settings.nomor_telepon}<br>
-         E-Mail : {$settings.email}<br>
-				Website : {$settings.website}</p></td>
+				{?=isset_or($settings.alamat)?}<br>
+				 Telp : {?=isset_or($settings.nomor_telepon)?}<br>
+         E-Mail : {?=isset_or($settings.email)?}<br>
+				Website : {?=isset_or($settings.website)?}</p></td>
 			<td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
 				<p align="right" style="font-size: 10px;">
-				Kode Faktur : {$billing.kd_billing}<br>
-				Nama Pasien : {$pasien.nm_pasien}<br>
-				No RM : {$pasien.no_rkm_medis}<br>
-				Alamat : {$pasien.alamat}<br></p>
+				Kode Faktur : {?=isset_or($billing.kd_billing)?}<br>
+				Nama Pasien : {?=isset_or($pasien.nm_pasien)?}<br>
+				No RM : {?=isset_or($pasien.no_rkm_medis)?}<br>
+				Alamat : {?=isset_or($pasien.alamat)?}<br></p>
 			</td>
 			</tr>
 		</table>
@@ -71,9 +71,9 @@
 			</tr>
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$billing_besar_detail.kamar_inap.kd_kamar}</td>
+				<td>- {?=isset_or($billing_besar_detail.kamar_inap.kd_kamar)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($billing_besar_detail.kamar_inap.trf_kamar,2,',','.')?}</span></td>
-				<td>{$billing_besar_detail.kamar_inap.lama}</td>
+				<td>{?=isset_or($billing_besar_detail.kamar_inap.lama)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($billing_besar_detail.kamar_inap.ttl_biaya,2,',','.')?}</span></td>
 			</tr>
 			<tr border='0', height='20px'>
@@ -88,18 +88,12 @@
 				<td></td>
 				<td></td>
 			</tr>
-			{if: $billing_besar_detail.detail_pemberian_obat}
-			<tr>
-				<td></td>
-				<td colspan="4">Non Racikan</td>
-			</tr>
-			{/if}
 			{loop: $billing_besar_detail.detail_pemberian_obat as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nama_brng}</td>
+				<td>&nbsp;&nbsp;{?=isset_or($data.nama_brng)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_obat,2,',','.')?}</span></td>
-				<td>{$data.jml}</td>
+				<td>{?=isset_or($data.jml)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -120,9 +114,9 @@
 			{loop: $billing_besar_detail.rawat_inap_dr as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
-				<td>{$data.jml}</td>
+				<td>{?=isset_or($data.jml)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_dr,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -143,9 +137,9 @@
 			{loop: $billing_besar_detail.rawat_inap_pr as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
-				<td>{$data.jml}</td>
+				<td>{?=isset_or($data.jml)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_pr,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -166,9 +160,9 @@
 			{loop: $billing_besar_detail.rawat_inap_drpr as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
-				<td>{$data.jml}</td>
+				<td>{?=isset_or($data.jml)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_drpr,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -189,7 +183,7 @@
 			{loop: $billing_besar_detail.periksa_lab as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
 				<td></td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
@@ -212,7 +206,7 @@
 			{loop: $billing_besar_detail.periksa_radiologi as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
 				<td></td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
@@ -235,7 +229,7 @@
 			{loop: $billing_besar_detail.operasi as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_perawatan}</td>
+				<td>- {?=isset_or($data.nm_perawatan)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.jumlah,2,',','.')?}</span></td>
 				<td>1</td>
 				<td>Rp. <span class="pull-right">{?= number_format($jumlah_total_operasi,2,',','.')?}</span></td>
@@ -258,9 +252,9 @@
 			{loop: $billing_besar_detail.obat_operasi as $data}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$data.nm_obat}</td>
+				<td>- {?=isset_or($data.nm_obat)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.hargasatuan,2,',','.')?}</span></td>
-				<td>{$data.jumlah}</td>
+				<td>{?=isset_or($data.jumlah)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.harga,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
@@ -273,7 +267,30 @@
 			{/if}
 			<tr border='1', height='20px'>
 				<td>X</td>
-				<td colspan="1">Biaya Tambahan</td>
+				<td colspan="1">Obat Pulang</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.resep_pulang}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {?=isset_or($value.nama_brng)?}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{?=isset_or($value.jml_barang)?}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			{if: $billing_besar_detail.resep_pulang}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.resep_pulang, 'total')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
+			<tr border='1', height='20px'>
+				<td>XI</td>
+				<td colspan="1">Biaya Tambahan (termasuk UTD)</td>
 				<td></td>
 				<td></td>
 				<td></td>
@@ -281,7 +298,7 @@
 			{loop: $billing_besar_detail.tambahan_biaya}
 			<tr border='0', height='20px'>
 				<td></td>
-				<td>- {$value.nama_biaya}</td>
+				<td>- {?=isset_or($value.nama_biaya)?}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
 				<td>1</td>
 				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
@@ -319,11 +336,11 @@
 				<td colspan="3"></td>
 				<td colspan=3>
 					<br><br>
-				<p align="center" ><strong>{$settings.kota}, {?=date('d-m-Y')?}</strong><br>
+				<p align="center" ><strong>{?=isset_or($settings.kota)?}, {?=date('d-m-Y')?}</strong><br>
 					Kasir<br><br>
- 				 <img src="{$qrCode}">
+ 				 <img src="{?=isset_or($qrCode)?}">
  				 <br><br>
-				{$fullname}<br>
+				{?=isset_or($fullname)?}<br>
 				</p>
 				</td>
 			</tr>
@@ -349,7 +366,7 @@
 	        <div class="modal-body">
 		        <div class="form-floating number">
 							<label for="floatingPassword">Nomor</label>
-		          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan" value="{$pasien.no_tlp}">
+		          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan" value="{?=isset_or($pasien.no_tlp)?}">
 		        </div>
 		        <div class="form-floating message">
 							<label for="floatingPassword">Pesan</label>
@@ -375,11 +392,11 @@
 	        <div class="modal-body">
 		        <div class="form-floating number">
 							<label for="floatingPassword">Email</label>
-		          <input type="text" name="email" class="form-control" id="email" placeholder="Email Tujuan" value="{$pasien.email}">
+		          <input type="text" name="email" class="form-control" id="email" placeholder="Email Tujuan" value="{?=isset_or($pasien.email)?}">
 		        </div>
 		        <div class="form-floating message">
 							<label for="floatingPassword">Nama Pasien</label>
-		          <input type="text" name="receiver" class="form-control" id="receiver" placeholder="Nama Pasien" value="{$pasien.nm_pasien}">
+		          <input type="text" name="receiver" class="form-control" id="receiver" placeholder="Nama Pasien" value="{?=isset_or($pasien.nm_pasien)?}">
 		        </div>
 	        </div>
 	        <div class="modal-footer">
@@ -396,19 +413,19 @@ function KirimEmail() {
 	var xhttp = new XMLHttpRequest();
 	var email = document.getElementById("email").value;
 	var receiver = document.getElementById("receiver").value;
-	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
+	var file = "{?=url()?}/uploads/invoices/{?=isset_or($billing.kd_billing)?}.pdf";
 	xhttp.open("POST", "{?=url([ADMIN,'kasir_rawat_inap','kirimemail'])?}", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("email=" + email + "&receiver=" + receiver + "&file=" + file);
 }
 function KirimWA() {
 	var xhttp = new XMLHttpRequest();
-	var api_key = '{$wagateway.token}';
-	var sender = '{$wagateway.phonenumber}';
+	var api_key = '{?=isset_or($wagateway.token)?}';
+	var sender = '{?=isset_or($wagateway.phonenumber)?}';
 	var number = document.getElementById("number").value;
 	var message = document.getElementById("message").value;
 	var tipe = 'pdf';
-	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
+	var file = "{?=url()?}/uploads/invoices/{?=isset_or($billing.kd_billing)?}.pdf";
 	console.log(number + " - " + message);
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {

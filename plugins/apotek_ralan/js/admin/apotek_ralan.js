@@ -41,7 +41,6 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
     $("#rincian").hide();
     $("#sep").hide();
     $("#soap").hide();
-    $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
 });
@@ -72,7 +71,6 @@ $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
     $("#rincian").hide();
     $("#sep").hide();
     $("#soap").hide();
-    $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
 });
@@ -103,7 +101,6 @@ $('#manage').on('click', '#selesai_periode_rawat_jalan', function(event){
     $("#rincian").hide();
     $("#sep").hide();
     $("#soap").hide();
-    $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
 });
@@ -134,7 +131,6 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
     $("#rincian").hide();
     $("#sep").hide();
     $("#soap").hide();
-    $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
 });
@@ -179,6 +175,7 @@ $("#form_rincian").on("click", "#selesai", function(event){
 
 // ketika baris data diklik
 $("#display").on("click", ".layanan_obat", function(event){
+  {if: $this->core->checkPermission($this->core->getUserInfo('username'), 'can_update', 'apotek_ralan') == true}
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
 
@@ -194,12 +191,18 @@ $("#display").on("click", ".layanan_obat", function(event){
   var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
   }, function(data) {
+    // hapus modal sebelumnya jika ada
+    $('#modal_gudangbarang').remove();
+    $('.modal-backdrop').remove();
+    $('body').removeClass('modal-open');
+    
     // tampilkan data
     $("#form_rincian").show();
     $("#form").hide();
     $("#notif").hide();
     $("#rincian").html(data).show();
   });
+  {/if}
 });
 
 // ketika inputbox pencarian diisi
@@ -258,8 +261,12 @@ $('input:text[name=racikan]').on('input',function(e){
   if(racikan!="") {
       $.post(url, {racikan: racikan} ,function(data) {
       // tampilkan data yang sudah di perbaharui
+      console.log(data);
         $("#racikan").html(data).show();
+        $("#layanan").hide();
         $("#obat").hide();
+        $("#radiologi").hide();
+        $("#laboratorium").hide();
       });
   }
 
@@ -294,7 +301,7 @@ $('.databarang_ajax').selectator({
   load: function (search, callback) {
     if (search.length < this.minSearchLength) return callback();
     $.ajax({
-      url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+      url: '{?=url()?}/{?=ADMIN?}/apotek_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
       type: 'GET',
       dataType: 'json',
       success: function(data) {
@@ -331,6 +338,8 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var keterangan      = $('textarea[name=keterangan]').val();
   var kode_brng       = JSON.stringify($('select[name=kode_brng]').serializeArray());
   var kandungan       = JSON.stringify($('input:text[name=kandungan]').serializeArray());
+  var embalase        = $('input:text[name=embalase]').val();
+  var tuslah          = $('input:text[name=tuslah]').val();
 
   console.log(kode_brng);
 
@@ -348,7 +357,9 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   nama_racik     : nama_racik,
   keterangan     : keterangan,
   kode_brng      : kode_brng,
-  kandungan      : kandungan 
+  kandungan      : kandungan, 
+  embalase       : embalase,
+  tuslah         : tuslah
   }, function(data) {
     // tampilkan data
     $("#display").hide();
@@ -421,6 +432,77 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
   var jenis_racikan = $(this).attr("data-racikan");
   var penyerahan = $(this).attr("data-penyerahan");
 
+  var $tbody = $(this).closest('tbody.resep-group');
+  var $rows = $tbody.find('tr.item-row');
+  var valid = true;
+  var msg = "";
+  var embalaseData = {};
+  var tuslahData = {};
+  var jumlahData = {};
+  var kandunganData = {};
+  var aturanPakaiData = {};
+
+  // Proses header racikan untuk aturan pakai
+  var $racikanHeaderRow = $tbody.find('tr').has('.aturan_pakai');
+  $racikanHeaderRow.each(function() {
+      var $aturanInput = $(this).find('.aturan_pakai');
+      if ($aturanInput.length > 0) {
+          var kd_racik = $aturanInput.attr('data-kode_brng');
+          var aturan = $aturanInput.val();
+          if (kd_racik && aturan !== undefined) {
+              aturanPakaiData[kd_racik] = aturan;
+          }
+      }
+  });
+
+  $rows.each(function() {
+      var stok = parseFloat($(this).attr('data-stok'));
+      // var jml = parseFloat($(this).attr('data-jml'));
+      var nama = $(this).attr('data-nama_brng');
+      
+      var kode_brng = $(this).find('.embalase').attr('data-kode_brng') || $(this).find('.kandungan_obat').attr('data-kode_brng');
+      var embalaseVal = $(this).find('.embalase').val();
+      var tuslahVal = $(this).find('.tuslah').val();
+      var jumlahVal = $(this).find('.jumlah_obat').val();
+      var kandunganVal = $(this).find('.kandungan_obat').val();
+      var aturanPakaiVal = $(this).find('.aturan_pakai').val();
+
+      var jml = parseFloat(jumlahVal);
+      var kandungan = parseFloat(kandunganVal);
+
+      if (isNaN(jml)) {
+        // Cek jika ini baris racikan (parent)
+        var jmlRacik = parseFloat($(this).closest('tbody').find('tr:first .jumlah_obat').val());
+        if(!isNaN(jmlRacik) && !isNaN(kandungan)) {
+             var kapasitas = parseFloat($(this).attr('data-kapasitas'));
+             jml = Math.round((jmlRacik * kandungan) / kapasitas);
+        } else {
+             jml = parseFloat($(this).attr('data-jml'));
+        }
+      }
+      if (isNaN(jml)) jml = 0;
+
+      if(kode_brng) {
+          if(embalaseVal !== undefined) embalaseData[kode_brng] = embalaseVal;
+          if(tuslahVal !== undefined) tuslahData[kode_brng] = tuslahVal;
+          if(jumlahVal !== undefined) jumlahData[kode_brng] = jml;
+          if(kandunganVal !== undefined) kandunganData[kode_brng] = kandungan;
+          if(aturanPakaiVal !== undefined) aturanPakaiData[kode_brng] = aturanPakaiVal;
+      }
+
+      if (isNaN(stok)) stok = 0;
+
+      if (stok < jml) {
+          valid = false;
+          msg += "Stok " + nama + " tidak mencukupi (Stok: " + stok + ", Jml: " + jml + ")\n";
+      }
+  });
+
+  if (!valid) {
+      alert(msg);
+      return false;
+  }
+
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menvalidasi/menyerahkan data resep ini?", function(result){
     // ketika ditekan tombol ok
@@ -432,7 +514,12 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
         tgl_peresepan: tgl_peresepan,
         jam_peresepan: jam_peresepan,
         jenis_racikan: jenis_racikan,
-        penyerahan: penyerahan
+        penyerahan: penyerahan,
+        embalase: JSON.stringify(embalaseData),
+        tuslah: JSON.stringify(tuslahData),
+        jumlah: JSON.stringify(jumlahData),
+        kandungan: JSON.stringify(kandunganData),
+        aturan_pakai: JSON.stringify(aturanPakaiData)
       } ,function(data) {
         console.log(data);
         var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
@@ -480,6 +567,134 @@ $("#rincian").on("click",".hapus_resep_dokter", function(event){
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_obat", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/apotek_ralan/hapusobat?t=' + mlite.token;
+  var kode_brng = $(this).attr("data-kode_brng");
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_perawatan = $(this).attr("data-tgl_peresepan");
+  var jam = $(this).attr("data-jam_peresepan");
+  var jml = $(this).attr("data-jml");
+
+  console.log(kode_brng + ' ' + no_rawat + ' ' + tgl_perawatan + ' ' + jam);
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        kode_brng: kode_brng,
+        no_rawat: no_rawat,
+        tgl_perawatan: tgl_perawatan,
+        jam: jam, 
+        jml: jml
+      } ,function(data) {
+        console.log(data);
+        var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_obat_racikan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/apotek_ralan/hapusobatracikan?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_perawatan = $(this).attr("data-tgl_peresepan");
+  var jam = $(this).attr("data-jam_peresepan");
+  var no_racik = $(this).attr("data-no_racik"); // Add this to HTML
+  var jml = $(this).attr("data-jml");
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_rawat: no_rawat,
+        tgl_perawatan: tgl_perawatan,
+        jam: jam,
+        no_racik: no_racik,
+        jml: jml
+      } ,function(data) {
+        console.log(data);
+        var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+$("#rincian").on("click", ".bayar_parsial_obat", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var no_rawat = $(this).attr("data-no_rawat");
+  if(!no_rawat) {
+    no_rawat = $('input:hidden[name=no_rawat_parsial_obat]').val();
+  }
+  var metode = $('select[name=metode_parsial_obat]').val();
+  var jumlah = $('input[name=jumlah_bayar_parsial_obat]').val();
+
+  if(!jumlah || parseFloat(jumlah) <= 0) {
+    alert('Nominal bayar masih kosong!');
+    return;
+  }
+
+  var url = baseURL + '/apotek_ralan/bayarparsial?t=' + mlite.token;
+  $.post(url, {
+    no_rawat: no_rawat,
+    metode: metode,
+    jumlah_bayar: jumlah
+  }, function(data) {
+    var res = data;
+    try {
+      if (typeof data === 'string') {
+        res = JSON.parse(data);
+      }
+    } catch (e) {
+      res = {status: 'error', message: 'Respon tidak valid.'};
+    }
+
+    if (res.status === 'success') {
+      window.open(baseURL + '/apotek_ralan/notaparsial?show=kecil&pembayaran_id=' + res.pembayaran_id + '&t=' + mlite.token);
+      var url2 = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
+      $.post(url2, {no_rawat: no_rawat}, function(html) {
+        $("#rincian").html(html).show();
+      });
+      $('input[name=jumlah_bayar_parsial_obat]').val('');
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      (res.message ? res.message : "Pembayaran parsial berhasil disimpan.")+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    } else {
+      alert(res.message ? res.message : 'Gagal menyimpan pembayaran parsial.');
     }
   });
 });
@@ -549,7 +764,7 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
   {if: $mlite.websocket_proxy != ''}
     var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
   {else}
-    var URL_WEBSOCKET = "ws://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+    var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
   {/if}
 
   var ws = new WebSocket(URL_WEBSOCKET);
@@ -590,3 +805,257 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
   }   
 
 {/if}
+
+// Variabel global untuk menampung data sementara dari tombol tambah item
+var currentNoResep = "";
+var currentNoRawat = "";
+var currentTglPeresepan = "";
+var currentJamPeresepan = "";
+var currentTipe = "";
+var currentNoRacik = "";
+var currentJmlDr = "";
+
+// Ketika tombol tambah item barang diklik
+$("#rincian").on("click", ".tambah_item_barang", function(event){
+    event.preventDefault();
+    currentNoResep = $(this).attr("data-no_resep");
+    currentNoRawat = $(this).attr("data-no_rawat");
+    currentTglPeresepan = $(this).attr("data-tgl_peresepan");
+    currentJamPeresepan = $(this).attr("data-jam_peresepan");
+    currentTipe = $(this).attr("data-tipe");
+    currentNoRacik = $(this).attr("data-no_racik");
+    currentJmlDr = $(this).attr("data-jml_dr");
+    
+    console.log(currentNoRawat + ' ' + currentTipe);
+    // Reset input pencarian dan tabel
+    $("#cari_barang").val("");
+    $("#tabel_cari_barang tbody").html("");
+    
+    // Tampilkan modal
+    $("#modal_gudangbarang").modal("show");
+    
+    // Fokus ke input pencarian setelah modal tampil
+    setTimeout(function(){
+        $("#cari_barang").focus();
+    }, 500);
+});
+
+// Ketika input pencarian barang di ketik
+$(document).on("keyup", "#cari_barang", function(){
+    var search = $(this).val();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    
+    if(search.length > 2){
+        $.ajax({
+            url: baseURL + '/apotek_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t=' + mlite.token,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                var html = "";
+                if(data.length > 0){
+                    $.each(data, function(i, item){
+                        html += "<tr>";
+                        html += "<td>" + item.kode_brng + "</td>";
+                        html += "<td>" + item.nama_brng + "</td>";
+                        html += "<td>" + item.stok + "</td>";
+                        html += "<td>" + item.ralan + "</td>";
+                        html += "<td><button class=\"btn btn-primary btn-xs pilih_barang_modal\" data-kode_brng='" + item.kode_brng + "' data-nama_brng='" + item.nama_brng + "'>Pilih</button></td>";
+                        html += "</tr>";
+                    });
+                } else {
+                    html = "<tr><td colspan='5' class='text-center'>Tidak ada data ditemukan</td></tr>";
+                }
+                $("#tabel_cari_barang tbody").html(html);
+            }
+        });
+    }
+});
+
+// Ketika tombol pilih barang di modal diklik
+$(document).on("click", ".pilih_barang_modal", function(){
+    var kode_brng = $(this).attr("data-kode_brng");
+    var nama_brng = $(this).attr("data-nama_brng");
+    var embalase_item = $("#embalase_item").val();
+    var tuslah_item = $("#tuslah_item").val();
+
+    console.log(kode_brng + ' - ' + currentNoRawat);
+    
+    $("#modal_gudangbarang").modal("hide");
+    
+    if(currentTipe == 'racikan') {
+        bootbox.prompt({
+            title: "Masukkan Kandungan (mg/ml/tab)",
+            inputType: 'number',
+            callback: function (kandungan) {
+                if(kandungan != null && kandungan != ""){
+                    var baseURL = mlite.url + '/' + mlite.admin;
+                    var url = baseURL + '/apotek_ralan/tambahitemresep?t=' + mlite.token;
+                    
+                    $.post(url, {
+                        no_resep: currentNoResep,
+                        no_rawat: currentNoRawat,
+                        tgl_peresepan: currentTglPeresepan,
+                        jam_peresepan: currentJamPeresepan,
+                        kode_brng: kode_brng,
+                        kandungan: kandungan,
+                        tipe: 'racikan',
+                        no_racik: currentNoRacik,
+                        jml_dr: currentJmlDr,
+                        embalase: embalase_item,
+                        tuslah: tuslah_item
+                    }, function(data) {
+                        console.log(data);
+                        $('#modal_gudangbarang').remove();
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        
+                        var result = (typeof data === 'string') ? JSON.parse(data) : data;
+                        
+                        var $btn = $('button[data-no_resep="' + currentNoResep + '"][data-no_racik="' + currentNoRacik + '"][data-tipe="racikan"]');
+                        var $tbody = $btn.closest('tbody.resep-group');
+                        
+                        var totalHarga = parseFloat(result.total_harga !== undefined ? result.total_harga : result.ralan);
+                        var formattedRalan = isNaN(totalHarga) ? '0' : totalHarga.toLocaleString('id-ID');
+                        
+                        var newRow = '<tr class="item-row" data-nama_brng="' + result.nama_brng + '" data-stok="999" data-jml="' + result.jml + '" data-kandungan="' + result.kandungan + '" data-kapasitas="' + result.kapasitas + '" data-ralan="' + result.ralan + '">' +
+                            '<td>' + result.nama_brng + '</td>' +
+                            '<td><input type="number" class="form-control input-sm kandungan_obat" data-kode_brng="' + result.kode_brng + '" value="' + result.kandungan + '" style="width: 100px;"></td>' +
+                            '<td><span class="jml_obat_display">' + result.jml + '</span></td>' +
+                            '<td><input type="text" class="form-control input-sm embalase" data-kode_brng="' + result.kode_brng + '" value="' + result.embalase + '" style="width: 80px;"></td>' +
+                            '<td><input type="text" class="form-control input-sm tuslah" data-kode_brng="' + result.kode_brng + '" value="' + result.tuslah + '" style="width: 80px;"></td>' +
+                            '<td>Rp. <span class="pull-right total_harga_display">' + formattedRalan + '</span></td>' +
+                            '</tr>';
+                            
+                        $tbody.append(newRow);
+                        
+                        // Trigger input event to update totals if necessary
+                        $tbody.find('.kandungan_obat').trigger('input');
+                        
+                        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+                        "Item obat racikan berhasil ditambahkan!"+
+                        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+                        "</div>").show();
+                    });
+                }
+            }
+        });
+    } else {
+        bootbox.prompt({
+            title: "Masukkan Jumlah " + nama_brng,
+            inputType: 'number',
+            callback: function (jml) {
+                if(jml != null && jml != ""){
+                    bootbox.prompt({
+                        title: "Masukkan Aturan Pakai",
+                        callback: function (aturan_pakai) {
+                            if(aturan_pakai != null){
+                                var baseURL = mlite.url + '/' + mlite.admin;
+                                var url = baseURL + '/apotek_ralan/tambahitemresep?t=' + mlite.token;
+                                
+                                $.post(url, {
+                                    no_resep: currentNoResep,
+                                    no_rawat: currentNoRawat,
+                                    tgl_peresepan: currentTglPeresepan,
+                                    jam_peresepan: currentJamPeresepan,
+                                    kode_brng: kode_brng,
+                                    jml: jml,
+                                    aturan_pakai: aturan_pakai,
+                                    tipe: 'nonracikan',
+                                    embalase: embalase_item,
+                                    tuslah: tuslah_item
+                                }, function(data) {
+                                    console.log(data);
+                                    // hapus modal sebelumnya jika ada
+                                    $('#modal_gudangbarang').remove();
+                                    $('.modal-backdrop').remove();
+                                    $('body').removeClass('modal-open');
+                                    
+                                    var result = (typeof data === 'string') ? JSON.parse(data) : data;
+                                    
+                                    // Cari tbody target berdasarkan tombol tambah yang diklik
+                                    var $btn = $('button[data-no_resep="' + currentNoResep + '"][data-tipe="nonracikan"]');
+                                    var $tbody = $btn.closest('tbody.resep-group');
+    
+                                    // Buat baris baru
+                                    var totalHarga = parseFloat(result.total_harga !== undefined ? result.total_harga : result.ralan);
+                                    var formattedRalan = isNaN(totalHarga) ? '0' : totalHarga.toLocaleString('id-ID');
+    
+                                    var newRow = '<tr class="item-row" data-nama_brng="' + result.nama_brng + '" data-stok="999" data-jml="' + result.jml + '" data-ralan="' + result.ralan + '">' +
+                                        '<td>' + result.nama_brng + '</td>' +
+                                        '<td><input type="number" class="form-control input-sm jumlah_obat" data-kode_brng="' + result.kode_brng + '" value="' + result.jml + '" style="width: 50px;"></td>' +
+                                        '<td>' + result.aturan_pakai + ' <button type="button" class="btn btn-danger btn-xs cetak_etiket" data-kode_brng="' + result.kode_brng + '" data-no_rawat="' + currentNoRawat + '" data-tgl_peresepan="' + currentTglPeresepan + '" data-jam_peresepan="' + currentJamPeresepan + '" data-tipe="nonracikan"><i class="fa fa-print"></i></button> <button type="button" class="btn btn-danger btn-xs hapus_obat" data-kode_brng="' + result.kode_brng + '" data-no_rawat="' + currentNoRawat + '" data-tgl_peresepan="' + currentTglPeresepan + '" data-jam_peresepan="' + currentJamPeresepan + '" data-jml="' + result.jml + '"><i class="fa fa-trash"></i></button></td>' +
+                                        '<td><input type="text" class="form-control input-sm embalase" data-kode_brng="' + result.kode_brng + '" value="' + result.embalase + '" style="width: 80px;"></td>' +
+                                        '<td><input type="text" class="form-control input-sm tuslah" data-kode_brng="' + result.kode_brng + '" value="' + result.tuslah + '" style="width: 80px;"></td>' +
+                                        '<td>Rp. <span class="pull-right total_harga_display">' + formattedRalan + '</span></td>' +
+                                        '</tr>';
+                                        
+                                    $tbody.append(newRow);
+                                    
+                                    // Tampilkan notifikasi
+                                    $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+                                    "Item obat berhasil ditambahkan!"+
+                                    "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+                                    "</div>").show();
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+});
+
+// Update jumlah obat racikan saat jumlah racik atau kandungan berubah
+$(document).on('input', '.jumlah_obat, .kandungan_obat, .embalase, .tuslah', function() {
+    var $tbody = $(this).closest('tbody.resep-group');
+    
+    // Cek apakah ini baris racikan dengan mengecek keberadaan input kandungan
+    if($tbody.find('.kandungan_obat').length > 0) {
+        // Ambil jumlah racikan. Kita gunakan .first() karena .jumlah_obat ada di header racikan
+        var jmlRacik = parseFloat($tbody.find('.jumlah_obat').val()) || 0;
+        
+        $tbody.find('tr.item-row').each(function() {
+            var $row = $(this);
+            var kandungan = parseFloat($row.find('.kandungan_obat').val()) || 0;
+            var kapasitas = parseFloat($row.attr('data-kapasitas')) || 0;
+            var ralan = parseFloat($row.attr('data-ralan')) || 0;
+            
+            var jmlBaru = 0;
+            // Pastikan kapasitas valid untuk menghindari pembagian dengan nol
+            // Dan pastikan input valid (jmlRacik > 0 dan kandungan > 0)
+            if (kapasitas > 0 && jmlRacik > 0 && kandungan > 0) {
+                // Rumus: (jml_dr * kandungan) / kapasitas
+                jmlBaru = (jmlRacik * kandungan) / kapasitas;
+                // Pembulatan 1 desimal
+                jmlBaru = Math.round(jmlBaru * 10) / 10;
+            }
+            
+            // Tampilkan jumlah baru
+            $row.find('.jml_obat_display').text(jmlBaru);
+            
+            // Update atribut data-jml untuk keperluan validasi/pengiriman data
+            $row.attr('data-jml', jmlBaru);
+            
+            // Update total harga per obat
+            var embalase = parseFloat($row.find('.embalase').val()) || 0;
+            var tuslah = parseFloat($row.find('.tuslah').val()) || 0;
+            var totalHarga = (jmlBaru * ralan) + embalase + tuslah;
+            var formattedHarga = totalHarga.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            $row.find('.total_harga_display').text(formattedHarga);
+        });
+
+        // Hitung total biaya obat racikan
+        var totalBiayaRacikan = 0;
+        $tbody.find('tr.item-row').each(function() {
+            var ralan = parseFloat($(this).attr('data-ralan')) || 0;
+            var jml = parseFloat($(this).attr('data-jml')) || 0;
+            var embalase = parseFloat($(this).find('.embalase').val()) || 0;
+            var tuslah = parseFloat($(this).find('.tuslah').val()) || 0;
+            totalBiayaRacikan += (ralan * jml) + embalase + tuslah;
+        });
+        
+        var formattedTotalBiaya = totalBiayaRacikan.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        $tbody.closest('table').find('.total_biaya_racikan_display').text(formattedTotalBiaya);
+    }
+});

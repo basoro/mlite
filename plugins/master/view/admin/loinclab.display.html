@@ -1,0 +1,69 @@
+<div class="table-responsive no-margin">
+  <table class="table table-striped no-margin">
+    <thead>
+      <tr>
+        <th>Kode</th>
+        <th>Display</th>
+        <th>Komponen</th>
+        <th>Sistem</th>
+        <th class="text-right">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {if: !empty($loinclab.list)}
+      {loop: $loinclab.list}
+      <tr>
+        <td>{$value.Code}</td>
+        <td>{$value.Display}</td>
+        <td>{$value.Component}</td>
+        <td>{$value.System}</td>
+        <td class="text-right">
+          <div class="btn-group">
+            <button class="btn btn-default btn-xs edit" data-code="{$value.Code}">Edit</button>
+            <button class="btn btn-danger btn-xs hapus" data-code="{$value.Code}">Hapus</button>
+          </div>
+        </td>
+      </tr>
+      {/loop}
+      {else}
+      <tr>
+        <td colspan="5" class="text-center">Data tidak ditemukan</td>
+      </tr>
+      {/if}
+    </tbody>
+  </table>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <div class="padding-top-md">
+      Total Data: {$loinclab.jumlah_data}
+    </div>
+  </div>
+  <div class="col-md-6">
+    <nav class="pull-right">
+      <ul class="pagination no-margin">
+        {if: $loinclab.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-halaman="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $loinclab.halaman > 1}
+        <li class="halaman" data-halaman="{?=$loinclab.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$loinclab.halaman} dari {$loinclab.jml_halaman} Hal</a></li>
+        {if: $loinclab.halaman < $loinclab.jml_halaman}
+        <li class="halaman" data-halaman="{?=$loinclab.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $loinclab.halaman == $loinclab.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-halaman="{$loinclab.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      </ul>
+    </nav>
+  </div>
+</div>

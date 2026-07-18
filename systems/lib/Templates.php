@@ -10,7 +10,7 @@ class Templates
     private $tmp = 'tmp/';
 
     private $tags = [
-                '{\*(.*?)\*}' => 'self::comment',
+                '{\*(.*?)\*}' => self::class . '::comment',
                 '{noparse}(.*?){\/noparse}' => self::class . '::noParse',
                 '{if: ([^}]*)}' => '<?php if ($1): ?>',
                 '{else}' => '<?php else: ?>',
@@ -122,8 +122,20 @@ class Templates
 
     private function execute($file, $counter = 0)
     {
+        $normalizedFile = str_replace('\\', '/', $file);
+        $normalizedTmp = rtrim(str_replace('\\', '/', $this->tmp), '/').'/';
         $pathInfo = pathinfo($file);
-        $tmpFile = $this->tmp.$pathInfo['basename'];
+
+        // Use a unique cache filename per source template path to avoid collisions
+        // between plugins that share the same basename (e.g. "rincian.html").
+        if (strpos($normalizedFile, $normalizedTmp) === 0) {
+            $tmpFile = $this->tmp.$pathInfo['basename'];
+        } else {
+            $extension = isset($pathInfo['extension']) ? '.'.$pathInfo['extension'] : '';
+            $fileName = isset($pathInfo['filename']) ? $pathInfo['filename'] : $pathInfo['basename'];
+            $templateKey = realpath($file) ?: $file;
+            $tmpFile = $this->tmp.$fileName.'_'.substr(sha1($templateKey), 0, 12).$extension;
+        }
 
         if (!is_file($file)) {
             echo "Template '$file' not found.";
@@ -136,7 +148,15 @@ class Templates
             }
             file_put_contents($tmpFile, $this->parse($content));
 
-            extract($this->data, EXTR_SKIP);
+            // Safely extract template data with security checks
+            if (is_array($this->data) && !empty($this->data)) {
+                // Filter out potentially dangerous variables
+                $safeData = array_filter($this->data, function($key) {
+                    return !in_array($key, ['GLOBALS', '_SERVER', '_GET', '_POST', '_FILES', '_COOKIE', '_SESSION', '_ENV']);
+                }, ARRAY_FILTER_USE_KEY);
+                
+                extract($safeData, EXTR_SKIP);
+            }
 
             ob_start();
             include($tmpFile);
@@ -160,13 +180,14 @@ class Templates
         if (!$last) {
             return $result;
         } else {
-            $result = str_replace(['*bracket*','*/bracket*'], ['{', '}'], $result);
-            $result = str_replace('*dollar*', '$', $result);
+            // Add null check to prevent deprecated warning
+            if ($result !== null) {
+                $result = str_replace(['*bracket*','*/bracket*'], ['{', '}'], $result);
+                $result = str_replace('*dollar*', '$', $result);
+            } else {
+                $result = '';
+            }
 
-            //if (HTML_BEAUTY) {
-            //    $tidyHTML = new Indenter;
-            //    return $tidyHTML->indent($result);
-            //}
             return $result;
         }
     }
@@ -176,6 +197,12 @@ class Templates
         if (is_array($content)) {
             $content = $content[1];
         }
+        
+        // Add null check to prevent deprecated warning
+        if ($content === null) {
+            return '';
+        }
+        
         $content = str_replace(['{', '}'], ['*bracket*', '*/bracket*'], $content);
         return str_replace('$', '*dollar*', $content);
     }
@@ -194,7 +221,7 @@ class Templates
 
     public function comment($content)
     {
-        return null;
+        return '';
     }
 
     private function searchTags($content)

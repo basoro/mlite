@@ -8,8 +8,8 @@
     <tbody>
       {loop: $bridging_sep}
       <tr>
-        <td>{$value.no_rawat}</td>
-        <td>{$value.no_sep}</td>
+        <td>{?=isset_or($value.no_rawat)?}</td>
+        <td>{?=isset_or($value.no_sep)?}</td>
       </tr
       {/loop}
     </tbody>

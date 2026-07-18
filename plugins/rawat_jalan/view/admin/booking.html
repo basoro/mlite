@@ -24,7 +24,7 @@
                     <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($booking.totalRecords)?}</h3>
                   </div>
                   <div class="col col-md-6">
-                    <form action="{$booking.searchUrl}" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                    <form action="{?=isset_or($booking.searchUrl)?}" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
                         <div class="input-group">
                             <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
                             <input type="hidden" name="start_date" value="{if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}">
@@ -61,18 +61,18 @@
               			{if: !empty($booking.list)}
       								{loop: $booking.list}
       								<tr>
-                        <td><input type="checkbox" name="no_rkm_medis[]" class="list-item" value="{$value.no_rkm_medis}" /></td>
-      									<td>{$value.nm_pasien}</td>
-                        <td>{$value.no_rkm_medis}</td>
-                        <td>{$value.no_reg}</td>
-                        <td>{$value.nm_poli}</td>
-      									<td>{$value.nm_dokter}</td>
-                        <td>{$value.png_jawab}</td>
-                        <td>{$value.tanggal_booking}</td>
-                        <td>{$value.jam_booking}</td>
-                        <td>{$value.tanggal_periksa}</td>
-                        <td>{$value.status}</td>
-                        <td><button type="button" class="btn btn-xs btn-success" data-toggle="modal" href="#waModal" data-no_tlp="{$value.no_tlp}" data-nm_pasien="Yang terhormat {$value.nm_pasien} dengan nomor rekam medik {$value.no_rkm_medis}.&#013;&#010;&#013;&#010;Sekedar mengingatkan jadwal kontrol anda: &#013;&#010;Tanggal: {$value.tanggal_periksa} &#013;&#010;Nomor Antrian: {$value.no_reg} &#013;&#010;Poliklinik: {$value.nm_poli}&#013;&#010;&#013;&#010;Bawalah kartu berobat anda. &#013;&#010;Datanglah 30 menit sebelumnya.&#013;&#010;&#013;&#010;-------------------&#013;&#010;Pesan WhatsApp ini dikirim otomatis oleh {$nama_instansi} &#013;&#010;Terima Kasih"><i class="fa fa-whatsapp"></i></button></td>
+                        <td><input type="checkbox" name="no_rkm_medis[]" class="list-item" value="{?=isset_or($value.no_rkm_medis)?}" /></td>
+      									<td>{?=isset_or($value.nm_pasien)?}</td>
+                        <td>{?=isset_or($value.no_rkm_medis)?}</td>
+                        <td>{?=isset_or($value.no_reg)?}</td>
+                        <td>{?=isset_or($value.nm_poli)?}</td>
+      									<td>{?=isset_or($value.nm_dokter)?}</td>
+                        <td>{?=isset_or($value.png_jawab)?}</td>
+                        <td>{?=isset_or($value.tanggal_booking)?}</td>
+                        <td>{?=isset_or($value.jam_booking)?}</td>
+                        <td>{?=isset_or($value.tanggal_periksa)?}</td>
+                        <td>{?=isset_or($value.status)?}</td>
+                        <td><button type="button" class="btn btn-xs btn-success" data-toggle="modal" href="#waModal" data-no_tlp="{?=isset_or($value.no_tlp)?}" data-nm_pasien="Yang terhormat {?=isset_or($value.nm_pasien)?} dengan nomor rekam medik {?=isset_or($value.no_rkm_medis)?}.&#013;&#010;&#013;&#010;Sekedar mengingatkan jadwal kontrol anda: &#013;&#010;Tanggal: {?=isset_or($value.tanggal_periksa)?} &#013;&#010;Nomor Antrian: {?=isset_or($value.no_reg)?} &#013;&#010;Poliklinik: {?=isset_or($value.nm_poli)?}&#013;&#010;&#013;&#010;Bawalah kartu berobat anda. &#013;&#010;Datanglah 30 menit sebelumnya.&#013;&#010;&#013;&#010;-------------------&#013;&#010;Pesan WhatsApp ini dikirim otomatis oleh {?=isset_or($nama_instansi)?} &#013;&#010;Terima Kasih"><i class="fa fa-whatsapp"></i></button></td>
       								</tr>
       								{/loop}
       								{else}
@@ -82,7 +82,7 @@
       						</table>
       					</div>
                 </form>
-                {$booking.pagination}
+                {?=isset_or($booking.pagination)?}
             </div>
         </div>
     </div>
@@ -142,8 +142,8 @@ $('#waModal').on('show.bs.modal', function(e) {
 <script>
   function KirimWA() {
   	var xhttp = new XMLHttpRequest();
-    var api_key = '{$waapitoken}';
-  	var sender = '{$waapiphonenumber}';
+    var api_key = '{?=isset_or($waapitoken)?}';
+  	var sender = '{?=isset_or($waapiphonenumber)?}';
   	var number = document.getElementById("number").value;
   	var message = document.getElementById("message").value;
   	console.log(api_key + " - " + number + " - " + message);
@@ -154,11 +154,17 @@ $('#waModal').on('show.bs.modal', function(e) {
         if(data.indexOf(timeout) != -1) {
             alert('Timeout!!! Gagal mengirim pesan.');
         } else {
-            var jsonResponse = JSON.parse(data);
-            if(jsonResponse["status"] == true) {
-              alert('Sukses mengirim pesan.');
-            } else {
-            alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+            try {
+                var jsonResponse = JSON.parse(data);
+                if(jsonResponse["status"] == true) {
+                  alert('Sukses mengirim pesan.');
+                } else {
+                  alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+                }
+            } catch (e) {
+                console.error("Error parsing JSON:", e);
+                console.log("Raw response:", data);
+                alert('Gagal mengirim pesan. Respon server tidak valid.');
             }
         }
       }

@@ -92,7 +92,11 @@ class Backup_Database {
         $this->charset                 = $charset;
         $this->conn                    = $this->initializeDatabase();
         $this->backupDir               = BACKUP_DIR ? BACKUP_DIR : '.';
-        $this->backupFile              = 'backup-'.$this->dbName.'-'.date("Ymd_His", time()).'.sql';
+        
+        // Handle SQLite DB path which might contain slashes
+        $cleanDbName = basename($this->dbName);
+        $this->backupFile              = 'backup-'.$cleanDbName.'-'.date("Ymd_His", time()).'.sql';
+        
         $this->gzipBackupFile          = defined('GZIP_BACKUP_FILE') ? GZIP_BACKUP_FILE : true;
         $this->disableForeignKeyChecks = defined('DISABLE_FOREIGN_KEY_CHECKS') ? DISABLE_FOREIGN_KEY_CHECKS : true;
         $this->batchSize               = defined('BATCH_SIZE') ? BATCH_SIZE : 1000; // default 1000 rows
@@ -100,16 +104,20 @@ class Backup_Database {
     }
 
     protected function initializeDatabase() {
+        if (DBDRIVER == 'sqlite') {
+            return new \PDO("sqlite:" . $this->dbName);
+        }
+        
         try {
             $conn = mysqli_connect($this->host, $this->username, $this->passwd, $this->dbName);
             if (mysqli_connect_errno()) {
-                throw new Exception('ERROR connecting database: ' . mysqli_connect_error());
+                throw new \Exception('ERROR connecting database: ' . mysqli_connect_error());
                 die();
             }
             if (!mysqli_set_charset($conn, $this->charset)) {
                 mysqli_query($conn, 'SET NAMES '.$this->charset);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             die();
         }
@@ -124,6 +132,11 @@ class Backup_Database {
      */
     public function backupTables($tables = '*') {
         try {
+            if (DBDRIVER == 'sqlite') {
+                $this->backupTablesSqlite($tables);
+                return true;
+            }
+
             /**
              * Tables to export
              */
@@ -139,6 +152,7 @@ class Backup_Database {
 
             $sql = 'CREATE DATABASE IF NOT EXISTS `'.$this->dbName.'`'.";\n\n";
             $sql .= 'USE `'.$this->dbName."`;\n\n";
+            $sql .= "SET sql_mode = '';\n\n";
 
             /**
              * Disable foreign key checks 
@@ -245,12 +259,74 @@ class Backup_Database {
             } else {
                 $this->obfPrint('Backup file succesfully saved to ' . $this->backupDir.'/'.$this->backupFile, 1, 1);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             return false;
         }
 
         return true;
+    }
+
+    protected function backupTablesSqlite($tables = '*') {
+        $pdo = $this->conn;
+        
+        if($tables == '*') {
+            $tables = array();
+            $query = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+            while($row = $query->fetch(\PDO::FETCH_NUM)) {
+                $tables[] = $row[0];
+            }
+        } else {
+            $tables = is_array($tables) ? $tables : explode(',', str_replace(' ', '', $tables));
+        }
+
+        $sql = "PRAGMA foreign_keys=OFF;\nBEGIN TRANSACTION;\n\n";
+
+        foreach($tables as $table) {
+            if( in_array($table, IGNORE_TABLES) )
+                continue;
+            
+            $this->obfPrint("Backing up `".$table."` table...".str_repeat('.', 50-strlen($table)), 0, 0);
+
+            // Get CREATE TABLE
+            $stmt = $pdo->query("SELECT sql FROM sqlite_master WHERE type='table' AND name='$table'");
+            $createSql = $stmt->fetchColumn();
+            $sql .= $createSql . ";\n\n";
+
+            // Get Data
+            $stmt = $pdo->query("SELECT * FROM `$table`");
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            if (count($rows) > 0) {
+                foreach ($rows as $row) {
+                    $cols = array_keys($row);
+                    $vals = array_values($row);
+                    
+                    $valStrs = [];
+                    foreach ($vals as $val) {
+                        if ($val === null) {
+                            $valStrs[] = "NULL";
+                        } else {
+                            $valStrs[] = "'" . str_replace("'", "''", $val) . "'";
+                        }
+                    }
+                    
+                    $sql .= "INSERT INTO `$table` (`" . implode("`, `", $cols) . "`) VALUES (" . implode(", ", $valStrs) . ");\n";
+                }
+                $sql .= "\n";
+            }
+            $this->obfPrint('OK');
+        }
+
+        $sql .= "COMMIT;\n";
+        
+        $this->saveFile($sql);
+
+        if ($this->gzipBackupFile) {
+            $this->gzipBackupFile();
+        } else {
+            $this->obfPrint('Backup file succesfully saved to ' . $this->backupDir.'/'.$this->backupFile, 1, 1);
+        }
     }
 
     /**
@@ -268,7 +344,7 @@ class Backup_Database {
 
             file_put_contents($this->backupDir.'/'.$this->backupFile, $sql, FILE_APPEND | LOCK_EX);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             return false;
         }

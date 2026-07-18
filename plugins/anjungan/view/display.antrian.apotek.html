@@ -3,11 +3,11 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="180">
+    <!-- <meta http-equiv="refresh" content="180"> -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>{$title} - {$settings.nama_instansi}</title>
+    <title>{?=isset_or($title)?} - {?=isset_or($settings.nama_instansi)?}</title>
     <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
     <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
@@ -55,11 +55,39 @@
         padding-top: 0;
         padding-bottom: 0;
       }
+      .scroll-container {
+        height: 700px;
+        overflow: hidden;
+        position: relative;
+      }
+      .scroll-container ul {
+        position: absolute;
+        width: 100%;
+        animation: scrollUp 20s linear infinite;
+      }
+      @keyframes scrollUp {
+        0% { top: 100%; }
+        100% { top: -100%; }
+      }
+      .running-text-wrapper {
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+      }
+      .running-text-track {
+        display: inline-block;
+        padding-left: 100%;
+        animation: ticker 25s linear infinite;
+      }
+      @keyframes ticker {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+      }
     </style>
 </head>
 <body>
 <div class="container-fluid">
-  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Apotek {$settings.nama_instansi}</h1>
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{?=isset_or($logo)?}" alt="" width="60px"> Antrian Apotek {?=isset_or($settings.nama_instansi)?}</h1>
   {if: isset($_GET['status']) && $_GET['status'] == '1'}
   <h1 class="display-3 text-center kanan">
     <div class="panel border-success">
@@ -76,38 +104,56 @@
     <tbody class="bg-primary">
       <tr>
         <td>
-          <marquee direction="up" scrollamount="3" height="700">
+          <div class="scroll-container">
             <div id="list_lab" style="font-size: 24px; font-weight:bold;">
-              <ul class="list-unstyled">
-                {if: $display}
-                {loop: $display}
-                <li style="padding:10px;">
-                  <span class="noantrian"><b>{$value.noantrian}</b></span> {$value.nm_pasien} - [{$value.no_rkm_medis}], Resep: {$value.jenis_resep} <span class="pull-right">Status: <b {if: $value.status_resep == 'Disiapkan'}style="color:red;"{/if} {if: $value.status_resep == 'Diserahkan'}style="color:green;"{/if}>{$value.status_resep}</b></span><br>
-                </li>
-                {/loop}
-                {else}
-                <center><b style="color:white;">Belum ada data antrian!</b></center>
-                {/if}
-              </ul>
+              <ul class="list-unstyled" id="list_apotek"></ul>
             </div>
-          </marquee>
+          </div>
         </td>
       </tr>
     </tbody>
   </table>
   <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
-  	<h3><marquee>{$running_text} :: {loop: $jadwal}<i class="fa fa-user-md"></i> {$value.nm_dokter} [{$value.nm_poli}] - {$value.jam_mulai} s/d  {$value.jam_selesai} WITA {/loop}</marquee></h3>
+  	<h3 class="running-text-wrapper"><span class="running-text-track">{?=isset_or($running_text)?} :: {loop: $jadwal}<i class="fa fa-user-md"></i> {?=isset_or($value.nm_dokter)?} [{?=isset_or($value.nm_poli)?}] - {?=isset_or($value.jam_mulai)?} s/d {?=isset_or($value.jam_selesai)?} WITA {/loop}</span></h3>
   </div>
 </div>
 <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
   <div class="canvas">
     <p class="pull-right">
       Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
-      {$powered}.
+      {?=isset_or($powered)?}.
     </p>
-    <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+    <p><i class="fa fa-fw fa-calendar"></i> <span>{?=isset_or($tanggal)?}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
   </div>
 </footer>
+<script>
+  $(document).ready(function(){
+    loadApotek();
+    setInterval(loadApotek, 5000);
+  }); 
+
+  function resetAnimation(){
+    const el = document.querySelector(".scroll-container ul");
+    if(!el) return;
+    el.style.animation = "none";
+    el.offsetHeight;
+    el.style.animation = null;
+  }
+
+  function loadApotek() {
+    $.ajax({
+      url: '{?=url()?}/anjungan/ajax?show=apotek-display',
+      success: function(html){
+        $("#list_apotek").html(html || '<li style="padding:10px;"><center><b style="color:white;">Belum ada data antrian!</b></center></li>');
+        resetAnimation();
+      },
+      error: function(xhr) {
+        console.log('Gagal memuat antrian apotek.');
+        console.log(xhr.status);
+      }
+    });
+  }
+</script>
 {if: isset($_GET['status']) && $_GET['status'] == '1'}
 <script>
 $(document).ready(function(){

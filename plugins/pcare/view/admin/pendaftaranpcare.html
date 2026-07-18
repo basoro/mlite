@@ -15,19 +15,19 @@
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Rekam Medis</label>
-        <input type="text" id="id_pasien" name="id_pasien_bridging" class="form-control" value="{$pasien.no_rkm_medis}">
+        <input type="text" id="id_pasien" name="id_pasien_bridging" class="form-control" value="{?=isset_or($pasien.no_rkm_medis)?}">
       </div>
     </div>
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Pendaftaran</label>
-        <input type="text" id="id_pendaftaran" name="id_pendaftaran_bridging" class="form-control" value="{$pendaftaran.no_rawat}">
+        <input type="text" id="id_pendaftaran" name="id_pendaftaran_bridging" class="form-control" value="{?=isset_or($pendaftaran.no_rawat)?}">
       </div>
     </div>
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nomor Kartu</label>
-        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$pasien.no_peserta}">
+        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{?=isset_or($pasien.no_peserta)?}">
       </div>
     </div>
     <div class="col col-md-3">
@@ -104,16 +104,16 @@
       <tbody>
         {loop: $bridging_pcare}
         <tr>
-          <td>{$value.tgl_daftar}</td>
-          <td>{$value.no_rawat}</td>
-          <td>{$value.nomor_urut}</td>
-          <td>{$value.no_rkm_medis}</td>
-          <td>{$value.pasien.nm_pasien}</td>
-          <td>{$value.nomor_jaminan}</td>
-          <td>{$value.nama_poli}</td>
-          <td>{$value.subyektif}</td>
+          <td>{?=isset_or($value.tgl_daftar)?}</td>
+          <td>{?=isset_or($value.no_rawat)?}</td>
+          <td>{?=isset_or($value.nomor_urut)?}</td>
+          <td>{?=isset_or($value.no_rkm_medis)?}</td>
+          <td>{?=isset_or($value.pasien.nm_pasien)?}</td>
+          <td>{?=isset_or($value.nomor_jaminan)?}</td>
+          <td>{?=isset_or($value.nama_poli)?}</td>
+          <td>{?=isset_or($value.subyektif)?}</td>
           <td>{?=($value.kunjungan_sakit === 'true') ? 'Kunjungan Sakit' : 'Kunjungan Sehat'?}</td>
-          <td>{$value.status_kirim}</td>
+          <td>{?=isset_or($value.status_kirim)?}</td>
         </tr>
         {/loop}
       </tbody>

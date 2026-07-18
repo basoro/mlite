@@ -8,7 +8,7 @@
         <fieldset>
             <div class="form-group">
                 <label>No Peserta</label>
-                <input type="text" name="poli_nama" id="poli_nama" class="form-control" value="{$no_peserta}" readonly>
+                <input type="text" name="poli_nama" id="poli_nama" class="form-control" value="{?=isset_or($no_peserta)?}" readonly>
             </div>
             <div id="myDiv">Pilih Rujukan</div>
             <!-- <div class="form-group">
@@ -22,8 +22,8 @@
 </div>
 <script>
     $(document).ready(function(){
-        if ("{$jenispasien}" == "BPJ") {
-            $.get("{$json}", function(data){
+        if ("{?=isset_or($jenispasien)?}" == "BPJ") {
+            $.get("{?=isset_or($json)?}", function(data){
                 var data = JSON.parse(data);
                 var jsonPretty = JSON.stringify(data, null, '\t');
                 if(data.metaData.message=='OK') {
@@ -51,7 +51,7 @@
             var selectList = document.createElement("input");
             selectList.setAttribute("id", "mySelect");
             selectList.classList.add('form-control')
-            selectList.value = "{$json}";
+            selectList.value = "{?=isset_or($json)?}";
             selectList.readOnly = true;
             myDiv.appendChild(selectList);
         }

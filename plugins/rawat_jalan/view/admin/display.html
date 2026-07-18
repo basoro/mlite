@@ -1,6 +1,58 @@
+<style>
+/* Fix thead tbody alignment for rujukan internal table */
+#rujukan-internal .dataTables {
+  table-layout: fixed !important;
+}
+
+#rujukan-internal .dataTables th,
+#rujukan-internal .dataTables td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Ensure DataTables doesn't override column widths */
+#rujukan-internal .dataTables_wrapper .dataTables_scroll .dataTables_scrollHead table,
+#rujukan-internal .dataTables_wrapper .dataTables_scroll .dataTables_scrollBody table {
+  table-layout: fixed !important;
+}
+
+/* Fix column alignment */
+#rujukan-internal .dataTables tbody td:nth-child(1) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(2) { width: 15% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(3) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(4) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(5) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(6) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(7) { width: 12% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(8) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(9) { width: 10% !important; }
+#rujukan-internal .dataTables tbody td:nth-child(10) { width: 7% !important; }
+</style>
+
 <div id="display">
-  <div class="table-responsive no-margin">
-    <table class="table table-striped no-padding dataTables" width="100%">
+  <!-- Tab Navigation -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+      <a href="#rawat-jalan" aria-controls="rawat-jalan" role="tab" data-toggle="tab">
+        <i class="fa fa-hospital-o"></i> Rawat Jalan
+        <span class="badge" id="count-rawat-jalan">0</span>
+      </a>
+    </li>
+    <li role="presentation">
+      <a href="#rujukan-internal" aria-controls="rujukan-internal" role="tab" data-toggle="tab">
+        <i class="fa fa-share"></i> Rujukan Internal
+        <span class="badge" id="count-rujukan-internal">0</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content" style="margin-top: 15px;">
+    <!-- Tab Rawat Jalan -->
+    <div role="tabpanel" class="tab-pane active" id="rawat-jalan">
+      <div class="table-responsive no-margin">
+        <table class="table table-striped no-padding dataTables" width="100%">
       <thead>
         <tr>
           <th style="white-space: nowrap;">No. RM</th>
@@ -30,42 +82,38 @@
                     <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynokartu', $value.no_peserta, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">Cek Nomor Kartu</a></li>
                     <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynik', $value.no_ktp, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">Cek Nomor KTP</a></li>
                     <li><a href="{?=url([ADMIN, 'jkn_mobile', 'onsite', $value.no_peserta, $value.kd_pj, $value.tgl_registrasi])?}" data-toggle="modal" data-target="#onsite">Antrian Onsite</a></li>
+                    {if: $cek_pcare}
+                      <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynokartu', 'noka', $value.no_peserta])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor Kartu</a></li>
+                      <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynik', 'nik', $value.no_ktp])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor KTP</a></li>
+                    {/if}
                   </ul>
                 </li>
-              {/if}
-              {if: $cek_pcare}
-                <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynokartu', 'noka', $value.no_peserta])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor Kartu</a></li>
-                <li><a href="{?=url([ADMIN, 'pasien', 'pcare_bynik', 'nik', $value.no_ktp])?}" data-toggle="modal" data-target="#asuransiModal">[PCare] Cek Nomor KTP</a></li>
               {/if}
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAPIE & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Tindakan</a></li>
-              <li class="dropdown-submenu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Penilaian Keperawatan</a>
-                <ul class="dropdown-menu">
-                  <li><a href="{?=url([ADMIN,'penilaian_keperawatan_ralan','manage'])?}&no_rawat={$value.no_rawat}">Keperawatan Umum</a></li>
-                  <li><a href="{?=url([ADMIN,'penilaian_keperawatan_gigi','manage'])?}&no_rawat={$value.no_rawat}">Keperawatan Gigi</a></li>
-                </ul>
-              </li>
-              <li><a href="{?=url([ADMIN,'peta_mukosa_rongga_mulut','manage'])?}&no_rawat={$value.no_rawat}">Peta Mukosa Oral</a></li>
-              <li><a href="{?=url([ADMIN,'penilaian_ulang_nyeri','manage'])?}&no_rawat={$value.no_rawat}">Penilaian Ulang Nyeri</a></li>
+              {? \Systems\Lib\Event::call('rsgmgha.dropdown_menu', [$value]) ?}
               <li class="dropdown-submenu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
                 <ul class="dropdown-menu">
-                  <li><a href="#cover_rm" data-no_rkm_medis="{$value.no_rkm_medis}">Cover Rekam Medis</a></li>
-                  <li><a href="#identitas_pasien" data-no_rkm_medis="{$value.no_rkm_medis}">Identitas Pasien</a></li>
                   <li><a href="{?=url([ADMIN,'rawat_jalan','persetujuanumum',$value.no_rkm_medis])?}" target="_blank">Persetujuan Umum</a></li>
                   <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
-                  <li><a href="{?=url([ADMIN,'rawat_jalan','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
-                  <li><a href="{?=url([ADMIN,'rawat_jalan','suratsehat',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sehat</a></li>
-                  <li><a href="{?=url([ADMIN,'rawat_jalan','suratsakit',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sakit</a></li>
+                  {? \Systems\Lib\Event::call('rawat_jalan.surat_menu', [$value]) ?}
+                </ul>
+              </li>
+              <li class="dropdown-submenu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Set Status</a>
+                <ul class="dropdown-menu">
+                  <li><a href="#rujuk_internal" data-no_rawat="{$value.no_rawat}">Rujuk Internal</a></li>
+                  <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
+                  <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
+                  <li><a href="#obat_kronis" data-no_rawat="{$value.no_rawat}">Obat Kronis</a></li>
+                  <li><a href="#kps" data-no_rawat="{$value.no_rawat}" data-kd_dokter="{$value.kd_dokter}">Set KPS</a></li>
                 </ul>
               </li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
-              <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
-              <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
-              <li><a href="#obat_kronis" data-no_rawat="{$value.no_rawat}">Obat Kronis</a></li>
+              <li><a href="#data_tb" class="data-tb-link" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Data TB</a></li>
               <li><a href="#kirimwaModal" data-toggle="modal" data-no_tlp="{$value.no_tlp}" data-nm_pasien="Yang terhormat {$value.nm_pasien} dengan nomor rekam medik {$value.no_rkm_medis}.&#013;&#010;&#013;&#010;-------------------&#013;&#010; Pesan WhatsApp ini dikirim otomatis oleh {$nama_instansi} &#013;&#010;Terima Kasih">Kirim WhatsApp</a></li>
               {/if}
             </ul>
@@ -106,7 +154,7 @@
                 disabled
                 {/if}
               ><span class="fa fa-send"></span> BPJS</button>
-              {if: $value.no_sep !=''}
+              {if: $value.no_sep != ''}
               <a href="{?=url([ADMIN, 'rawat_jalan', 'sepdetail', $value.no_sep])?}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#sepModal"><span class="fa fa-eye"></span></a>
               {/if}
               </div>
@@ -137,7 +185,54 @@
         </tr>
         {/loop}
       </tbody>
-    </table>
+        </table>
+      </div>
+    </div>
+    <!-- Tab Rujukan Internal -->
+    <div role="tabpanel" class="tab-pane" id="rujukan-internal">
+      <div class="table-responsive no-margin">
+        <table class="table table-striped no-padding dataTables" width="100%" style="table-layout: fixed;">
+          <thead>
+            <tr>
+              <th style="white-space: nowrap;">No. RM</th>
+              <th style="white-space: nowrap;">Nama Pasien</th>
+              <th style="white-space: nowrap;">ID Kunjungan</th>
+              <th style="white-space: nowrap;">Poli Asal</th>
+              <th style="white-space: nowrap;">Poli Tujuan</th>
+              <th style="white-space: nowrap;">Dokter Perujuk</th>
+              <th style="white-space: nowrap;">Dokter Tujuan</th>
+              <th style="white-space: nowrap;">Tgl. Rujukan</th>
+              <th style="white-space: nowrap;">Status</th>
+              <th style="white-space: nowrap;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loop: $rawat_jalan.list_rujukan_internal} 
+            <tr>
+              <td style="white-space: nowrap;">{if: isset($value.no_rkm_medis)}{$value.no_rkm_medis}{else}-{/if}</td>
+              <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', isset($value.no_rkm_medis) ? $value.no_rkm_medis : '-'])?}" data-toggle="modal" data-target="#riwayatModal">{if: isset($value.nm_pasien)}{$value.nm_pasien}{else}-{/if}</a></td>
+              <td style="white-space: nowrap;">{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.poli_asal)}{$value.poli_asal}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.poli_tujuan)}{$value.poli_tujuan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.dokter_perujuk)}{$value.dokter_perujuk}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.dokter_tujuan)}{$value.dokter_tujuan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">{if: isset($value.tgl_rujukan)}{$value.tgl_rujukan}{else}-{/if}</td>
+              <td style="white-space: nowrap;">
+                {if: isset($value.keterangan_jawab) && $value.keterangan_jawab != ''}
+                  <span class="label label-success">Sudah Dijawab</span>
+                {else}
+                  <span class="label label-warning">Belum Dijawab</span>
+                {/if}
+              </td>
+              <td style="white-space: nowrap; width: 17%;">
+                <a href="#jawab_rujukan_internal" class="btn btn-xs btn-primary" data-no_rawat="{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}" data-kd_dokter="{if: isset($value.kd_dokter)}{$value.kd_dokter}{else}-{/if}" data-nm_dokter="{if: isset($value.kd_dokter_tujuan)}{$value.dokter_tujuan}{else}-{/if}" data-kd_dokter_tujuan="{if: isset($value.kd_dokter_tujuan)}{$value.kd_dokter_tujuan}{else}-{/if}" data-dokter_tujuan="{if: isset($value.dokter_tujuan)}{$value.dokter_tujuan}{else}-{/if}" data-kd_poli_tujuan="{if: isset($value.kd_poli_tujuan)}{$value.kd_poli_tujuan}{else}-{/if}" data-poli_tujuan="{if: isset($value.poli_tujuan)}{$value.poli_tujuan}{else}-{/if}" data-keterangan="{if: isset($value.keterangan)}{$value.keterangan}{else}-{/if}" data-keterangan_jawab="{if: isset($value.keterangan_jawab)}{$value.keterangan_jawab}{else}-{/if}">Jawab</a><a href="#hapus_rujukan_internal" class="btn btn-xs btn-danger" data-no_rawat="{if: isset($value.no_rawat)}{$value.no_rawat}{else}-{/if}">Hapus</a>
+              </td>
+            </tr>
+            {/loop}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 <div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
@@ -397,8 +492,8 @@
         + '<div class="form-group">'
         + '<label for="status_keluar">Pilih Status Lanjut</label>'
         + '<select name="status_lanjut" id="status_lanjut" class="form-control" data-use-dimmer="false">'
-        + '<option value="ralan">Rawat Jalan</option>'
-        + '<option value="ranap">Rawat Inap</option>'
+        + '<option value="Ralan">Rawat Jalan</option>'
+        + '<option value="Ranap">Rawat Inap</option>'
         + '</select>'
         + '</div>'
         + '';
@@ -433,12 +528,20 @@
               no_rawat: no_rawat,
               status_lanjut: status_lanjut
             } ,function(data) {
-              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-              $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
-              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-              "Status lanjut pasien telah disimpan!"+
-              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-              "</div>").show();
+              // Tampilkan notifikasi sukses
+              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+                "Status lanjut pasien telah disimpan!" +
+                "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+                "</div>").show();
+              
+              // Kondisi redirect berdasarkan status_lanjut
+              if (status_lanjut == 'Ranap') {
+                // redirect ke plugins/rawat_inap setelah menyimpan status lanjut
+                window.location.href = baseURL + '/rawat_inap/manage?t=' + mlite.token + '&no_rawat=' + no_rawat;
+              } else {
+                // reload display Rawat Jalan untuk status lainnya
+                $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+              }
             });
           }
         }
@@ -448,6 +551,7 @@
     event.stopPropagation();
     return false;
   });
+
   $('a[href="#obat_kronis"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -471,6 +575,31 @@
       }
     });
   });
+  $('a[href="#kps"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/rawat_jalan/kps?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+    var kd_dokter= $(this).attr("data-kd_dokter");
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah pasien dimasukkan sebagai pasien dengan status Keluarga Pra Sejahtera?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_rawat: no_rawat, 
+          kd_dokter: kd_dokter
+        } ,function(data) {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Status periksa pasien telah disimpan!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });  
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
   $('.dataTables').DataTable({
     "order": [[ 3, "desc" ]],
@@ -486,11 +615,19 @@
       "searchPlaceholder": "Search..."
     },
     "lengthChange": false,
-    "scrollX": true,
+    "scrollX": false,
+    "autoWidth": false,
+    "columnDefs": [
+      { "width": "12%", "targets": [0, 2] },
+      { "width": "15%", "targets": 1 },
+      { "width": "10%", "targets": [3, 4, 7, 8] },
+      { "width": "12%", "targets": [5, 6] },
+      { "width": "7%", "targets": 9 }
+    ],
     dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
   });
   var t = $(".dataTables").DataTable().rows().count();
-  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  // $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
   //event.stopPropagation();
 </script>
 <script type="text/javascript">
@@ -519,9 +656,8 @@
     var cari = $('input:text[name=cari]').val();
     var tgl_awal = $('input:text[name=periode_rawat_jalan]').val();
     var tgl_akhir = $('input:text[name=periode_rawat_jalan_akhir]').val();
-
+    
     $.post(url, {cari: cari, tgl_awal: tgl_awal, tgl_akhir: tgl_akhir} ,function(data) {
-      //window.open(baseURL + '/rawat_jalan/cetakpdf?t=' + mlite.token);
       $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/rawat_jalan/cetakpdf?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
     });
 
@@ -558,28 +694,6 @@
     });
   });
 
-  $('a[href="#cover_rm"]').click(function(event){
-    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var loadURL =  baseURL + '/jasper/coverrm/' + no_rkm_medis + '?t=' + mlite.token;
-    $("#modal_cetak_cover_rm").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
-
-    return false;
-
-  });
-
-  $('a[href="#identitas_pasien"]').click(function(event){
-    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var loadURL =  baseURL + '/jasper/identitaspasien/' + no_rkm_medis + '?t=' + mlite.token;
-    $("#modal_cetak_identitas_pasien").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + loadURL + '" frameborder="no" width="100%" height="100%"></iframe></div>');
-
-    return false;
-
-  });
-  
 </script>
 <script type="text/javascript">
   $("#display").on("click",".bridgingpcare", function(event){
@@ -619,19 +733,45 @@
     var loadURL =  baseURL + '/jkn_mobile_fktp/antroladdantrian/' + no_rkm_medis + '?t=' + mlite.token;
     // alert(loadURL);
     fetch(loadURL)
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Network response was not ok');
-			}
-			return response.json();
-		})
-		.then(data => {
-			alert(data.metaData.message);
-		})
-		.catch(error => {
-			alert('There was a problem with the fetch operation:');
-		});
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+
+        if (data.metaData.code === "200") {
+            alert("✅ Antrian berhasil ditambahkan");
+        } else if (
+            data.metaData.code === "201" &&
+            data.metaData.message.includes("Anda belum melakukan skrining kesehatan")
+        ) {
+            alert("⚠️ " + data.metaData.message);
+
+            // ukuran popup
+            const width = 1024;
+            const height = 768;
+
+            // posisi tengah layar
+            const left = (screen.width / 2) - (width / 2);
+            const top = (screen.height / 2) - (height / 2);
+
+            window.open(
+                "https://webskrining.bpjs-kesehatan.go.id/skrining",
+                "SkriningBPJS",
+                `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+            );
+        } else {
+            alert("⚠️ Informasil: " + data.metaData.message);
+        }
+    })
+    .catch(error => {
+        alert("There was a problem with the fetch operation: " + error.message);
+    });
 	}  
+
 	function panggilAntrian(no_rkm_medis){
     var baseURL = mlite.url + '/' + mlite.admin;
     var loadURL =  baseURL + '/jkn_mobile_fktp/antrolpanggilantrian/' + no_rkm_medis + '?t=' + mlite.token;
@@ -718,4 +858,221 @@
   	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
   }
+</script>
+
+<!-- Modal Data TB -->
+<div class="modal fade" id="dataTbModal" tabindex="-1" role="dialog" aria-labelledby="dataTbModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <!-- Content will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  // Debug: Check if Data TB links exist
+  $(document).ready(function() {
+    console.log('Document ready, checking Data TB links...');
+    console.log('Data TB links found:', $(".data-tb-link").length);
+    console.log('Display element found:', $("#display").length);
+  });
+  
+  // Use document-level event delegation for better reliability
+  $(document).on("click", ".data-tb-link", function(event){
+    console.log('Data TB link clicked!');
+    var baseURL = mlite.url + '/' + mlite.admin;
+    console.log('Base URL:', baseURL);
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    
+    console.log('Data attributes:', {no_rawat: no_rawat, no_rkm_medis: no_rkm_medis, nm_pasien: nm_pasien});
+    
+    var modal = $('#dataTbModal');
+    var modalContent = $('#dataTbModal .modal-content');
+    
+    console.log('Modal element found:', modal.length > 0);
+    
+    // Show loading
+    modalContent.html('<div class="modal-body text-center"><i class="fa fa-spinner fa-spin fa-2x"></i><br>Loading...</div>');
+    modal.modal('show');
+    
+    var ajaxUrl = baseURL + '/rawat_jalan/datatb?t=' + mlite.token;
+    console.log('AJAX URL:', ajaxUrl);
+    
+    // Load form
+    $.ajax({
+      url: ajaxUrl,
+      type: 'POST',
+      data: {
+        no_rawat: no_rawat,
+        no_rkm_medis: no_rkm_medis,
+        nm_pasien: nm_pasien
+      },
+      beforeSend: function() {
+        console.log('AJAX request starting...');
+      },
+      success: function(response) {
+        console.log('AJAX success, response:', response);
+        console.log('Response type:', typeof response);
+        console.log('Response length:', response ? response.length : 'undefined');
+        
+        if(response && response.length > 0) {
+          modalContent.html(response);
+          
+          // Wait for DOM to be ready, then bind events
+          setTimeout(function() {
+            var form = modalContent.find('form');
+            console.log('Form found:', form.length);
+            console.log('Form HTML preview:', form.length ? form[0].outerHTML.substring(0, 200) : 'No form found');
+            console.log('Submit buttons found:', modalContent.find('button[type="submit"]').length);
+            
+            if(form.length > 0) {
+              form.attr('id', 'data_tb_form');
+              console.log('Form ID set to:', form.attr('id'));
+              
+              // Bind form submission event
+              form.off('submit').on('submit', function(e) {
+                e.preventDefault();
+                console.log('Form submission started via form submit event');
+                
+                var formData = $(this).serialize();
+                console.log('Form data:', formData);
+                
+                // Show loading state
+                var submitBtn = $(this).find('button[type="submit"]');
+                var originalText = submitBtn.text();
+                submitBtn.prop('disabled', true).text('Menyimpan...');
+                
+                var saveUrl = baseURL + '/rawat_jalan/datatbsave?t=' + mlite.token;
+                console.log('Save URL:', saveUrl);
+                
+                $.ajax({
+                  url: saveUrl,
+                  type: 'POST',
+                  data: formData,
+                  beforeSend: function() {
+                    console.log('Save AJAX request starting...');
+                  },
+                  success: function(response) {
+                    console.log('Save response:', response);
+                    console.log('Save response type:', typeof response);
+                    console.log('Save response length:', response ? response.length : 'undefined');
+                    
+                    try {
+                      var result = typeof response === 'string' ? JSON.parse(response) : response;
+                      console.log('Parsed result:', result);
+                      
+                      if(result.status == 'success') {
+                        alert('Data TB berhasil disimpan');
+                        $('#dataTbModal').modal('hide');
+                        location.reload();
+                      } else {
+                        alert('Error: ' + result.message);
+                      }
+                    } catch(e) {
+                      console.error('JSON parse error:', e);
+                      console.error('Raw response:', response);
+                      alert('Response tidak valid: ' + response);
+                    }
+                  },
+                  error: function(xhr, status, error) {
+                    console.error('Save error:', {xhr: xhr, status: status, error: error});
+                    console.error('Response text:', xhr.responseText);
+                    alert('Terjadi kesalahan saat menyimpan data: ' + error);
+                  },
+                  complete: function() {
+                    submitBtn.prop('disabled', false).text(originalText);
+                    console.log('Save AJAX request completed');
+                  }
+                });
+              });
+              
+              // Also bind click event to submit button as backup
+              form.find('button[type="submit"]').off('click').on('click', function(e) {
+                e.preventDefault();
+                console.log('Submit button clicked, triggering form submit');
+                form.trigger('submit');
+              });
+              
+              // Alternative: Use event delegation on modal content
+              modalContent.off('submit', 'form').on('submit', 'form', function(e) {
+                console.log('Form submitted via event delegation');
+                // This will be handled by the form submit event above
+              });
+              
+              modalContent.off('click', 'button[type="submit"]').on('click', 'button[type="submit"]', function(e) {
+                console.log('Submit button clicked via event delegation');
+                // This will be handled by the button click event above
+              });
+              
+            } else {
+              console.error('No form found in loaded content');
+            }
+          }, 100);
+        } else {
+          console.error('Empty or undefined response received');
+          modalContent.html('<div class="modal-body"><div class="alert alert-danger">Server mengembalikan response kosong. Silakan periksa log server untuk detail error.</div></div>');
+        }
+      },
+      error: function(xhr, status, error) {
+        console.log('AJAX error:', {xhr: xhr, status: status, error: error});
+        console.error('Response text:', xhr.responseText);
+        modalContent.html('<div class="modal-body"><div class="alert alert-danger">Error memuat form Data TB:<br>Status: ' + status + '<br>Error: ' + error + '<br>Response: ' + xhr.responseText + '</div></div>');
+      }
+    });
+    
+    return false;
+  });
+</script>
+
+<script>
+$(document).ready(function() {
+  // Function to update tab counters
+  function updateTabCounters() {
+    // Get total entries from DataTables pagination for rawat jalan
+    var rawatJalanCount = 0;
+    var rujukanInternalCount = 0;
+    
+    // Check if rawat jalan table has DataTables initialized
+    if ($.fn.DataTable.isDataTable('#rawat-jalan .dataTables')) {
+      var rawatJalanTable = $('#rawat-jalan .dataTables').DataTable();
+      rawatJalanCount = rawatJalanTable.page.info().recordsTotal;
+    } else {
+      // Fallback to counting visible rows if DataTables not initialized
+      rawatJalanCount = $('#rawat-jalan tbody tr').length;
+    }
+    
+    // Check if rujukan internal table has DataTables initialized
+    if ($.fn.DataTable.isDataTable('#rujukan-internal .dataTables')) {
+      var rujukanInternalTable = $('#rujukan-internal .dataTables').DataTable();
+      rujukanInternalCount = rujukanInternalTable.page.info().recordsTotal;
+    } else {
+      // Fallback to counting visible rows if DataTables not initialized
+      rujukanInternalCount = $('#rujukan-internal tbody tr').length;
+    }
+    
+    // Update badge counters
+    $('#count-rawat-jalan').text(rawatJalanCount);
+    $('#count-rujukan-internal').text(rujukanInternalCount);
+  }
+  
+  // Update counters on page load with delay to ensure DataTables is initialized
+  setTimeout(function() {
+    updateTabCounters();
+  }, 500);
+  
+  // Update counters when tab is shown
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    setTimeout(function() {
+      updateTabCounters();
+    }, 100);
+  });
+  
+  // Update counters when DataTables is redrawn
+  $(document).on('draw.dt', '.dataTables', function() {
+    updateTabCounters();
+  });
+});
 </script>

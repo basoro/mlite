@@ -614,6 +614,9 @@ footer a, footer a:hover {
 .selectator_options .selectator_option.active .selectator_option_subtitle {
     color: rgba(255, 255, 255, 0.6);
 }
+.selectator_options .selectator_option:hover .selectator_option_subtitle {
+    color: rgba(182, 0, 0, 0.6);
+}
 @keyframes selectator_spinner {
     0% {
         transform: rotate(0deg);
@@ -1050,4 +1053,51 @@ select[multiple].form-control {
       width: 90%;
      max-width:1200px;
     }
+  }
+
+  .badge {
+    padding: 1px 9px 2px;
+    font-size: 12.025px;
+    font-weight: bold;
+    white-space: nowrap;
+    color: #ffffff;
+    background-color: #70b9c5;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
+  }
+  .badge:hover {
+    color: #ffffff;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .badge-error {
+    background-color: #b94a48;
+  }
+  .badge-error:hover {
+    background-color: #953b39;
+  }
+  .badge-warning {
+    background-color: #f89406;
+  }
+  .badge-warning:hover {
+    background-color: #c67605;
+  }
+  .badge-success {
+    background-color: ##5cc45e;
+  }
+  .badge-success:hover {
+    background-color: #356635;
+  }
+  .badge-info {
+    background-color: #3a87ad;
+  }
+  .badge-info:hover {
+    background-color: #2d6987;
+  }
+  .badge-inverse {
+    background-color: #333333;
+  }
+  .badge-inverse:hover {
+    background-color: #1a1a1a;
   }

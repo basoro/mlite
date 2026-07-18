@@ -19,7 +19,7 @@ $("#form").on("click", "#simpan", function(event){
       $("#display").show().load(baseURL + '/keuangan/akunrekeningdisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
-      $("#tutupform").attr("id", "bukaform");
+      $("#tutupform").attr("id", "buka_form");
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data akun rekening telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+

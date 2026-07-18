@@ -3,14 +3,14 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{$settings.title}</h3>
+                    <h3 class="panel-title">{?=isset_or($settings.title)?}</h3>
                 </div>
             	  <div class="panel-body">
                     <div class="form-group">
                         <label>Prosedur Non Bedah</label>
                         <select name="vedika[inacbgs_prosedur_non_bedah]" class="form-control" data-use-search="true">
                           {loop: $settings.kategori_perawatan}
-                            <option value="{$value.kd_kategori}" {if: $value.kd_kategori == $settings.vedika.inacbgs_prosedur_non_bedah}selected{/if}>{$value.nm_kategori}</option>
+                            <option value="{?=isset_or($value.kd_kategori)?}" {if: $value.kd_kategori == $settings.vedika.inacbgs_prosedur_non_bedah}selected{/if}>{?=isset_or($value.nm_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -18,7 +18,7 @@
                         <label>Prosedur Bedah</label>
                         <select name="vedika[inacbgs_prosedur_bedah]" class="form-control" data-use-search="true">
                           {loop: $settings.kategori_perawatan}
-                            <option value="{$value.kd_kategori}" {if: $value.kd_kategori == $settings.vedika.inacbgs_prosedur_bedah}selected{/if}>{$value.nm_kategori}</option>
+                            <option value="{?=isset_or($value.kd_kategori)?}" {if: $value.kd_kategori == $settings.vedika.inacbgs_prosedur_bedah}selected{/if}>{?=isset_or($value.nm_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -26,7 +26,7 @@
                         <label>Konsultasi</label>
                         <select name="vedika[inacbgs_konsultasi]" class="form-control" data-use-search="true">
                           {loop: $settings.kategori_perawatan}
-                            <option value="{$value.kd_kategori}" {if: $value.kd_kategori == $settings.vedika.inacbgs_konsultasi}selected{/if}>{$value.nm_kategori}</option>
+                            <option value="{?=isset_or($value.kd_kategori)?}" {if: $value.kd_kategori == $settings.vedika.inacbgs_konsultasi}selected{/if}>{?=isset_or($value.nm_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -34,7 +34,7 @@
                         <label>Tenaga Ahli</label>
                         <select name="vedika[inacbgs_tenaga_ahli]" class="form-control" data-use-search="true">
                           {loop: $settings.kategori_perawatan}
-                            <option value="{$value.kd_kategori}" {if: $value.kd_kategori == $settings.vedika.inacbgs_tenaga_ahli}selected{/if}>{$value.nm_kategori}</option>
+                            <option value="{?=isset_or($value.kd_kategori)?}" {if: $value.kd_kategori == $settings.vedika.inacbgs_tenaga_ahli}selected{/if}>{?=isset_or($value.nm_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -42,7 +42,7 @@
                         <label>Keperawatan</label>
                         <select name="vedika[inacbgs_keperawatan]" class="form-control" data-use-search="true">
                           {loop: $settings.kategori_perawatan}
-                            <option value="{$value.kd_kategori}" {if: $value.kd_kategori == $settings.vedika.inacbgs_keperawatan}selected{/if}>{$value.nm_kategori}</option>
+                            <option value="{?=isset_or($value.kd_kategori)?}" {if: $value.kd_kategori == $settings.vedika.inacbgs_keperawatan}selected{/if}>{?=isset_or($value.nm_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -50,7 +50,7 @@
                         <label>Penunjang</label>
                         <select name="vedika[inacbgs_penunjang]" class="form-control" data-use-search="true">
                           {loop: $settings.kategori_perawatan}
-                            <option value="{$value.kd_kategori}" {if: $value.kd_kategori == $settings.vedika.inacbgs_penunjang}selected{/if}>{$value.nm_kategori}</option>
+                            <option value="{?=isset_or($value.kd_kategori)?}" {if: $value.kd_kategori == $settings.vedika.inacbgs_penunjang}selected{/if}>{?=isset_or($value.nm_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -58,7 +58,7 @@
                         <label>Pelayanan Darah</label>
                         <select name="vedika[inacbgs_pelayanan_darah]" class="form-control" data-use-search="true">
                           {loop: $settings.kategori_perawatan}
-                            <option value="{$value.kd_kategori}" {if: $value.kd_kategori == $settings.vedika.inacbgs_pelayanan_darah}selected{/if}>{$value.nm_kategori}</option>
+                            <option value="{?=isset_or($value.kd_kategori)?}" {if: $value.kd_kategori == $settings.vedika.inacbgs_pelayanan_darah}selected{/if}>{?=isset_or($value.nm_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -66,7 +66,7 @@
                         <label>Rehabilitasi</label>
                         <select name="vedika[inacbgs_rehabilitasi]" class="form-control" data-use-search="true">
                           {loop: $settings.kategori_perawatan}
-                            <option value="{$value.kd_kategori}" {if: $value.kd_kategori == $settings.vedika.inacbgs_rehabilitasi}selected{/if}>{$value.nm_kategori}</option>
+                            <option value="{?=isset_or($value.kd_kategori)?}" {if: $value.kd_kategori == $settings.vedika.inacbgs_rehabilitasi}selected{/if}>{?=isset_or($value.nm_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -74,7 +74,7 @@
                         <label>Rawat Intensif</label>
                         <select name="vedika[inacbgs_rawat_intensif]" class="form-control" data-use-search="true">
                           {loop: $settings.kategori_perawatan}
-                            <option value="{$value.kd_kategori}" {if: $value.kd_kategori == $settings.vedika.inacbgs_rawat_intensif}selected{/if}>{$value.nm_kategori}</option>
+                            <option value="{?=isset_or($value.kd_kategori)?}" {if: $value.kd_kategori == $settings.vedika.inacbgs_rawat_intensif}selected{/if}>{?=isset_or($value.nm_kategori)?}</option>
                           {/loop}
                         </select>
                     </div>

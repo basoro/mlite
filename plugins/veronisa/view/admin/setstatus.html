@@ -5,24 +5,24 @@
 <div class="modal-body">
   <div class="row">
   	<form name="veronisa" action="" method="POST">
-      <input type="hidden" name="tgl_registrasi" class="form-control" required value="{$set_status.tglsep}" />
-      <input type="hidden" name="jnspelayanan" class="form-control" required value="{$set_status.jnspelayanan}" />
+      <input type="hidden" name="tgl_registrasi" class="form-control" required value="{?=isset_or($set_status.tglsep)?}" />
+      <input type="hidden" name="jnspelayanan" class="form-control" required value="{?=isset_or($set_status.jnspelayanan)?}" />
       <div class="col-md-6">
         <div class="form-group">
             <label>No. Rekam Medis</label>
-            <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor RM" required value="{$set_status.nomr}" />
+            <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor RM" required value="{?=isset_or($set_status.nomr)?}" />
         </div>
       </div>
       <div class="col-md-6">
         <div class="form-group">
             <label>Nomor Rawat</label>
-            <input type="text" name="no_rawat" class="form-control" placeholder="Nomro Rawat" required value="{$set_status.no_rawat}" />
+            <input type="text" name="no_rawat" class="form-control" placeholder="Nomro Rawat" required value="{?=isset_or($set_status.no_rawat)?}" />
         </div>
       </div>
       <div class="col-md-6">
         <div class="form-group">
             <label>Nomor SEP</label>
-            <input type="text" name="nosep" class="form-control" placeholder="Nomor SEP" required value="{$set_status.no_sep}" />
+            <input type="text" name="nosep" class="form-control" placeholder="Nomor SEP" required value="{?=isset_or($set_status.no_sep)?}" />
         </div>
       </div>
       <div class="col-md-6">
@@ -54,21 +54,21 @@
       <div class="comments-list">
         {loop: $veronisa}
         <div class="media">
-          <p class="pull-right"><small>{$value.tanggal}</small></p>
+          <p class="pull-right"><small>{?=isset_or($value.tanggal)?}</small></p>
           <a class="media-left" href="#">
             {if: $value.username == 'bpjs'}
               <img src="{?=url()?}/assets/img/avatar-bpjs.png" width="30px">
             {else}
-              <img src="{?=url()?}/{$logo}" width="30px">
+              <img src="{?=url()?}/{?=isset_or($logo)?}" width="30px">
             {/if}
           </a>
           <div class="media-body">
             {if: $value.username == 'bpjs'}
               <h5 class="media-heading user_name">Verifikator BPJS</h5>
             {else}
-              <h5 class="media-heading user_name">{$nama_instansi}</h5>
+              <h5 class="media-heading user_name">{?=isset_or($nama_instansi)?}</h5>
             {/if}
-            {$value.catatan}
+            {?=isset_or($value.catatan)?}
           </div>
         </div>
         {/loop}

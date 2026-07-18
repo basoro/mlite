@@ -18,16 +18,16 @@
   <tbody>
     {loop: $bridging_pcare}
     <tr>
-      <td>{$value.tgl_daftar}</td>
-      <td>{$value.no_rawat}</td>
-      <td>{$value.nomor_urut}</td>
-      <td>{$value.no_rkm_medis}</td>
-      <td>{$value.nm_pasien}</td>
-      <td>{$value.nomor_jaminan}</td>
-      <td>{$value.nama_poli}</td>
-      <td>{$value.subyektif}</td>
+      <td>{?=isset_or($value.tgl_daftar)?}</td>
+      <td>{?=isset_or($value.no_rawat)?}</td>
+      <td>{?=isset_or($value.nomor_urut)?}</td>
+      <td>{?=isset_or($value.no_rkm_medis)?}</td>
+      <td>{?=isset_or($value.nm_pasien)?}</td>
+      <td>{?=isset_or($value.nomor_jaminan)?}</td>
+      <td>{?=isset_or($value.nama_poli)?}</td>
+      <td>{?=isset_or($value.subyektif)?}</td>
       <td>{?=($value.kunjungan_sakit === 'true') ? 'Kunjungan Sakit' : 'Kunjungan Sehat'?}</td>
-      <td>{$value.status_kirim}</td>
+      <td>{?=isset_or($value.status_kirim)?}</td>
     </tr>
     {/loop}
   </tbody>

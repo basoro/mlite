@@ -3,12 +3,12 @@
 		<div class="col-md-8">
 		    <div class="panel panel-default">
                 <div class="panel-heading">
-		            <h3 class="panel-title">{$news.title}</h3>
+		            <h3 class="panel-title">{?=isset_or($news.title)?}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
                         <label>Judul</label>
-                        <input type="text" name="title" class="form-control" value="{$news.form.title}" required />
+                        <input type="text" name="title" class="form-control" value="{?=isset_or($news.form.title)?}" required />
                     </div>
 					<div class="progress-wrapper">
 						<div class="progress no-margin collapse">
@@ -19,10 +19,10 @@
                     <div class="form-group no-margin">
                         <div class="tab-content">
                             <div role="tabpanel" class="tab-pane active" id="full-text">
-                                <textarea name="content" rows="16" class="editor form-control" data-editor="{$news.editor}">{$news.form.content}</textarea>
+                                <textarea name="content" rows="16" class="editor form-control" data-editor="{?=isset_or($news.editor)?}">{?=isset_or($news.form.content)?}</textarea>
                             </div>
                             <div role="tabpanel" class="tab-pane" id="short-text">
-                                <textarea name="intro" rows="16" class="editor form-control" data-editor="{$news.editor}">{$news.form.intro}</textarea>
+                                <textarea name="intro" rows="16" class="editor form-control" data-editor="{?=isset_or($news.editor)?}">{?=isset_or($news.form.intro)?}</textarea>
                             </div>
                         </div>
                         <ul class="nav nav-tabs" role="tablist" id="textarea-tabs">
@@ -44,9 +44,9 @@
                         <label>Cover</label>
                         {if: !empty($news.form.cover_photo)}
                         <div style="position:relative;">
-                    		<img src="{?= url('uploads/website/news/'.$news.form.cover_photo) ?}?{$news.form.updated_at}" class="img-responsive" />
+                    		<img src="{?= url('uploads/website/news/'.$news.form.cover_photo) ?}?{?=isset_or($news.form.updated_at)?}" class="img-responsive" />
                     		<input type="file" name="cover_photo" class="form-control" />
-                    		<a href="{$news.coverDeleteURL}" class="btn btn-danger" style="position:absolute; right:5px; top:5px;">Hapus Foto</a>
+                    		<a href="{?=isset_or($news.coverDeleteURL)?}" class="btn btn-danger" style="position:absolute; right:5px; top:5px;">Hapus Foto</a>
                     	</div>
                         {else}
                         <input type="file" name="cover_photo" class="form-control"/>
@@ -55,7 +55,7 @@
 
                     <div class="form-group">
                         <label>Slug</label>
-                        <input type="text" name="slug" class="form-control" value="{$news.form.slug}"/>
+                        <input type="text" name="slug" class="form-control" value="{?=isset_or($news.form.slug)?}"/>
                     </div>
 
                     <div class="form-group">
@@ -71,7 +71,7 @@
                         <label>Tags</label>
                         <select name="tags[]" class="form-control" multiple>
                         {loop: $news.form.tags}
-                            <option value="{$value.name}" selected>{$value.name}</option>
+                            <option value="{?=isset_or($value.name)?}" selected>{?=isset_or($value.name)?}</option>
                         {/loop}
                         </select>
                     </div>
@@ -80,11 +80,11 @@
                         <label>Penulis</label>
                         <select name="user_id" class="form-control">
                         	{loop: $news.users}
-                        	<option value="{$value.id}"{if: $value.id == $news.author} selected{/if}>
+                        	<option value="{?=isset_or($value.id)?}"{if: $value.id == $news.author} selected{/if}>
                                 {if: !empty($value.fullname)}
-                                {$value.fullname} ({$value.username})
+                                {?=isset_or($value.fullname)?} ({?=isset_or($value.username)?})
                                 {else}
-                                {$value.username}
+                                {?=isset_or($value.username)?}
                                 {/if}
                             </option>
                         	{/loop}
@@ -93,7 +93,7 @@
 
                     <div class="form-group">
                         <label>Terbit</label>
-                        <input type="datetime-local" class="form-control" name="published_at" value="{$news.form.date}" />
+                        <input type="datetime-local" class="form-control" name="published_at" value="{?=isset_or($news.form.date)?}" />
                     </div>
 
                     <div class="form-group">
@@ -105,7 +105,7 @@
                     </div>
 
                     <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
-                    <a href="{$news.manageURL}" class="btn btn-default">Batal</a>
+                    <a href="{?=isset_or($news.manageURL)?}" class="btn btn-default">Batal</a>
                 </div>
             </div>
         </div>

@@ -3,22 +3,22 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{$settings.title}</h3>
+                    <h3 class="panel-title">{?=isset_or($settings.title)?}</h3>
                 </div>
             	  <div class="panel-body">
                     <div class="form-group">
                         <label>Periode Klaim</label>
-                        <input type="text" name="vedika[periode]" class="form-control tanggal" value="{$settings.vedika.periode}" />
+                        <input type="text" name="vedika[periode]" class="form-control tanggal" value="{?=isset_or($settings.vedika.periode)?}" />
                     </div>
                     <div class="form-group">
                         <label>Periode Verivikasi</label>
-                        <input type="text" name="vedika[verifikasi]" class="form-control tanggal" value="{$settings.vedika.verifikasi}" />
+                        <input type="text" name="vedika[verifikasi]" class="form-control tanggal" value="{?=isset_or($settings.vedika.verifikasi)?}" />
                     </div>
                     <div class="form-group">
                         <label>Cara Bayar</label>
                         <select name="vedika[carabayar][]" class="form-control" multiple>
                           {loop: $settings.penjab}
-                            <option value="{$value.kd_pj}" {$value.attr}>{$value.png_jawab}</option>
+                            <option value="{?=isset_or($value.kd_pj)?}" {?=isset_or($value.attr)?}>{?=isset_or($value.png_jawab)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -26,7 +26,7 @@
                         <label>Berkas SEP</label>
                         <select name="vedika[sep]" class="form-control">
                           {loop: $settings.master_berkas_digital}
-                            <option value="{$value.kode}" {if: $value.kode == $settings.vedika.sep}selected{/if}>{$value.nama}</option>
+                            <option value="{?=isset_or($value.kode)?}" {if: $value.kode == $settings.vedika.sep}selected{/if}>{?=isset_or($value.nama)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -34,7 +34,7 @@
                         <label>Berkas SKDP</label>
                         <select name="vedika[skdp]" class="form-control">
                           {loop: $settings.master_berkas_digital}
-                            <option value="{$value.kode}" {if: $value.kode == $settings.vedika.skdp}selected{/if}>{$value.nama}</option>
+                            <option value="{?=isset_or($value.kode)?}" {if: $value.kode == $settings.vedika.skdp}selected{/if}>{?=isset_or($value.nama)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -42,7 +42,7 @@
                         <label>Berkas Laporan Operasi</label>
                         <select name="vedika[operasi]" class="form-control">
                           {loop: $settings.master_berkas_digital}
-                            <option value="{$value.kode}" {if: $value.kode == $settings.vedika.operasi}selected{/if}>{$value.nama}</option>
+                            <option value="{?=isset_or($value.kode)?}" {if: $value.kode == $settings.vedika.operasi}selected{/if}>{?=isset_or($value.nama)?}</option>
                           {/loop}
                         </select>
                     </div>
@@ -50,7 +50,7 @@
                         <label>Berkas Individual E-Klaim</label>
                         <select name="vedika[individual]" class="form-control">
                           {loop: $settings.master_berkas_digital}
-                            <option value="{$value.kode}" {if: $value.kode == $settings.vedika.individual}selected{/if}>{$value.nama}</option>
+                            <option value="{?=isset_or($value.kode)?}" {if: $value.kode == $settings.vedika.individual}selected{/if}>{?=isset_or($value.nama)?}</option>
                           {/loop}
                         </select>
                     </div>
