@@ -362,9 +362,9 @@ abstract class Main
           }
 
           // Jika tidak ada di type, coba parse langsung dari SQL CREATE TABLE.
-          $sqlMaster = "SELECT sql FROM sqlite_master WHERE type='table' AND name='$table_name'";
+          $sqlMaster = "SELECT sql FROM sqlite_master WHERE type='table' AND name=?";
           $stmtMaster = $this->db()->pdo()->prepare($sqlMaster);
-          $stmtMaster->execute();
+          $stmtMaster->execute([$table_name]);
           $tableDef = $stmtMaster->fetchColumn();
 
           if (is_string($tableDef) && preg_match('/`?' . preg_quote($column_name, '/') . '`?\s+(?:enum|set)\s*\(([^)]+)\)/i', $tableDef, $enumMatch)) {
