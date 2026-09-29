@@ -45,7 +45,6 @@
                                 <option value="" {if: $satu_sehat.rme_emergency_fallback == ''}selected{/if}>Nonaktif (hanya pasien IGD yang bypass)</option>
                                 <option value="1" {if: $satu_sehat.rme_emergency_fallback == '1'}selected{/if}>Aktif (CHL normal gagal &rarr; pakai EMERGENCY)</option>
                             </select>
-                            <span class="help-block small">Bila CHL jalur normal gagal di server ChaRME, coba ulangi dengan bypass EMERGENCY agar RME tetap terbuka. Gunakan hanya bila fasyankes mengizinkan, karena melewati persetujuan pasien non-darurat.</span>
                         </div>
                         <div class="form-group">
                             <label>Latitude</label><span class="pull-right"><a href="#koordinat-modal" data-toggle="modal" class="small">[Generate Koordinat Latitude & Longitude]</a></span>
