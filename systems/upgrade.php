@@ -2732,12 +2732,17 @@ switch ($version) {
             } catch (\Exception $e) {}
         }
 
-        $return = '6.3.8';
+        $return = '6.3.9';
+        break;
+
+    case '6.3.8':
+        // Release v6.3.9: penyelarasan versi database dengan tag rilis.
+        $return = '6.3.9';
         break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.3.8';
+        $return = '6.3.9';
     }
 
 return $return;
