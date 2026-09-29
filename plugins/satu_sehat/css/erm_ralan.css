@@ -1,0 +1,82 @@
+/* ERM Rawat Jalan - SATUSEHAT */
+
+.erm-ralan .erm-title {
+  margin: 4px 0 12px;
+}
+
+.erm-ralan .er-ralan-toolbar {
+  margin-bottom: 8px;
+}
+
+.erm-ralan .er-margin-none {
+  margin: 0;
+}
+
+.erm-ralan .erm-sections-title {
+  margin-top: 18px;
+  margin-bottom: 10px;
+}
+
+.erm-ralan .erm-section {
+  margin-bottom: 8px;
+}
+
+.erm-ralan .erm-section-head {
+  cursor: pointer;
+}
+
+.erm-ralan .erm-section-head .erm-chevron {
+  margin-top: 3px;
+}
+
+.erm-ralan .erm-section .panel-body {
+  padding-top: 8px;
+}
+
+.erm-ralan .erm-bab-table th {
+  width: 22%;
+  font-weight: 600;
+  vertical-align: top;
+}
+
+.erm-ralan .erm-identitas th {
+  width: 18%;
+  font-weight: 600;
+  vertical-align: top;
+}
+
+.erm-ralan .erm-json {
+  max-height: 420px;
+  overflow: auto;
+  background: #f7f7f9;
+  border: 1px solid #e1e1e8;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.erm-ralan .erm-validation ul {
+  margin-bottom: 0;
+}
+
+.erm-ralan .erm-sync-message ul {
+  margin: 6px 0 0;
+}
+
+.erm-ralan .erm-log-table .erm-log-detail-row > td {
+  background: #fafafa;
+  border-top: 0;
+}
+
+.erm-ralan .erm-filter-form .form-group {
+  margin-right: 10px;
+  margin-bottom: 6px;
+}
+
+.erm-ralan .erm-list td,
+.erm-ralan .erm-log-table td {
+  vertical-align: middle;
+}
+
+.erm-ralan .erm-summary {
+  max-width: 420px;
+}

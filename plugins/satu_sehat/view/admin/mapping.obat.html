@@ -29,6 +29,39 @@
                             <option value="vaksin">Vaksin</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="satuan_den">Satuan Denominator (kode unit)</label>
+                        <input type="text" name="satuan_den" id="satuan_den" class="form-control" list="list_satuan_den" placeholder="mis. mL, g, atau 385057009" value="">
+                        <datalist id="list_satuan_den">
+                            <option value="mL">Mililiter (UCUM)</option>
+                            <option value="dL">Desiliter (UCUM)</option>
+                            <option value="L">Liter (UCUM)</option>
+                            <option value="g">Gram (UCUM)</option>
+                            <option value="mg">Miligram (UCUM)</option>
+                            <option value="ug">Mikrogram (UCUM)</option>
+                            <option value="kg">Kilogram (UCUM)</option>
+                            <option value="mmol">Milimol (UCUM)</option>
+                            <option value="385057009">Film-coated tablet (SNOMED)</option>
+                            <option value="421366001">Suspension (SNOMED)</option>
+                        </datalist>
+                        <p class="help-block">Kosongkan untuk memakai nilai KFA. Nilai lama seperti <code>SYRUP</code> ditolak validasi (rule 10050/10349) — perbaiki manual atau lewat tombol Normalisasi di bawah.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="nama_satuan_den">Nama Satuan Denominator</label>
+                        <input type="text" name="nama_satuan_den" id="nama_satuan_den" class="form-control" placeholder="mis. Mililiter" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="kode_route">Kode Rute (ATC)</label>
+                        <input type="text" name="kode_route" id="kode_route" class="form-control" list="list_kode_route" placeholder="mis. oral, inj.intramuscular" value="">
+                        <datalist id="list_kode_route">
+                            <option value="oral">Oral</option>
+                            <option value="inj.intramuscular">Injection Intramuscular</option>
+                        </datalist>
+                    </div>
+                    <div class="form-group">
+                        <label for="nama_route">Nama Rute</label>
+                        <input type="text" name="nama_route" id="nama_route" class="form-control" placeholder="mis. Oral" value="">
+                    </div>
                 </div>
                 <div class="col-md-12" style="padding-top: 20px;">
                     <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
@@ -38,6 +71,10 @@
             </div>
         </div>
     </div>
+</form>
+<form action="{?=url(ADMIN.'/satu_sehat/normalisasimappingobat')?}" method="POST" style="margin-bottom: 15px;">
+    <button type="submit" name="normalisasi" class="btn btn-warning" onclick="return confirm('Perbaiki isian satuan & rute SELURUH mapping obat?');">Normalisasi Satuan &amp; Rute</button>
+    <p class="help-block">Konversi massal: satuan cair (SYRUP/SIRUP/SUSPENSI/CAIR/...) &rarr; <code>mL</code>; tablet (TABLET/TAB/KAPLET) &rarr; <code>385057009</code> Film-coated tablet; rute PO/ORAL/MINUM &rarr; <code>oral</code>; IM/INTRAMUSKULAR &rarr; <code>inj.intramuscular</code>; ejaan UCUM dikanonkan (mis. <code>ml</code> &rarr; <code>mL</code>). Nilai yang tidak dikenal (mis. KAPSUL) dilaporkan untuk diisi manual.</p>
 </form>
 <div class="row">
 <div class="col-md-12">

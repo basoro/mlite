@@ -1,0 +1,115 @@
+{* Mapping resource SATUSEHAT untuk ERM Rawat Jalan *}
+<div class="erm-ralan erm-mapping">
+  <div class="row er-ralan-toolbar">
+    <div class="col-md-8">
+      <h4 class="erm-title"><i class="fa fa-plug"></i> Mapping Resource SATUSEHAT</h4>
+    </div>
+    <div class="col-md-4 text-right">
+      <div class="btn-group btn-group-sm">
+        <a href="{$url_ermralan}" class="btn btn-default"><i class="fa fa-list"></i> Kunjungan</a>
+        <a href="{$url_log}" class="btn btn-default"><i class="fa fa-history"></i> Log Sinkronisasi</a>
+      </div>
+    </div>
+  </div>
+
+  {if: $no_rawat}
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <strong>Mapping Kunjungan</strong> &middot; {$no_rawat|e}
+      <span class="pull-right"><span class="{$badge_class}">{$status_text|e}</span></span>
+    </div>
+    <div class="panel-body">
+      <table class="table table-condensed table-bordered erm-identitas">
+        <tbody>
+          {loop: $identitas as $row}
+          <tr>
+            {loop: $row as $col}
+            {if: ($key % 2) == 0}
+            <th class="active">{$col|e}</th>
+            {else}
+            <td>{$col|e}</td>
+            {/if}
+            {/loop}
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+
+      <form method="post" action="{$url_save}" class="form-horizontal erm-mapping-form">
+        <input type="hidden" name="no_rawat" value="{$no_rawat_enc}">
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Patient ID (IHS)</label>
+          <div class="col-sm-6">
+            <input type="text" name="patient_id" value="{$patient_id|e}" class="form-control input-sm" placeholder="ID IHS pasien">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Encounter ID</label>
+          <div class="col-sm-6">
+            <input type="text" name="encounter_id" value="{$encounter_id|e}" class="form-control input-sm" placeholder="ID Encounter SATUSEHAT">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Practitioner ID</label>
+          <div class="col-sm-6">
+            <input type="text" name="practitioner_id" value="{$practitioner_id|e}" class="form-control input-sm" placeholder="ID IHS praktisi">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Location ID</label>
+          <div class="col-sm-6">
+            <input type="text" name="location_id" value="{$location_id|e}" class="form-control input-sm" placeholder="ID Lokasi SATUSEHAT">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Organization ID</label>
+          <div class="col-sm-6">
+            <input type="text" name="organization_id" value="{$organization_id|e}" class="form-control input-sm" placeholder="ID Organisasi fasyankes">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-3 col-sm-9">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-save"></i> Simpan Mapping</button>
+            <a href="{$url_back}" class="btn btn-default btn-sm">Kembali</a>
+          </div>
+        </div>
+      </form>
+
+      <h5>ID Resource Hasil Sinkronisasi</h5>
+      {if: $has_resource_map}
+      <pre class="erm-json">{$resource_map_json}</pre>
+      {else}
+      <p class="text-muted">Belum ada ID resource hasil sinkronisasi untuk kunjungan ini.</p>
+      {/if}
+    </div>
+  </div>
+  {else}
+  <div class="panel panel-default">
+    <div class="panel-heading"><i class="fa fa-info-circle"></i> Pilih Kunjungan</div>
+    <div class="panel-body">
+      <p class="text-muted">Buka halaman mapping dari daftar kunjungan {$erm_jenis|e} untuk mengatur ID resource per kunjungan.</p>
+      <a href="{$url_ermralan}" class="btn btn-primary btn-sm"><i class="fa fa-list"></i> Ke Daftar Kunjungan</a>
+    </div>
+  </div>
+  {/if}
+
+  <div class="panel panel-default">
+    <div class="panel-heading"><i class="fa fa-database"></i> Kesiapan Mapping Master</div>
+    <div class="table-responsive">
+      <table class="table table-condensed table-striped table-bordered erm-summary">
+        <thead>
+          <tr><th>Master</th><th class="text-center">Terpetakan</th><th>Keterangan</th></tr>
+        </thead>
+        <tbody>
+          {loop: $counters as $row}
+          <tr>
+            <td>{$row.label|e}</td>
+            <td class="text-center"><span class="label label-default">{$row.jumlah|e}</span></td>
+            <td>{$row.keterangan|e}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

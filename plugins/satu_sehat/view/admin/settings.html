@@ -28,6 +28,29 @@
                             <input type="text" name="satu_sehat[fhirurl]" class="form-control" value="{?=isset_or($satu_sehat.fhirurl)?}" />
                         </div>
                         <div class="form-group">
+                            <label>RME / ChaRME Auth URL</label>
+                            <input type="text" name="satu_sehat[rme_authurl]" class="form-control" value="{?=isset_or($satu_sehat.rme_authurl)?}" placeholder="https://api-satusehat.kemkes.go.id/oauth2/v1" />
+                            <span class="help-block small">Host URL ini dipakai endpoint RME Nasional. Kosongkan untuk mengikuti host Auth URL. Produksi: <code>https://api-satusehat.kemkes.go.id/oauth2/v1</code></span>
+                        </div>
+                        <div class="form-group">
+                            <label>API CHLink (Consent Health Link)</label>
+                            <input type="text" name="satu_sehat[chlurl]" class="form-control" value="{?=isset_or($satu_sehat.chlurl)?}" placeholder="https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/chl" />
+                            <span class="help-block small">Endpoint pembuatan link persetujuan pasien. Produksi: <code>https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/chl</code></span>
+                        </div>
+                        <div class="form-group">
+                            <label>API SHLink (Smart Health Link)</label>
+                            <input type="text" name="satu_sehat[shlurl]" class="form-control" value="{?=isset_or($satu_sehat.shlurl)?}" placeholder="https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/shl" />
+                            <span class="help-block small">Endpoint pembuka RME Nasional. Produksi: <code>https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/shl</code></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Fallback EMERGENCY untuk CHL Normal</label>
+                            <select name="satu_sehat[rme_emergency_fallback]" class="form-control">
+                                <option value="" {if: $satu_sehat.rme_emergency_fallback == ''}selected{/if}>Nonaktif (hanya pasien IGD yang bypass)</option>
+                                <option value="1" {if: $satu_sehat.rme_emergency_fallback == '1'}selected{/if}>Aktif (CHL normal gagal &rarr; pakai EMERGENCY)</option>
+                            </select>
+                            <span class="help-block small">Bila CHL jalur normal gagal di server ChaRME, coba ulangi dengan bypass EMERGENCY agar RME tetap terbuka. Gunakan hanya bila fasyankes mengizinkan, karena melewati persetujuan pasien non-darurat.</span>
+                        </div>
+                        <div class="form-group">
                             <label>Latitude</label><span class="pull-right"><a href="#koordinat-modal" data-toggle="modal" class="small">[Generate Koordinat Latitude & Longitude]</a></span>
                             <input type="text" name="satu_sehat[latitude]" id="latitude" class="form-control" value="{?=isset_or($satu_sehat.latitude)?}" />
                         </div>

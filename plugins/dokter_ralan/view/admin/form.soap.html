@@ -1,4 +1,8 @@
 <div id="form_soap">
+  {* FAB kirim ERM ke SATUSEHAT (tampil saat form SOAP aktif) *}
+  <a href="#" id="satusehat-fab" class="satusehat-fab" title="Kirim ERM ke SATUSEHAT">
+    <img src="{?=url('assets/img/satusehat-button-dark-color.png')?}" width="200px" alt="SATUSEHAT">
+  </a>
   <div class="col-md-3">
     <div class="panel panel-default">
       <div class="panel-body">
@@ -629,5 +633,97 @@
       modalContent.load(loadURL);
     }).modal();
     return false;
+  });
+</script>
+<script type="text/javascript">
+  // FAB SATUSEHAT: buka RME Nasional pasien (SATUSEHAT RME).
+  // Halaman SATUSEHAT melarang iframe (X-Frame-Options: SAMEORIGIN), sehingga
+  // hasil URL dibuka di popup window tanpa bar (chromeless) agar terasa seperti
+  // modal. Window kosong dibuka saat klik (user gesture, lolos popup blocker),
+  // URL-nya diisi setelah respons AJAX diterima.
+  function satusehatWindow() {
+    var w = Math.min(screen.width * 0.85, 1600);
+    var h = Math.min(screen.height * 0.92, 1100);
+    var left = Math.max(0, Math.round((screen.width - w) / 2));
+    var top = Math.max(0, Math.round((screen.height - h) / 2));
+    var features = 'width=' + Math.round(w) + ',height=' + Math.round(h) +
+      ',left=' + left + ',top=' + top +
+      ',toolbar=no,menubar=no,location=no,status=no,directories=no' +
+      ',scrollbars=yes,resizable=yes';
+    return window.open('about:blank', 'satusehatRme', features);
+  }
+
+  $("#form_soap").on("click", "#satusehat-fab", function (event) {
+    event.preventDefault();
+    var $fab = $(this);
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $('input:text[name=no_rawat]').val();
+
+    if (!no_rawat) {
+      alert('Pilih pasien terlebih dahulu.');
+      return;
+    }
+
+    // Pre-open popup saat klik agar tidak dianggap popup oleh browser.
+    var rmeWindow = satusehatWindow();
+
+    var $toast = $('#satusehat-fab-toast');
+    if (!$toast.length) {
+      $toast = $('<div id="satusehat-fab-toast" class="alert" role="alert"></div>');
+      $('body').append($toast);
+    }
+    // Tombol close notifikasi + auto-hide saat sukses.
+    function satusehatToast(type, content) {
+      var closeBtn = '<button type="button" class="close" aria-label="Close" style="margin-left:10px;">&times;</button>';
+      $toast.removeClass('alert-success alert-danger alert-info alert-warning')
+        .addClass('alert-' + type).html(closeBtn + '<div style="padding-right:20px;">' + content + '</div>').fadeIn();
+    }
+    $toast.off('click', '.close').on('click', '.close', function () {
+      $toast.fadeOut();
+    });
+
+    satusehatToast('info', 'Membuka RME Nasional SATUSEHAT&hellip;');
+
+    $fab.addClass('satusehat-fab-loading');
+
+    $.post(baseURL + '/satu_sehat/satusehatrme?t=' + mlite.token, { no_rawat: no_rawat })
+      .done(function (result) {
+        result = result || { status: 'error', message: 'Response kosong.' };
+        var type = result.status === 'success' ? 'success' : (result.status === 'consent_required' ? 'warning' : 'danger');
+        var html = '<strong>' + $('<div></div>').text(result.message || '').html() + '</strong>';
+
+        // Prioritas jendela: URL RME bila sukses, jika belum ada consent tampilkan link consent.
+        var mainUrl = (result.status === 'success' && result.url) ? result.url : (result.consent_url || '');
+        if (mainUrl && rmeWindow && !rmeWindow.closed) {
+          rmeWindow.location.href = mainUrl;
+          rmeWindow.focus();
+        } else if (mainUrl) {
+          html += '<br><small><a href="' + mainUrl + '" target="_blank" rel="noopener">Buka di tab baru</a></small>';
+        }
+
+        if (result.status === 'success' && result.consent_url) {
+          html += '<br><small>Link persetujuan: <a href="' + result.consent_url + '" target="_blank" rel="noopener">buka inform consent</a></small>';
+        }
+        if (result.status === 'consent_required') {
+          html += '<br><small>Setelah persetujuan diberikan, klik tombol SATUSEHAT lagi untuk membuka RME.</small>';
+        }
+
+        satusehatToast(type, html);
+        if (result.status === 'success') {
+          // Notifikasi sukses menutup sendiri setelah beberapa detik.
+          setTimeout(function () { $toast.fadeOut(); }, 8000);
+        }
+      })
+      .fail(function (xhr) {
+        var response = xhr && xhr.responseJSON ? xhr.responseJSON : null;
+        var message = response && response.message ? response.message : 'Gagal menghubungi server (HTTP ' + xhr.status + ').';
+        satusehatToast('danger', message);
+        if (rmeWindow && !rmeWindow.closed) {
+          rmeWindow.close();
+        }
+      })
+      .always(function () {
+        $fab.removeClass('satusehat-fab-loading');
+      });
   });
 </script>

@@ -1,0 +1,229 @@
+{* Sub modul ERM Rawat Jalan - SATUSEHAT *}
+<div class="erm-ralan">
+  <div class="row er-ralan-toolbar">
+    <div class="col-md-8">
+      <h4 class="erm-title"><i class="fa fa-notes-medical"></i> {$erm_label|e} <small>SATUSEHAT FHIR R4</small></h4>
+    </div>
+    <div class="col-md-4 text-right">
+      <div class="btn-group btn-group-sm">
+        <a href="{$url_ermralan}" class="btn btn-default"><i class="fa fa-list"></i> Kunjungan</a>
+        <a href="{$url_log}" class="btn btn-default"><i class="fa fa-history"></i> Log Sinkronisasi</a>
+        <a href="{$url_mapping}" class="btn btn-default"><i class="fa fa-plug"></i> Mapping Resource</a>
+      </div>
+    </div>
+  </div>
+
+  {if: $detail}
+  {* ===================== DETAIL ERM KUNJUNGAN ===================== *}
+  <div class="panel panel-primary erm-detail">
+    <div class="panel-heading">
+      <strong>{$erm_label|e}</strong> &middot; {$no_rawat|e}
+      <span class="pull-right">{$badge_html}</span>
+    </div>
+    <div class="panel-body">
+      {if: $rme_consent_status}
+      {* Status consent RME Nasional (dari log CHL/SHL/consent terakhir) *}
+      <div class="alert {if: $rme_consent_status == 'shl'}alert-success{else}alert-warning{/if} erm-consent-status" style="margin-top:0;">
+        <i class="fa fa-id-card-o"></i>
+        <strong>RME Nasional:</strong>
+        <span class="{$rme_consent_badge}">{if: $rme_consent_status == 'shl'}AKSES RME AKTIF{elseif: $rme_consent_status == 'consent'}MENUNGGU PERSETUJUAN PASIEN{else}LINK CONSENT DIBUAT{/if}</span>
+        {if: $rme_consent_message}
+        <span class="text-muted">&mdash; {$rme_consent_message|e} {if: $rme_consent_time}<small>({$rme_consent_time|e})</small>{/if}</span>
+        {/if}
+        {if: $rme_consent_url && $rme_consent_status != 'shl'}
+        <br><a href="{$rme_consent_url}" target="_blank" rel="noopener" class="btn btn-warning btn-xs" style="margin-top:6px;">
+          <i class="fa fa-qrcode"></i> Buka Link Persetujuan Pasien
+        </a>
+        {/if}
+      </div>
+      {/if}
+      <div class="row">
+        <div class="col-md-8">
+          <table class="table table-condensed table-bordered erm-identitas">
+            <tbody>
+              {loop: $identitas as $row}
+              <tr>
+                {loop: $row as $col}
+                {if: ($key % 2) == 0}
+                <th class="active">{$col|e}</th>
+                {else}
+                <td>{$col|e}</td>
+                {/if}
+                {/loop}
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-4">
+          <div class="well well-sm">
+            <h5><i class="fa fa-cloud-upload"></i> Sinkronisasi SATUSEHAT</h5>
+            <p class="text-muted">Kirim seluruh resource ERM (Encounter, Condition, Observation, CarePlan, Procedure, ServiceRequest, DiagnosticReport, AllergyIntolerance, Medication, MedicationRequest, QuestionnaireResponse, MedicationDispense) sebagai Bundle transaction.</p>
+            <p>
+              <button type="button" class="btn btn-success btn-sm erm-sync-btn" data-url="{$url_sync}" data-no-rawat="{$no_rawat_enc}" data-erm-label="{$erm_label|e}">
+                <i class="fa fa-paper-plane"></i> Kirim ke SATUSEHAT
+              </button>
+              <a href="{$url_bundle}" class="btn btn-info btn-sm"><i class="fa fa-code"></i> Lihat Bundle</a>
+              <a href="{$url_mapping}" class="btn btn-default btn-sm"><i class="fa fa-plug"></i> Mapping</a>
+            </p>
+            <div id="erm-sync-result"></div>
+            {if: $validation_errors}
+            <div class="alert alert-danger erm-validation">
+              <strong>Belum siap kirim:</strong>
+              <ul>
+                {loop: $validation_errors as $error}
+                <li>{$error|e}</li>
+                {/loop}
+              </ul>
+            </div>
+            {/if}
+            {if: $validation_warnings}
+            <div class="alert alert-warning erm-validation">
+              <strong>Perhatian:</strong>
+              <ul>
+                {loop: $validation_warnings as $warning}
+                <li>{$warning|e}</li>
+                {/loop}
+              </ul>
+            </div>
+            {/if}
+            <h6>Ringkasan Resource</h6>
+            <table class="table table-condensed table-striped">
+              <tbody>
+                {loop: $resource_summary as $row}
+                <tr>
+                  <td>{$row.type|e}</td>
+                  <td class="text-right"><span class="label label-default">{$row.jumlah|e}</span></td>
+                </tr>
+                {/loop}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h5 class="erm-sections-title"><i class="fa fa-book-medical"></i> Isi ERM (BAB 1 &ndash; 29)</h5>
+      <div class="erm-sections">
+        {loop: $sections as $section}
+        <div class="panel panel-default erm-section">
+          <div class="panel-heading erm-section-head" data-toggle="collapse" data-target="#erm-bab-{$section.bab}">
+            {$section.label|e}
+            <i class="fa fa-chevron-down pull-right erm-chevron"></i>
+          </div>
+          <div id="erm-bab-{$section.bab}" class="panel-collapse collapse{if: $section.bab == '1'} in{/if}">
+            <div class="panel-body">
+              <table class="table table-condensed table-bordered erm-bab-table">
+                <tbody>
+                  {loop: $section.rows as $row}
+                  <tr>
+                    {loop: $row as $col}
+                    {if: ($key % 2) == 0}
+                    <th class="active">{$col|e}</th>
+                    {else}
+                    <td>{$col|e}</td>
+                    {/if}
+                    {/loop}
+                  </tr>
+                  {/loop}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        {/loop}
+      </div>
+    </div>
+    <div class="panel-footer">
+      <a href="{$url_ermralan}" class="btn btn-default btn-sm"><i class="fa fa-arrow-left"></i> Kembali ke daftar kunjungan</a>
+    </div>
+  </div>
+  {else}
+  {* ===================== DAFTAR KUNJUNGAN ===================== *}
+  <div class="panel panel-default">
+    <div class="panel-heading"><i class="fa fa-filter"></i> Filter Kunjungan {$erm_jenis|e}</div>
+    <div class="panel-body">
+      <form method="get" action="{$url_ermralan}" class="form-inline erm-filter-form">
+        <div class="form-group">
+          <label>Tgl Mulai</label>
+          <input type="date" name="tgl_awal" value="{$tgl_awal|e}" class="form-control input-sm">
+        </div>
+        <div class="form-group">
+          <label>Tgl Akhir</label>
+          <input type="date" name="tgl_akhir" value="{$tgl_akhir|e}" class="form-control input-sm">
+        </div>
+        <div class="form-group">
+          <label>Cari</label>
+          <input type="text" name="cari" value="{$cari|e}" class="form-control input-sm" placeholder="No. rawat / No. RM / Nama">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status_kirim" class="form-control input-sm">
+            <option value="" {$sel_all}>Semua</option>
+            <option value="belum" {$sel_belum}>Belum Terkirim</option>
+            <option value="terkirim" {$sel_terkirim}>Terkirim</option>
+            <option value="gagal" {$sel_gagal}>Gagal</option>
+            <option value="invalid" {$sel_invalid}>Invalid</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-search"></i> Tampilkan</button>
+        <a href="{$url_ermralan}" class="btn btn-default btn-sm">Reset</a>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <i class="fa fa-list"></i> Kunjungan {$erm_jenis|e}
+      <span class="label label-info">{$showing}</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-bordered erm-list">
+        <thead>
+          <tr>
+            <th>Tgl / Jam</th>
+            <th>No. Rawat</th>
+            <th>No. RM</th>
+            <th>Pasien</th>
+            <th>Poli</th>
+            <th>Dokter</th>
+            <th>Status ERM</th>
+            <th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $rows as $row}
+          <tr>
+            <td>{$row.tgl_registrasi|e}<br><small>{$row.jam_reg|e}</small></td>
+            <td>{$row.no_rawat|e}</td>
+            <td>{$row.no_rkm_medis|e}</td>
+            <td>{$row.nm_pasien|e}</td>
+            <td>{$row.nm_poli|e}</td>
+            <td>{$row.nm_dokter|e}</td>
+            <td><span class="{$row.badge_class}">{$row.badge_text|e}</span></td>
+            <td class="text-center">
+              <a href="{$row.url_detail}" class="btn btn-xs btn-primary" title="Detail ERM"><i class="fa fa-notes-medical"></i> ERM</a>
+              <a href="{$row.url_bundle}" class="btn btn-xs btn-info" title="Pratinjau Bundle"><i class="fa fa-code"></i></a>
+              <a href="{$row.url_mapping}" class="btn btn-xs btn-default" title="Mapping Resource"><i class="fa fa-plug"></i></a>
+            </td>
+          </tr>
+          {/loop}
+          {if: $rows_count == 0}
+          <tr><td colspan="8" class="text-center text-muted">Tidak ada kunjungan {$erm_jenis|e} pada rentang tanggal tersebut.</td></tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+    <div class="panel-footer text-center">
+      <ul class="pagination pagination-sm er-margin-none">
+        {loop: $pagination as $page}
+        {if: $page.active}
+        <li class="active"><a href="{$page.url}">{$page.label|e}</a></li>
+        {else}
+        <li><a href="{$page.url}">{$page.label|e}</a></li>
+        {/if}
+        {/loop}
+      </ul>
+    </div>
+  </div>
+  {/if}
+</div>

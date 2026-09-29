@@ -28,6 +28,21 @@ class Admin extends AdminModule
   private $secretkey;
   private $organizationid;
 
+  /**
+   * Instance tanpa argumen dipakai ErmFromSatuSehatHelper (plugin klaim_bpjs_satusehat)
+   * via reflection; fallback ke $GLOBALS['core'] agar tetap punya akses DB & settings.
+   */
+  public function __construct($core = null)
+  {
+    if ($core === null && isset($GLOBALS['core']) && $GLOBALS['core'] instanceof \Systems\Main) {
+      $core = $GLOBALS['core'];
+    }
+    if ($core === null) {
+      throw new \RuntimeException('Plugins\\Satu_Sehat\\Admin membutuhkan instance Systems\\Main.');
+    }
+    parent::__construct($core);
+  }
+
   public function init()
   {
     $this->authurl = $this->settings->get('satu_sehat.authurl');
@@ -75,6 +90,19 @@ class Admin extends AdminModule
       'Mapping Obat' => 'mappingobat',
       'Mapping Laboratorium' => 'mappinglab',
       'Mapping Radiologi' => 'mappingrad',
+      'Mapping Tindakan' => 'mappingtindakan',
+      'ERM Rawat Jalan' => 'ermralan',
+      'ERM Bundle' => 'ermralanbundle',
+      'Log ERM' => 'ermralanlog',
+      'Mapping Resource ERM' => 'ermralanmapping',
+      'ERM Rawat Inap' => 'ermranap',
+      'ERM Bundle Ranap' => 'ermranapbundle',
+      'Log ERM Ranap' => 'ermranaplog',
+      'Mapping Resource Ranap' => 'ermranapmapping',
+      'ERM IGD' => 'ermigd',
+      'ERM Bundle IGD' => 'ermigdbundle',
+      'Log ERM IGD' => 'ermigdlog',
+      'Mapping Resource IGD' => 'ermigdmapping',
       'Data Response' => 'response',
       'Verifikasi KYC' => 'kyc',
       'Pengaturan' => 'settings',
@@ -84,6 +112,9 @@ class Admin extends AdminModule
   public function getManage()
   {
     $sub_modules = [
+      ['name' => 'ERM Rawat Jalan', 'url' => url([ADMIN, 'satu_sehat', 'ermralan']), 'icon' => 'heart', 'desc' => 'Rekam medis elektronik rawat jalan & sinkronisasi SATUSEHAT'],
+      ['name' => 'ERM Rawat Inap', 'url' => url([ADMIN, 'satu_sehat', 'ermranap']), 'icon' => 'heart', 'desc' => 'Rekam medis elektronik rawat inap & sinkronisasi SATUSEHAT'],
+      ['name' => 'ERM IGD', 'url' => url([ADMIN, 'satu_sehat', 'ermigd']), 'icon' => 'heart', 'desc' => 'Rekam medis elektronik IGD (triase & gawat darurat) & sinkronisasi SATUSEHAT'],
       ['name' => 'Referensi Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'praktisi']), 'icon' => 'heart', 'desc' => 'Referensi praktisi satu sehat'],
       ['name' => 'Referensi Pasien', 'url' => url([ADMIN, 'satu_sehat', 'pasien']), 'icon' => 'heart', 'desc' => 'Referensi pasien satu sehat'],
       ['name' => 'Mapping Departemen', 'url' => url([ADMIN, 'satu_sehat', 'departemen']), 'icon' => 'heart', 'desc' => 'Mapping departemen satu sehat'],
@@ -92,6 +123,7 @@ class Admin extends AdminModule
       ['name' => 'Mapping Obat', 'url' => url([ADMIN, 'satu_sehat', 'mappingobat']), 'icon' => 'heart', 'desc' => 'Mapping obat satu sehat'],
       ['name' => 'Mapping Laboratorium', 'url' => url([ADMIN, 'satu_sehat', 'mappinglab']), 'icon' => 'heart', 'desc' => 'Mapping laboratorium satu sehat'],
       ['name' => 'Mapping Radiologi', 'url' => url([ADMIN, 'satu_sehat', 'mappingrad']), 'icon' => 'heart', 'desc' => 'Mapping radiologi satu sehat'],
+      ['name' => 'Mapping Tindakan', 'url' => url([ADMIN, 'satu_sehat', 'mappingtindakan']), 'icon' => 'heart', 'desc' => 'Mapping tindakan (jns_perawatan) ke kode KPTL'],
       ['name' => 'Data Response', 'url' => url([ADMIN, 'satu_sehat', 'response']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
       ['name' => 'Verifikasi KYC', 'url' => url([ADMIN, 'satu_sehat', 'kyc']), 'icon' => 'heart', 'desc' => 'Verifikasi KYC satu sehat'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
@@ -2654,6 +2686,24 @@ class Admin extends AdminModule
           'code' => $code,
           'display' => $display,
           'code_system' => 'http://snomed.info/sct'
+        ];
+      }
+    } elseif ($type === 'ktpl') {
+      $rows = $this->db('mlite_ktpl')
+        ->like('kode_ktpl', '%'.$q.'%')
+        ->orLike('nama_ktpl', '%'.$q.'%')
+        ->limit(50)
+        ->toArray();
+
+      foreach ($rows as $row) {
+        $code = trim((string) ($row['kode_ktpl'] ?? ''));
+        $display = trim((string) ($row['nama_ktpl'] ?? ''));
+        if ($code === '') continue;
+        $items[] = [
+          'value' => $code,
+          'text' => '['.$code.'] '.($display !== '' ? $display : $code),
+          'kode_ktpl' => $code,
+          'nama_ktpl' => $display
         ];
       }
     } elseif ($type === 'kfa') {
@@ -6331,6 +6381,20 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'satu_sehat', 'mappingobat']));
       }
 
+      // Isian manual (opsional) mengungguli nilai KFA; kode unit & rute
+      // dinormalkan ke bentuk yang diterima validator SATUSEHAT.
+      $this->_ermRalan(); // muat kelas service untuk normalisasi
+      list($satuanDen, ) = \Plugins\Satu_Sehat\Services\SatuSehatResourceMappingService::normalizeSatuanDen(
+        trim((string) ($_POST['satuan_den'] ?? '')) !== ''
+          ? (string) $_POST['satuan_den']
+          : (string) ($kfa['satuan_den'] ?? '')
+      );
+      list($kodeRoute, $namaRouteAuto, ) = \Plugins\Satu_Sehat\Services\SatuSehatResourceMappingService::normalizeKodeRoute((string) ($_POST['kode_route'] ?? ''));
+      $namaRoute = trim((string) ($_POST['nama_route'] ?? ''));
+      if ($namaRoute === '') {
+        $namaRoute = $namaRouteAuto;
+      }
+
       $query = $this->db('mlite_satu_sehat_mapping_obat')->save(
         [
           'kode_brng' => $_POST['kode_brng'],
@@ -6341,12 +6405,12 @@ class Admin extends AdminModule
           'numerator' => $kfa['numerator'] ?? null,
           'satuan_num' => $kfa['satuan_num'] ?? null,
           'denominator' => $kfa['denominator'] ?? null,
-          'satuan_den' => $kfa['satuan_den'] ?? null,
-          'nama_satuan_den' => $kfa['nama_satuan_den'] ?? null,
+          'satuan_den' => $satuanDen !== '' ? $satuanDen : null,
+          'nama_satuan_den' => trim((string) ($_POST['nama_satuan_den'] ?? '')) !== '' ? trim((string) $_POST['nama_satuan_den']) : ($kfa['nama_satuan_den'] ?? null),
           'kode_sediaan' => $kfa['kode_sediaan'] ?? null,
           'nama_sediaan' => $kfa['nama_sediaan'] ?? null,
-          'kode_route' => null,
-          'nama_route' => null,
+          'kode_route' => $kodeRoute !== '' ? $kodeRoute : null,
+          'nama_route' => $namaRoute !== '' ? $namaRoute : null,
           'type' => $_POST['type'],
         ]
       );
@@ -6382,6 +6446,74 @@ class Admin extends AdminModule
       }
     }
 
+    redirect(url([ADMIN, 'satu_sehat', 'mappingobat']));
+  }
+
+  /** Mapping tindakan (jns_perawatan) -> kode KPTL untuk Procedure/ServiceRequest. */
+  public function getMappingTindakan()
+  {
+    $this->_ermRalan(); // memastikan tabel mapping tersedia
+    $this->_addHeaderFiles();
+    $tindakan = $this->db('jns_perawatan')->toArray();
+    $mapping = $this->db('mlite_satu_sehat_mapping_tindakan')
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = mlite_satu_sehat_mapping_tindakan.kd_jenis_prw')
+      ->toArray();
+    return $this->draw('mapping.tindakan.html', [
+      'tindakan_satu_sehat' => $tindakan,
+      'mapping_tindakan_satu_sehat' => $mapping,
+    ]);
+  }
+
+  public function postSaveMappingTindakan()
+  {
+    $this->_ermRalan(); // memastikan tabel mapping tersedia
+    if (isset($_POST['simpan'])) {
+      $kd = trim((string) ($_POST['kd_jenis_prw'] ?? ''));
+      $kodeKtpl = trim((string) ($_POST['select_ktpl'] ?? ''));
+      if ($kd === '' || $kodeKtpl === '') {
+        $this->notify('danger', 'Tindakan dan kode KPTL wajib dipilih');
+        redirect(url([ADMIN, 'satu_sehat', 'mappingtindakan']));
+      }
+      $ktpl = $this->db('mlite_ktpl')->where('kode_ktpl', $kodeKtpl)->oneArray();
+      if (!$ktpl) {
+        $this->notify('danger', 'Kode KPTL tidak ditemukan di codebook mlite_ktpl. Silakan impor master KPTL terlebih dahulu.');
+        redirect(url([ADMIN, 'satu_sehat', 'mappingtindakan']));
+      }
+      $query = $this->db('mlite_satu_sehat_mapping_tindakan')->save([
+        'kd_jenis_prw' => $kd,
+        'kode_ktpl' => $kodeKtpl,
+        'nama_ktpl' => trim((string) ($ktpl['nama_ktpl'] ?? '')),
+      ]);
+      if ($query) {
+        $this->notify('success', 'Mapping tindakan telah disimpan');
+      } else {
+        $this->notify('danger', 'Mapping tindakan gagal disimpan');
+      }
+    }
+
+    if (isset($_POST['hapus'])) {
+      $kd = trim((string) ($_POST['kd_jenis_prw'] ?? ''));
+      $query = $this->db('mlite_satu_sehat_mapping_tindakan')
+        ->where('kd_jenis_prw', $kd)
+        ->delete();
+      if ($query) {
+        $this->notify('success', 'Mapping tindakan telah dihapus');
+      }
+    }
+
+    redirect(url([ADMIN, 'satu_sehat', 'mappingtindakan']));
+  }
+
+  /** Normalisasi isian satuan & rute mapping obat (bulk) agar Quantity lolos validasi. */
+  public function postNormalisasiMappingObat()
+  {
+    $result = $this->_ermRalan()->mapping()->normalisasiMappingObat();
+    $pesan = 'Normalisasi selesai: ' . (int) ($result['satuan'] ?? 0) . ' satuan dan ' . (int) ($result['route'] ?? 0) . ' rute diperbaiki.';
+    $lewat = (array) ($result['lewat'] ?? []);
+    if (!empty($lewat)) {
+      $pesan .= ' Perlu isi manual (satuan belum dikenal): ' . implode(', ', array_slice($lewat, 0, 10)) . (count($lewat) > 10 ? ', ...' : '') . '.';
+    }
+    $this->notify(empty($lewat) ? 'success' : 'info', $pesan);
     redirect(url([ADMIN, 'satu_sehat', 'mappingobat']));
   }
 
@@ -7083,6 +7215,1214 @@ class Admin extends AdminModule
     $response = curl_exec($ch);
     curl_close($ch);
     return $response;
+  }
+
+  // ==================================================================
+  // Sub modul ERM Rawat Jalan (services/ resources/ view/ js/ css/)
+  // ==================================================================
+
+  /**
+   * Muat class sub modul ERM Rawat Jalan dan kembalikan service utamanya.
+   */
+  private function _ermRalan()
+  {
+    static $service = null;
+    if ($service === null) {
+      // Class Plugins\Satu_Sehat\* dimuat otomatis oleh Autoloader PSR-4 mLITE.
+      $service = new \Plugins\Satu_Sehat\Services\SatuSehatErmRalanService($this->core);
+    }
+    return $service;
+  }
+
+  /**
+   * Muat class sub modul ERM Rawat Inap dan kembalikan service utamanya.
+   */
+  private function _ermRanap()
+  {
+    static $service = null;
+    if ($service === null) {
+      $service = new \Plugins\Satu_Sehat\Services\SatuSehatErmRanapService($this->core);
+    }
+    return $service;
+  }
+
+  /**
+   * Muat class sub modul ERM IGD dan kembalikan service utamanya.
+   */
+  private function _ermIgd()
+  {
+    static $service = null;
+    if ($service === null) {
+      $service = new \Plugins\Satu_Sehat\Services\SatuSehatErmIgdService($this->core);
+    }
+    return $service;
+  }
+
+  /** @param \Plugins\Satu_Sehat\Services\SatuSehatErmRalanService|null $service Service ERM (default rawat jalan). */
+  private function _ermSync($service = null)
+  {
+    static $syncs = [];
+    $service = $service !== null ? $service : $this->_ermRalan();
+    $key = get_class($service);
+    if (!isset($syncs[$key])) {
+      $syncs[$key] = new \Plugins\Satu_Sehat\Services\SatuSehatSyncService($this->core, $service);
+    }
+    return $syncs[$key];
+  }
+
+  /**
+   * Render view sub modul ERM (view/admin/erm.html, erm.bundle.html, erm.log.html, erm.mapping.html).
+   *
+   * @param string $base Slug route ('ermralan' / 'ermranap' / 'ermigd') untuk URL navigasi.
+   * @param string $ermLabel Label sub modul (mis. "ERM Rawat Inap").
+   * @param string $ermJenis Jenis layanan (mis. "Rawat Inap").
+   */
+  private function _ermDraw($view, array $variables = [], $base = 'ermralan', $ermLabel = 'ERM Rawat Jalan', $ermJenis = 'Rawat Jalan')
+  {
+    $variables += [
+      'erm_label' => $ermLabel,
+      'erm_jenis' => $ermJenis,
+      'url_ermralan' => url([ADMIN, 'satu_sehat', $base]),
+      'url_log' => url([ADMIN, 'satu_sehat', $base . 'log']),
+      'url_mapping' => url([ADMIN, 'satu_sehat', $base . 'mapping']),
+      'rme_consent_status' => '',
+      'rme_consent_badge' => '',
+      'rme_consent_url' => '',
+      'rme_consent_time' => '',
+      'rme_consent_message' => '',
+    ];
+    return $this->draw($view, $variables);
+  }
+
+  private function _ermAssets()
+  {
+    $this->core->addCSS(url('plugins/satu_sehat/css/erm_ralan.css'));
+    $this->core->addJS(url('plugins/satu_sehat/js/erm_ralan.js'), 'footer');
+  }
+
+  private function _ermBadge($status)
+  {
+    $status = (string) $status;
+    if ($status === 'terkirim') {
+      return ['label label-success', 'TERKIRIM'];
+    }
+    if ($status === 'gagal') {
+      return ['label label-danger', 'GAGAL'];
+    }
+    if ($status === 'invalid') {
+      return ['label label-warning', 'INVALID'];
+    }
+    if ($status === 'chl') {
+      return ['label label-info', 'CHL'];
+    }
+    if ($status === 'shl') {
+      return ['label label-primary', 'SHL'];
+    }
+    if ($status === 'consent') {
+      return ['label label-warning', 'CONSENT'];
+    }
+    return ['label label-default', 'BELUM TERKIRIM'];
+  }
+
+  private function _ermSummaryList(array $grouped)
+  {
+    $list = [];
+    foreach ($grouped as $type => $ids) {
+      $list[] = ['type' => (string) $type, 'jumlah' => count((array) $ids)];
+    }
+    usort($list, function ($a, $b) {
+      return strcmp($a['type'], $b['type']);
+    });
+    return $list;
+  }
+
+  private function _ermPagination($baseUrl, $page, $totalPages, array $query = [])
+  {
+    $items = [];
+    if ($totalPages <= 1) {
+      return $items;
+    }
+    $separator = strpos($baseUrl, '?') !== false ? '&' : '?';
+    $link = function ($target) use ($baseUrl, $separator, $query) {
+      $query['page'] = $target;
+      return $baseUrl . $separator . http_build_query($query);
+    };
+    $items[] = ['url' => $link(max(1, $page - 1)), 'label' => '«', 'active' => ''];
+    $start = max(1, $page - 3);
+    $end = min($totalPages, $start + 6);
+    $start = max(1, $end - 6);
+    for ($i = $start; $i <= $end; $i++) {
+      $items[] = ['url' => $link($i), 'label' => (string) $i, 'active' => $i === $page ? 'active' : ''];
+    }
+    $items[] = ['url' => $link(min($totalPages, $page + 1)), 'label' => '»', 'active' => ''];
+    return $items;
+  }
+
+  private function _ermPrettify($text)
+  {
+    $text = (string) $text;
+    if ($text === '') {
+      return '-';
+    }
+    $json = json_decode($text, true);
+    if (is_array($json)) {
+      $text = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+    return htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+  }
+
+  private function _ermCounters()
+  {
+    $counters = $this->_ermRalan()->mapping()->counters();
+    $labels = [
+      'praktisi' => ['Mapping Praktisi', 'Dokter/apoteker/petugas yang sudah punya ID IHS Practitioner.'],
+      'lokasi' => ['Mapping Lokasi', 'Poli/bangsal yang sudah punya ID Location SATUSEHAT.'],
+      'obat' => ['Mapping Obat', 'Item obat yang sudah dipetakan ke kode KFA.'],
+      'lab' => ['Mapping Laboratorium', 'Item pemeriksaan lab yang sudah dipetakan ke LOINC.'],
+      'radiologi' => ['Mapping Radiologi', 'Item radiologi yang sudah dipetakan ke kode standar.'],
+      'erm_terkirim' => ['Kunjungan ERM Terkirim', 'Kunjungan rawat jalan/inap yang Bundlenya sudah diterima SATUSEHAT.'],
+    ];
+    $rows = [];
+    foreach ($labels as $key => $info) {
+      $rows[] = [
+        'label' => $info[0],
+        'jumlah' => (int) ($counters[$key] ?? 0),
+        'keterangan' => $info[1],
+      ];
+    }
+    return $rows;
+  }
+
+  /** Daftar / detail ERM Rawat Jalan. */
+  public function getErmralan($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermRalan();
+
+    if ($no_rawat !== null && $no_rawat !== '') {
+      $no_rawat = $service->normalizeNoRawat($no_rawat);
+      $emr = $service->getEmr($no_rawat);
+      if (empty($emr['reg_periksa'])) {
+        $this->notify('failure', 'Kunjungan rawat jalan %s tidak ditemukan.', $no_rawat);
+        redirect(url([ADMIN, 'satu_sehat', 'ermralan']));
+      }
+
+      $pipeline = $service->buildResourceEntries($no_rawat);
+      $validator = new \Plugins\Satu_Sehat\Services\SatuSehatValidator();
+      $validation = $validator->validate($pipeline['entries']);
+
+      $sections = $service->getErmSections($no_rawat);
+      $identitas = $sections['identitas_pasien']['rows'];
+      unset($sections['identitas_pasien']);
+
+      $visitMapping = $service->mapping()->getVisitMapping($no_rawat);
+      list($badgeClass, $badgeText) = $this->_ermBadge($visitMapping['status_kirim'] ?? '');
+      $noRawatEnc = convertNorawat($no_rawat);
+
+      // Status consent RME Nasional pasien (dari log CHL/SHL/consent terakhir).
+      $rmeLog = \Plugins\Satu_Sehat\Services\SatuSehatRmeNasionalService::lastRmeLog($this->core, $no_rawat);
+      $rmeConsentStatus = is_array($rmeLog) ? (string) $rmeLog['status'] : '';
+      $rmeConsentUrl = \Plugins\Satu_Sehat\Services\SatuSehatRmeNasionalService::lastConsentUrl($this->core, $no_rawat);
+      $rmeConsentBadge = '';
+      if ($rmeConsentStatus !== '') {
+        list($rmeConsentBadge) = $this->_ermBadge($rmeConsentStatus);
+      }
+
+      return $this->_ermDraw('erm.html', [
+        'detail' => 'ya',
+        'no_rawat' => $no_rawat,
+        'no_rawat_enc' => $noRawatEnc,
+        'badge_html' => '<span class="' . $badgeClass . '">' . $badgeText . '</span>',
+        'identitas' => $identitas,
+        'sections' => array_values($sections),
+        'resource_summary' => $this->_ermSummaryList(\Plugins\Satu_Sehat\Services\SatuSehatBundleBuilder::groupIdsByType($pipeline['entries'])),
+        'validation_errors' => $validation['errors'],
+        'validation_warnings' => $validation['warnings'],
+        'rme_consent_status' => $rmeConsentStatus,
+        'rme_consent_badge' => $rmeConsentBadge,
+        'rme_consent_url' => $rmeConsentUrl,
+        'rme_consent_time' => is_array($rmeLog) ? (string) ($rmeLog['created_at'] ?? '') : '',
+        'rme_consent_message' => is_array($rmeLog) ? (string) ($rmeLog['message'] ?? '') : '',
+        'url_sync' => url([ADMIN, 'satu_sehat', 'ermralansync']),
+        'url_bundle' => url([ADMIN, 'satu_sehat', 'ermralanbundle', $noRawatEnc]),
+        'url_mapping' => url([ADMIN, 'satu_sehat', 'ermralanmapping', $noRawatEnc]),
+        'url_back' => url([ADMIN, 'satu_sehat', 'ermralan']),
+      ]);
+    }
+
+    $tgl_awal = isset($_GET['tgl_awal']) ? (string) $_GET['tgl_awal'] : date('Y-m-01');
+    $tgl_akhir = isset($_GET['tgl_akhir']) ? (string) $_GET['tgl_akhir'] : date('Y-m-d');
+    $cari = trim((string) ($_GET['cari'] ?? ''));
+    $filter_status = trim((string) ($_GET['status_kirim'] ?? ''));
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $perPage = 20;
+
+    $filters = [
+      'tgl_awal' => $tgl_awal,
+      'tgl_akhir' => $tgl_akhir,
+      'cari' => $cari,
+      'status_kirim' => $filter_status,
+    ];
+    $total = $service->countVisits($filters);
+    $totalPages = max(1, (int) ceil($total / $perPage));
+    if ($page > $totalPages) {
+      $page = $totalPages;
+    }
+    $rows = $service->getVisitList($filters, $perPage, ($page - 1) * $perPage);
+
+    foreach ($rows as $i => $row) {
+      $enc = convertNorawat((string) ($row['no_rawat'] ?? ''));
+      list($badgeClass, $badgeText) = $this->_ermBadge($row['status_kirim'] ?? '');
+      $rows[$i]['badge_class'] = $badgeClass;
+      $rows[$i]['badge_text'] = $badgeText;
+      $rows[$i]['url_detail'] = url([ADMIN, 'satu_sehat', 'ermralan', $enc]);
+      $rows[$i]['url_bundle'] = url([ADMIN, 'satu_sehat', 'ermralanbundle', $enc]);
+      $rows[$i]['url_mapping'] = url([ADMIN, 'satu_sehat', 'ermralanmapping', $enc]);
+    }
+
+    $start = $total > 0 ? ($page - 1) * $perPage + 1 : 0;
+    $end = min($page * $perPage, $total);
+    $showing = $total > 0
+      ? sprintf('Menampilkan %d-%d dari %d kunjungan', $start, $end, $total)
+      : 'Tidak ada kunjungan';
+
+    return $this->_ermDraw('erm.html', [
+      'detail' => '',
+      'rows' => $rows,
+      'rows_count' => count($rows),
+      'showing' => $showing,
+      'tgl_awal' => $tgl_awal,
+      'tgl_akhir' => $tgl_akhir,
+      'cari' => $cari,
+      'filter_status' => $filter_status,
+      'sel_all' => $filter_status === '' ? 'selected' : '',
+      'sel_belum' => $filter_status === 'belum' ? 'selected' : '',
+      'sel_terkirim' => $filter_status === 'terkirim' ? 'selected' : '',
+      'sel_gagal' => $filter_status === 'gagal' ? 'selected' : '',
+      'sel_invalid' => $filter_status === 'invalid' ? 'selected' : '',
+      'pagination' => $this->_ermPagination(url([ADMIN, 'satu_sehat', 'ermralan']), $page, $totalPages, [
+        'tgl_awal' => $tgl_awal,
+        'tgl_akhir' => $tgl_akhir,
+        'cari' => $cari,
+        'status_kirim' => $filter_status,
+      ]),
+    ]);
+  }
+
+  /** Pratinjau Bundle transaction ERM Rawat Jalan. */
+  public function getErmralanbundle($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermRalan();
+    if ($no_rawat === null || $no_rawat === '') {
+      return $this->_ermDraw('erm.bundle.html', ['no_rawat' => '', 'erm_label' => 'ERM Rawat Jalan']);
+    }
+
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    $emr = $service->getEmr($no_rawat);
+    if (empty($emr['reg_periksa'])) {
+      $this->notify('failure', 'Kunjungan rawat jalan %s tidak ditemukan.', $no_rawat);
+      redirect(url([ADMIN, 'satu_sehat', 'ermralan']));
+    }
+
+    $bundle = $service->buildTransactionBundle($no_rawat);
+    $validator = new \Plugins\Satu_Sehat\Services\SatuSehatValidator();
+    $validation = $validator->validate(is_array($bundle['entry'] ?? null) ? $bundle['entry'] : []);
+    $bundleJson = json_encode($bundle, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    return $this->_ermDraw('erm.bundle.html', [
+      'no_rawat' => $no_rawat,
+      'no_rawat_enc' => convertNorawat($no_rawat),
+      'erm_label' => 'ERM Rawat Jalan',
+      'bundle_json' => htmlspecialchars((string) $bundleJson, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+      'jumlah_entry' => count(is_array($bundle['entry'] ?? null) ? $bundle['entry'] : []),
+      'resource_summary' => $this->_ermSummaryList(\Plugins\Satu_Sehat\Services\SatuSehatBundleBuilder::groupIdsByType(is_array($bundle['entry'] ?? null) ? $bundle['entry'] : [])),
+      'validation_errors' => $validation['errors'],
+      'validation_warnings' => $validation['warnings'],
+      'url_sync' => url([ADMIN, 'satu_sehat', 'ermralansync']),
+      'url_back' => url([ADMIN, 'satu_sehat', 'ermralan', convertNorawat($no_rawat)]),
+    ]);
+  }
+
+  /** Log sinkronisasi ERM Rawat Jalan (semua kunjungan / per no_rawat). */
+  public function getErmralanlog($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermRalan();
+    $filter = ($no_rawat !== null && $no_rawat !== '') ? $service->normalizeNoRawat($no_rawat) : null;
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $perPage = 20;
+
+    $sync = $this->_ermSync();
+    $total = $sync->countLogs($filter);
+    $totalPages = max(1, (int) ceil($total / $perPage));
+    if ($page > $totalPages) {
+      $page = $totalPages;
+    }
+    $logs = $sync->getLogs($filter, $perPage, ($page - 1) * $perPage);
+
+    foreach ($logs as $i => $row) {
+      list($badgeClass) = $this->_ermBadge($row['status'] ?? '');
+      $logs[$i]['badge_class'] = $badgeClass;
+      $logs[$i]['status_text'] = strtoupper((string) ($row['status'] ?? ''));
+      $logs[$i]['url_detail'] = url([ADMIN, 'satu_sehat', 'ermralan', convertNorawat((string) ($row['no_rawat'] ?? ''))]);
+      $logs[$i]['request'] = $this->_ermPrettify((string) ($row['request'] ?? ''));
+      $logs[$i]['response'] = $this->_ermPrettify((string) ($row['response'] ?? ''));
+    }
+
+    $start = $total > 0 ? ($page - 1) * $perPage + 1 : 0;
+    $end = min($page * $perPage, $total);
+    $showing = $total > 0
+      ? sprintf('Menampilkan %d-%d dari %d log', $start, $end, $total)
+      : 'Belum ada log';
+
+    return $this->_ermDraw('erm.log.html', [
+      'logs' => $logs,
+      'logs_count' => count($logs),
+      'no_rawat' => (string) ($filter ?? ''),
+      'showing' => $showing,
+      'pagination' => $this->_ermPagination(url([ADMIN, 'satu_sehat', 'ermralanlog']), $page, $totalPages, [
+        'no_rawat' => (string) ($filter ?? ''),
+      ]),
+    ]);
+  }
+
+  /** Mapping resource SATUSEHAT per kunjungan + kesiapan mapping master. */
+  public function getErmralanmapping($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermRalan();
+    $vars = [
+      'no_rawat' => '',
+      'counters' => $this->_ermCounters(),
+    ];
+
+    if ($no_rawat !== null && $no_rawat !== '') {
+      $no_rawat = $service->normalizeNoRawat($no_rawat);
+      $emr = $service->getEmr($no_rawat);
+      if (empty($emr['reg_periksa'])) {
+        $this->notify('failure', 'Kunjungan rawat jalan %s tidak ditemukan.', $no_rawat);
+        redirect(url([ADMIN, 'satu_sehat', 'ermralan']));
+      }
+
+      $visitMapping = $service->mapping()->getVisitMapping($no_rawat);
+      $sections = $service->getErmSections($no_rawat);
+      list($badgeClass, $badgeText) = $this->_ermBadge($visitMapping['status_kirim'] ?? '');
+      $resourceMap = json_decode((string) ($visitMapping['resource_map'] ?? ''), true);
+      $noRawatEnc = convertNorawat($no_rawat);
+
+      $vars = array_merge($vars, [
+        'no_rawat' => $no_rawat,
+        'no_rawat_enc' => $noRawatEnc,
+        'identitas' => $sections['identitas_pasien']['rows'],
+        'badge_class' => $badgeClass,
+        'status_text' => $badgeText,
+        'patient_id' => (string) ($visitMapping['patient_id'] ?? ($emr['mapping']['patient_id'] ?? '')),
+        'encounter_id' => (string) ($visitMapping['encounter_id'] ?? ''),
+        'practitioner_id' => (string) ($visitMapping['practitioner_id'] ?? ($emr['mapping']['practitioner_id'] ?? '')),
+        'location_id' => (string) ($visitMapping['location_id'] ?? ($emr['mapping']['location_id'] ?? '')),
+        'organization_id' => (string) ($visitMapping['organization_id'] ?? ($emr['mapping']['organization_id'] ?? '')),
+        'has_resource_map' => is_array($resourceMap) && !empty($resourceMap),
+        'resource_map_json' => is_array($resourceMap)
+          ? htmlspecialchars(json_encode($resourceMap, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_QUOTES | ENT_HTML5, 'UTF-8')
+          : '',
+        'url_save' => url([ADMIN, 'satu_sehat', 'ermralanmapping', $noRawatEnc]),
+        'url_back' => url([ADMIN, 'satu_sehat', 'ermralan', $noRawatEnc]),
+      ]);
+    }
+
+    return $this->_ermDraw('erm.mapping.html', $vars);
+  }
+
+  /** Sinkronisasi (ajax): kirim Bundle transaction ERM ke SATUSEHAT. */
+  public function postErmralansync($no_rawat = null)
+  {
+    header('Content-Type: application/json; charset=utf-8');
+    $service = $this->_ermRalan();
+    if ($no_rawat === null || $no_rawat === '') {
+      $no_rawat = (string) ($_POST['no_rawat'] ?? '');
+    }
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    if ($no_rawat === '') {
+      http_response_code(422);
+      echo json_encode(['status' => 'error', 'message' => 'No. rawat wajib diisi.'], JSON_UNESCAPED_UNICODE);
+      exit;
+    }
+
+    $result = $this->_ermSync()->sync($no_rawat);
+    echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+  }
+
+  /**
+   * RME Nasional (ajax): kembalikan URL RME Nasional SATUSEHAT untuk sebuah
+   * kunjungan rawat jalan. Alur: token -> SHL; bila consent belum ada,
+   * kembalikan verification_url CHL agar pasien memberi persetujuan dulu.
+   */
+  public function postSatusehatrme($no_rawat = null)
+  {
+    header('Content-Type: application/json; charset=utf-8');
+    $service = $this->_ermRalan();
+    if ($no_rawat === null || $no_rawat === '') {
+      $no_rawat = (string) ($_POST['no_rawat'] ?? '');
+    }
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    if ($no_rawat === '') {
+      http_response_code(422);
+      echo json_encode(['status' => 'error', 'message' => 'No. rawat wajib diisi.'], JSON_UNESCAPED_UNICODE);
+      exit;
+    }
+
+    $emr = $service->getEmr($no_rawat);
+    if (empty($emr['reg_periksa'])) {
+      http_response_code(404);
+      echo json_encode(['status' => 'error', 'message' => 'Kunjungan ' . $no_rawat . ' tidak ditemukan.'], JSON_UNESCAPED_UNICODE);
+      exit;
+    }
+
+    // ID IHS pasien: dari mapping kunjungan, bila kosong lakukan lookup via NIK.
+    $patientId = (string) ($emr['mapping']['patient_id'] ?? '');
+    if ($patientId === '') {
+      $patientId = $service->mapping()->patientId($emr, true);
+    }
+    $practitionerId = (string) ($emr['mapping']['practitioner_id'] ?? '');
+    $organizationId = (string) ($emr['mapping']['organization_id'] ?? '');
+
+    $missing = [];
+    if ($patientId === '') {
+      $missing[] = 'ID IHS pasien (mapping pasien / NIK tidak ditemukan)';
+    }
+    if ($practitionerId === '') {
+      $missing[] = 'ID IHS praktisi (Mapping Praktisi)';
+    }
+    if ($organizationId === '') {
+      $missing[] = 'ID Organization SATUSEHAT (pengaturan plugin)';
+    }
+    if ($missing) {
+      http_response_code(422);
+      echo json_encode(['status' => 'error', 'message' => 'Data belum lengkap: ' . implode(', ', $missing) . '.'], JSON_UNESCAPED_UNICODE);
+      exit;
+    }
+
+    $ctx = [
+      'patient_id' => $patientId,
+      'patient_name' => (string) ($emr['pasien']['nm_pasien'] ?? ''),
+      'practitioner_id' => $practitionerId,
+      'practitioner_name' => (string) ($emr['dokter']['nm_dokter'] ?? ''),
+      'organization_id' => $organizationId,
+      'organization_name' => (string) $this->settings->get('settings.nama_instansi'),
+    ];
+
+    $rme = new \Plugins\Satu_Sehat\Services\SatuSehatRmeNasionalService($this->core, $no_rawat);
+    $open = $rme->openRmeNasional($ctx);
+
+    if ($open['status'] === 'success') {
+      echo json_encode([
+        'status' => 'success',
+        'message' => $open['message'],
+        'url' => (string) ($open['data']['url'] ?? ''),
+      ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+      exit;
+    }
+
+    if ($open['status'] === 'consent_required') {
+      // Consent belum ada: buat Consent Health Link, dengan bypass EMERGENCY
+      // hanya untuk pasien IGD (kd_poli sama dengan setting settings.igd),
+      // lalu coba buka RME sekali lagi.
+      $chlCtx = $ctx;
+      $igdPoli = trim((string) $this->settings->get('settings.igd'));
+      $kdPoli = trim((string) ($emr['reg_periksa']['kd_poli'] ?? ''));
+      if ($igdPoli !== '' && $kdPoli === $igdPoli) {
+        $chlCtx['type_medical_summary'] = 'EMERGENCY';
+      }
+      $chl = $rme->createConsentHealthLink($chlCtx);
+      $consentUrl = (string) ($chl['data']['url'] ?? '');
+
+      if ($chl['status'] === 'success' && $consentUrl !== '') {
+        // Log khusus consent (link persetujuan dibuat).
+        $rme->log(
+          \Plugins\Satu_Sehat\Services\SatuSehatRmeNasionalService::LOG_CONSENT,
+          (int) ($chl['data']['http_code'] ?? 0),
+          0,
+          isset($chlCtx['type_medical_summary'])
+            ? 'Consent verification link dibuat (bypass EMERGENCY).'
+            : 'Consent verification link dibuat.',
+          null,
+          json_encode(['verificationUrl' => $consentUrl], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+        );
+      }
+      if ($chl['status'] !== 'success' && $consentUrl === '') {
+        // Fallback: tampilkan link consent dari log sebelumnya bila pernah berhasil dibuat.
+        $consentUrl = \Plugins\Satu_Sehat\Services\SatuSehatRmeNasionalService::lastConsentUrl($this->core, $no_rawat);
+      }
+
+      // Fallback opsional (setting rme_emergency_fallback): bila CHL jalur normal
+      // gagal di server ChaRME, coba sekali lagi dengan bypass EMERGENCY agar RME
+      // tetap dapat dibuka. Default mati; aktifkan hanya bila fasyankes mengizinkan.
+      if ($chl['status'] !== 'success'
+        && trim((string) $this->settings->get('satu_sehat.rme_emergency_fallback')) !== '') {
+        $chlFallback = $chlCtx;
+        $chlFallback['type_medical_summary'] = 'EMERGENCY';
+        $chlFallbackResp = $rme->createConsentHealthLink($chlFallback);
+        $consentUrl = (string) ($chlFallbackResp['data']['url'] ?? '');
+        if ($chlFallbackResp['status'] === 'success' && $consentUrl !== '') {
+          $chl = $chlFallbackResp;
+          $rme->log(
+            \Plugins\Satu_Sehat\Services\SatuSehatRmeNasionalService::LOG_CONSENT,
+            (int) ($chlFallbackResp['data']['http_code'] ?? 0),
+            0,
+            'Consent verification link dibuat via fallback EMERGENCY (CHL normal gagal).',
+            null,
+            json_encode(['verificationUrl' => $consentUrl], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+          );
+        }
+      }
+
+      // Coba buka RME lagi setelah consent link tersedia.
+      if ($chl['status'] === 'success') {
+        $retry = $rme->openRmeNasional($ctx);
+        if ($retry['status'] === 'success') {
+          echo json_encode([
+            'status' => 'success',
+            'message' => $retry['message'],
+            'url' => (string) ($retry['data']['url'] ?? ''),
+            'consent_url' => $consentUrl,
+          ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+          exit;
+        }
+      }
+
+      $fallbackNote = ($chl['status'] !== 'success' && $consentUrl !== '')
+        ? ' Menampilkan link persetujuan yang pernah dibuat sebelumnya.'
+        : '';
+      echo json_encode([
+        'status' => 'consent_required',
+        'message' => $chl['status'] === 'success'
+          ? 'Link persetujuan (consent) dibuat. Buka link berikut untuk menyetujui akses RME pasien.'
+          : ($chl['message'] . $fallbackNote),
+        'consent_url' => $consentUrl,
+      ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+      exit;
+    }
+
+    http_response_code(502);
+    echo json_encode(['status' => 'error', 'message' => $open['message']], JSON_UNESCAPED_UNICODE);
+    exit;
+  }
+
+  /** Simpan mapping resource SATUSEHAT per kunjungan. */
+  public function postErmralanmapping($no_rawat = null)
+  {
+    $service = $this->_ermRalan();
+    if ($no_rawat === null || $no_rawat === '') {
+      $no_rawat = (string) ($_POST['no_rawat'] ?? '');
+    }
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    if ($no_rawat === '') {
+      $this->notify('failure', 'No. rawat wajib diisi.');
+      redirect(url([ADMIN, 'satu_sehat', 'ermralanmapping']));
+    }
+
+    $fields = [];
+    foreach (['patient_id', 'encounter_id', 'practitioner_id', 'location_id', 'organization_id'] as $field) {
+      $fields[$field] = trim((string) ($_POST[$field] ?? ''));
+    }
+    $service->mapping()->saveVisitMapping($no_rawat, $fields);
+    $this->notify('success', 'Mapping resource SATUSEHAT untuk %s telah disimpan.', $no_rawat);
+    redirect(url([ADMIN, 'satu_sehat', 'ermralanmapping', convertNorawat($no_rawat)]));
+  }
+
+  // ==================================================================
+  // Sub modul ERM Rawat Inap (services/SatuSehatErmRanapService.php)
+  // ==================================================================
+
+  /** Daftar / detail ERM Rawat Inap. */
+  public function getErmranap($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermRanap();
+
+    if ($no_rawat !== null && $no_rawat !== '') {
+      $no_rawat = $service->normalizeNoRawat($no_rawat);
+      $emr = $service->getEmr($no_rawat);
+      if (empty($emr['reg_periksa'])) {
+        $this->notify('failure', 'Kunjungan rawat inap %s tidak ditemukan.', $no_rawat);
+        redirect(url([ADMIN, 'satu_sehat', 'ermranap']));
+      }
+
+      $pipeline = $service->buildResourceEntries($no_rawat);
+      $validator = new \Plugins\Satu_Sehat\Services\SatuSehatValidator();
+      $validation = $validator->validate($pipeline['entries']);
+
+      $sections = $service->getErmSections($no_rawat);
+      $identitas = $sections['identitas_pasien']['rows'];
+      unset($sections['identitas_pasien']);
+
+      $visitMapping = $service->mapping()->getVisitMapping($no_rawat);
+      list($badgeClass, $badgeText) = $this->_ermBadge($visitMapping['status_kirim'] ?? '');
+      $noRawatEnc = convertNorawat($no_rawat);
+
+      return $this->_ermDraw('erm.html', [
+        'detail' => 'ya',
+        'no_rawat' => $no_rawat,
+        'no_rawat_enc' => $noRawatEnc,
+        'badge_html' => '<span class=\"' . $badgeClass . '\">' . $badgeText . '</span>',
+        'identitas' => $identitas,
+        'sections' => array_values($sections),
+        'resource_summary' => $this->_ermSummaryList(\Plugins\Satu_Sehat\Services\SatuSehatBundleBuilder::groupIdsByType($pipeline['entries'])),
+        'validation_errors' => $validation['errors'],
+        'validation_warnings' => $validation['warnings'],
+        'url_sync' => url([ADMIN, 'satu_sehat', 'ermranapsync']),
+        'url_bundle' => url([ADMIN, 'satu_sehat', 'ermranapbundle', $noRawatEnc]),
+        'url_mapping' => url([ADMIN, 'satu_sehat', 'ermranapmapping', $noRawatEnc]),
+        'url_back' => url([ADMIN, 'satu_sehat', 'ermranap']),
+      ], 'ermranap', 'ERM Rawat Inap', 'Rawat Inap');
+    }
+
+    $tgl_awal = isset($_GET['tgl_awal']) ? (string) $_GET['tgl_awal'] : date('Y-m-01');
+    $tgl_akhir = isset($_GET['tgl_akhir']) ? (string) $_GET['tgl_akhir'] : date('Y-m-d');
+    $cari = trim((string) ($_GET['cari'] ?? ''));
+    $filter_status = trim((string) ($_GET['status_kirim'] ?? ''));
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $perPage = 20;
+
+    $filters = [
+      'tgl_awal' => $tgl_awal,
+      'tgl_akhir' => $tgl_akhir,
+      'cari' => $cari,
+      'status_kirim' => $filter_status,
+    ];
+    $total = $service->countVisits($filters);
+    $totalPages = max(1, (int) ceil($total / $perPage));
+    if ($page > $totalPages) {
+      $page = $totalPages;
+    }
+    $rows = $service->getVisitList($filters, $perPage, ($page - 1) * $perPage);
+
+    foreach ($rows as $i => $row) {
+      $enc = convertNorawat((string) ($row['no_rawat'] ?? ''));
+      list($badgeClass, $badgeText) = $this->_ermBadge($row['status_kirim'] ?? '');
+      $rows[$i]['badge_class'] = $badgeClass;
+      $rows[$i]['badge_text'] = $badgeText;
+      $rows[$i]['url_detail'] = url([ADMIN, 'satu_sehat', 'ermranap', $enc]);
+      $rows[$i]['url_bundle'] = url([ADMIN, 'satu_sehat', 'ermranapbundle', $enc]);
+      $rows[$i]['url_mapping'] = url([ADMIN, 'satu_sehat', 'ermranapmapping', $enc]);
+    }
+
+    $start = $total > 0 ? ($page - 1) * $perPage + 1 : 0;
+    $end = min($page * $perPage, $total);
+    $showing = $total > 0
+      ? sprintf('Menampilkan %d-%d dari %d kunjungan', $start, $end, $total)
+      : 'Tidak ada kunjungan';
+
+    return $this->_ermDraw('erm.html', [
+      'detail' => '',
+      'rows' => $rows,
+      'rows_count' => count($rows),
+      'showing' => $showing,
+      'tgl_awal' => $tgl_awal,
+      'tgl_akhir' => $tgl_akhir,
+      'cari' => $cari,
+      'filter_status' => $filter_status,
+      'sel_all' => $filter_status === '' ? 'selected' : '',
+      'sel_belum' => $filter_status === 'belum' ? 'selected' : '',
+      'sel_terkirim' => $filter_status === 'terkirim' ? 'selected' : '',
+      'sel_gagal' => $filter_status === 'gagal' ? 'selected' : '',
+      'sel_invalid' => $filter_status === 'invalid' ? 'selected' : '',
+      'pagination' => $this->_ermPagination(url([ADMIN, 'satu_sehat', 'ermranap']), $page, $totalPages, [
+        'tgl_awal' => $tgl_awal,
+        'tgl_akhir' => $tgl_akhir,
+        'cari' => $cari,
+        'status_kirim' => $filter_status,
+      ]),
+    ], 'ermranap', 'ERM Rawat Inap', 'Rawat Inap');
+  }
+
+  /** Pratinjau Bundle transaction ERM Rawat Inap. */
+  public function getErmranapbundle($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermRanap();
+    if ($no_rawat === null || $no_rawat === '') {
+      return $this->_ermDraw('erm.bundle.html', ['no_rawat' => ''], 'ermranap', 'ERM Rawat Inap', 'Rawat Inap');
+    }
+
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    $emr = $service->getEmr($no_rawat);
+    if (empty($emr['reg_periksa'])) {
+      $this->notify('failure', 'Kunjungan rawat inap %s tidak ditemukan.', $no_rawat);
+      redirect(url([ADMIN, 'satu_sehat', 'ermranap']));
+    }
+
+    $bundle = $service->buildTransactionBundle($no_rawat);
+    $validator = new \Plugins\Satu_Sehat\Services\SatuSehatValidator();
+    $validation = $validator->validate(is_array($bundle['entry'] ?? null) ? $bundle['entry'] : []);
+    $bundleJson = json_encode($bundle, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    return $this->_ermDraw('erm.bundle.html', [
+      'no_rawat' => $no_rawat,
+      'no_rawat_enc' => convertNorawat($no_rawat),
+      'bundle_json' => htmlspecialchars((string) $bundleJson, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+      'jumlah_entry' => count(is_array($bundle['entry'] ?? null) ? $bundle['entry'] : []),
+      'resource_summary' => $this->_ermSummaryList(\Plugins\Satu_Sehat\Services\SatuSehatBundleBuilder::groupIdsByType(is_array($bundle['entry'] ?? null) ? $bundle['entry'] : [])),
+      'validation_errors' => $validation['errors'],
+      'validation_warnings' => $validation['warnings'],
+      'url_sync' => url([ADMIN, 'satu_sehat', 'ermranapsync']),
+      'url_back' => url([ADMIN, 'satu_sehat', 'ermranap', convertNorawat($no_rawat)]),
+    ], 'ermranap', 'ERM Rawat Inap', 'Rawat Inap');
+  }
+
+  /** Log sinkronisasi ERM Rawat Inap (semua kunjungan / per no_rawat). */
+  public function getErmranaplog($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermRanap();
+    $filter = ($no_rawat !== null && $no_rawat !== '') ? $service->normalizeNoRawat($no_rawat) : null;
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $perPage = 20;
+
+    $sync = $this->_ermSync($service);
+    $total = $sync->countLogs($filter);
+    $totalPages = max(1, (int) ceil($total / $perPage));
+    if ($page > $totalPages) {
+      $page = $totalPages;
+    }
+    $logs = $sync->getLogs($filter, $perPage, ($page - 1) * $perPage);
+
+    foreach ($logs as $i => $row) {
+      list($badgeClass) = $this->_ermBadge($row['status'] ?? '');
+      $logs[$i]['badge_class'] = $badgeClass;
+      $logs[$i]['status_text'] = strtoupper((string) ($row['status'] ?? ''));
+      $logs[$i]['url_detail'] = url([ADMIN, 'satu_sehat', 'ermranap', convertNorawat((string) ($row['no_rawat'] ?? ''))]);
+      $logs[$i]['request'] = $this->_ermPrettify((string) ($row['request'] ?? ''));
+      $logs[$i]['response'] = $this->_ermPrettify((string) ($row['response'] ?? ''));
+    }
+
+    $start = $total > 0 ? ($page - 1) * $perPage + 1 : 0;
+    $end = min($page * $perPage, $total);
+    $showing = $total > 0
+      ? sprintf('Menampilkan %d-%d dari %d log', $start, $end, $total)
+      : 'Belum ada log';
+
+    return $this->_ermDraw('erm.log.html', [
+      'logs' => $logs,
+      'logs_count' => count($logs),
+      'no_rawat' => (string) ($filter ?? ''),
+      'showing' => $showing,
+      'pagination' => $this->_ermPagination(url([ADMIN, 'satu_sehat', 'ermranaplog']), $page, $totalPages, [
+        'no_rawat' => (string) ($filter ?? ''),
+      ]),
+    ], 'ermranap', 'ERM Rawat Inap', 'Rawat Inap');
+  }
+
+  /** Mapping resource SATUSEHAT per kunjungan rawat inap + kesiapan mapping master. */
+  public function getErmranapmapping($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermRanap();
+    $vars = [
+      'no_rawat' => '',
+      'counters' => $this->_ermCounters(),
+    ];
+
+    if ($no_rawat !== null && $no_rawat !== '') {
+      $no_rawat = $service->normalizeNoRawat($no_rawat);
+      $emr = $service->getEmr($no_rawat);
+      if (empty($emr['reg_periksa'])) {
+        $this->notify('failure', 'Kunjungan rawat inap %s tidak ditemukan.', $no_rawat);
+        redirect(url([ADMIN, 'satu_sehat', 'ermranap']));
+      }
+
+      $visitMapping = $service->mapping()->getVisitMapping($no_rawat);
+      $sections = $service->getErmSections($no_rawat);
+      list($badgeClass, $badgeText) = $this->_ermBadge($visitMapping['status_kirim'] ?? '');
+      $resourceMap = json_decode((string) ($visitMapping['resource_map'] ?? ''), true);
+      $noRawatEnc = convertNorawat($no_rawat);
+
+      $vars = array_merge($vars, [
+        'no_rawat' => $no_rawat,
+        'no_rawat_enc' => $noRawatEnc,
+        'identitas' => $sections['identitas_pasien']['rows'],
+        'badge_class' => $badgeClass,
+        'status_text' => $badgeText,
+        'patient_id' => (string) ($visitMapping['patient_id'] ?? ($emr['mapping']['patient_id'] ?? '')),
+        'encounter_id' => (string) ($visitMapping['encounter_id'] ?? ''),
+        'practitioner_id' => (string) ($visitMapping['practitioner_id'] ?? ($emr['mapping']['practitioner_id'] ?? '')),
+        'location_id' => (string) ($visitMapping['location_id'] ?? ($emr['mapping']['location_id'] ?? '')),
+        'organization_id' => (string) ($visitMapping['organization_id'] ?? ($emr['mapping']['organization_id'] ?? '')),
+        'has_resource_map' => is_array($resourceMap) && !empty($resourceMap),
+        'resource_map_json' => is_array($resourceMap)
+          ? htmlspecialchars(json_encode($resourceMap, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_QUOTES | ENT_HTML5, 'UTF-8')
+          : '',
+        'url_save' => url([ADMIN, 'satu_sehat', 'ermranapmapping', $noRawatEnc]),
+        'url_back' => url([ADMIN, 'satu_sehat', 'ermranap', $noRawatEnc]),
+      ]);
+    }
+
+    return $this->_ermDraw('erm.mapping.html', $vars, 'ermranap', 'ERM Rawat Inap', 'Rawat Inap');
+  }
+
+  /** Sinkronisasi (ajax): kirim Bundle transaction ERM Rawat Inap ke SATUSEHAT. */
+  public function postErmranapsync($no_rawat = null)
+  {
+    header('Content-Type: application/json; charset=utf-8');
+    $service = $this->_ermRanap();
+    if ($no_rawat === null || $no_rawat === '') {
+      $no_rawat = (string) ($_POST['no_rawat'] ?? '');
+    }
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    if ($no_rawat === '') {
+      http_response_code(422);
+      echo json_encode(['status' => 'error', 'message' => 'No. rawat wajib diisi.'], JSON_UNESCAPED_UNICODE);
+      exit;
+    }
+
+    $result = $this->_ermSync($service)->sync($no_rawat);
+    echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+  }
+
+  /** Simpan mapping resource SATUSEHAT per kunjungan rawat inap. */
+  public function postErmranapmapping($no_rawat = null)
+  {
+    $service = $this->_ermRanap();
+    if ($no_rawat === null || $no_rawat === '') {
+      $no_rawat = (string) ($_POST['no_rawat'] ?? '');
+    }
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    if ($no_rawat === '') {
+      $this->notify('failure', 'No. rawat wajib diisi.');
+      redirect(url([ADMIN, 'satu_sehat', 'ermranapmapping']));
+    }
+
+    $fields = [];
+    foreach (['patient_id', 'encounter_id', 'practitioner_id', 'location_id', 'organization_id'] as $field) {
+      $fields[$field] = trim((string) ($_POST[$field] ?? ''));
+    }
+    $service->mapping()->saveVisitMapping($no_rawat, $fields);
+    $this->notify('success', 'Mapping resource SATUSEHAT untuk %s telah disimpan.', $no_rawat);
+    redirect(url([ADMIN, 'satu_sehat', 'ermranapmapping', convertNorawat($no_rawat)]));
+  }
+
+  // ==================================================================
+  // Sub modul ERM IGD (services/SatuSehatErmIgdService.php)
+  // ==================================================================
+
+  /** Daftar / detail ERM IGD. */
+  public function getErmigd($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermIgd();
+
+    if ($no_rawat !== null && $no_rawat !== '') {
+      $no_rawat = $service->normalizeNoRawat($no_rawat);
+      $emr = $service->getEmr($no_rawat);
+      if (empty($emr['reg_periksa'])) {
+        $this->notify('failure', 'Kunjungan IGD %s tidak ditemukan.', $no_rawat);
+        redirect(url([ADMIN, 'satu_sehat', 'ermigd']));
+      }
+
+      $pipeline = $service->buildResourceEntries($no_rawat);
+      $validator = new \Plugins\Satu_Sehat\Services\SatuSehatValidator();
+      $validation = $validator->validate($pipeline['entries']);
+
+      $sections = $service->getErmSections($no_rawat);
+      $identitas = $sections['identitas_pasien']['rows'];
+      unset($sections['identitas_pasien']);
+
+      $visitMapping = $service->mapping()->getVisitMapping($no_rawat);
+      list($badgeClass, $badgeText) = $this->_ermBadge($visitMapping['status_kirim'] ?? '');
+      $noRawatEnc = convertNorawat($no_rawat);
+
+      return $this->_ermDraw('erm.html', [
+        'detail' => 'ya',
+        'no_rawat' => $no_rawat,
+        'no_rawat_enc' => $noRawatEnc,
+        'badge_html' => '<span class="' . $badgeClass . '">' . $badgeText . '</span>',
+        'identitas' => $identitas,
+        'sections' => array_values($sections),
+        'resource_summary' => $this->_ermSummaryList(\Plugins\Satu_Sehat\Services\SatuSehatBundleBuilder::groupIdsByType($pipeline['entries'])),
+        'validation_errors' => $validation['errors'],
+        'validation_warnings' => $validation['warnings'],
+        'url_sync' => url([ADMIN, 'satu_sehat', 'ermigdsync']),
+        'url_bundle' => url([ADMIN, 'satu_sehat', 'ermigdbundle', $noRawatEnc]),
+        'url_mapping' => url([ADMIN, 'satu_sehat', 'ermigdmapping', $noRawatEnc]),
+        'url_back' => url([ADMIN, 'satu_sehat', 'ermigd']),
+      ], 'ermigd', 'ERM IGD', 'IGD');
+    }
+
+    $tgl_awal = isset($_GET['tgl_awal']) ? (string) $_GET['tgl_awal'] : date('Y-m-01');
+    $tgl_akhir = isset($_GET['tgl_akhir']) ? (string) $_GET['tgl_akhir'] : date('Y-m-d');
+    $cari = trim((string) ($_GET['cari'] ?? ''));
+    $filter_status = trim((string) ($_GET['status_kirim'] ?? ''));
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $perPage = 20;
+
+    $filters = [
+      'tgl_awal' => $tgl_awal,
+      'tgl_akhir' => $tgl_akhir,
+      'cari' => $cari,
+      'status_kirim' => $filter_status,
+    ];
+    $total = $service->countVisits($filters);
+    $totalPages = max(1, (int) ceil($total / $perPage));
+    if ($page > $totalPages) {
+      $page = $totalPages;
+    }
+    $rows = $service->getVisitList($filters, $perPage, ($page - 1) * $perPage);
+
+    foreach ($rows as $i => $row) {
+      $enc = convertNorawat((string) ($row['no_rawat'] ?? ''));
+      list($badgeClass, $badgeText) = $this->_ermBadge($row['status_kirim'] ?? '');
+      $rows[$i]['badge_class'] = $badgeClass;
+      $rows[$i]['badge_text'] = $badgeText;
+      $rows[$i]['url_detail'] = url([ADMIN, 'satu_sehat', 'ermigd', $enc]);
+      $rows[$i]['url_bundle'] = url([ADMIN, 'satu_sehat', 'ermigdbundle', $enc]);
+      $rows[$i]['url_mapping'] = url([ADMIN, 'satu_sehat', 'ermigdmapping', $enc]);
+    }
+
+    $start = $total > 0 ? ($page - 1) * $perPage + 1 : 0;
+    $end = min($page * $perPage, $total);
+    $showing = $total > 0
+      ? sprintf('Menampilkan %d-%d dari %d kunjungan', $start, $end, $total)
+      : 'Tidak ada kunjungan';
+
+    return $this->_ermDraw('erm.html', [
+      'detail' => '',
+      'rows' => $rows,
+      'rows_count' => count($rows),
+      'showing' => $showing,
+      'tgl_awal' => $tgl_awal,
+      'tgl_akhir' => $tgl_akhir,
+      'cari' => $cari,
+      'filter_status' => $filter_status,
+      'sel_all' => $filter_status === '' ? 'selected' : '',
+      'sel_belum' => $filter_status === 'belum' ? 'selected' : '',
+      'sel_terkirim' => $filter_status === 'terkirim' ? 'selected' : '',
+      'sel_gagal' => $filter_status === 'gagal' ? 'selected' : '',
+      'sel_invalid' => $filter_status === 'invalid' ? 'selected' : '',
+      'pagination' => $this->_ermPagination(url([ADMIN, 'satu_sehat', 'ermigd']), $page, $totalPages, [
+        'tgl_awal' => $tgl_awal,
+        'tgl_akhir' => $tgl_akhir,
+        'cari' => $cari,
+        'status_kirim' => $filter_status,
+      ]),
+    ], 'ermigd', 'ERM IGD', 'IGD');
+  }
+
+  /** Pratinjau Bundle transaction ERM IGD. */
+  public function getErmigdbundle($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermIgd();
+    if ($no_rawat === null || $no_rawat === '') {
+      return $this->_ermDraw('erm.bundle.html', ['no_rawat' => ''], 'ermigd', 'ERM IGD', 'IGD');
+    }
+
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    $emr = $service->getEmr($no_rawat);
+    if (empty($emr['reg_periksa'])) {
+      $this->notify('failure', 'Kunjungan IGD %s tidak ditemukan.', $no_rawat);
+      redirect(url([ADMIN, 'satu_sehat', 'ermigd']));
+    }
+
+    $bundle = $service->buildTransactionBundle($no_rawat);
+    $validator = new \Plugins\Satu_Sehat\Services\SatuSehatValidator();
+    $validation = $validator->validate(is_array($bundle['entry'] ?? null) ? $bundle['entry'] : []);
+    $bundleJson = json_encode($bundle, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    return $this->_ermDraw('erm.bundle.html', [
+      'no_rawat' => $no_rawat,
+      'no_rawat_enc' => convertNorawat($no_rawat),
+      'bundle_json' => htmlspecialchars((string) $bundleJson, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+      'jumlah_entry' => count(is_array($bundle['entry'] ?? null) ? $bundle['entry'] : []),
+      'resource_summary' => $this->_ermSummaryList(\Plugins\Satu_Sehat\Services\SatuSehatBundleBuilder::groupIdsByType(is_array($bundle['entry'] ?? null) ? $bundle['entry'] : [])),
+      'validation_errors' => $validation['errors'],
+      'validation_warnings' => $validation['warnings'],
+      'url_sync' => url([ADMIN, 'satu_sehat', 'ermigdsync']),
+      'url_back' => url([ADMIN, 'satu_sehat', 'ermigd', convertNorawat($no_rawat)]),
+    ], 'ermigd', 'ERM IGD', 'IGD');
+  }
+
+  /** Log sinkronisasi ERM IGD (semua kunjungan / per no_rawat). */
+  public function getErmigdlog($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermIgd();
+    $filter = ($no_rawat !== null && $no_rawat !== '') ? $service->normalizeNoRawat($no_rawat) : null;
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $perPage = 20;
+
+    $sync = $this->_ermSync($service);
+    $total = $sync->countLogs($filter);
+    $totalPages = max(1, (int) ceil($total / $perPage));
+    if ($page > $totalPages) {
+      $page = $totalPages;
+    }
+    $logs = $sync->getLogs($filter, $perPage, ($page - 1) * $perPage);
+
+    foreach ($logs as $i => $row) {
+      list($badgeClass) = $this->_ermBadge($row['status'] ?? '');
+      $logs[$i]['badge_class'] = $badgeClass;
+      $logs[$i]['status_text'] = strtoupper((string) ($row['status'] ?? ''));
+      $logs[$i]['url_detail'] = url([ADMIN, 'satu_sehat', 'ermigd', convertNorawat((string) ($row['no_rawat'] ?? ''))]);
+      $logs[$i]['request'] = $this->_ermPrettify((string) ($row['request'] ?? ''));
+      $logs[$i]['response'] = $this->_ermPrettify((string) ($row['response'] ?? ''));
+    }
+
+    $start = $total > 0 ? ($page - 1) * $perPage + 1 : 0;
+    $end = min($page * $perPage, $total);
+    $showing = $total > 0
+      ? sprintf('Menampilkan %d-%d dari %d log', $start, $end, $total)
+      : 'Belum ada log';
+
+    return $this->_ermDraw('erm.log.html', [
+      'logs' => $logs,
+      'logs_count' => count($logs),
+      'no_rawat' => (string) ($filter ?? ''),
+      'showing' => $showing,
+      'pagination' => $this->_ermPagination(url([ADMIN, 'satu_sehat', 'ermigdlog']), $page, $totalPages, [
+        'no_rawat' => (string) ($filter ?? ''),
+      ]),
+    ], 'ermigd', 'ERM IGD', 'IGD');
+  }
+
+  /** Mapping resource SATUSEHAT per kunjungan IGD + kesiapan mapping master. */
+  public function getErmigdmapping($no_rawat = null)
+  {
+    $this->_ermAssets();
+    $service = $this->_ermIgd();
+    $vars = [
+      'no_rawat' => '',
+      'counters' => $this->_ermCounters(),
+    ];
+
+    if ($no_rawat !== null && $no_rawat !== '') {
+      $no_rawat = $service->normalizeNoRawat($no_rawat);
+      $emr = $service->getEmr($no_rawat);
+      if (empty($emr['reg_periksa'])) {
+        $this->notify('failure', 'Kunjungan IGD %s tidak ditemukan.', $no_rawat);
+        redirect(url([ADMIN, 'satu_sehat', 'ermigd']));
+      }
+
+      $visitMapping = $service->mapping()->getVisitMapping($no_rawat);
+      $sections = $service->getErmSections($no_rawat);
+      list($badgeClass, $badgeText) = $this->_ermBadge($visitMapping['status_kirim'] ?? '');
+      $resourceMap = json_decode((string) ($visitMapping['resource_map'] ?? ''), true);
+      $noRawatEnc = convertNorawat($no_rawat);
+
+      $vars = array_merge($vars, [
+        'no_rawat' => $no_rawat,
+        'no_rawat_enc' => $noRawatEnc,
+        'identitas' => $sections['identitas_pasien']['rows'],
+        'badge_class' => $badgeClass,
+        'status_text' => $badgeText,
+        'patient_id' => (string) ($visitMapping['patient_id'] ?? ($emr['mapping']['patient_id'] ?? '')),
+        'encounter_id' => (string) ($visitMapping['encounter_id'] ?? ''),
+        'practitioner_id' => (string) ($visitMapping['practitioner_id'] ?? ($emr['mapping']['practitioner_id'] ?? '')),
+        'location_id' => (string) ($visitMapping['location_id'] ?? ($emr['mapping']['location_id'] ?? '')),
+        'organization_id' => (string) ($visitMapping['organization_id'] ?? ($emr['mapping']['organization_id'] ?? '')),
+        'has_resource_map' => is_array($resourceMap) && !empty($resourceMap),
+        'resource_map_json' => is_array($resourceMap)
+          ? htmlspecialchars(json_encode($resourceMap, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_QUOTES | ENT_HTML5, 'UTF-8')
+          : '',
+        'url_save' => url([ADMIN, 'satu_sehat', 'ermigdmapping', $noRawatEnc]),
+        'url_back' => url([ADMIN, 'satu_sehat', 'ermigd', $noRawatEnc]),
+      ]);
+    }
+
+    return $this->_ermDraw('erm.mapping.html', $vars, 'ermigd', 'ERM IGD', 'IGD');
+  }
+
+  /** Sinkronisasi (ajax): kirim Bundle transaction ERM IGD ke SATUSEHAT. */
+  public function postErmigdsync($no_rawat = null)
+  {
+    header('Content-Type: application/json; charset=utf-8');
+    $service = $this->_ermIgd();
+    if ($no_rawat === null || $no_rawat === '') {
+      $no_rawat = (string) ($_POST['no_rawat'] ?? '');
+    }
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    if ($no_rawat === '') {
+      http_response_code(422);
+      echo json_encode(['status' => 'error', 'message' => 'No. rawat wajib diisi.'], JSON_UNESCAPED_UNICODE);
+      exit;
+    }
+
+    $result = $this->_ermSync($service)->sync($no_rawat);
+    echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+  }
+
+  /** Simpan mapping resource SATUSEHAT per kunjungan IGD. */
+  public function postErmigdmapping($no_rawat = null)
+  {
+    $service = $this->_ermIgd();
+    if ($no_rawat === null || $no_rawat === '') {
+      $no_rawat = (string) ($_POST['no_rawat'] ?? '');
+    }
+    $no_rawat = $service->normalizeNoRawat($no_rawat);
+    if ($no_rawat === '') {
+      $this->notify('failure', 'No. rawat wajib diisi.');
+      redirect(url([ADMIN, 'satu_sehat', 'ermigdmapping']));
+    }
+
+    $fields = [];
+    foreach (['patient_id', 'encounter_id', 'practitioner_id', 'location_id', 'organization_id'] as $field) {
+      $fields[$field] = trim((string) ($_POST[$field] ?? ''));
+    }
+    $service->mapping()->saveVisitMapping($no_rawat, $fields);
+    $this->notify('success', 'Mapping resource SATUSEHAT untuk %s telah disimpan.', $no_rawat);
+    redirect(url([ADMIN, 'satu_sehat', 'ermigdmapping', convertNorawat($no_rawat)]));
+  }
+
+  // ------------------------------------------------------------------
+  // Hook untuk ErmFromSatuSehatHelper (plugin klaim_bpjs_satusehat).
+  // ------------------------------------------------------------------
+
+  private function _getEmrByNoRawat($no_rawat)
+  {
+    return $this->_ermRalan()->getEmr($no_rawat);
+  }
+
+  private function _buildLocalEncounterFhir($no_rawat, $emr = null, $ermType = null)
+  {
+    return $this->_ermRalan()->hookGroup($no_rawat, 'encounter', $ermType, $emr);
+  }
+
+  private function _buildLocalConditionFhir($no_rawat, $emr = null, $encounter = null)
+  {
+    return $this->_ermRalan()->hookGroup($no_rawat, 'condition', null, $emr);
+  }
+
+  private function _buildLocalClinicalImpressionFhir($no_rawat, $emr = null, $encounter = null, $condition = null)
+  {
+    return $this->_ermRalan()->hookGroup($no_rawat, 'clinical_impression', null, $emr);
+  }
+
+  private function _buildLocalProcedureFhir($no_rawat, $emr = null, $encounter = null)
+  {
+    return $this->_ermRalan()->hookGroup($no_rawat, 'procedure', null, $emr);
+  }
+
+  private function _buildLocalMedicationFhir($no_rawat, $emr = null, $encounter = null)
+  {
+    return $this->_ermRalan()->hookGroup($no_rawat, 'medication', null, $emr);
+  }
+
+  private function _buildLocalLaboratoryFhir($no_rawat, $emr = null, $encounter = null)
+  {
+    return $this->_ermRalan()->hookGroup($no_rawat, 'laboratory', null, $emr);
+  }
+
+  private function _buildLocalRadiologyFhir($no_rawat, $emr = null, $encounter = null)
+  {
+    return $this->_ermRalan()->hookGroup($no_rawat, 'radiology', null, $emr);
+  }
+
+  private function _buildCompositionBundle($no_rawat, $emr = null, $payloads = null)
+  {
+    return $this->_ermRalan()->buildDocumentBundle($no_rawat, is_array($payloads) ? $payloads : null);
   }
 
   private function _addHeaderFiles()

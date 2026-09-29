@@ -1,0 +1,79 @@
+{* Pratinjau Bundle FHIR ERM Rawat Jalan *}
+<div class="erm-ralan erm-bundle">
+  <div class="row er-ralan-toolbar">
+    <div class="col-md-8">
+      <h4 class="erm-title"><i class="fa fa-code"></i> Bundle FHIR {$erm_label|e} <small>{$no_rawat|e}</small></h4>
+    </div>
+    <div class="col-md-4 text-right">
+      <div class="btn-group btn-group-sm">
+        <a href="{$url_ermralan}" class="btn btn-default"><i class="fa fa-list"></i> Kunjungan</a>
+        <a href="{$url_log}" class="btn btn-default"><i class="fa fa-history"></i> Log Sinkronisasi</a>
+        <a href="{$url_mapping}" class="btn btn-default"><i class="fa fa-plug"></i> Mapping Resource</a>
+      </div>
+    </div>
+  </div>
+
+  {if: $no_rawat}
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <strong>{$erm_label|e}</strong> &middot; {$no_rawat|e}
+      <span class="pull-right">
+        <button type="button" class="btn btn-xs btn-default erm-copy-btn" data-target="#erm-bundle-json"><i class="fa fa-copy"></i> Salin JSON</button>
+        <button type="button" class="btn btn-success btn-sm erm-sync-btn" data-url="{$url_sync}" data-no-rawat="{$no_rawat_enc}" data-erm-label="{$erm_label|e}"><i class="fa fa-paper-plane"></i> Kirim ke SATUSEHAT</button>
+      </span>
+    </div>
+    <div class="panel-body">
+      <div id="erm-sync-result"></div>
+      {if: $validation_errors}
+      <div class="alert alert-danger">
+        <strong>Bundle belum valid:</strong>
+        <ul>
+          {loop: $validation_errors as $error}
+          <li>{$error|e}</li>
+          {/loop}
+        </ul>
+      </div>
+      {/if}
+      {if: $validation_warnings}
+      <div class="alert alert-warning">
+        <strong>Perhatian:</strong>
+        <ul>
+          {loop: $validation_warnings as $warning}
+          <li>{$warning|e}</li>
+          {/loop}
+        </ul>
+      </div>
+      {/if}
+
+      <h5>Ringkasan Resource <span class="label label-default">{$jumlah_entry} entries</span></h5>
+      <table class="table table-condensed table-striped table-bordered erm-summary">
+        <thead>
+          <tr><th>ResourceType</th><th class="text-center">Jumlah</th></tr>
+        </thead>
+        <tbody>
+          {loop: $resource_summary as $row}
+          <tr>
+            <td>{$row.type|e}</td>
+            <td class="text-center">{$row.jumlah|e}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+
+      <h5>Bundle JSON (type = transaction)</h5>
+      <pre id="erm-bundle-json" class="erm-json">{$bundle_json}</pre>
+    </div>
+    <div class="panel-footer">
+      <a href="{$url_back}" class="btn btn-default btn-sm"><i class="fa fa-arrow-left"></i> Kembali ke detail ERM</a>
+    </div>
+  </div>
+  {else}
+  <div class="panel panel-default">
+    <div class="panel-heading"><i class="fa fa-info-circle"></i> Pilih Kunjungan</div>
+    <div class="panel-body">
+      <p class="text-muted">Buka pratinjau Bundle dari daftar kunjungan {$erm_jenis|e}.</p>
+      <a href="{$url_ermralan}" class="btn btn-primary btn-sm"><i class="fa fa-list"></i> Ke Daftar Kunjungan</a>
+    </div>
+  </div>
+  {/if}
+</div>
