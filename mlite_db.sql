@@ -2962,6 +2962,44 @@ CREATE TABLE `mlite_satu_sehat_mapping_rad` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
+CREATE TABLE `mlite_satu_sehat_erm_ralan` (
+  `no_rawat` varchar(20) NOT NULL,
+  `patient_id` varchar(64) DEFAULT '',
+  `encounter_id` varchar(64) DEFAULT '',
+  `practitioner_id` varchar(64) DEFAULT '',
+  `location_id` varchar(64) DEFAULT '',
+  `organization_id` varchar(64) DEFAULT '',
+  `resource_map` text,
+  `status_kirim` varchar(20) DEFAULT 'belum',
+  `tgl_kirim` datetime DEFAULT NULL,
+  `keterangan` text,
+  PRIMARY KEY (`no_rawat`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_satu_sehat_erm_log` (
+  `id` varchar(40) NOT NULL,
+  `no_rawat` varchar(20) DEFAULT '',
+  `status` varchar(20) DEFAULT '',
+  `http_code` int(11) DEFAULT 0,
+  `duration_ms` int(11) DEFAULT 0,
+  `jumlah_resource` int(11) DEFAULT 0,
+  `message` text,
+  `request` text,
+  `response` text,
+  `created_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_satu_sehat_mapping_tindakan` (
+  `kd_jenis_prw` varchar(15) NOT NULL,
+  `kode_ktpl` varchar(50) DEFAULT '',
+  `nama_ktpl` varchar(255) DEFAULT '',
+  PRIMARY KEY (`kd_jenis_prw`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
 CREATE TABLE `mlite_satu_sehat_response` (
   `no_rawat` varchar(17) NOT NULL,
   `id_encounter` varchar(50) DEFAULT NULL,
@@ -3091,7 +3129,7 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("31","settings","admin_mode","complex"),
 ("32","settings","input_kasir","tidak"),
 ("33","settings","editor","wysiwyg"),
-("34","settings","version","6.3.4"),
+("34","settings","version","6.3.8"),
 ("35","settings","update_check",""),
 ("36","settings","update_changelog",""),
 ("37","settings","update_version","0"),
@@ -3272,7 +3310,11 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("217","bpjs_emr","kecamatan",""),
 ("218","satu_sehat","imaging",""),
 ("219","farmasi","pajak_obat_persen","0"),
-("220","settings","billing_parsial","false");
+("220","settings","billing_parsial","false"),
+("221","satu_sehat","rme_authurl","https://api-satusehat.kemkes.go.id/oauth2/v1"),
+("222","satu_sehat","chlurl","https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/chl"),
+("223","satu_sehat","shlurl","https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/shl"),
+("224","satu_sehat","rme_emergency_fallback","");
 
 
 CREATE TABLE `mlite_subrekening` (

@@ -2641,10 +2641,103 @@ switch ($version) {
         }
         $return = '6.3.7';
         break;
+
+    case '6.3.7':
+        // Sub modul ERM SATUSEHAT (Rawat Jalan / Rawat Inap / IGD) + RME Nasional.
+        // Tabel pemetaan kunjungan, log sinkronisasi, dan mapping tindakan KPTL.
+        if (DBDRIVER == 'sqlite') {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_erm_ralan` (
+              `no_rawat` TEXT PRIMARY KEY,
+              `patient_id` TEXT DEFAULT '',
+              `encounter_id` TEXT DEFAULT '',
+              `practitioner_id` TEXT DEFAULT '',
+              `location_id` TEXT DEFAULT '',
+              `organization_id` TEXT DEFAULT '',
+              `resource_map` TEXT,
+              `status_kirim` TEXT DEFAULT 'belum',
+              `tgl_kirim` datetime DEFAULT NULL,
+              `keterangan` TEXT
+            );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_erm_log` (
+              `id` TEXT PRIMARY KEY,
+              `no_rawat` TEXT DEFAULT '',
+              `status` TEXT DEFAULT '',
+              `http_code` INTEGER DEFAULT 0,
+              `duration_ms` INTEGER DEFAULT 0,
+              `jumlah_resource` INTEGER DEFAULT 0,
+              `message` TEXT,
+              `request` TEXT,
+              `response` TEXT,
+              `created_at` datetime DEFAULT NULL
+            );");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_mapping_tindakan` (
+              `kd_jenis_prw` TEXT PRIMARY KEY,
+              `kode_ktpl` TEXT DEFAULT '',
+              `nama_ktpl` TEXT DEFAULT ''
+            );");
+        } else {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_erm_ralan` (
+              `no_rawat` varchar(20) NOT NULL,
+              `patient_id` varchar(64) DEFAULT '',
+              `encounter_id` varchar(64) DEFAULT '',
+              `practitioner_id` varchar(64) DEFAULT '',
+              `location_id` varchar(64) DEFAULT '',
+              `organization_id` varchar(64) DEFAULT '',
+              `resource_map` text,
+              `status_kirim` varchar(20) DEFAULT 'belum',
+              `tgl_kirim` datetime DEFAULT NULL,
+              `keterangan` text,
+              PRIMARY KEY (`no_rawat`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_erm_log` (
+              `id` varchar(40) NOT NULL,
+              `no_rawat` varchar(20) DEFAULT '',
+              `status` varchar(20) DEFAULT '',
+              `http_code` integer DEFAULT 0,
+              `duration_ms` integer DEFAULT 0,
+              `jumlah_resource` integer DEFAULT 0,
+              `message` text,
+              `request` text,
+              `response` text,
+              `created_at` datetime DEFAULT NULL,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_mapping_tindakan` (
+              `kd_jenis_prw` varchar(15) NOT NULL,
+              `kode_ktpl` varchar(50) DEFAULT '',
+              `nama_ktpl` varchar(255) DEFAULT '',
+              PRIMARY KEY (`kd_jenis_prw`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
+        }
+
+        // Pengaturan plugin Satu Sehat untuk RME Nasional (ChaRME).
+        $settings_satu_sehat = [
+            ['satu_sehat', 'rme_authurl', 'https://api-satusehat.kemkes.go.id/oauth2/v1'],
+            ['satu_sehat', 'chlurl', 'https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/chl'],
+            ['satu_sehat', 'shlurl', 'https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/shl'],
+            ['satu_sehat', 'rme_emergency_fallback', ''],
+        ];
+        foreach ($settings_satu_sehat as $setting) {
+            try {
+                if (DBDRIVER == 'sqlite') {
+                    $stmt = $this->core->db()->pdo()->prepare("SELECT COUNT(*) FROM mlite_settings WHERE module = ? AND field = ?");
+                    $stmt->execute([$setting[0], $setting[1]]);
+                    if (!$stmt->fetchColumn()) {
+                        $ins = $this->core->db()->pdo()->prepare("INSERT INTO mlite_settings (module, field, value) VALUES (?, ?, ?)");
+                        $ins->execute($setting);
+                    }
+                } else {
+                    $this->core->db()->pdo()->exec("INSERT IGNORE INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('" . $setting[0] . "', '" . $setting[1] . "', '" . $setting[2] . "')");
+                }
+            } catch (\Exception $e) {}
+        }
+
+        $return = '6.3.8';
+        break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.3.7';
+        $return = '6.3.8';
     }
 
 return $return;
