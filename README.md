@@ -159,3 +159,34 @@ Ini harus diubah segera setelah login untuk alasan keamanan. Juga dapat menggant
 ## Demo
 
 Untuk Demo dan Info lebih lanjut di <https://mlite.id>
+
+## Prosedur Rilis Versi Baru (untuk maintainer)
+
+Versi rilis GitHub **mengikuti persis** `settings.version` yang dideklarasikan di `mlite_db.sql` (record id 34). Tidak ada auto-increment: workflow `.github/workflows/release.yml` hanya me-release jika versi tersebut belum pernah ditandai, dan push biasa tanpa bump versi **tidak** menghasilkan rilis baru.
+
+Untuk merilis versi baru (contoh: dari `6.3.11` ke `6.3.12`):
+
+1. **Naikkan versi database** di `mlite_db.sql`:
+
+   ```sql
+   ("34","settings","version","6.3.12"),
+   ```
+
+2. **Tambahkan jalur upgrade** di `systems/upgrade.php` agar instalasi lama ikut naik:
+
+   ```php
+   case '6.3.11':
+       // migrasi DB untuk v6.3.12 (jika ada)
+       $return = '6.3.12';
+       break;
+   ```
+
+   Perhatikan juga `case` terakhir dan fallback `if (!isset($return) || !$return)` di akhir file — keduanya harus dikembalikan ke versi terbaru.
+
+3. **Commit dan push ke `master`.** Workflow otomatis akan membuat tag `6.3.12` dan GitHub Release `v6.3.12`.
+
+### Aturan penting
+
+- Jangan pernah me-release versi yang tag-nya sudah ada. Jika workflow mendeteksi `settings.version` sudah dipakai tag, CI akan **gagal** dengan pesan perbaikan.
+- `6.3.9` dan `6.3.10` sudah terlanjur dipakai oleh workflow lama (auto-increment), sehingga tidak boleh dipakai lagi — itulah alasan penyelarasan dimulai dari `6.3.11`.
+- Instalasi yang menjalankan menu *Pembaruan* akan mengeksekusi `systems/upgrade.php` berdasarkan versi di database mereka, sehingga setiap versi harus punya `case` yang mengembalikan versi berikutnya.

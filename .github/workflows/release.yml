@@ -17,6 +17,33 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validasi versi
+        run: |
+          set -euo pipefail
+
+          # Versi sumber kebenaran ada di mlite_db.sql: ("34","settings","version","x.y.z")
+          repo_ver="$(grep -oE '"settings","version","[0-9]+(\.[0-9]+)*"' mlite_db.sql | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)"
+
+          if [ -z "$repo_ver" ]; then
+            echo "::error::settings.version tidak ditemukan di mlite_db.sql."
+            exit 1
+          fi
+
+          # Commit ini memang sudah ditandai? → wajar, biarkan lanjut.
+          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+            echo "Commit HEAD sudah bertag $repo_ver, validasi dilewati."
+            exit 0
+          fi
+
+          # Versi di-bump tetapi tag-nya sudah ada? → human error, gagalkan CI.
+          if git rev-parse -q --verify "refs/tags/$repo_ver" >/dev/null; then
+            echo "::error::Tag v$repo_ver sudah ada, tetapi settings.version di mlite_db.sql masih $repo_ver."
+            echo "::error::Naikkan settings.version di mlite_db.sql (dan tambahkan case di systems/upgrade.php), lalu push ulang."
+            exit 1
+          fi
+
+          echo "Versi $repo_ver belum dipakai tag mana pun. OK."
+
       - name: Ambil versi dari repo
         id: version
         run: |
