@@ -1,0 +1,66 @@
+name: Auto Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Hitung versi berikutnya
+        id: version
+        run: |
+          set -euo pipefail
+
+          # Sudah ditandai di commit ini? → tidak perlu release ganda
+          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Commit ini sudah memiliki tag, melepas release."
+            exit 0
+          fi
+
+          # Versi tertinggi antara tag git dan settings.version di mlite_db.sql
+          sql_ver="$(grep -oE '"settings","version","[0-9]+(\.[0-9]+)*"' mlite_db.sql | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)"
+          tag_ver="$(git tag --list | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n1 || true)"
+
+          current="$(printf '%s\n%s\n' "$sql_ver" "$tag_ver" | grep -E '^[0-9]' | sort -V | tail -n1)"
+          if [ -z "$current" ]; then
+            current="0.0.0"
+          fi
+
+          IFS=. read -r major minor patch <<EOF
+          $current
+          EOF
+          next="${major}.${minor}.$(( ${patch:-0} + 1 ))"
+
+          echo "Versi saat ini: ${current} → versi rilis baru: ${next}"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "tag=${next}" >> "$GITHUB_OUTPUT"
+
+      - name: Buat tag dan release
+        if: steps.version.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag "$TAG"
+          git push origin "$TAG"
+
+          gh release create "$TAG" \
+            --title "v${TAG}" \
+            --generate-notes
