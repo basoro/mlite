@@ -7656,13 +7656,18 @@ class Admin extends AdminModule
 
   /**
    * RME Nasional (ajax): kembalikan URL RME Nasional SATUSEHAT untuk sebuah
-   * kunjungan rawat jalan. Alur: token -> SHL; bila consent belum ada,
-   * kembalikan verification_url CHL agar pasien memberi persetujuan dulu.
+   * kunjungan (rawat jalan / IGD / rawat inap). Alur: token -> SHL; bila
+   * consent belum ada, buat CHL (bypass EMERGENCY hanya untuk pasien IGD /
+   * fallback aktif) lalu coba buka RME sekali lagi.
    */
   public function postSatusehatrme($no_rawat = null)
   {
     header('Content-Type: application/json; charset=utf-8');
-    $service = $this->_ermRalan();
+    $jenis = trim((string) ($_POST['jenis'] ?? 'ralan'));
+    if (!in_array($jenis, ['ralan', 'igd', 'ranap'], true)) {
+      $jenis = 'ralan';
+    }
+    $service = $jenis === 'igd' ? $this->_ermIgd() : ($jenis === 'ranap' ? $this->_ermRanap() : $this->_ermRalan());
     if ($no_rawat === null || $no_rawat === '') {
       $no_rawat = (string) ($_POST['no_rawat'] ?? '');
     }
