@@ -1,0 +1,235 @@
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">Laporan Penjualan Obat Rawat Jalan</h3>
+  </div>
+  <div class="panel-body">
+    <form method="get" action="{?= url([ADMIN,'kasir_rawat_jalan','obatsales']) ?}">
+      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+      <div class="row">
+        <div class="col-md-4">
+          <label>Mulai</label>
+          <input type="text" class="form-control tanggal_jam" name="awal" value="{?=isset_or($awal)?}">
+        </div>
+        <div class="col-md-4">
+          <label>Selesai</label>
+          <input type="text" class="form-control tanggal_jam" name="akhir" value="{?=isset_or($akhir)?}">
+        </div>
+        <div class="col-md-4">
+          <label>&nbsp;</label>
+          <div>
+            <button type="submit" class="btn btn-primary">Terapkan</button>
+            <a class="btn btn-default" href="{?= url([ADMIN,'kasir_rawat_jalan','obatsalesexport']) ?}&awal={?=isset_or($awal)?}&akhir={?=isset_or($akhir)?}">Export CSV</a>
+            <button type="button" class="btn btn-warning" onclick="printContent('laporan')">Cetak</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <hr>
+    <div id="kop_print" style="display:none;">
+      <div style="width:960px;">
+        <table style="width:100%;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">
+                <img src="{?=url()?}/{?=isset_or($settings.logo)?}" height="80px" style="margin-right: 20px;" alt="">
+              </th>
+              <th style="text-align:left;" width="100%">
+                  <p style="margin:0;">
+                    <span style="font-size: 22px;">{?=isset_or($settings.nama_instansi)?}</span><br>
+                    <span style="font-size: 14px;">Alamat: {?=isset_or($settings.alamat)?} - {?=isset_or($settings.kota)?} - {?=isset_or($settings.propinsi)?}</span><br>
+                    <span style="font-size: 14px;">Telepon: {?=isset_or($settings.nomor_telepon)?} - Email: {?=isset_or($settings.email)?}</span>
+                  </p>
+              </th>
+            </tr>
+            <tr>
+              <th colspan="2">
+                <hr style="border-bottom: 2px solid #000;padding-top:3px;">
+              </th>
+            </tr>
+            <tr>
+              <th colspan="2">
+                <div style="text-align:center;font-size:16px;margin:10px 0 0 0;"><b>LAPORAN PENJUALAN OBAT RAWAT JALAN</b></div>
+                <div style="text-align:center;font-size:13px;margin:4px 0 10px 0;">Periode {?=isset_or($awal)?} s/d {?=isset_or($akhir)?}</div>
+              </th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+
+    <div id="laporan">
+      <h4>Rekap Per Obat</h4>
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th width="40px;">No.</th>
+            <th width="110px;">Kode</th>
+            <th>Nama Obat/BHP</th>
+            <th width="90px;">Jml Terjual</th>
+            <th width="120px;">Harga Beli</th>
+            <th width="130px;">Total Harga Beli</th>
+            <th width="140px;">Total Penjualan</th>
+            <th width="130px;">Estimasi Margin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $rekap}
+          <tr>
+            <td>{?=$counter+1?}.</td>
+            <td>{?=isset_or($value.kode_brng)?}</td>
+            <td>{?=isset_or($value.nama_brng)?}</td>
+            <td>{?= number_format(isset_or($value.jml,0),0,',','.')?}</td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_beli,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.sub_harga_beli,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.total_jual,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.total_jual,0) - isset_or($value.sub_harga_beli,0),2,',','.')?}</span></td>
+          </tr>
+          {/loop}
+          {if: empty($rekap)}
+          <tr><td colspan="8" class="text-center">Tidak ada penjualan obat pada periode ini.</td></tr>
+          {/if}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3">Total</th>
+            <th>{?= number_format(isset_or($total_qty,0),0,',','.')?}</th>
+            <th></th>
+            <th>Rp. <span class="pull-right">{?= number_format(isset_or($total_beli,0),2,',','.')?}</span></th>
+            <th>Rp. <span class="pull-right">{?= number_format(isset_or($total_jual,0),2,',','.')?}</span></th>
+            <th>Rp. <span class="pull-right">{?= number_format(isset_or($total_margin,0),2,',','.')?}</span></th>
+          </tr>
+        </tfoot>
+      </table>
+
+      <hr>
+      <h4>Rincian Penjualan (dikelompokkan per No. Rawat &amp; Pasien)</h4>
+      {loop: $groups as $gi => $group}
+      <table class="table table-bordered" style="margin-bottom:0;">
+        <thead>
+          <tr class="info">
+            <th style="color:#000;">
+              {?=$gi+1?}. No. Rawat: <strong>{?=isset_or($group.no_rawat)?}</strong>
+              &nbsp;|&nbsp; No. RM: <strong>{?=isset_or($group.no_rkm_medis)?}</strong>
+              &nbsp;|&nbsp; Pasien: <strong>{?=isset_or($group.nm_pasien)?}</strong>
+              &nbsp;|&nbsp; Tanggal: {?=isset_or($group.tgl_perawatan)?} {?=isset_or($group.jam)?}
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <table class="table table-striped table-bordered" style="margin-bottom:0;" width="100%">
+        <thead>
+          <tr>
+            <th width="40px;">No.</th>
+            <th width="90px;">Tanggal</th>
+            <th width="70px;">Jam</th>
+            <th width="110px;">Kode</th>
+            <th>Nama Obat/BHP</th>
+            <th width="70px;">Jml</th>
+            <th width="110px;">Harga Beli</th>
+            <th width="115px;">Subtotal Beli</th>
+            <th width="110px;">Harga Jual</th>
+            <th width="70px;">Embalase</th>
+            <th width="70px;">Tuslah</th>
+            <th width="120px;">Subtotal Jual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="active">
+            <td colspan="12"><strong style="color:#000;">Obat Non-Racikan</strong></td>
+          </tr>
+          {loop: $group.non_racikan as $value}
+          <tr>
+            <td>{?=$counter+1?}.</td>
+            <td>{?=isset_or($value.tgl_perawatan)?}</td>
+            <td>{?=isset_or($value.jam)?}</td>
+            <td>{?=isset_or($value.kode_brng)?}</td>
+            <td>{?= !empty($value.nama_brng) ? $value.nama_brng : $value.kode_brng ?}</td>
+            <td>{?= number_format(isset_or($value.jml,0),0,',','.')?}</td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_beli,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.sub_harga_beli,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_jual,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.embalase,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.tuslah,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.total,0),2,',','.')?}</span></td>
+          </tr>
+          {/loop}
+          {if: empty($group.non_racikan)}
+          <tr><td colspan="12" class="text-center" style="color:#999;">Tidak ada obat non-racikan.</td></tr>
+          {/if}
+          <tr class="warning">
+            <td colspan="12"><strong style="color:#000;">Obat Racikan</strong></td>
+          </tr>
+          {loop: $group.racikan as $value}
+          <tr style="background-color:#fcf8e3;">
+            <td>{?=$counter+1?}.</td>
+            <td>{?=isset_or($value.tgl_perawatan)?}</td>
+            <td>{?=isset_or($value.jam)?}</td>
+            <td>{?=isset_or($value.kode_brng)?}</td>
+            <td>
+              {?= !empty($value.nama_brng) ? $value.nama_brng : $value.kode_brng ?}
+              <span class="label label-warning" style="margin-left:4px;">{?=isset_or($value.racikan_label)?}</span>
+            </td>
+            <td>{?= number_format(isset_or($value.jml,0),0,',','.')?}</td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_beli,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.sub_harga_beli,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_jual,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.embalase,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.tuslah,0),2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.total,0),2,',','.')?}</span></td>
+          </tr>
+          {/loop}
+          {if: empty($group.racikan)}
+          <tr><td colspan="12" class="text-center" style="color:#999;">Tidak ada obat racikan.</td></tr>
+          {/if}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="7">Subtotal {?=isset_or($group.no_rawat)?}</th>
+            <th>Rp. <span class="pull-right">{?= number_format(isset_or($group.subtotal_beli,0),2,',','.')?}</span></th>
+            <th colspan="3"></th>
+            <th>Rp. <span class="pull-right">{?= number_format(isset_or($group.subtotal_jual,0),2,',','.')?}</span></th>
+          </tr>
+        </tfoot>
+      </table>
+      <div style="height:12px;"></div>
+      {/loop}
+      {if: empty($groups)}
+      <div class="text-center" style="padding:20px;color:#999;">Tidak ada data pada periode ini.</div>
+      {/if}
+      <table class="table table-striped table-bordered" width="100%">
+        <tfoot>
+          <tr>
+            <th colspan="7">Total Keseluruhan (Jml: {?= number_format(isset_or($total_qty,0),0,',','.')?})</th>
+            <th>Rp. <span class="pull-right">{?= number_format(isset_or($total_beli,0),2,',','.')?}</span></th>
+            <th colspan="3"></th>
+            <th>Rp. <span class="pull-right">{?= number_format(isset_or($total_jual,0),2,',','.')?}</span></th>
+          </tr>
+          <tr>
+            <th colspan="12">Total Embalase: Rp. {?= number_format(isset_or($total_embalase,0),2,',','.')?} &nbsp;|&nbsp; Total Tuslah: Rp. {?= number_format(isset_or($total_tuslah,0),2,',','.')?} &nbsp;|&nbsp; Estimasi Margin (Jual - Beli): Rp. {?= number_format(isset_or($total_margin,0),2,',','.')?}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <script>
+      function printContent(el){
+        var restore = document.body.innerHTML;
+        var kop = document.getElementById('kop_print') ? document.getElementById('kop_print').innerHTML : '';
+        var content = document.getElementById(el).innerHTML;
+        document.body.innerHTML = kop + content;
+        window.print();
+        document.body.innerHTML = restore;
+      }
+    </script>
+    <script type="text/javascript">
+      $(function () {
+          $('.tanggal_jam').datetimepicker({
+            defaultDate: '{?=date('Y-m-d H:i:s')?}',
+            format: 'YYYY-MM-DD HH:mm:ss',
+            locale: 'id'
+          });
+      });
+    </script>
+  </div>
+</div>
