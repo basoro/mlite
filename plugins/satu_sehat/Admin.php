@@ -6742,7 +6742,6 @@ class Admin extends AdminModule
       ->where('reg_periksa.tgl_registrasi', '>=', $start_date)
       ->where('reg_periksa.tgl_registrasi', '<=', $end_date)
       ->where('stts', '!=', 'Batal')
-      ->where('status_lanjut', 'Ralan')
       ->count();
 
     $query = $this->db('reg_periksa')
@@ -6751,8 +6750,7 @@ class Admin extends AdminModule
       ->leftJoin('pegawai', 'pegawai.nik = reg_periksa.kd_dokter')
       ->where('reg_periksa.tgl_registrasi', '>=', $start_date)
       ->where('reg_periksa.tgl_registrasi', '<=', $end_date)
-      ->where('stts', '!=', 'Batal')
-      ->where('status_lanjut', 'Ralan');
+      ->where('stts', '!=', 'Batal');
 
     if ($searchTerm) {
       $query->where(function ($q) use ($searchTerm) {
