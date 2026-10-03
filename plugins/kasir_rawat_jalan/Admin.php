@@ -1133,14 +1133,35 @@ class Admin extends AdminModule
       $jumlah_total_obat = 0;
       $jumlah_total_embalase = 0;
       $jumlah_total_tuslah = 0;
+      $jumlah_total_harga_beli = 0;
       $no_obat = 1;
       foreach ($rows_pemberian_obat as $row) {
         $row['nomor'] = $no_obat++;
         $databarang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
         $row['nama_brng'] = $databarang['nama_brng'];
+
+        // Harga beli: nilai terekam saat pemberian obat, fallback ke master databarang
+        $harga_beli = floatval($row['h_beli'] ?? 0);
+        if ($harga_beli <= 0) {
+          $harga_beli = floatval($databarang['h_beli'] ?? 0);
+        }
+        $jml_obat = floatval($row['jml']);
+        $row['harga_beli'] = $harga_beli;
+        $row['sub_harga_beli'] = $harga_beli * $jml_obat;
+
+        // Harga jual ke pasien (satuan): biaya_obat bila terisi, dihitung dari total bila kosong
+        $harga_jual = floatval($row['biaya_obat'] ?? 0);
+        if ($harga_jual <= 0 && $jml_obat > 0) {
+          $harga_jual = (floatval($row['total']) - floatval($row['embalase']) - floatval($row['tuslah'])) / $jml_obat;
+        }
+        $row['harga_jual'] = $harga_jual;
+        $row['is_header'] = 0;
+        $row['is_ingredient'] = 0;
+
         $jumlah_total_obat += floatval($row['total']);
         $jumlah_total_embalase += floatval($row['embalase']);
         $jumlah_total_tuslah += floatval($row['tuslah']);
+        $jumlah_total_harga_beli += $harga_beli * $jml_obat;
         $detail_pemberian_obat[] = $row;
       }
 
@@ -1160,34 +1181,49 @@ class Admin extends AdminModule
         $total_racikan = 0;
         $total_embalase_racikan = 0;
         $total_tuslah_racikan = 0;
+        $total_harga_beli_racikan = 0;
         $ingredient_rows = [];
 
         foreach ($ingredients_map as $map) {
             $row = $this->db('detail_pemberian_obat')
-                ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
-                ->where('detail_pemberian_obat.no_rawat', $map['no_rawat'])
-                ->where('detail_pemberian_obat.kode_brng', $map['kode_brng'])
-                ->where('detail_pemberian_obat.tgl_perawatan', $map['tgl_perawatan'])
-                ->where('detail_pemberian_obat.jam', $map['jam'])
-                ->where('detail_pemberian_obat.status', 'Ralan')
+                ->where('no_rawat', $map['no_rawat'])
+                ->where('kode_brng', $map['kode_brng'])
+                ->where('tgl_perawatan', $map['tgl_perawatan'])
+                ->where('jam', $map['jam'])
+                ->where('status', 'Ralan')
                 ->oneArray();
 
             if ($row) {
-                $subtotal = $row['total'];
-                
-                $total_racikan += $subtotal;
-                $total_embalase_racikan += $row['embalase'];
-                $total_tuslah_racikan += $row['tuslah'];
-    
-                // Prepare ingredient row (hide prices)
-                $row['nomor'] = ''; 
+                $databarang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
+                $row['nama_brng'] = $databarang['nama_brng'];
+
+                // Harga beli per obat dalam racikan (fallback master databarang)
+                $harga_beli = floatval($row['h_beli'] ?? 0);
+                if ($harga_beli <= 0) {
+                    $harga_beli = floatval($databarang['h_beli'] ?? 0);
+                }
+                $jml_obat = floatval($row['jml']);
+                $row['harga_beli'] = $harga_beli;
+                $row['sub_harga_beli'] = $harga_beli * $jml_obat;
+
+                // Harga jual ke pasien (satuan)
+                $harga_jual = floatval($row['biaya_obat'] ?? 0);
+                if ($harga_jual <= 0 && $jml_obat > 0) {
+                    $harga_jual = (floatval($row['total']) - floatval($row['embalase']) - floatval($row['tuslah'])) / $jml_obat;
+                }
+                $row['harga_jual'] = $harga_jual;
+
+                $total_racikan += floatval($row['total']);
+                $total_embalase_racikan += floatval($row['embalase']);
+                $total_tuslah_racikan += floatval($row['tuslah']);
+                $total_harga_beli_racikan += $harga_beli * $jml_obat;
+
+                // Baris per obat dalam racikan: harga beli & harga jual ikut ditampilkan
+                $row['nomor'] = '';
                 $row['nama_brng'] = str_repeat("\u{00A0}", 4) . ' - ' . $row['nama_brng'];
-                $row['total'] = 0;
-                $row['embalase'] = 0;
-                $row['tuslah'] = 0;
-                $row['biaya_obat'] = 0;
-                $row['jml'] = 0;
-                
+                $row['is_header'] = 0;
+                $row['is_ingredient'] = 1;
+
                 $ingredient_rows[] = $row;
             }
         }
@@ -1205,16 +1241,22 @@ class Admin extends AdminModule
         }
 
         $header_row['total'] = $total_racikan;
+        $header_row['harga_beli'] = $total_harga_beli_racikan;
+        $header_row['sub_harga_beli'] = $total_harga_beli_racikan;
+        $header_row['harga_jual'] = $header_row['biaya_obat'];
+        $header_row['is_header'] = 1;
+        $header_row['is_ingredient'] = 0;
         $header_row['embalase'] = $total_embalase_racikan;
         $header_row['tuslah'] = $total_tuslah_racikan;
         $header_row['no_rawat'] = $header['no_rawat'];
         $header_row['tgl_perawatan'] = $header['tgl_perawatan'];
         $header_row['jam'] = $header['jam'];
-        $header_row['kode_brng'] = '-'; 
-        
+        $header_row['kode_brng'] = '-';
+
         $jumlah_total_obat += $total_racikan;
         $jumlah_total_embalase += $total_embalase_racikan;
         $jumlah_total_tuslah += $total_tuslah_racikan;
+        $jumlah_total_harga_beli += $total_harga_beli_racikan;
 
         $detail_pemberian_obat[] = $header_row;
         
@@ -1343,6 +1385,7 @@ class Admin extends AdminModule
         'jumlah_total_obat' => $jumlah_total_obat,
         'jumlah_total_embalase' => $jumlah_total_embalase,
         'jumlah_total_tuslah' => $jumlah_total_tuslah,
+        'jumlah_total_harga_beli' => $jumlah_total_harga_beli,
         'poliklinik' => htmlspecialchars_array($poliklinik),
         'biaya_registrasi' => htmlspecialchars_array($poliklinik)['registrasi'],
         'detail_pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat),

@@ -535,9 +535,16 @@ function formatDuit($duit){
 
 function hitungUmur($tanggal_lahir)
 {
-  $birthDate = new \DateTime($tanggal_lahir);
-  $today = new \DateTime("today");
   $umur = "0 Th 0 Bl 0 Hr";
+  if (empty($tanggal_lahir)) {
+    return $umur;
+  }
+  try {
+    $birthDate = new \DateTime($tanggal_lahir);
+  } catch (\Exception $e) {
+    return $umur;
+  }
+  $today = new \DateTime("today");
   if ($birthDate < $today) {
     $y = $today->diff($birthDate)->y;
     $m = $today->diff($birthDate)->m;

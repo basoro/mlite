@@ -48,6 +48,7 @@
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
+              <li><a href="#buka-ssrme" data-no_rawat="{?=convertNorawat($value.no_rawat)?}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Buka SSRME</a></li>
               {/if}
             </ul>
           </td>
@@ -468,4 +469,54 @@
   $('body').on('hidden.bs.modal', '.modal', function () {
       $(this).removeData('bs.modal');
   });
+</script>
+
+<div class="modal fade" id="modalSsrmeViewer" tabindex="-1" role="dialog" aria-labelledby="modalSsrmeLabel" data-backdrop="static">
+    <div class="modal-dialog modal-lg" role="document" style="width: 92%; max-width: 1200px;">
+        <div class="modal-content" style="border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div class="modal-header" style="background-color: #00897b; color: #fff; padding: 12px 20px;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; opacity: 0.85;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalSsrmeLabel" style="font-weight: 600;">
+                    <i class="fa fa-heartbeat"></i> Rekam Medis Elektronik Nasional Satu Sehat
+                </h4>
+            </div>
+            <div class="modal-body" id="modalSsrmeBody" style="padding: 15px; min-height: 400px; background: #fdfdfd;">
+                <div style="text-align: center; padding: 50px;">
+                    <i class="fa fa-spinner fa-spin fa-3x" style="color: #00897b;"></i>
+                    <p style="margin-top: 15px; color: #64748b;">Memuat data pasien...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).off('click.ssrme').on('click.ssrme', 'a[href="#buka-ssrme"]', function(e) {
+    e.preventDefault();
+    var norawat = $(this).attr('data-no_rawat');
+    var nama = $(this).attr('data-nm_pasien');
+    var norm = $(this).attr('data-no_rkm_medis');
+
+    $('#modalSsrmeLabel').html('<i class="fa fa-heartbeat"></i> SSRME Satu Sehat: <strong>' + nama + ' (' + norm + ')</strong>');
+    $('#modalSsrmeBody').html(
+        '<div style="text-align: center; padding: 50px;">' +
+        '<i class="fa fa-circle-o-notch fa-spin fa-3x" style="color: #00897b;"></i>' +
+        '<p style="margin-top: 15px; color: #64748b;">Menghubungkan ke Satu Sehat RME Nasional...</p>' +
+        '</div>'
+    );
+    $('#modalSsrmeViewer').modal('show');
+
+    var url = mlite.url + '/' + mlite.admin + '/satu_sehat/rme/' + norawat + '?t=' + mlite.token;
+    $.get(url, function(html) {
+        $('#modalSsrmeBody').html(html);
+    }).fail(function() {
+        $('#modalSsrmeBody').html(
+            '<div class="alert alert-danger" style="margin: 20px;">' +
+            '<i class="fa fa-exclamation-circle"></i> Gagal memuat tampilan SSRME. Silakan coba lagi.' +
+            '</div>'
+        );
+    });
+});
 </script>

@@ -242,38 +242,54 @@
                 <tr>
                   <th width="20px;">No.</th>
                   <th>Nama Obat/BHP</th>
-                  <th>Jumlah</th>
-                  <th>Harga</th>
-                  <th>Aksi</th>
+                  <th width="60px;">Jumlah</th>
+                  <th width="120px;">Harga Beli</th>
+                  <th width="120px;">Harga Jual</th>
+                  <th width="130px;">Subtotal</th>
+                  <th width="110px;">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {loop: $detail_pemberian_obat}
-                <tr>
+                <tr {if: isset_or($value.is_header)}class="info"{/if}>
                   <td>{?=isset_or($value.nomor)?}</td>
-                  <td>{?=isset_or($value.nama_brng)?}</td>
+                  <td {if: isset_or($value.is_header)}style="font-weight:bold;"{/if}>{?=isset_or($value.nama_brng)?}</td>
                   <td>{if: $value.jml > 0}{?=isset_or($value.jml)?}{/if}</td>
-                  <td>Rp. <span class="pull-right">{?= number_format(($value.biaya_obat * $value.jml),2,',','.')?}</span></td>
-                  <td colspan="2">
+                  <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_beli,0),2,',','.')?}</span></td>
+                  <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_jual,0),2,',','.')?}</span></td>
+                  <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.total,0),2,',','.')?}</span></td>
+                  <td>
+                    {if: !isset_or($value.is_header) && !isset_or($value.is_ingredient)}
                     <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-tgl_peresepan="{?=isset_or($value.tgl_perawatan)?}" data-jam_peresepan="{?=isset_or($value.jam)?}" data-kode_brng="{?=isset_or($value.kode_brng)?}" data-jml="{?=isset_or($value.jml)?}" {if: !empty($billing_control.edit_locked)}disabled{/if}><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                    {/if}
                   </td>
                 </tr>
                 {/loop}
               </tbody>
               <tfoot>
                 <tr>
-                  <th colspan="3">Total Embalase</th>
+                  <th colspan="5">Total Embalase</th>
                   <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_embalase,2,',','.')?}</span></th>
                   <th></th>
                 </tr>
                 <tr>
-                  <th colspan="3">Total Tuslah</th>
+                  <th colspan="5">Total Tuslah</th>
                   <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_tuslah,2,',','.')?}</span></th>
                   <th></th>
                 </tr>
                 <tr>
-                  <th colspan="3">Total Biaya Obat</th>
+                  <th colspan="5">Total Biaya Obat (Jual ke Pasien)</th>
                   <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat,2,',','.')?}</span></th>
+                  <th></th>
+                </tr>
+                <tr>
+                  <th colspan="5">Total Harga Beli (Obat, BHP &amp; Racikan)</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_harga_beli,2,',','.')?}</span></th>
+                  <th></th>
+                </tr>
+                <tr class="success">
+                  <th colspan="5">Estimasi Margin Obat (Jual - Beli)</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat - $jumlah_total_harga_beli,2,',','.')?}</span></th>
                   <th></th>
                 </tr>
               </tfoot>

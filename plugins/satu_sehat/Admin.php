@@ -8436,6 +8436,306 @@ class Admin extends AdminModule
     return $this->_ermRalan()->buildDocumentBundle($no_rawat, is_array($payloads) ? $payloads : null);
   }
 
+  public function getSsrmeBaseUrl()
+  {
+    $customUrl = !empty($this->ssrme_url) ? $this->ssrme_url : $this->settings->get('satu_sehat.ssrme_url');
+    if (!empty($customUrl)) {
+      return rtrim($customUrl, '/');
+    }
+    $authUrl = !empty($this->authurl) ? $this->authurl : $this->settings->get('satu_sehat.authurl');
+    if (strpos((string)$authUrl, '-stg') !== false || strpos((string)$authUrl, 'dto.') !== false) {
+      return 'https://api-satusehat-stg.dto.kemkes.go.id/ssrme/v2';
+    }
+    return 'https://api-satusehat.kemkes.go.id/ssrme/v2';
+  }
+
+public function callSsrme($endpoint, array $payload)
+{
+  $token = $this->getAccessToken();
+  if (empty($token)) {
+    $token = $this->getAccessToken(true);
+  }
+  if (empty($token)) {
+    return [
+      'http_code' => 401,
+      'error' => 'Gagal mendapatkan OAuth2 Access Token Satu Sehat. Periksa Client ID & Secret Key.',
+      'data' => null
+    ];
+  }
+  $url = $this->getSsrmeBaseUrl() . '/' . ltrim($endpoint, '/');
+  $ch = curl_init($url);
+  curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => json_encode($payload),
+    CURLOPT_HTTPHEADER => [
+      'Authorization: Bearer ' . $token,
+      'Content-Type: application/json',
+      'Accept: application/json'
+    ],
+    CURLOPT_TIMEOUT => 30,
+    CURLOPT_SSL_VERIFYPEER => false,
+    CURLOPT_SSL_VERIFYHOST => false
+  ]);
+  $response = curl_exec($ch);
+  $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  $curlError = curl_error($ch);
+  curl_close($ch);
+  if ($curlError) {
+    return [
+      'http_code' => 500,
+      'error' => 'cURL Error: ' . $curlError,
+      'data' => null
+    ];
+  }
+  $decoded = json_decode($response, true);
+  return [
+    'http_code' => $httpCode,
+    'raw' => $response,
+    'data' => $decoded
+  ];
+}
+
+public function resolveSsrmePayload($no_rawat)
+{
+  $no_rawat = revertNoRawat($no_rawat);
+  $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+  if (empty($no_rkm_medis)) {
+    return [
+      'success' => false,
+      'message' => 'Data registrasi tidak ditemukan untuk No. Rawat: ' . $no_rawat
+    ];
+  }
+  $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
+  $nama_pasien = $this->core->getPasienInfo('nm_pasien', $no_rkm_medis);
+  // Ambil IHS Pasien
+  $patient_id = '';
+  if (!empty($no_ktp_pasien)) {
+    $pResp = $this->getPatient($no_ktp_pasien);
+    $pJson = json_decode($pResp, true);
+    if (!empty($pJson['entry'][0]['resource']['id'])) {
+      $patient_id = $pJson['entry'][0]['resource']['id'];
+    }
+  }
+  // Fallback: jika belum dapat, coba ambil dari riwayat Encounter yang tersimpan
+  if (empty($patient_id)) {
+    $ss_response = $this->db('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
+    if (!empty($ss_response['id_encounter'])) {
+      $enc_curl = curl_init();
+      curl_setopt_array($enc_curl, [
+        CURLOPT_URL => $this->fhirurl . '/Encounter/' . $ss_response['id_encounter'],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+          'Content-Type: application/json',
+          'Authorization: Bearer ' . $this->getAccessToken(),
+        ],
+        CURLOPT_TIMEOUT => 15,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false
+      ]);
+      $enc_raw = curl_exec($enc_curl);
+      curl_close($enc_curl);
+      $enc_json = json_decode($enc_raw, true);
+      if (!empty($enc_json['subject']['reference'])) {
+        $patient_id = str_replace('Patient/', '', $enc_json['subject']['reference']);
+      }
+    }
+  }
+  // Ambil Praktisi / Dokter
+  $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+  $practitioner_id = '';
+  $mappingPraktisi = $this->db('mlite_satu_sehat_mapping_praktisi')->select('practitioner_id')->where('kd_dokter', $kd_dokter)->oneArray();
+  if (!empty($mappingPraktisi['practitioner_id'])) {
+    $practitioner_id = $mappingPraktisi['practitioner_id'];
+  } else {
+    $nik_dokter = $this->core->getPegawaiInfo('no_ktp', $kd_dokter);
+    if (!empty($nik_dokter)) {
+      $dResp = $this->getPractitioner($nik_dokter);
+      $dJson = json_decode($dResp, true);
+      if (!empty($dJson['entry'][0]['resource']['id'])) {
+        $practitioner_id = $dJson['entry'][0]['resource']['id'];
+      }
+    }
+  }
+  $nama_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+  if (empty($nama_dokter)) {
+    $nama_dokter = $this->core->getDokterInfo('nm_dokter', $kd_dokter);
+  }
+  if (empty($nama_dokter)) {
+    $nama_dokter = 'Dokter Pemeriksa';
+  }
+  // Ambil Organization
+  $organization_id = !empty($this->organizationid) ? $this->organizationid : $this->settings->get('satu_sehat.organizationid');
+  $organization_name = $this->settings->get('settings.nama_instansi') ?: 'Fasilitas Pelayanan Kesehatan';
+  $baseInfo = [
+    'no_rawat' => $no_rawat,
+    'no_rkm_medis' => $no_rkm_medis,
+    'nama_pasien' => $nama_pasien,
+    'no_ktp_pasien' => $no_ktp_pasien,
+    'nama_dokter' => $nama_dokter,
+    'patient_id' => $patient_id,
+    'practitioner_id' => $practitioner_id,
+    'organization_id' => $organization_id,
+    'organization_name' => $organization_name
+  ];
+  if (empty($patient_id)) {
+    return [
+      'success' => false,
+      'message' => 'Pasien "' . $nama_pasien . '" (NIK: ' . ($no_ktp_pasien ?: '-') . ') belum memiliki IHS Number di Satu Sehat. Pastikan NIK pasien valid dan telah terdaftar di Kemenkes RI.',
+      'info' => $baseInfo
+    ];
+  }
+  if (empty($practitioner_id)) {
+    return [
+      'success' => false,
+      'message' => 'IHS Praktisi untuk dokter "' . $nama_dokter . '" belum ditemukan. Silakan petakan dokter di menu Mapping Praktisi Satu Sehat.',
+      'info' => $baseInfo
+    ];
+  }
+  if (empty($organization_id)) {
+    return [
+      'success' => false,
+      'message' => 'Organization ID Satu Sehat belum diatur di menu Pengaturan Satu Sehat.',
+      'info' => $baseInfo
+    ];
+  }
+  return [
+    'success' => true,
+    'payload' => [
+      'patient_id' => (string) $patient_id,
+      'patient_name' => (string) $nama_pasien,
+      'practitioner_id' => (string) $practitioner_id,
+      'practitioner_name' => (string) $nama_dokter,
+      'organization_id' => (string) $organization_id,
+      'organization_name' => (string) $organization_name
+    ],
+    'info' => $baseInfo
+  ];
+}
+
+public function postRmeApi($no_rawat = null)
+{
+  header('Content-Type: application/json');
+  if (empty($no_rawat)) {
+    $no_rawat = isset($_POST['no_rawat']) ? $_POST['no_rawat'] : (isset($_GET['no_rawat']) ? $_GET['no_rawat'] : '');
+  }
+  if (empty($no_rawat)) {
+    echo json_encode(['status' => 'error', 'message' => 'No. Rawat tidak boleh kosong']);
+    exit();
+  }
+  $resolved = $this->resolveSsrmePayload($no_rawat);
+  if (!$resolved['success']) {
+    echo json_encode([
+      'status' => 'error',
+      'message' => $resolved['message'],
+      'info' => $resolved['info'] ?? null
+    ]);
+    exit();
+  }
+  $payload = $resolved['payload'];
+  // 1. Coba Buka RME Nasional (SHL - Shared Health Link)
+  $shlRes = $this->callSsrme('/ntl/shl', $payload);
+  $httpCode = $shlRes['http_code'] ?? 0;
+  $shlData = $shlRes['data'] ?? [];
+  if ($httpCode === 200 && !empty($shlData['data']['shlinkUrl'])) {
+    echo json_encode([
+      'status' => 'success',
+      'type' => 'shl',
+      'shlinkUrl' => $shlData['data']['shlinkUrl'],
+      'message' => 'Akses RME Nasional berhasil dibuka.',
+      'info' => $resolved['info']
+    ]);
+    exit();
+  }
+  // 2. Jika Consent Required (403 atau pesan CONSENT_REQUIRED)
+  $msg = $shlData['meta']['message'] ?? ($shlData['message'] ?? '');
+  if ($httpCode === 403 || stripos($msg, 'CONSENT_REQUIRED') !== false) {
+    // Panggil CHL (Consent Health Link)
+    $chlRes = $this->callSsrme('/ntl/chl', $payload);
+    $chlData = $chlRes['data'] ?? [];
+    $chlHttpCode = $chlRes['http_code'] ?? 0;
+    if ($chlHttpCode === 200 && !empty($chlData['data']['verificationUrl'])) {
+      $verificationUrl = $chlData['data']['verificationUrl'];
+      $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . urlencode($verificationUrl);
+      echo json_encode([
+        'status' => 'consent_required',
+        'type' => 'chl',
+        'verificationUrl' => $verificationUrl,
+        'qrCodeUrl' => $qrCodeUrl,
+        'message' => 'Persetujuan Pasien Diperlukan (Consent Required). Minta pasien memindai QR Code atau membuka tautan persetujuan Satu Sehat Mobile.',
+        'info' => $resolved['info']
+      ]);
+      exit();
+    } else {
+      $chlErrMsg = $chlData['meta']['message'] ?? ($chlData['message'] ?? ($chlRes['error'] ?? 'Gagal membuat Consent Health Link'));
+      echo json_encode([
+        'status' => 'error',
+        'message' => 'Persetujuan pasien diperlukan, namun gagal membuat link persetujuan: ' . $chlErrMsg,
+        'detail' => $chlData,
+        'info' => $resolved['info']
+      ]);
+      exit();
+    }
+  }
+  // 3. Error lainnya dari Satu Sehat
+  $errMsg = $shlData['meta']['message'] ?? ($shlData['message'] ?? ($shlRes['error'] ?? ('Gagal membuka RME Nasional (HTTP ' . $httpCode . ')')));
+  echo json_encode([
+    'status' => 'error',
+    'message' => $errMsg,
+    'detail' => $shlData,
+    'info' => $resolved['info']
+  ]);
+  exit();
+}
+
+public function getRme($no_rawat = null)
+{
+  if (!empty($no_rawat)) {
+    $no_rawat = revertNoRawat($no_rawat);
+    $resolved = $this->resolveSsrmePayload($no_rawat);
+    echo $this->draw('rme.html', [
+      'no_rawat' => $no_rawat,
+      'resolved' => $resolved,
+      'ssrme_base_url' => $this->getSsrmeBaseUrl()
+    ]);
+    exit();
+  }
+  $this->_addHeaderFiles();
+  // Halaman Standalone RME Nasional
+  $tanggal_awal = isset($_GET['tanggal_awal']) ? $_GET['tanggal_awal'] : (isset($_POST['tanggal_awal']) ? $_POST['tanggal_awal'] : date('Y-m-d'));
+  $tanggal_akhir = isset($_GET['tanggal_akhir']) ? $_GET['tanggal_akhir'] : (isset($_POST['tanggal_akhir']) ? $_POST['tanggal_akhir'] : date('Y-m-d'));
+  $status_lanjut = isset($_GET['status_lanjut']) ? $_GET['status_lanjut'] : (isset($_POST['status_lanjut']) ? $_POST['status_lanjut'] : 'Ralan');
+  $query = $this->db('reg_periksa')
+    ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+    ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+    ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+    ->select([
+      'reg_periksa.no_rawat',
+      'reg_periksa.no_rkm_medis',
+      'reg_periksa.tgl_registrasi',
+      'reg_periksa.jam_reg',
+      'reg_periksa.status_lanjut',
+      'reg_periksa.stts',
+      'pasien.nm_pasien',
+      'pasien.no_ktp',
+      'dokter.nm_dokter',
+      'poliklinik.nm_poli'
+    ])
+    ->where('reg_periksa.tgl_registrasi', '>=', $tanggal_awal)
+    ->where('reg_periksa.tgl_registrasi', '<=', $tanggal_akhir);
+  if (!empty($status_lanjut)) {
+    $query->where('reg_periksa.status_lanjut', $status_lanjut);
+  }
+  $pasien_list = $query->desc('reg_periksa.jam_reg')->toArray();
+  return $this->draw('rme_manage.html', [
+    'pasien_list' => $pasien_list,
+    'tanggal_awal' => $tanggal_awal,
+    'tanggal_akhir' => $tanggal_akhir,
+    'status_lanjut' => $status_lanjut,
+    'ssrme_base_url' => $this->getSsrmeBaseUrl()
+  ]);
+}
+
   private function _addHeaderFiles()
   {
     $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));

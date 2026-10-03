@@ -1,0 +1,357 @@
+<div class="ssrme-container" style="padding: 5px 0;">
+    <!-- INFORMASI PASIEN & STATUS -->
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+            <div>
+                <span class="label" id="ssrme-status-badge" style="background-color: #0284c7; font-size: 11px; padding: 4px 8px;">
+                    <i class="fa fa-spinner fa-spin"></i> Memeriksa Status...
+                </span>
+            </div>
+            <div>
+                <button type="button" class="btn btn-default btn-xs" id="btn-ssrme-refresh" style="font-weight: 500;">
+                    <i class="fa fa-refresh"></i> Muat Ulang
+                </button>
+            </div>
+        </div>
+
+        <div class="row" style="font-size: 13px;">
+            <div class="col-sm-3 col-xs-6" style="margin-bottom: 6px;">
+                <span class="text-muted small"><i class="fa fa-user"></i> Pasien:</span><br>
+                <strong id="info-nama-pasien">{?=isset_or($resolved.info.nama_pasien, '-')?}</strong>
+                <small class="text-muted">({?=isset_or($resolved.info.no_rkm_medis, '-')?})</small>
+            </div>
+            <div class="col-sm-3 col-xs-6" style="margin-bottom: 6px;">
+                <span class="text-muted small"><i class="fa fa-id-card-o"></i> NIK / IHS Pasien:</span><br>
+                <span>{?=isset_or($resolved.info.no_ktp_pasien, '-')?}</span><br>
+                <code id="info-ihs-pasien" style="font-size: 11px; background: #e2e8f0; color: #1e293b;">{?=isset_or($resolved.info.patient_id, 'IHS Belum Ada')?}</code>
+            </div>
+            <div class="col-sm-3 col-xs-6" style="margin-bottom: 6px;">
+                <span class="text-muted small"><i class="fa fa-user-md"></i> Dokter Pemeriksa:</span><br>
+                <strong id="info-nama-dokter">{?=isset_or($resolved.info.nama_dokter, '-')?}</strong><br>
+                <code id="info-ihs-dokter" style="font-size: 11px; background: #e2e8f0; color: #1e293b;">{?=isset_or($resolved.info.practitioner_id, 'IHS Belum Ada')?}</code>
+            </div>
+            <div class="col-sm-3 col-xs-6" style="margin-bottom: 6px;">
+                <span class="text-muted small"><i class="fa fa-hospital-o"></i> No. Rawat:</span><br>
+                <code>{?=isset_or($no_rawat)?}</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. LOADING STATE -->
+    <div id="ssrme-loading" style="text-align: center; padding: 50px 20px;">
+        <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw" style="color: #00897b;"></i>
+        <h4 style="margin-top: 15px; color: #334155; font-weight: 600;">Menghubungkan ke Satu Sehat RME Nasional...</h4>
+        <p class="text-muted" style="max-width: 520px; margin: 0 auto; font-size: 13px;">
+            Sistem sedang memverifikasi IHS Pasien, Praktisi, dan membuka akses Shared Health Link (SHL) Kemenkes.
+        </p>
+    </div>
+
+    <!-- 2. SUCCESS STATE (SHL IFRAME) -->
+    <div id="ssrme-success-state" style="display: none;">
+        <div id="ssrme-object-frame-wrapper" style="position: relative; width: 100%; height: calc(100vh - 330px); max-height: 620px; min-height: 380px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; background: #f8fafc;">
+            <!--
+                Viewer <object> (fallback <embed>) di dalam Modal.
+                Catatan: CSP frame-ancestors / X-Frame-Options tetap berlaku untuk
+                <object>/<embed>; jika tetap diblokir server SATUSEHAT, panel
+                fallback di bawah (ssrme-frame-blocked) ditampilkan otomatis.
+            -->
+            <object id="ssrme-object-frame" type="text/html" data=""
+                    style="width: 100%; height: 100%; border: none; display: block;">
+                <embed id="ssrme-embed-frame" type="text/html" src=""
+                       style="width: 100%; height: 100%; border: none;">
+            </object>
+            <!-- Panel fallback: dibuka jika object/embed diblokir oleh CSP frame-ancestors -->
+            <div id="ssrme-frame-blocked" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 5; padding: 40px 20px; text-align: center;">
+                <i class="fa fa-shield" style="font-size: 42px; color: #f59e0b;"></i>
+                <h4 style="margin-top: 15px; color: #334155; font-weight: 600;">Tampilan Tersemat Diblokir oleh Server SATUSEHAT</h4>
+                <p class="text-muted" style="max-width: 560px; margin: 0 auto 18px; font-size: 13px;">
+                    Server Satu Sehat menolak tampilan tersemat (<code>frame-ancestors</code> / <code>X-Frame-Options</code>),
+                    termasuk melalui <code>&lt;object&gt;</code> / <code>&lt;embed&gt;</code>.
+                    Silakan buka RME Nasional dalam jendela popup (tanpa toolbar) menggunakan tombol di bawah ini.
+                </p>
+                <a href="#" id="ssrme-blocked-newtab" class="btn btn-primary" style="background-color: #00897b; border-color: #00796b;">
+                    <i class="fa fa-external-link"></i> Buka RME Nasional (Popup)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CONSENT REQUIRED STATE (CHL QR CODE & LINK) -->
+    <div id="ssrme-consent-state" style="display: none;">
+        <div class="alert alert-warning" style="border-left: 4px solid #f59e0b; background-color: #fffbeb; color: #92400e; border-radius: 6px; margin-bottom: 15px;">
+            <h4 style="margin-top: 0; font-weight: 600;"><i class="fa fa-exclamation-triangle"></i> Persetujuan Akses Pasien Diperlukan (Consent Required)</h4>
+            <p style="margin: 0;">Pasien belum memberikan izin akses Rekam Medis Nasional kepada Fasilitas Pelayanan Kesehatan ini. Silakan minta pasien memberikan persetujuan melalui salah satu metode di bawah:</p>
+        </div>
+
+        <div class="row" style="margin-top: 15px;">
+            <div class="col-md-5 col-sm-6 text-center" style="border-right: 1px dashed #e2e8f0; padding-bottom: 20px;">
+                <h5 style="font-weight: 600; color: #1e293b; margin-top: 0;"><i class="fa fa-qrcode"></i> Scan via SatuSehat Mobile</h5>
+                <div style="display: inline-block; padding: 10px; background: #fff; border: 2px solid #e2e8f0; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin: 10px 0;">
+                    <img id="ssrme-qrcode-img" src="" alt="QR Code Persetujuan Satu Sehat" style="width: 210px; height: 210px; display: block; margin: 0 auto;" />
+                </div>
+                <p class="text-muted small" style="margin: 0;">Buka aplikasi <strong>SatuSehat Mobile</strong> pada ponsel pasien, lalu pindai QR Code di atas.</p>
+            </div>
+            <div class="col-md-7 col-sm-6" style="padding-left: 20px;">
+                <h5 style="font-weight: 600; color: #1e293b; margin-top: 0;"><i class="fa fa-link"></i> Alternatif: Buka Tautan Persetujuan</h5>
+                <p class="text-muted small">Jika pasien tidak dapat memindai QR Code, buka atau bagikan tautan verifikasi persetujuan berikut:</p>
+                
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <input type="text" id="ssrme-verify-url-input" class="form-control input-sm" readonly value="" style="background: #f8fafc; font-size: 12px;">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-sm" type="button" id="btn-ssrme-copy" title="Salin Tautan">
+                            <i class="fa fa-copy"></i> Salin
+                        </button>
+                        <a href="#" id="btn-ssrme-verify-link" target="_blank" class="btn btn-warning btn-sm">
+                            <i class="fa fa-external-link"></i> Buka Izin
+                        </a>
+                    </span>
+                </div>
+
+                <div class="well well-sm" style="background: #f1f5f9; border-color: #e2e8f0; border-radius: 6px; margin-top: 15px;">
+                    <h5 style="margin-top: 0; font-weight: 600; color: #1e293b;"><i class="fa fa-check-circle text-success"></i> Setelah Pasien Menyetujui:</h5>
+                    <p class="small text-muted" style="margin-bottom: 12px;">Segera klik tombol di bawah ini untuk langsung membuka Rekam Medis Nasional pasien.</p>
+                    <button type="button" class="btn btn-success btn-block" id="btn-ssrme-recheck" style="font-weight: 600; padding: 8px 14px;">
+                        <i class="fa fa-check-circle"></i> Pasien Sudah Setuju, Buka RME Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. ERROR STATE -->
+    <div id="ssrme-error-state" style="display: none; padding: 10px 0;">
+        <div class="alert alert-danger" style="border-left: 4px solid #ef4444; background: #fef2f2; color: #991b1b; border-radius: 6px; padding: 15px 18px;">
+            <h4 style="margin-top: 0; font-weight: 600; font-size: 16px;">
+                <i class="fa fa-times-circle"></i> Gagal Membuka RME Nasional
+            </h4>
+            <p id="ssrme-error-message" style="margin-bottom: 12px; font-size: 13px; line-height: 1.5;"></p>
+            <div id="ssrme-error-detail" class="small" style="font-family: monospace; white-space: pre-wrap; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #fecaca; max-height: 150px; overflow-y: auto; display: none;"></div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; margin-bottom: 15px; font-size: 12px; color: #475569;">
+            <strong style="color: #1e293b;"><i class="fa fa-lightbulb-o text-warning"></i> Panduan Pemecahan Masalah:</strong>
+            <ul style="margin: 6px 0 0 18px; padding: 0;">
+                <li>Pastikan Nomor Induk Kependudukan (NIK) pasien telah sesuai dengan data Dukcapil dan memiliki 16 digit angka valid.</li>
+                <li>Jika pasien belum memiliki IHS Number, Anda dapat melakukan cek identitas di menu <strong>Satu Sehat &rarr; Referensi Pasien</strong>.</li>
+                <li>Pastikan Dokter Pemeriksa telah dipetakan pada menu <strong>Satu Sehat &rarr; Mapping Praktisi</strong>.</li>
+                <li>Pastikan kredensial Satu Sehat (Client ID & Secret Key) di menu <strong>Pengaturan Satu Sehat</strong> dalam status aktif dan valid.</li>
+            </ul>
+        </div>
+
+        <div style="text-align: right; margin-top: 10px;">
+            <button type="button" class="btn btn-default" data-dismiss="modal" style="margin-right: 8px;">
+                Tutup
+            </button>
+            <button type="button" class="btn btn-primary" id="btn-ssrme-retry" style="background-color: #00897b; border-color: #00796b;">
+                <i class="fa fa-refresh"></i> Coba Lagi
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function($) {
+    var noRawat = "{?=convertNorawat($no_rawat)?}";
+    var apiUrl = mlite.url + '/' + mlite.admin + '/satu_sehat/rmeapi?t=' + mlite.token;
+    var currentShlinkUrl = null;
+
+    function loadSsrme() {
+        $('#ssrme-loading').show();
+        $('#ssrme-success-state').hide();
+        $('#ssrme-consent-state').hide();
+        $('#ssrme-error-state').hide();
+        $('#ssrme-status-badge').attr('class', 'label label-info').html('<i class="fa fa-spinner fa-spin"></i> Menghubungkan ke Kemkes...');
+
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: { no_rawat: noRawat },
+            dataType: 'json',
+            timeout: 45000,
+            success: function(res) {
+                $('#ssrme-loading').hide();
+                if (res.info) {
+                    updateInfo(res.info);
+                }
+
+                if (res.status === 'success' && res.shlinkUrl) {
+                    $('#ssrme-status-badge').attr('class', 'label label-success').html('<i class="fa fa-check"></i> Terhubung');
+                    currentShlinkUrl = res.shlinkUrl;
+                    mountSsrmeObject(res.shlinkUrl);
+                    $('#btn-ssrme-newtab').attr('href', res.shlinkUrl);
+                    $('#ssrme-success-state').fadeIn(200);
+                } else if (res.status === 'consent_required') {
+                    $('#ssrme-status-badge').attr('class', 'label label-warning').html('<i class="fa fa-exclamation-triangle"></i> Perlu Persetujuan Pasien');
+                    $('#ssrme-qrcode-img').attr('src', res.qrCodeUrl);
+                    $('#ssrme-verify-url-input').val(res.verificationUrl);
+                    $('#btn-ssrme-verify-link').attr('href', res.verificationUrl);
+                    $('#ssrme-consent-state').fadeIn(200);
+                } else {
+                    showError(res.message || 'Terjadi kesalahan dari API Satu Sehat', res.detail);
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#ssrme-loading').hide();
+                var msg = 'Koneksi ke server gagal atau waktu tunggu habis.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                showError(msg, xhr.responseText);
+            }
+        });
+    }
+
+    /**
+     * Muat SHL SATUSEHAT ke dalam <object> (fallback <embed>) di dalam Modal.
+     * Elemen dibuat ulang setiap kali dimuat agar browser memproses ulang
+     * atribut data/src dan timer deteksi blokir dimulai dari nol.
+     */
+    function mountSsrmeObject(shlinkUrl) {
+        var wrapper = $('#ssrme-object-frame-wrapper');
+        var objectFrame = '<object id="ssrme-object-frame" type="text/html" data="' + shlinkUrl + '" '
+            + 'style="width: 100%; height: 100%; border: none; display: block;">'
+            + '<embed id="ssrme-embed-frame" type="text/html" src="' + shlinkUrl + '" '
+            + 'style="width: 100%; height: 100%; border: none;">'
+            + '</object>';
+        wrapper.find('object, embed').remove();
+        $('#ssrme-frame-blocked').hide();
+        wrapper.prepend(objectFrame);
+
+        // Deteksi pemblokiran: object/embed yang diblokir CSP dianggap gagal
+        // dimuat oleh browser (error / about:blank). Jika konten tidak sibuk
+        // memuat dan tidak bisa diakses, tampilkan panel fallback tab baru.
+        var blockedTimer = null;
+        var checkInterval = setInterval(function() {
+            var frameEl = document.getElementById('ssrme-object-frame');
+            if (!frameEl) {
+                clearInterval(checkInterval);
+                if (blockedTimer) { clearTimeout(blockedTimer); }
+                return;
+            }
+            var isBlocked = false;
+            try {
+                if (frameEl.contentDocument === null || typeof frameEl.contentDocument === 'undefined') {
+                    isBlocked = true;
+                }
+            } catch (err) {
+                // SecurityError berarti lintas-domain TANPA blokir: konten termuat normal.
+                isBlocked = false;
+            }
+            if (isBlocked) {
+                clearInterval(checkInterval);
+                $('#ssrme-frame-blocked').fadeIn(200);
+            }
+        }, 1200);
+        blockedTimer = setTimeout(function() {
+            clearInterval(checkInterval);
+        }, 15000);
+    }
+
+    // Bersihkan object/embed + panel fallback saat Modal ditutup agar tidak
+    // ada sesi SHL yang tetap tersembunyi di background.
+    $(document).off('hidden.bs.modal.ssrme').on('hidden.bs.modal.ssrme', '#modalSsrmeViewer', function() {
+        $('#ssrme-object-frame-wrapper').find('object, embed').remove();
+        $('#ssrme-frame-blocked').hide();
+        $('#ssrme-success-state').hide();
+        $('#ssrme-consent-state').hide();
+        $('#ssrme-error-state').hide();
+    });
+
+    /**
+     * Buka SHL SATUSEHAT sebagai jendela popup tanpa toolbar.
+     * Ukuran responsif mengikuti resolusi layar (85% lebar & tinggi),
+     * dibatasi maksimum 1600x1000 dan minimum 380x420. Posisi dihitung di
+     * tengah area layar tersedia LALU di-clamp agar tidak pernah jatuh
+     * di luar layar (fullscreen / multi-monitor / taskbar).
+     */
+    function openSsrmePopup(url) {
+        if (!url || url === '#') {
+            alert('Tautan RME Nasional belum tersedia. Mohon tunggu proses koneksi selesai, lalu coba lagi.');
+            return;
+        }
+        var screenObj = window.screen || {};
+        var availW = screenObj.availWidth || 1280;
+        var availH = screenObj.availHeight || 800;
+        var availLeft = (typeof screenObj.availLeft === 'number') ? screenObj.availLeft : 0;
+        var availTop = (typeof screenObj.availTop === 'number') ? screenObj.availTop : 0;
+
+        // Responsif: hampir memenuhi layar (85% lebar & tinggi) dengan
+        // batas maksimum & minimum agar tetap proporsional di semua resolusi.
+        var w = Math.round(Math.min(availW * 0.85, 1600));
+        var h = Math.round(Math.min(availH * 0.85, 1000));
+        w = Math.min(Math.max(w, 380), Math.max(380, availW - 40));
+        h = Math.min(Math.max(h, 420), Math.max(420, availH - 80));
+
+        // Centering pada area layar tersedia, di-clamp ke dalam batas layar.
+        var left = availLeft + Math.round((availW - w) / 2);
+        var top = availTop + Math.round((availH - h) / 2);
+        left = Math.min(Math.max(left, availLeft), availLeft + Math.max(0, availW - w));
+        top = Math.min(Math.max(top, availTop), availTop + Math.max(0, availH - h));
+
+        var features = 'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top
+            + ',toolbar=no,menubar=no,location=no,status=no,scrollbars=yes,resizable=yes';
+        var win = window.open(url, 'SsrmeRmePopup', features);
+        if (win) {
+            try { win.focus(); } catch (err) { /* abaikan jika focus ditolak */ }
+        } else {
+            alert('Popup diblokir oleh browser. Mohon izinkan popup untuk situs ini, lalu coba lagi.');
+        }
+    }
+
+    // Gunakan event delegation agar handler tetap berfungsi walau konten
+    // modal di-inject ulang oleh AJAX (elemen dibuat ulang berkali-kali).
+    $(document).off('click.ssrmePopup').on('click.ssrmePopup', '#btn-ssrme-newtab, #ssrme-blocked-newtab', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var url = $(this).attr('href');
+        if (!url || url === '#') {
+            url = currentShlinkUrl;
+        }
+        openSsrmePopup(url);
+    });
+
+    function updateInfo(info) {
+        if (info.nama_pasien) $('#info-nama-pasien').text(info.nama_pasien);
+        if (info.patient_id) {
+            $('#info-ihs-pasien').text(info.patient_id);
+        } else {
+            $('#info-ihs-pasien').text('Belum Terdaftar di SS');
+        }
+        if (info.nama_dokter) $('#info-nama-dokter').text(info.nama_dokter);
+        if (info.practitioner_id) {
+            $('#info-ihs-dokter').text(info.practitioner_id);
+        } else {
+            $('#info-ihs-dokter').text('Belum Dipetakan');
+        }
+    }
+
+    function showError(msg, detail) {
+        $('#ssrme-status-badge').attr('class', 'label label-danger').html('<i class="fa fa-times"></i> Gagal Memuat');
+        $('#ssrme-error-message').text(msg);
+        if (detail && Object.keys(detail).length > 0) {
+            var detailText = typeof detail === 'object' ? JSON.stringify(detail, null, 2) : detail;
+            $('#ssrme-error-detail').text(detailText).show();
+        } else {
+            $('#ssrme-error-detail').hide();
+        }
+        $('#ssrme-error-state').fadeIn(200);
+    }
+
+    $('#btn-ssrme-refresh, #btn-ssrme-retry, #btn-ssrme-recheck').off('click').on('click', function(e) {
+        e.preventDefault();
+        loadSsrme();
+    });
+
+    $('#btn-ssrme-copy').off('click').on('click', function() {
+        var copyText = document.getElementById("ssrme-verify-url-input");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value).then(function() {
+            alert('Tautan persetujuan berhasil disalin!');
+        });
+    });
+
+    // Jalankan pemuatan otomatis saat skrip ini di-inject ke dalam Modal
+    loadSsrme();
+})(jQuery);
+</script>

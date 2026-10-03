@@ -304,19 +304,20 @@ class Site extends SiteModule
                 'url' => str_replace('/', '', htmlspecialchars($r['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'))
             ];
         }
-        $encBase = '/satu-sehat/encounter/';
-        $condBase = '/satu-sehat/condition/';
-        $obsBase = '/satu-sehat/observation/';
-        $procBase = '/satu-sehat/procedure/';
-        $impBase = '/satu-sehat/clinical-impression/';
-        $vaxBase = '/satu-sehat/vaksin/';
-        $dietBase = '/satu-sehat/diet-gizi/';
-        $careBase = '/satu-sehat/care-plan/';
-        $allergyBase = '/satu-sehat/allergy/';
-        $questionnaireBase = '/satu-sehat/questionnaire/';
-        $medBase = '/satu-sehat/medication/';
-        $labBase = '/satu-sehat/laboratory/';
-        $radBase = '/satu-sehat/radiology/';
+        $ssBase = url();
+        $encBase = $ssBase.'/satu-sehat/encounter/';
+        $condBase = $ssBase.'/satu-sehat/condition/';
+        $obsBase = $ssBase.'/satu-sehat/observation/';
+        $procBase = $ssBase.'/satu-sehat/procedure/';
+        $impBase = $ssBase.'/satu-sehat/clinical-impression/';
+        $vaxBase = $ssBase.'/satu-sehat/vaksin/';
+        $dietBase = $ssBase.'/satu-sehat/diet-gizi/';
+        $careBase = $ssBase.'/satu-sehat/care-plan/';
+        $allergyBase = $ssBase.'/satu-sehat/allergy/';
+        $questionnaireBase = $ssBase.'/satu-sehat/questionnaire/';
+        $medBase = $ssBase.'/satu-sehat/medication/';
+        $labBase = $ssBase.'/satu-sehat/laboratory/';
+        $radBase = $ssBase.'/satu-sehat/radiology/';
 
         echo '<!doctype html>
         <html>
@@ -334,7 +335,7 @@ class Site extends SiteModule
 
         <body>
 
-        <form method="get" action="/satu-sehat/forward-tanggal" style="margin-bottom:12px"><label>Tanggal : </label> <input type="date" name="tanggal" value="' . htmlspecialchars($tanggal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '" /> <button type="submit">Proses</button></form>
+        <form method="get" action="' . $ssBase . '/satu-sehat/forward-tanggal" style="margin-bottom:12px"><label>Tanggal : </label> <input type="date" name="tanggal" value="' . htmlspecialchars($tanggal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '" /> <button type="submit">Proses</button></form>
         <h3>Proses tanggal ' . htmlspecialchars($tanggal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</h3>
 
         <div id="log"></div>
@@ -561,19 +562,20 @@ class Site extends SiteModule
             ];
         }
 
-        $encBase = '/satu-sehat/encounter/';
-        $condBase = '/satu-sehat/condition/';
-        $obsBase = '/satu-sehat/observation/';
-        $procBase = '/satu-sehat/procedure/';
-        $impBase = '/satu-sehat/clinical-impression/';
-        $vaxBase = '/satu-sehat/vaksin/';
-        $dietBase = '/satu-sehat/diet-gizi/';
-        $careBase = '/satu-sehat/care-plan/';
-        $allergyBase = '/satu-sehat/allergy/';
-        $questionnaireBase = '/satu-sehat/questionnaire/';
-        $medBase = '/satu-sehat/medication/';
-        $labBase = '/satu-sehat/laboratory/';
-        $radBase = '/satu-sehat/radiology/';
+        $ssBase = url();
+        $encBase = $ssBase.'/satu-sehat/encounter/';
+        $condBase = $ssBase.'/satu-sehat/condition/';
+        $obsBase = $ssBase.'/satu-sehat/observation/';
+        $procBase = $ssBase.'/satu-sehat/procedure/';
+        $impBase = $ssBase.'/satu-sehat/clinical-impression/';
+        $vaxBase = $ssBase.'/satu-sehat/vaksin/';
+        $dietBase = $ssBase.'/satu-sehat/diet-gizi/';
+        $careBase = $ssBase.'/satu-sehat/care-plan/';
+        $allergyBase = $ssBase.'/satu-sehat/allergy/';
+        $questionnaireBase = $ssBase.'/satu-sehat/questionnaire/';
+        $medBase = $ssBase.'/satu-sehat/medication/';
+        $labBase = $ssBase.'/satu-sehat/laboratory/';
+        $radBase = $ssBase.'/satu-sehat/radiology/';
 
         echo '<!doctype html>
         <html>
