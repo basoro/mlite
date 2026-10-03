@@ -251,9 +251,9 @@
               </thead>
               <tbody>
                 {loop: $detail_pemberian_obat}
-                <tr {if: isset_or($value.is_header)}class="info"{/if}>
+                <tr {if: isset_or($value.is_header)}class="info" style="color:#000;"{/if}>
                   <td>{?=isset_or($value.nomor)?}</td>
-                  <td {if: isset_or($value.is_header)}style="font-weight:bold;"{/if}>{?=isset_or($value.nama_brng)?}</td>
+                  <td {if: isset_or($value.is_header)}style="font-weight:bold;color:#000;"{/if}>{?=isset_or($value.nama_brng)?}</td>
                   <td>{if: $value.jml > 0}{?=isset_or($value.jml)?}{/if}</td>
                   <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_beli,0),2,',','.')?}</span></td>
                   <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_jual,0),2,',','.')?}</span></td>
@@ -287,9 +287,9 @@
                   <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_harga_beli,2,',','.')?}</span></th>
                   <th></th>
                 </tr>
-                <tr class="success">
-                  <th colspan="5">Estimasi Margin Obat (Jual - Beli)</th>
-                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat - $jumlah_total_harga_beli,2,',','.')?}</span></th>
+                <tr class="success" style="color:#000;">
+                  <th colspan="5" style="color:#000;">Estimasi Margin Obat (Jual - Beli)</th>
+                  <th style="color:#000;">Rp. <span class="pull-right">{?= number_format($jumlah_total_obat - $jumlah_total_harga_beli,2,',','.')?}</span></th>
                   <th></th>
                 </tr>
               </tfoot>

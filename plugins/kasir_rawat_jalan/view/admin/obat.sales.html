@@ -170,7 +170,7 @@
               {?= !empty($value.nama_brng) ? $value.nama_brng : $value.kode_brng ?}
               <span class="label label-warning" style="margin-left:4px;">{?=isset_or($value.racikan_label)?}</span>
             </td>
-            <td>{?= number_format(isset_or($value.jml,0),0,',','.')?}</td>
+            <td>{?= rtrim(rtrim(number_format(isset_or($value.jml,0),4,',','.'), '0'), ',') ?}</td>
             <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_beli,0),2,',','.')?}</span></td>
             <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.sub_harga_beli,0),2,',','.')?}</span></td>
             <td>Rp. <span class="pull-right">{?= number_format(isset_or($value.harga_jual,0),2,',','.')?}</span></td>
