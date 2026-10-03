@@ -2732,12 +2732,23 @@ switch ($version) {
             } catch (\Exception $e) {}
         }
 
-        $return = '6.3.8';
+        $return = '6.4.0';
+        break;
+
+    case '6.3.10':
+    case '6.3.9':
+        // Release v6.4.0: tag 6.3.9 & 6.3.10 terlanjur dipakai workflow lama.
+        $return = '6.4.0';
+        break;
+
+    case '6.3.8':
+        // Penyelarasan versi database dengan tag rilis.
+        $return = '6.4.0';
         break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.3.8';
+        $return = '6.4.0';
     }
 
 return $return;

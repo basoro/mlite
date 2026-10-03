@@ -17,35 +17,65 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Hitung versi berikutnya
+      - name: Validasi versi
+        run: |
+          set -euo pipefail
+
+          # Versi sumber kebenaran ada di mlite_db.sql: ("34","settings","version","x.y.z")
+          repo_ver="$(grep -oE '"settings","version","[0-9]+(\.[0-9]+)*"' mlite_db.sql | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)"
+
+          if [ -z "$repo_ver" ]; then
+            echo "::error::settings.version tidak ditemukan di mlite_db.sql."
+            exit 1
+          fi
+
+          # Commit ini memang sudah ditandai? → wajar, biarkan lanjut.
+          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+            echo "Commit HEAD sudah bertag $repo_ver, validasi dilewati."
+            exit 0
+          fi
+
+          # Versi di-bump tetapi tag-nya sudah ada? → human error, gagalkan CI.
+          if git rev-parse -q --verify "refs/tags/$repo_ver" >/dev/null; then
+            echo "::error::Tag v$repo_ver sudah ada, tetapi settings.version di mlite_db.sql masih $repo_ver."
+            echo "::error::Naikkan settings.version di mlite_db.sql (dan tambahkan case di systems/upgrade.php), lalu push ulang."
+            exit 1
+          fi
+
+          echo "Versi $repo_ver belum dipakai tag mana pun. OK."
+
+      - name: Ambil versi dari repo
         id: version
         run: |
           set -euo pipefail
 
-          # Sudah ditandai di commit ini? → tidak perlu release ganda
-          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+          # Versi sumber kebenaran ada di mlite_db.sql: ("34","settings","version","x.y.z")
+          repo_ver="$(grep -oE '"settings","version","[0-9]+(\.[0-9]+)*"' mlite_db.sql | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)"
+
+          if [ -z "$repo_ver" ]; then
+            echo "Versi tidak ditemukan di mlite_db.sql, release dilewati."
             echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "Commit ini sudah memiliki tag, melepas release."
             exit 0
           fi
 
-          # Versi tertinggi antara tag git dan settings.version di mlite_db.sql
-          sql_ver="$(grep -oE '"settings","version","[0-9]+(\.[0-9]+)*"' mlite_db.sql | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)"
-          tag_ver="$(git tag --list | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n1 || true)"
-
-          current="$(printf '%s\n%s\n' "$sql_ver" "$tag_ver" | grep -E '^[0-9]' | sort -V | tail -n1)"
-          if [ -z "$current" ]; then
-            current="0.0.0"
+          # Commit yang sudah ditandai versi ini? → tidak perlu release ganda
+          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+            echo "Commit ini sudah memiliki tag, melepas release."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
-          IFS=. read -r major minor patch <<EOF
-          $current
-          EOF
-          next="${major}.${minor}.$(( ${patch:-0} + 1 ))"
+          # Tag dengan versi ini sudah ada? → repo belum di-bump, dilewati
+          if git rev-parse "refs/tags/$repo_ver" >/dev/null 2>&1; then
+            echo "Tag $repo_ver sudah ada sedangkan mlite_db.sql masih $repo_ver."
+            echo "Naikkan settings.version di mlite_db.sql untuk merilis versi baru."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
-          echo "Versi saat ini: ${current} → versi rilis baru: ${next}"
+          echo "Versi repo: $repo_ver → release $repo_ver"
           echo "skip=false" >> "$GITHUB_OUTPUT"
-          echo "tag=${next}" >> "$GITHUB_OUTPUT"
+          echo "tag=${repo_ver}" >> "$GITHUB_OUTPUT"
 
       - name: Buat tag dan release
         if: steps.version.outputs.skip == 'false'

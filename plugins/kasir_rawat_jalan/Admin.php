@@ -38,6 +38,7 @@ class Admin extends AdminModule
             'Kelola'   => 'manage',
             'Kasir'    => 'shift',
             'Laporan'  => 'report',
+            'Penjualan Obat' => 'obatsales',
             'Rekap Shift' => 'shiftreport',
         ];
     }
@@ -2936,6 +2937,181 @@ class Admin extends AdminModule
         ]);
         $this->notify('success', 'Shift kasir ditutup');
         redirect(url([ADMIN, 'kasir_rawat_jalan', 'shift']));
+    }
+
+    private function fetchObatSalesData($awal, $akhir)
+    {
+        $pdo = $this->db()->pdo();
+
+        // Rincian penjualan obat/BHP rawat jalan, termasuk komponen obat racikan
+        $stmt = $pdo->prepare("SELECT p.tgl_perawatan, p.jam, p.no_rawat, rg.no_rkm_medis, ps.nm_pasien, p.kode_brng, b.nama_brng, b.h_beli AS db_h_beli, p.jml, p.biaya_obat, p.embalase, p.tuslah, p.total, p.h_beli, o.no_racik, o.nama_racik FROM detail_pemberian_obat p JOIN reg_periksa rg ON rg.no_rawat = p.no_rawat LEFT JOIN pasien ps ON ps.no_rkm_medis = rg.no_rkm_medis LEFT JOIN databarang b ON b.kode_brng = p.kode_brng LEFT JOIN detail_obat_racikan d ON d.no_rawat = p.no_rawat AND d.tgl_perawatan = p.tgl_perawatan AND d.jam = p.jam AND d.kode_brng = p.kode_brng LEFT JOIN obat_racikan o ON o.no_rawat = d.no_rawat AND o.tgl_perawatan = d.tgl_perawatan AND o.jam = d.jam AND o.no_racik = d.no_racik WHERE p.status = 'Ralan' AND CONCAT(p.tgl_perawatan, ' ', p.jam) BETWEEN ? AND ? ORDER BY CONCAT(p.tgl_perawatan, ' ', p.jam) ASC, p.no_rawat ASC");
+        $stmt->execute([$awal, $akhir]);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $groups = [];
+        $group_index = [];
+        $rekap = [];
+        $total_qty = 0;
+        $total_jual = 0;
+        $total_beli = 0;
+        $total_embalase = 0;
+        $total_tuslah = 0;
+
+        foreach ($rows as $row) {
+            $is_racikan = !empty($row['nama_racik']);
+            $jml = floatval($row['jml']);
+
+            // Harga beli: nilai terekam saat pemberian obat, fallback ke master databarang
+            $harga_beli = floatval($row['h_beli']);
+            if ($harga_beli <= 0) {
+                $harga_beli = floatval($row['db_h_beli'] ?? 0);
+            }
+            $sub_beli = $harga_beli * $jml;
+
+            // Harga jual ke pasien (satuan): biaya_obat bila terisi, dihitung dari total bila kosong
+            $harga_jual = floatval($row['biaya_obat']);
+            if ($harga_jual <= 0 && $jml > 0) {
+                $harga_jual = (floatval($row['total']) - floatval($row['embalase']) - floatval($row['tuslah'])) / $jml;
+            }
+
+            $row['is_racikan'] = $is_racikan ? 1 : 0;
+            $row['racikan_label'] = $is_racikan ? ('Racikan ' . $row['no_racik'] . ': ' . $row['nama_racik']) : '';
+            $row['harga_beli'] = $harga_beli;
+            $row['sub_harga_beli'] = $sub_beli;
+            $row['harga_jual'] = $harga_jual;
+            $row['nama_brng'] = $row['nama_brng'] ?? '';
+            $row['nm_pasien'] = $row['nm_pasien'] ?? '';
+
+            // Kelompokkan per nomor rawat + pasien, pisahkan obat non-racikan dan racikan
+            $gkey = $row['no_rawat'];
+            if (!isset($group_index[$gkey])) {
+                $group_index[$gkey] = count($groups);
+                $groups[] = [
+                    'no_rawat' => $row['no_rawat'],
+                    'tgl_perawatan' => $row['tgl_perawatan'],
+                    'jam' => $row['jam'],
+                    'no_rkm_medis' => $row['no_rkm_medis'] ?? '',
+                    'nm_pasien' => $row['nm_pasien'],
+                    'non_racikan' => [],
+                    'racikan' => [],
+                    'subtotal_beli' => 0,
+                    'subtotal_jual' => 0
+                ];
+            }
+            $idx = $group_index[$gkey];
+            if ($is_racikan) {
+                $groups[$idx]['racikan'][] = $row;
+            } else {
+                $groups[$idx]['non_racikan'][] = $row;
+            }
+            $groups[$idx]['subtotal_beli'] += $sub_beli;
+            $groups[$idx]['subtotal_jual'] += floatval($row['total']);
+
+            $total_qty += $jml;
+            $total_jual += floatval($row['total']);
+            $total_beli += $sub_beli;
+            $total_embalase += floatval($row['embalase']);
+            $total_tuslah += floatval($row['tuslah']);
+
+            $key = $row['kode_brng'];
+            if (!isset($rekap[$key])) {
+                $rekap[$key] = [
+                    'kode_brng' => $row['kode_brng'],
+                    'nama_brng' => $row['nama_brng'],
+                    'jml' => 0,
+                    'harga_beli' => $harga_beli,
+                    'sub_harga_beli' => 0,
+                    'total_jual' => 0
+                ];
+            }
+            $rekap[$key]['jml'] += $jml;
+            $rekap[$key]['sub_harga_beli'] += $sub_beli;
+            $rekap[$key]['total_jual'] += floatval($row['total']);
+        }
+
+        usort($rekap, function ($a, $b) {
+            return $b['total_jual'] <=> $a['total_jual'];
+        });
+
+        return [
+            'groups' => $groups,
+            'rekap' => array_values($rekap),
+            'total_qty' => $total_qty,
+            'total_jual' => $total_jual,
+            'total_beli' => $total_beli,
+            'total_embalase' => $total_embalase,
+            'total_tuslah' => $total_tuslah,
+            'total_margin' => $total_jual - $total_beli
+        ];
+    }
+
+    public function anyObatSales()
+    {
+        $this->_addHeaderFiles();
+        $awal = isset($_GET['awal']) ? $_GET['awal'] : date('Y-m-d').' 00:00:00';
+        $akhir = isset($_GET['akhir']) ? $_GET['akhir'] : date('Y-m-d').' 23:59:59';
+        $data = $this->fetchObatSalesData($awal, $akhir);
+
+        return $this->draw('obat.sales.html', [
+            'awal' => $awal,
+            'akhir' => $akhir,
+            'groups' => htmlspecialchars_array($data['groups']),
+            'rekap' => htmlspecialchars_array($data['rekap']),
+            'total_qty' => $data['total_qty'],
+            'total_jual' => $data['total_jual'],
+            'total_beli' => $data['total_beli'],
+            'total_embalase' => $data['total_embalase'],
+            'total_tuslah' => $data['total_tuslah'],
+            'total_margin' => $data['total_margin'],
+            'settings' => $this->settings('settings')
+        ]);
+    }
+
+    public function anyObatSalesExport()
+    {
+        $awal = isset($_GET['awal']) ? $_GET['awal'] : date('Y-m-d').' 00:00:00';
+        $akhir = isset($_GET['akhir']) ? $_GET['akhir'] : date('Y-m-d').' 23:59:59';
+        $data = $this->fetchObatSalesData($awal, $akhir);
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="laporan_penjualan_obat.csv"');
+        $fp = fopen('php://output', 'w');
+        fputs($fp, "\xEF\xBB\xBF"); // BOM UTF-8 agar Excel membaca dengan benar
+        fputcsv($fp, ['Laporan Penjualan Obat Rawat Jalan']);
+        fputcsv($fp, ['Periode', $awal . ' s/d ' . $akhir]);
+        fputcsv($fp, []);
+        fputcsv($fp, ['RINCIAN PENJUALAN (dikelompokkan per No. Rawat & Pasien)']);
+        foreach ($data['groups'] as $g) {
+            fputcsv($fp, ['No. Rawat: ' . $g['no_rawat'], 'No. RM: ' . ($g['no_rkm_medis'] ?? ''), 'Pasien: ' . ($g['nm_pasien'] ?? ''), 'Tgl: ' . $g['tgl_perawatan'] . ' ' . $g['jam']]);
+            fputcsv($fp, ['Jenis', 'Tgl', 'Jam', 'Kode Barang', 'Nama Obat/BHP', 'Racikan', 'Jml', 'Harga Beli', 'Subtotal Beli', 'Harga Jual', 'Embalase', 'Tuslah', 'Subtotal Jual']);
+            foreach (['non_racikan' => 'Obat Non-Racikan', 'racikan' => 'Obat Racikan'] as $jenis_key => $jenis_label) {
+                if (empty($g[$jenis_key])) {
+                    continue;
+                }
+                fputcsv($fp, [$jenis_label]);
+                foreach ($g[$jenis_key] as $d) {
+                    fputcsv($fp, [
+                        $jenis_label, $d['tgl_perawatan'], $d['jam'], $d['kode_brng'], ($d['nama_brng'] ?? ''), ($d['racikan_label'] ?? ''),
+                        $d['jml'], $d['harga_beli'], $d['sub_harga_beli'], $d['harga_jual'], $d['embalase'], $d['tuslah'], $d['total']
+                    ]);
+                }
+            }
+            fputcsv($fp, ['Subtotal ' . $g['no_rawat'], '', '', '', '', '', '', '', $g['subtotal_beli'], '', '', '', $g['subtotal_jual']]);
+            fputcsv($fp, []);
+        }
+        fputcsv($fp, []);
+        fputcsv($fp, ['Rekap Per Obat']);
+        fputcsv($fp, ['Kode Barang', 'Nama Obat/BHP', 'Jml Terjual', 'Harga Beli', 'Total Harga Beli', 'Total Penjualan']);
+        foreach ($data['rekap'] as $r) {
+            fputcsv($fp, [
+                $r['kode_brng'], ($r['nama_brng'] ?? ''), $r['jml'], $r['harga_beli'], $r['sub_harga_beli'], $r['total_jual']
+            ]);
+        }
+        fputcsv($fp, []);
+        fputcsv($fp, ['Total Jumlah', 'Total Embalase', 'Total Tuslah', 'Total Harga Beli', 'Total Penjualan', 'Estimasi Margin']);
+        fputcsv($fp, [$data['total_qty'], $data['total_embalase'], $data['total_tuslah'], $data['total_beli'], $data['total_jual'], $data['total_margin']]);
+        fclose($fp);
+        exit();
     }
 
     public function anyReport()
