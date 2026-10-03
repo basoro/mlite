@@ -883,7 +883,15 @@ class Admin extends AdminModule
       $display = 'inpatient encounter';
     }
 
+    if ($kd_poli == $this->settings->get('settings.igd') && $status_lanjut == 'Ralan') {
+      $code = 'EMER';
+      $display = 'emergency encounter';
+    }
+
     $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $kd_poli)->oneArray();
+    if ($status_lanjut == 'Ranap') {
+      $mlite_satu_sehat_lokasi = $this->db('mlite_satu_sehat_lokasi')->where('kode', $kd_bangsal)->oneArray();
+    }
     $praktisi_id = isset($no_ktp_dokter['practitioner_id']) ? $no_ktp_dokter['practitioner_id'] : '';
     $lokasi_id = isset($mlite_satu_sehat_lokasi['id_lokasi_satusehat']) ? $mlite_satu_sehat_lokasi['id_lokasi_satusehat'] : '';
 
