@@ -8,6 +8,50 @@ class Admin extends AdminModule
   private $_uploads = WEBAPPS_PATH . '/berkasrawat/pages/upload';
   protected $assign = [];
 
+  // Tabel yang mereferensi no_rkm_medis dan ikut dipindah saat penggabungan No. RM
+  private const GABUNG_NRM_TABLES = [
+    'reg_periksa',
+    'skdp_bpjs',
+    'booking_periksa_diterima',
+    'mlite_antrian_loket',
+    'mlite_antrian_referensi',
+    'mlite_bridging_pcare',
+    'mlite_duitku',
+    'mlite_notifications',
+    'mlite_odontogram',
+    'mlite_ohis',
+    'mlite_pendaftaran_oral_diagnostic',
+    'mlite_pengaduan',
+    'mlite_pengaduan_detail',
+    'mlite_surat_rujukan',
+    'mlite_surat_sakit',
+    'mlite_surat_sehat',
+    'mlite_triase_igd',
+    'mlite_vedika',
+    'mlite_veronisa',
+    'booking_registrasi',
+    'personal_pasien',
+  ];
+
+  // Field data pasien tujuan yang boleh diisi dari data pasien sumber jika masih kosong
+  private const GABUNG_NRM_FILL_FIELDS = [
+    'no_ktp',
+    'no_tlp',
+    'alamat',
+    'email',
+    'no_peserta',
+    'tmp_lahir',
+    'tgl_lahir',
+    'nm_ibu',
+    'namakeluarga',
+    'pekerjaanpj',
+    'alamatpj',
+    'kelurahanpj',
+    'kecamatanpj',
+    'kabupatenpj',
+    'propinsipj',
+  ];
+
   public function navigation()
   {
     return [
@@ -567,6 +611,252 @@ class Admin extends AdminModule
       }
     } catch (\Throwable $e) {
       echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+    exit();
+  }
+
+  private function gabungNrmTableExists(string $table): bool
+  {
+    $isSqlite = defined('DBDRIVER') && DBDRIVER == 'sqlite';
+    $pdo = $this->db()->pdo();
+    if ($isSqlite) {
+      $stmt = $pdo->prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?");
+    } else {
+      $stmt = $pdo->prepare("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?");
+    }
+    $stmt->execute([$table]);
+    return (bool) $stmt->fetchColumn();
+  }
+
+  private function gabungNrmCount(string $table, string $noRm): int
+  {
+    $pdo = $this->db()->pdo();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM `{$table}` WHERE no_rkm_medis = ?");
+    $stmt->execute([$noRm]);
+    return (int) $stmt->fetchColumn();
+  }
+
+  public function getGabungnrminfo()
+  {
+    $mlite_crud_permissions = $this->core->loadCrudPermissions('pasien');
+    if ($mlite_crud_permissions['can_update'] == 'false' || $mlite_crud_permissions['can_delete'] == 'false') {
+      echo json_encode(['status' => 'error', 'message' => 'Anda tidak memiliki hak akses untuk menggabungkan data pasien!']);
+      exit();
+    }
+
+    header('Content-Type: application/json');
+    $sumber = trim((string) ($_GET['no_rkm_medis'] ?? ''));
+    $tujuan = trim((string) ($_GET['no_rkm_medis_tujuan'] ?? ''));
+
+    if ($sumber === '' || $tujuan === '') {
+      echo json_encode(['status' => 'error', 'message' => 'No. RM sumber dan No. RM tujuan wajib diisi.']);
+      exit();
+    }
+    if ($sumber === $tujuan) {
+      echo json_encode(['status' => 'error', 'message' => 'No. RM sumber dan No. RM tujuan tidak boleh sama.']);
+      exit();
+    }
+
+    $pasienSumber = $this->db('pasien')->where('no_rkm_medis', $sumber)->oneArray();
+    $pasienTujuan = $this->db('pasien')->where('no_rkm_medis', $tujuan)->oneArray();
+
+    if (!$pasienSumber && !$pasienTujuan) {
+      echo json_encode(['status' => 'error', 'message' => "Pasien No. RM {$sumber} dan No. RM {$tujuan} tidak ditemukan."]);
+      exit();
+    }
+    if (!$pasienSumber) {
+      echo json_encode(['status' => 'error', 'message' => "Pasien No. RM {$sumber} (sumber) tidak ditemukan."]);
+      exit();
+    }
+    if (!$pasienTujuan) {
+      echo json_encode(['status' => 'error', 'message' => "Pasien No. RM {$tujuan} (tujuan) tidak ditemukan."]);
+      exit();
+    }
+
+    $riwayat = [];
+    foreach (self::GABUNG_NRM_TABLES as $table) {
+      if (!$this->gabungNrmTableExists($table)) {
+        continue;
+      }
+      $count = $this->gabungNrmCount($table, $sumber);
+      if ($count > 0) {
+        $riwayat[$table] = $count;
+      }
+    }
+
+    echo json_encode([
+      'status' => 'success',
+      'sumber' => [
+        'no_rkm_medis' => $pasienSumber['no_rkm_medis'],
+        'nm_pasien' => (string) $pasienSumber['nm_pasien'],
+      ],
+      'tujuan' => [
+        'no_rkm_medis' => $pasienTujuan['no_rkm_medis'],
+        'nm_pasien' => (string) $pasienTujuan['nm_pasien'],
+      ],
+      'riwayat' => $riwayat,
+    ]);
+    exit();
+  }
+
+  public function postGabungnrm()
+  {
+    $mlite_crud_permissions = $this->core->loadCrudPermissions('pasien');
+    if ($mlite_crud_permissions['can_update'] == 'false' || $mlite_crud_permissions['can_delete'] == 'false') {
+      echo json_encode(['status' => 'error', 'message' => 'Anda tidak memiliki hak akses untuk menggabungkan data pasien!']);
+      exit();
+    }
+
+    header('Content-Type: application/json');
+    $sumber = trim((string) ($_POST['no_rkm_medis'] ?? ''));
+    $tujuan = trim((string) ($_POST['no_rkm_medis_tujuan'] ?? ''));
+
+    if ($sumber === '' || $tujuan === '') {
+      echo json_encode(['status' => 'error', 'message' => 'No. RM sumber dan No. RM tujuan wajib diisi.']);
+      exit();
+    }
+    if ($sumber === $tujuan) {
+      echo json_encode(['status' => 'error', 'message' => 'No. RM sumber dan No. RM tujuan tidak boleh sama.']);
+      exit();
+    }
+
+    $pasienSumber = $this->db('pasien')->where('no_rkm_medis', $sumber)->oneArray();
+    $pasienTujuan = $this->db('pasien')->where('no_rkm_medis', $tujuan)->oneArray();
+
+    if (!$pasienSumber) {
+      echo json_encode(['status' => 'error', 'message' => "Pasien No. RM {$sumber} (sumber) tidak ditemukan."]);
+      exit();
+    }
+    if (!$pasienTujuan) {
+      echo json_encode(['status' => 'error', 'message' => "Pasien No. RM {$tujuan} (tujuan) tidak ditemukan."]);
+      exit();
+    }
+
+    $pdo = $this->db()->pdo();
+    $detail = [
+      'pindah' => [],
+      'konflik_dihapus' => [],
+      'field_diisi' => [],
+      'pasien_sumber_dihapus' => false,
+    ];
+
+    try {
+      $pdo->beginTransaction();
+
+      // 1. Pindahkan riwayat di tabel biasa (PK bukan no_rkm_medis)
+      foreach (self::GABUNG_NRM_TABLES as $table) {
+        if ($table == 'booking_registrasi' || $table == 'personal_pasien') {
+          continue; // ditangani khusus di bawah karena PK-nya memuat no_rkm_medis
+        }
+        if (!$this->gabungNrmTableExists($table)) {
+          continue;
+        }
+        $stmt = $pdo->prepare("UPDATE `{$table}` SET no_rkm_medis = ? WHERE no_rkm_medis = ?");
+        $stmt->execute([$tujuan, $sumber]);
+        $moved = $stmt->rowCount();
+        if ($moved > 0) {
+          $detail['pindah'][$table] = $moved;
+        }
+      }
+
+      // 2. booking_registrasi (PK: no_rkm_medis + tanggal_periksa) —
+      //    buang booking sumber yang bentrok dengan tanggal booking tujuan, sisanya dipindah
+      $deletedBooking = 0;
+      $movedBooking = 0;
+      if ($this->gabungNrmTableExists('booking_registrasi')) {
+        $stmtTanggal = $pdo->prepare("SELECT tanggal_periksa FROM booking_registrasi WHERE no_rkm_medis = ?");
+        $stmtTanggal->execute([$sumber]);
+        $tglSumber = $stmtTanggal->fetchAll(\PDO::FETCH_COLUMN) ?: [];
+        $stmtTanggal->execute([$tujuan]);
+        $tglTujuan = $stmtTanggal->fetchAll(\PDO::FETCH_COLUMN) ?: [];
+        $conflictDates = array_values(array_intersect($tglSumber, $tglTujuan));
+        if (!empty($conflictDates)) {
+          $placeholders = implode(',', array_fill(0, count($conflictDates), '?'));
+          $stmtHapus = $pdo->prepare("DELETE FROM booking_registrasi WHERE no_rkm_medis = ? AND tanggal_periksa IN ({$placeholders})");
+          $stmtHapus->execute(array_merge([$sumber], $conflictDates));
+          $deletedBooking = $stmtHapus->rowCount();
+        }
+        $stmtBooking = $pdo->prepare("UPDATE booking_registrasi SET no_rkm_medis = ? WHERE no_rkm_medis = ?");
+        $stmtBooking->execute([$tujuan, $sumber]);
+        $movedBooking = $stmtBooking->rowCount();
+      }
+      if ($deletedBooking > 0) {
+        $detail['konflik_dihapus']['booking_registrasi'] = $deletedBooking;
+      }
+      if ($movedBooking > 0) {
+        $detail['pindah']['booking_registrasi'] = $movedBooking;
+      }
+
+      // 3. personal_pasien (PK: no_rkm_medis) —
+      //    jika tujuan sudah punya baris, baris sumber dihapus; jika tidak, dipindah
+      $deletedPersonal = 0;
+      $movedPersonal = 0;
+      if ($this->gabungNrmTableExists('personal_pasien')) {
+        $stmtPersonal = $pdo->prepare("SELECT COUNT(*) FROM personal_pasien WHERE no_rkm_medis = ?");
+        $stmtPersonal->execute([$tujuan]);
+        if ((int) $stmtPersonal->fetchColumn() > 0) {
+          $stmtHapus = $pdo->prepare("DELETE FROM personal_pasien WHERE no_rkm_medis = ?");
+          $stmtHapus->execute([$sumber]);
+          $deletedPersonal = $stmtHapus->rowCount();
+        } else {
+          $stmtPindah = $pdo->prepare("UPDATE personal_pasien SET no_rkm_medis = ? WHERE no_rkm_medis = ?");
+          $stmtPindah->execute([$tujuan, $sumber]);
+          $movedPersonal = $stmtPindah->rowCount();
+        }
+      }
+      if ($deletedPersonal > 0) {
+        $detail['konflik_dihapus']['personal_pasien'] = $deletedPersonal;
+      }
+      if ($movedPersonal > 0) {
+        $detail['pindah']['personal_pasien'] = $movedPersonal;
+      }
+
+      // 4. Isi field data pasien tujuan yang masih kosong dari data pasien sumber
+      $updates = [];
+      $fillValues = [];
+      foreach (self::GABUNG_NRM_FILL_FIELDS as $field) {
+        $valSumber = $pasienSumber[$field] ?? null;
+        $valTujuan = $pasienTujuan[$field] ?? null;
+        if (($valTujuan === null || $valTujuan === '') && $valSumber !== null && $valSumber !== '') {
+          $updates[] = "`{$field}` = ?";
+          $fillValues[] = $valSumber;
+          $detail['field_diisi'][] = $field;
+        }
+      }
+      if (!empty($updates) && in_array('tgl_lahir', $detail['field_diisi'], true)) {
+        $umurTujuan = $pasienTujuan['umur'] ?? '';
+        if ($umurTujuan === null || $umurTujuan === '') {
+          $updates[] = "`umur` = ?";
+          $fillValues[] = $this->hitungUmur($pasienSumber['tgl_lahir']);
+          $detail['field_diisi'][] = 'umur';
+        }
+      }
+      if (!empty($updates)) {
+        $sqlUpdatePasien = "UPDATE pasien SET " . implode(', ', $updates) . " WHERE no_rkm_medis = ?";
+        $fillValues[] = $tujuan;
+        $pdo->prepare($sqlUpdatePasien)->execute($fillValues);
+      }
+
+      // 5. Hapus baris pasien sumber
+      $pdo->prepare("DELETE FROM pasien WHERE no_rkm_medis = ?")->execute([$sumber]);
+      $detail['pasien_sumber_dihapus'] = true;
+
+      $pdo->commit();
+
+      echo json_encode([
+        'status' => 'success',
+        'message' => "Riwayat No. RM {$sumber} berhasil digabung ke No. RM {$tujuan}.",
+        'detail' => $detail,
+      ]);
+    } catch (\Throwable $e) {
+      if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+      }
+      $message = preg_replace('/`[^`]+`\./', '', $e->getMessage());
+      echo json_encode([
+        'status' => 'error',
+        'message' => 'Gagal menggabungkan data: ' . $message,
+      ]);
     }
     exit();
   }

@@ -119,6 +119,7 @@
   var baseUrl = '{?=url()?}/{?=ADMIN?}/api/pasien';
   var token = '{?=isset_or($token)?}';
   var canUpdate = '{?=isset_or($mlite_crud_permissions.can_update)?}' == 'true';
+  var canDelete = '{?=isset_or($mlite_crud_permissions.can_delete)?}' == 'true';
   var adminMode = '{?=isset_or($admin_mode)?}';
 
   $(document).ready(function() {
@@ -189,6 +190,9 @@
                       
                       rows += '<li><a href="' + item.riwayatperawatan + '" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>';
                       rows += '<li><a href="' + item.folder + '">Folder Berkas Digital</a></li>';
+                      if(canUpdate && canDelete) {
+                        rows += '<li><a href="#" class="gabung-nrm-trigger" data-no_rkm_medis="' + item.no_rkm_medis + '">Gabung No. RM</a></li>';
+                      }
                       rows += '</ul>';
                       rows += '</td>';
 
@@ -275,4 +279,126 @@
          locale: 'id'
        });
    });
+</script>
+<div class="modal fade" id="gabungNrmModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><i class="fa fa-compress"></i> Gabung Nomor Rekam Medik</h4>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" style="margin-bottom:10px;">
+          <b>Perhatian:</b> Seluruh riwayat pasien dari <b>No. RM Sumber</b> akan dipindahkan ke <b>No. RM Tujuan</b>, lalu data pasien sumber akan dihapus. Tindakan ini tidak dapat dibatalkan.
+        </div>
+        <div class="form-group">
+          <label>No. RM Sumber</label>
+          <input type="text" id="gabung_nrm_sumber" class="form-control" placeholder="No. RM asal (riwayatnya akan dipindahkan)">
+        </div>
+        <div class="form-group">
+          <label>No. RM Tujuan</label>
+          <input type="text" id="gabung_nrm_tujuan" class="form-control" placeholder="No. RM tujuan (pemilik hasil gabungan)">
+        </div>
+        <div id="gabung_nrm_info"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" id="btn_gabung_nrm_cek" class="btn btn-info">Cek Data</button>
+        <button type="button" id="btn_gabung_nrm_proses" class="btn btn-danger" disabled>Gabung</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  var gabungNrmBaseURL = mlite.url + '/' + mlite.admin;
+
+  function gabungNrmEscape(str) {
+    return String(str == null ? '' : str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function gabungNrmCek() {
+    var sumber = $.trim($('#gabung_nrm_sumber').val());
+    var tujuan = $.trim($('#gabung_nrm_tujuan').val());
+    var infoBox = $('#gabung_nrm_info');
+    $('#btn_gabung_nrm_proses').prop('disabled', true);
+    if (!sumber || !tujuan) {
+      infoBox.empty();
+      return;
+    }
+    if (sumber === tujuan) {
+      infoBox.html('<div class="alert alert-danger" style="margin-bottom:0;">No. RM sumber dan tujuan tidak boleh sama.</div>');
+      return;
+    }
+    infoBox.html('<div class="text-muted"><i class="fa fa-spinner fa-spin"></i> Memeriksa data...</div>');
+    $.get(gabungNrmBaseURL + '/pasien/gabungnrminfo?t=' + mlite.token, {no_rkm_medis: sumber, no_rkm_medis_tujuan: tujuan}, function(res) {
+      if (typeof res === 'string') res = JSON.parse(res);
+      if (res.status !== 'success') {
+        infoBox.html('<div class="alert alert-danger" style="margin-bottom:0;">' + gabungNrmEscape(res.message || 'Gagal memeriksa data.') + '</div>');
+        return;
+      }
+      var html = '<table class="table table-condensed table-bordered" style="margin-bottom:5px;">';
+      html += '<tr class="info"><th width="40%"></th><th>Sumber</th><th>Tujuan</th></tr>';
+      html += '<tr><td><b>No. RM</b></td><td>' + gabungNrmEscape(res.sumber.no_rkm_medis) + '</td><td>' + gabungNrmEscape(res.tujuan.no_rkm_medis) + '</td></tr>';
+      html += '<tr><td><b>Nama Pasien</b></td><td>' + gabungNrmEscape(res.sumber.nm_pasien) + '</td><td>' + gabungNrmEscape(res.tujuan.nm_pasien) + '</td></tr>';
+      html += '</table>';
+      var counts = res.riwayat || {};
+      var rows = '';
+      $.each(counts, function(t, c) {
+        rows += '<tr><td>' + gabungNrmEscape(t) + '</td><td class="text-right">' + c + '</td></tr>';
+      });
+      if (rows) {
+        html += '<b>Jumlah riwayat yang akan dipindah:</b>';
+        html += '<table class="table table-condensed table-striped" style="margin-top:5px;margin-bottom:0;">' + rows + '</table>';
+      } else {
+        html += '<div class="alert alert-warning" style="margin-bottom:0;">Pasien sumber tidak memiliki riwayat.</div>';
+      }
+      infoBox.html(html);
+      $('#btn_gabung_nrm_proses').prop('disabled', false);
+    }).fail(function() {
+      infoBox.html('<div class="alert alert-danger" style="margin-bottom:0;">Gagal memeriksa data.</div>');
+    });
+  }
+  $(document).off('click.gabungNrmTrigger').on('click.gabungNrmTrigger', '.gabung-nrm-trigger', function(e) {
+    e.preventDefault();
+    $('#gabung_nrm_sumber').val($(this).data('no_rkm_medis') || '');
+    $('#gabung_nrm_tujuan').val('');
+    $('#gabung_nrm_info').empty();
+    $('#btn_gabung_nrm_proses').prop('disabled', true);
+    $('#gabungNrmModal').modal('show');
+  });
+
+  $(document).off('click.gabungNrmCek').on('click.gabungNrmCek', '#btn_gabung_nrm_cek', gabungNrmCek);
+
+  $(document).off('change.gabungNrm').on('change.gabungNrm', '#gabung_nrm_sumber, #gabung_nrm_tujuan', gabungNrmCek);
+
+  $(document).off('click.gabungNrmProses').on('click.gabungNrmProses', '#btn_gabung_nrm_proses', function() {
+    var sumber = $.trim($('#gabung_nrm_sumber').val());
+    var tujuan = $.trim($('#gabung_nrm_tujuan').val());
+    if (!sumber || !tujuan) {
+      alert('No. RM sumber dan No. RM tujuan wajib diisi.');
+      return;
+    }
+    if (sumber === tujuan) {
+      alert('No. RM sumber dan No. RM tujuan tidak boleh sama.');
+      return;
+    }
+    if (!confirm('Yakin menggabungkan seluruh riwayat No. RM ' + sumber + ' ke No. RM ' + tujuan + '?\nData pasien No. RM ' + sumber + ' akan dihapus dan tindakan ini tidak dapat dibatalkan.')) {
+      return;
+    }
+    var $btn = $(this).prop('disabled', true).text('Memproses...');
+    $.post(gabungNrmBaseURL + '/pasien/gabungnrm?t=' + mlite.token, {no_rkm_medis: sumber, no_rkm_medis_tujuan: tujuan}, function(res) {
+      $btn.prop('disabled', false).text('Gabung');
+      if (typeof res === 'string') res = JSON.parse(res);
+      if (res.status === 'success') {
+        $('#gabungNrmModal').modal('hide');
+        loadData(currentPage);
+        alert(res.message || 'Riwayat berhasil digabung.');
+      } else {
+        alert(res.message || 'Gagal menggabungkan data.');
+      }
+    }, 'json').fail(function() {
+      $btn.prop('disabled', false).text('Gabung');
+      alert('Gagal menggabungkan data.');
+    });
+  });
 </script>
