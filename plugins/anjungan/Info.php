@@ -9,24 +9,34 @@ return [
     'icon'          =>  'desktop',
     'pages'            =>  ['Anjungan Pasien Mandiri' => 'anjungan'],
     'install'       =>  function () use ($core) {
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'display_poli', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'carabayar', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'antrian_loket', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'antrian_cs', '2')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'antrian_apotek', '3')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'panggil_loket', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'panggil_loket_nomor', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'panggil_cs', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'panggil_cs_nomor', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'panggil_apotek', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'panggil_apotek_nomor', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_anjungan', 'Running text anjungan pasien mandiri.....')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_loket', 'Running text display antrian loket.....')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_poli', 'Running text display antrian poliklinik.....')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_laboratorium', 'Running text display antrian laboratorium.....')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_apotek', 'Running text display antrian apotek.....')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_farmasi', 'Running text display antrian farmasi.....')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'vidio', 'G4im8_n0OoI')");
+      // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+      // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+      $settings = [
+          'display_poli' => '',
+          'carabayar' => '',
+          'antrian_loket' => '1',
+          'antrian_cs' => '2',
+          'antrian_apotek' => '3',
+          'panggil_loket' => '1',
+          'panggil_loket_nomor' => '1',
+          'panggil_cs' => '1',
+          'panggil_cs_nomor' => '1',
+          'panggil_apotek' => '1',
+          'panggil_apotek_nomor' => '1',
+          'text_anjungan' => 'Running text anjungan pasien mandiri.....',
+          'text_loket' => 'Running text display antrian loket.....',
+          'text_poli' => 'Running text display antrian poliklinik.....',
+          'text_laboratorium' => 'Running text display antrian laboratorium.....',
+          'text_apotek' => 'Running text display antrian apotek.....',
+          'text_farmasi' => 'Running text display antrian farmasi.....',
+          'vidio' => 'G4im8_n0OoI',
+      ];
+      foreach ($settings as $field => $value) {
+          $cek = $core->db('mlite_settings')->where('module', 'anjungan')->where('field', $field)->oneArray();
+          if (!$cek) {
+              $core->db('mlite_settings')->save(['module' => 'anjungan', 'field' => $field, 'value' => $value]);
+          }
+      }
 
     },
     'uninstall'     =>  function () use ($core) {

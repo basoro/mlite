@@ -9,7 +9,17 @@ return [
     'compatibility' => '6.*.*',
     'icon' => 'sticky-note-o',
     'install' => function () use ($core) {
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('esignature', 'kode_berkasdigital', '')");
+        // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+        // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+        $settings = [
+            'kode_berkasdigital' => '',
+        ];
+        foreach ($settings as $field => $value) {
+            $cek = $core->db('mlite_settings')->where('module', 'esignature')->where('field', $field)->oneArray();
+            if (!$cek) {
+                $core->db('mlite_settings')->save(['module' => 'esignature', 'field' => $field, 'value' => $value]);
+            }
+        }
 
     },
     'uninstall' => function () use ($core) {

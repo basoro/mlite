@@ -9,7 +9,17 @@ return [
     'compatibility' =>  '6.*.*',
     'icon'          =>  'user-md',
     'install'       =>  function () use ($core) {
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('dokter_ralan', 'set_sudah', 'tidak')");
+      // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+      // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+      $settings = [
+          'set_sudah' => 'tidak',
+      ];
+      foreach ($settings as $field => $value) {
+          $cek = $core->db('mlite_settings')->where('module', 'dokter_ralan')->where('field', $field)->oneArray();
+          if (!$cek) {
+              $core->db('mlite_settings')->save(['module' => 'dokter_ralan', 'field' => $field, 'value' => $value]);
+          }
+      }
     },
     'uninstall'     =>  function() use($core)
     {

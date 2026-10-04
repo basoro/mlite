@@ -3129,7 +3129,7 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("31","settings","admin_mode","complex"),
 ("32","settings","input_kasir","tidak"),
 ("33","settings","editor","wysiwyg"),
-("34","settings","version","6.4.0"),
+("34","settings","version","6.4.1"),
 ("35","settings","update_check",""),
 ("36","settings","update_changelog",""),
 ("37","settings","update_version","0"),
@@ -3314,7 +3314,8 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("221","satu_sehat","rme_authurl","https://api-satusehat.kemkes.go.id/oauth2/v1"),
 ("222","satu_sehat","chlurl","https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/chl"),
 ("223","satu_sehat","shlurl","https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/shl"),
-("224","satu_sehat","rme_emergency_fallback","");
+("224","satu_sehat","rme_emergency_fallback",""),
+("225","jkn_mobile","ambil_antrian","booking");
 
 
 CREATE TABLE `mlite_subrekening` (

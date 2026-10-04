@@ -70,6 +70,18 @@
                          </div>
                     </div>
                     <div class="form-group">
+                         <label>Ambil Antrian</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="jkn_mobile[ambil_antrian]" value="booking" {if: isset_or($settings.jkn_mobile.ambil_antrian, 'booking') == 'booking'}checked{/if} /> Booking (booking_registrasi)
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="jkn_mobile[ambil_antrian]" value="nonbooking" {if: isset_or($settings.jkn_mobile.ambil_antrian, 'booking') == 'nonbooking'}checked{/if} /> Non Booking (reg_periksa)
+                             </label>
+                         </div>
+                         <p class="help-block">Booking: antrean disimpan di booking_registrasi dan pasien melakukan checkin. Non Booking: pasien langsung terdaftar di antrean poli (reg_periksa) tanpa checkin.</p>
+                    </div>
+                    <div class="form-group">
                         <label>Tampilkan Poli</label>
                         <select name="jkn_mobile[display][]" class="form-control" multiple>
                           {loop: $settings.poliklinik}

@@ -164,20 +164,20 @@ Untuk Demo dan Info lebih lanjut di <https://mlite.id>
 
 Versi rilis GitHub **mengikuti persis** `settings.version` yang dideklarasikan di `mlite_db.sql` (record id 34). Tidak ada auto-increment: workflow `.github/workflows/release.yml` hanya me-release jika versi tersebut belum pernah ditandai, dan push biasa tanpa bump versi **tidak** menghasilkan rilis baru.
 
-Untuk merilis versi baru (contoh: dari `6.4.0` ke `6.4.1`):
+Untuk merilis versi baru (contoh: dari `6.4.1` ke `6.4.2`):
 
 1. **Naikkan versi database** di `mlite_db.sql`:
 
    ```sql
-   ("34","settings","version","6.4.1"),
+   ("34","settings","version","6.4.2"),
    ```
 
 2. **Tambahkan jalur upgrade** di `systems/upgrade.php` agar instalasi lama ikut naik:
 
    ```php
-   case '6.4.0':
-       // migrasi DB untuk v6.4.1 (jika ada)
-       $return = '6.4.1';
+   case '6.4.1':
+       // migrasi DB untuk v6.4.2 (jika ada)
+       $return = '6.4.2';
        break;
    ```
 

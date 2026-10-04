@@ -349,6 +349,8 @@ class Admin extends AdminModule
             }
 
             $version = $this->settings->get('settings.version');
+
+            define("UPGRADABLE", true);
             $new_version = include($upgradeFile);
 
             if ($new_version === true || $new_version === 1) {

@@ -2745,10 +2745,34 @@ switch ($version) {
         // Penyelarasan versi database dengan tag rilis.
         $return = '6.4.0';
         break;
+
+    case '6.4.0':
+        // Release v6.4.1: pengaturan ambil antrian Booking/Non-Booking modul JKN Mobile.
+        // Booking (default) menyimpan antrean ke booking_registrasi, Non-Booking langsung ke reg_periksa.
+        $settings_jkn_mobile = [
+            ['jkn_mobile', 'ambil_antrian', 'booking'],
+        ];
+        foreach ($settings_jkn_mobile as $setting) {
+            try {
+                if (DBDRIVER == 'sqlite') {
+                    $stmt = $this->core->db()->pdo()->prepare("SELECT COUNT(*) FROM mlite_settings WHERE module = ? AND field = ?");
+                    $stmt->execute([$setting[0], $setting[1]]);
+                    if (!$stmt->fetchColumn()) {
+                        $ins = $this->core->db()->pdo()->prepare("INSERT INTO mlite_settings (module, field, value) VALUES (?, ?, ?)");
+                        $ins->execute($setting);
+                    }
+                } else {
+                    $this->core->db()->pdo()->exec("INSERT IGNORE INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('" . $setting[0] . "', '" . $setting[1] . "', '" . $setting[2] . "')");
+                }
+            } catch (\Exception $e) {}
+        }
+
+        $return = '6.4.1';
+        break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.4.0';
+        $return = '6.4.1';
     }
 
 return $return;

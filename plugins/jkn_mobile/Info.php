@@ -10,27 +10,40 @@ return [
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile' => 'jknmobile'],
     'install'       =>  function () use ($core) {
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'x_username', 'jkn')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'x_password', 'mobile')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'header_token', 'X-Token')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'header_username', 'X-Username')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'header_password', 'X-Password')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'BpjsConsID', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'BpjsSecretKey', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'BpjsUserKey', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'BpjsAntrianUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanrs_dev/')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'kd_pj_bpjs', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'exclude_taskid', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'display', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'kdprop', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'kdkab', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'kdkec', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'kdkel', '1')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'perusahaan_pasien', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'suku_bangsa', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'bahasa_pasien', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'cacat_fisik', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'kirimantrian', 'tidak')");
+      // Idempoten: jika settings sudah ada (sisa install sebelumnya), update nilainya,
+      // jika belum ada maka insert. Aman untuk MySQL dan SQLite.
+      $settings = [
+        'x_username'          =>  'jkn',
+        'x_password'          =>  'mobile',
+        'header_token'        =>  'X-Token',
+        'header_username'     =>  'X-Username',
+        'header_password'     =>  'X-Password',
+        'BpjsConsID'          =>  '',
+        'BpjsSecretKey'       =>  '',
+        'BpjsUserKey'         =>  '',
+        'BpjsAntrianUrl'      =>  'https://apijkn-dev.bpjs-kesehatan.go.id/antreanrs_dev/',
+        'kd_pj_bpjs'          =>  '',
+        'exclude_taskid'      =>  '',
+        'display'             =>  '',
+        'kdprop'              =>  '1',
+        'kdkab'               =>  '1',
+        'kdkec'               =>  '1',
+        'kdkel'               =>  '1',
+        'perusahaan_pasien'   =>  '',
+        'suku_bangsa'         =>  '',
+        'bahasa_pasien'       =>  '',
+        'cacat_fisik'         =>  '',
+        'kirimantrian'        =>  'tidak',
+        'ambil_antrian'       =>  'booking',
+      ];
+      foreach ($settings as $field => $value) {
+        $cek = $core->db('mlite_settings')->where('module', 'jkn_mobile')->where('field', $field)->oneArray();
+        if ($cek) {
+          $core->db('mlite_settings')->where('module', 'jkn_mobile')->where('field', $field)->update(['value' => $value]);
+        } else {
+          $core->db('mlite_settings')->save(['module' => 'jkn_mobile', 'field' => $field, 'value' => $value]);
+        }
+      }
     },
     'uninstall'     =>  function () use ($core) {
       $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'jkn_mobile'");

@@ -10,17 +10,27 @@ return [
     'icon' => 'camera-retro',
     'pages' => ['Mini PACS' => 'mini_pacs'],
     'install' => function () use ($core) {
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'ae_title', 'MLITE_PACS')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'target_aet', 'TARGET_PACS')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'target_ip', '127.0.0.1')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'target_port', '104')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'worklist_aet', 'MINIPACS')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'worklist_port', '10104')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'is_mono', '1')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'remote_ip', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'remote_api_key', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'remote_username', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('mini_pacs', 'remote_password', '')");
+        // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+        // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+        $settings = [
+            'ae_title' => 'MLITE_PACS',
+            'target_aet' => 'TARGET_PACS',
+            'target_ip' => '127.0.0.1',
+            'target_port' => '104',
+            'worklist_aet' => 'MINIPACS',
+            'worklist_port' => '10104',
+            'is_mono' => '1',
+            'remote_ip' => '',
+            'remote_api_key' => '',
+            'remote_username' => '',
+            'remote_password' => '',
+        ];
+        foreach ($settings as $field => $value) {
+            $cek = $core->db('mlite_settings')->where('module', 'mini_pacs')->where('field', $field)->oneArray();
+            if (!$cek) {
+                $core->db('mlite_settings')->save(['module' => 'mini_pacs', 'field' => $field, 'value' => $value]);
+            }
+        }
     },
     'uninstall' => function () use ($core) {
         $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'mini_pacs'");

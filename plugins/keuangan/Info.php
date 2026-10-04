@@ -9,13 +9,23 @@ return [
     'compatibility' =>  '6.*.*',
     'icon'          =>  'money',
     'install'       =>  function () use ($core) {
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'jurnal_kasir', '0')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_debet_kas', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_pendaftaran', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_tindakan', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_obat_bhp', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_laboratorium', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_radiologi', '')");
+        // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+        // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+        $settings = [
+            'jurnal_kasir' => '0',
+            'akun_debet_kas' => '',
+            'akun_kredit_pendaftaran' => '',
+            'akun_kredit_tindakan' => '',
+            'akun_kredit_obat_bhp' => '',
+            'akun_kredit_laboratorium' => '',
+            'akun_kredit_radiologi' => '',
+        ];
+        foreach ($settings as $field => $value) {
+            $cek = $core->db('mlite_settings')->where('module', 'keuangan')->where('field', $field)->oneArray();
+            if (!$cek) {
+                $core->db('mlite_settings')->save(['module' => 'keuangan', 'field' => $field, 'value' => $value]);
+            }
+        }
     },
     'uninstall'     =>  function() use($core)
     {

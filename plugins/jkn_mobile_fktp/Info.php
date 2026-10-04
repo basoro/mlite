@@ -9,18 +9,28 @@ return [
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile FKTP' => 'jknmobilefktp'],
     'install'       =>  function () use ($core) {
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'username', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'password', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'header', 'X-Token')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'header_username', 'X-Username')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'header_password', 'X-Password')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'kd_pj', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'hari', '3')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'display', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'kdkel', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'kdkec', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'kdkab', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'kdprop', '')");
+        // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+        // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+        $settings = [
+            'username' => '',
+            'password' => '',
+            'header' => 'X-Token',
+            'header_username' => 'X-Username',
+            'header_password' => 'X-Password',
+            'kd_pj' => '',
+            'hari' => '3',
+            'display' => '',
+            'kdkel' => '',
+            'kdkec' => '',
+            'kdkab' => '',
+            'kdprop' => '',
+        ];
+        foreach ($settings as $field => $value) {
+            $cek = $core->db('mlite_settings')->where('module', 'jkn_mobile_fktp')->where('field', $field)->oneArray();
+            if (!$cek) {
+                $core->db('mlite_settings')->save(['module' => 'jkn_mobile_fktp', 'field' => $field, 'value' => $value]);
+            }
+        }
     },
     'uninstall'     =>  function () use ($core) {
         $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'jkn_mobile_fktp'");

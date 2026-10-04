@@ -101,16 +101,87 @@ return [
               ADD CONSTRAINT `mlite_news_tags_relationship_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `mlite_news_tags` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;");
         }
 
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings`
-            (`module`, `field`, `value`)
-            VALUES
-            ('website', 'perpage', '5'),
-            ('website', 'disqus', ''),
-            ('website', 'dateformat', 'M d, Y'),
-            ('website', 'title', 'mLITE Indonesia'),
-            ('website', 'desc', '... RS Masa Gitu ...'),
-            ('website', 'latestPostsCount', '5')
-        ");
+        // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+        // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+        $settings = [
+            'perpage' => '5',
+            'disqus' => '',
+            'dateformat' => 'M d, Y',
+            'title' => 'mLITE Indonesia',
+            'desc' => '... RS Masa Gitu ...',
+            'latestPostsCount' => '5',
+            'homepage_login' => '1',
+            'homepage_logo' => 'website/logo.png',
+            'homepage_logo_icon' => 'website/icon-logo.png',
+            'homepage_slider_bg' => 'website/slider-bg.jpg',
+            'homepage_typewriter_1' => 'Medic LITE Indonesia',
+            'homepage_typewriter_2' => 'We Care Your Health',
+            'homepage_typewriter_3' => 'We are Expert!',
+            'homepage_gawat_darurat' => 'To save life and limb, itu adalah moto kami dalam layanan Gawat Darurat',
+            'homepage_rawat_jalan_1' => '8.00 – 18.00',
+            'homepage_rawat_jalan_2' => '8.00 – 16.00',
+            'homepage_rawat_jalan_3' => '8.00 – 13.00',
+            'homepage_rawat_inap' => 'Dengan 128 bed tersedia, 8 kamar VVIP, 24 Kelas 1, 56 Kelas 2 dan 50 Kelas 3',
+            'homepage_motto' => 'Melayani Dengan Hati',
+            'homepage_about_title' => 'MENGAPA MEMILIH KAMI',
+            'homepage_about_content' => '<h2>Layanan Paripurna</h2>\r\nMemberi pelayanan kesehatan yang aman, bermutu, antidiskriminasi, dan efektif dengan mengutamakan kepentingan pasien sesuai dengan standar pelayanan Rumah Sakit.\r\n\r\nDengan Misi, Mendorong peningkatan kualitas kehidupan masyarakat Indonesia dengan menyediakan solusi bisnis kesehatan yang bernilai tambah dan mengutamakan prinsip kemanusiaan dan keselamatan.',
+            'homepage_about_bg' => 'website/about_03.jpg',
+            'homepage_about_youtube' => 'T0qagA4_eVQ',
+            'homepage_about_11' => 'Peralatan Digital',
+            'homepage_about_12' => 'website/clinic_01.jpg',
+            'homepage_about_21' => 'Ruang Operasi Higienis',
+            'homepage_about_22' => 'website/clinic_02.jpg',
+            'homepage_about_31' => 'Spesialis Dibidangnya',
+            'homepage_about_32' => 'website/clinic_03.jpg',
+            'homepage_about_41' => 'Layanan Paripurna',
+            'homepage_about_42' => 'website/clinic_01.jpg',
+            'homepage_services_11' => 'FASILITAS PREMIUM',
+            'homepage_services_12' => 'Untuk memastikan bahwa Anda diberi perawatan terbaik',
+            'homepage_services_13' => 'website/service-icon1.png',
+            'homepage_services_14' => 'Terbaik Dibidangnya',
+            'homepage_services_15' => '',
+            'homepage_services_21' => 'LABORATORIUM',
+            'homepage_services_22' => 'Alat laboratorium terbaik untuk ketepatan diagnosa',
+            'homepage_services_23' => 'website/service-icon2.png',
+            'homepage_services_24' => 'Tekhnologi Terkini',
+            'homepage_services_25' => '',
+            'homepage_services_31' => 'DOKTER SPESIALIS',
+            'homepage_services_32' => 'Dilayani 35 Dokter Spesialis dan Sub Spesialis',
+            'homepage_services_33' => 'website/service-icon3.png',
+            'homepage_services_34' => 'Akurat & Rendah Radiasi',
+            'homepage_services_35' => '',
+            'homepage_services_41' => 'PERAWATAN ANAK',
+            'homepage_services_42' => 'Deteksi dini dan pelayanan tumbuh kembang anak',
+            'homepage_services_43' => 'website/service-icon4.png',
+            'homepage_services_44' => 'Untuk Buah Hati',
+            'homepage_services_45' => '',
+            'homepage_services_51' => 'LAYANAN FARMASI',
+            'homepage_services_52' => 'Memastikan ketepatan indikasi, aturan dan dosis obat',
+            'homepage_services_53' => 'website/service-icon5.png',
+            'homepage_services_54' => 'Tepat & Cepat',
+            'homepage_services_55' => '',
+            'homepage_services_61' => 'BANK DARAH',
+            'homepage_services_62' => 'Menjamin ketersediaan darah untuk transfusi yang aman',
+            'homepage_services_63' => 'website/service-icon1.png',
+            'homepage_services_64' => 'Aman dan Nyaman',
+            'homepage_services_65' => '',
+            'homepage_footer_about' => 'Rumah Sakit Pemerintah tipe C dengan layanan terdepan menggunakan tekhnologi terkini.',
+            'homepage_footer_informasi_11' => 'Jadwal Dokter',
+            'homepage_footer_informasi_12' => 'http://localhost/webapps/jadwal.php',
+            'homepage_footer_informasi_21' => 'Ketersediaan Tempat Tidur',
+            'homepage_footer_informasi_22' => 'http://localhost/webapps/bed5.php',
+            'homepage_footer_informasi_31' => 'Display Antrian',
+            'homepage_footer_informasi_32' => 'http://localhost/webapps/antrian.php',
+            'homepage_sosmed_facebook' => 'basoro',
+            'homepage_sosmed_youtube' => 'basoro',
+            'homepage_sosmed_instagram' => 'basoro',
+        ];
+        foreach ($settings as $field => $value) {
+            $cek = $core->db('mlite_settings')->where('module', 'website')->where('field', $field)->oneArray();
+            if (!$cek) {
+                $core->db('mlite_settings')->save(['module' => 'website', 'field' => $field, 'value' => $value]);
+            }
+        }
 
         if (!is_dir(UPLOADS."/website/news")) {
             mkdir(UPLOADS."/website/news", 0777);
@@ -118,71 +189,6 @@ return [
 
         copy(MODULES.'/website/img/default.jpg', UPLOADS.'/website/default.jpg');
 
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_login', '1')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_logo', 'website/logo.png')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_logo_icon', 'website/icon-logo.png')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_slider_bg', 'website/slider-bg.jpg')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_typewriter_1', 'Medic LITE Indonesia')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_typewriter_2', 'We Care Your Health')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_typewriter_3', 'We are Expert!')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_gawat_darurat', 'To save life and limb, itu adalah moto kami dalam layanan Gawat Darurat')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_rawat_jalan_1', '8.00 – 18.00')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_rawat_jalan_2', '8.00 – 16.00')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_rawat_jalan_3', '8.00 – 13.00')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_rawat_inap', 'Dengan 128 bed tersedia, 8 kamar VVIP, 24 Kelas 1, 56 Kelas 2 dan 50 Kelas 3')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_motto', 'Melayani Dengan Hati')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_title', 'MENGAPA MEMILIH KAMI')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_content', '<h2>Layanan Paripurna</h2>\r\nMemberi pelayanan kesehatan yang aman, bermutu, antidiskriminasi, dan efektif dengan mengutamakan kepentingan pasien sesuai dengan standar pelayanan Rumah Sakit.\r\n\r\nDengan Misi, Mendorong peningkatan kualitas kehidupan masyarakat Indonesia dengan menyediakan solusi bisnis kesehatan yang bernilai tambah dan mengutamakan prinsip kemanusiaan dan keselamatan.')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_bg', 'website/about_03.jpg')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_youtube', 'T0qagA4_eVQ')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_11', 'Peralatan Digital')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_12', 'website/clinic_01.jpg')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_21', 'Ruang Operasi Higienis')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_22', 'website/clinic_02.jpg')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_31', 'Spesialis Dibidangnya')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_32', 'website/clinic_03.jpg')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_41', 'Layanan Paripurna')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_about_42', 'website/clinic_01.jpg')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_11', 'FASILITAS PREMIUM')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_12', 'Untuk memastikan bahwa Anda diberi perawatan terbaik')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_13', 'website/service-icon1.png')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_14', 'Terbaik Dibidangnya')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_15', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_21', 'LABORATORIUM')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_22', 'Alat laboratorium terbaik untuk ketepatan diagnosa')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_23', 'website/service-icon2.png')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_24', 'Tekhnologi Terkini')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_25', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_31', 'DOKTER SPESIALIS')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_32', 'Dilayani 35 Dokter Spesialis dan Sub Spesialis')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_33', 'website/service-icon3.png')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_34', 'Akurat & Rendah Radiasi')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_35', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_41', 'PERAWATAN ANAK')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_42', 'Deteksi dini dan pelayanan tumbuh kembang anak')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_43', 'website/service-icon4.png')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_44', 'Untuk Buah Hati')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_45', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_51', 'LAYANAN FARMASI')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_52', 'Memastikan ketepatan indikasi, aturan dan dosis obat')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_53', 'website/service-icon5.png')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_54', 'Tepat & Cepat')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_55', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_61', 'BANK DARAH')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_62', 'Menjamin ketersediaan darah untuk transfusi yang aman')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_63', 'website/service-icon1.png')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_64', 'Aman dan Nyaman')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_services_65', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_footer_about', 'Rumah Sakit Pemerintah tipe C dengan layanan terdepan menggunakan tekhnologi terkini.')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_footer_informasi_11', 'Jadwal Dokter')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_footer_informasi_12', 'http://localhost/webapps/jadwal.php')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_footer_informasi_21', 'Ketersediaan Tempat Tidur')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_footer_informasi_22', 'http://localhost/webapps/bed5.php')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_footer_informasi_31', 'Display Antrian')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_footer_informasi_32', 'http://localhost/webapps/antrian.php')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_sosmed_facebook', 'basoro')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_sosmed_youtube', 'basoro')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'homepage_sosmed_instagram', 'basoro')");
 
         if (!is_dir(UPLOADS."/website")) {
             mkdir(UPLOADS."/website", 0777);

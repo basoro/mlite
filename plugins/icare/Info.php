@@ -9,13 +9,23 @@ return [
     'compatibility' =>  '6.*.*',
     'icon'          =>  'plus-square',
     'install'       =>  function () use ($core) {
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('icare', 'url', 'https://apijkn.bpjs-kesehatan.go.id/wsihs/api/rs/validate')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('icare', 'consid', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('icare', 'secretkey', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('icare', 'userkey', '')");      
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('icare', 'urlPCare', 'https://apijkn.bpjs-kesehatan.go.id/wsihs/api/pcare/validate')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('icare', 'usernameICare', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('icare', 'passwordICare', '')");
+      // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+      // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+      $settings = [
+          'url' => 'https://apijkn.bpjs-kesehatan.go.id/wsihs/api/rs/validate',
+          'consid' => '',
+          'secretkey' => '',
+          'userkey' => '',
+          'urlPCare' => 'https://apijkn.bpjs-kesehatan.go.id/wsihs/api/pcare/validate',
+          'usernameICare' => '',
+          'passwordICare' => '',
+      ];
+      foreach ($settings as $field => $value) {
+          $cek = $core->db('mlite_settings')->where('module', 'icare')->where('field', $field)->oneArray();
+          if (!$cek) {
+              $core->db('mlite_settings')->save(['module' => 'icare', 'field' => $field, 'value' => $value]);
+          }
+      }
     },
     'uninstall'     =>  function() use($core)
     {

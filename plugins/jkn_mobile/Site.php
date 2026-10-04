@@ -229,6 +229,7 @@ class Site extends SiteModule
 
             $data_pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
             $poli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray();
+            $ambilAntrianMode = $this->settings->get('jkn_mobile.ambil_antrian') ?: 'booking';
             
             // Check if kodedokter is present before using it
             $kodedokter = isset($decode['kodedokter']) ? $decode['kodedokter'] : '';
@@ -238,7 +239,7 @@ class Site extends SiteModule
                 $dokter = null;
             }
 
-            if(strtotime($decode['tanggalperiksa']) == strtotime(date('Y-m-d'))) {
+            if($ambilAntrianMode == 'nonbooking' || strtotime($decode['tanggalperiksa']) == strtotime(date('Y-m-d'))) {
               $sql = "SELECT jadwal.kuota - (SELECT COUNT(reg_periksa.tgl_registrasi)
               FROM reg_periksa WHERE reg_periksa.tgl_registrasi='$decode[tanggalperiksa]'
               AND reg_periksa.kd_dokter=jadwal.kd_dokter) as sisa_kuota, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter, jadwal.kuota
@@ -289,6 +290,16 @@ class Site extends SiteModule
             }
             if(!empty($cek_referensi_noka['tanggal_periksa'])) {
                $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$cek_referensi_noka['tanggal_periksa'].'. Silahkan pilih tanggal lain.';
+            }
+            if($ambilAntrianMode == 'nonbooking' && !empty($data_pasien['no_rkm_medis'])) {
+               // Mode Non-Booking: cegah pendaftaran dobel di reg_periksa
+               $antrean_reg_ada = $this->db('reg_periksa')->where('no_rkm_medis', $data_pasien['no_rkm_medis'])->where('tgl_registrasi', $decode['tanggalperiksa'])->toArray();
+               foreach ($antrean_reg_ada as $antrean_reg_row) {
+                  if (isset($antrean_reg_row['stts']) && $antrean_reg_row['stts'] != 'Batal') {
+                     $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$decode['tanggalperiksa'];
+                     break;
+                  }
+               }
             }
             if(empty($decode['nomorkartu'])) {
                $errors[] = 'Nomor kartu tidak boleh kosong';
@@ -358,7 +369,9 @@ class Site extends SiteModule
                         http_response_code(202);
                     } else {
                         // Get antrian poli
-                        $no_reg = $this->core->setNoBooking($dokter['kd_dokter'], $decode['tanggalperiksa'], $poli['kd_poli_rs']);
+                        // no_reg dihitung dari gabungan reg_periksa + booking_registrasi
+                        // per kd_poli (dan kd_dokter bila per-dokter) agar berurutan & tidak dobel
+                        $no_reg = $this->core->setNoAntrian($jadwal['kd_dokter'], $jadwal['kd_poli'], $decode['tanggalperiksa']);
                         $no_urut_reg = substr($no_reg, 0, 3);
                         $minutes = $no_urut_reg * 10;
                         $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kuota['jam_mulai'])));
@@ -371,7 +384,64 @@ class Site extends SiteModule
                         if(strtotime($decode['tanggalperiksa']) == strtotime(date('Y-m-d'))) {
                             $jam = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime(date('H:i:s'))));
                             $estimasi = strtotime($decode['tanggalperiksa'].' '.$jam) * 1000;
-                            $no_reg = $this->core->setNoReg($jadwal['kd_dokter'], $jadwal['kd_poli']);
+                        }
+                        if ($ambilAntrianMode == 'nonbooking') {
+                            // Mode Non Booking: pasien langsung terdaftar di antrean poli (reg_periksa)
+                            $stts_daftar = 'Baru';
+                            $biaya_reg_kolom = 'registrasi';
+                            if ($this->db('reg_periksa')->where('no_rkm_medis', $data_pasien['no_rkm_medis'])->count() > 0) {
+                                $stts_daftar = 'Lama';
+                                $biaya_reg_kolom = 'registrasilama';
+                            }
+                            $status_poli = 'Baru';
+                            if ($this->db('reg_periksa')->where('no_rkm_medis', $data_pasien['no_rkm_medis'])->where('kd_poli', $jadwal['kd_poli'])->count() > 0) {
+                                $status_poli = 'Lama';
+                            }
+                            $poliklinik_antrian = $this->db('poliklinik')->where('kd_poli', $jadwal['kd_poli'])->oneArray();
+                            $biaya_reg = isset($poliklinik_antrian[$biaya_reg_kolom]) ? $poliklinik_antrian[$biaya_reg_kolom] : 0;
+
+                            $umurdaftar = '0';
+                            $sttsumur = 'Hr';
+                            if (!empty($data_pasien['tgl_lahir'])) {
+                                $tglLahir = new \DateTime($data_pasien['tgl_lahir']);
+                                $hariIni = new \DateTime(date('Y-m-d'));
+                                $y = $hariIni->diff($tglLahir)->y;
+                                $m = $hariIni->diff($tglLahir)->m;
+                                $d = $hariIni->diff($tglLahir)->d;
+                                $umurdaftar = $d;
+                                $sttsumur = 'Hr';
+                                if ($y > 0) {
+                                    $umurdaftar = $y;
+                                    $sttsumur = 'Th';
+                                } else if ($m > 0) {
+                                    $umurdaftar = $m;
+                                    $sttsumur = 'Bl';
+                                }
+                            }
+
+                            $query = $this->db('reg_periksa')->save([
+                                'no_reg' => $no_reg,
+                                'no_rawat' => $this->core->setNoRawat($decode['tanggalperiksa']),
+                                'tgl_registrasi' => $decode['tanggalperiksa'],
+                                'jam_reg' => date('H:i:s'),
+                                'kd_dokter' => $jadwal['kd_dokter'],
+                                'no_rkm_medis' => $data_pasien['no_rkm_medis'],
+                                'kd_poli' => $jadwal['kd_poli'],
+                                'p_jawab' => $this->core->getPasienInfo('namakeluarga', $data_pasien['no_rkm_medis']),
+                                'almt_pj' => $this->core->getPasienInfo('alamatpj', $data_pasien['no_rkm_medis']),
+                                'hubunganpj' => $this->core->getPasienInfo('keluarga', $data_pasien['no_rkm_medis']),
+                                'biaya_reg' => $biaya_reg,
+                                'stts' => 'Belum',
+                                'stts_daftar' => $stts_daftar,
+                                'status_lanjut' => 'Ralan',
+                                'kd_pj' => $this->settings->get('jkn_mobile.kd_pj_bpjs'),
+                                'umurdaftar' => $umurdaftar,
+                                'sttsumur' => $sttsumur,
+                                'status_bayar' => 'Belum Bayar',
+                                'status_poli' => $status_poli
+                            ]);
+                        } else {
+                            // Mode Booking: simpan ke booking_registrasi, pasien checkin saat datang
                             $query = $this->db('booking_registrasi')->save([
                                 'tanggal_booking' => date('Y-m-d'),
                                 'jam_booking' => date('H:i:s'),
@@ -385,20 +455,6 @@ class Site extends SiteModule
                                 'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kuota['jam_mulai'],
                                 'status' => 'Belum'
                             ]);
-                        } else {
-                          $query = $this->db('booking_registrasi')->save([
-                              'tanggal_booking' => date('Y-m-d'),
-                              'jam_booking' => date('H:i:s'),
-                              'no_rkm_medis' => $data_pasien['no_rkm_medis'],
-                              'tanggal_periksa' => $decode['tanggalperiksa'],
-                              'kd_dokter' => $jadwal['kd_dokter'],
-                              'kd_poli' => $jadwal['kd_poli'],
-                              'no_reg' => $no_reg,
-                              'kd_pj' => $this->settings->get('jkn_mobile.kd_pj_bpjs'),
-                              'limit_reg' => 1,
-                              'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kuota['jam_mulai'],
-                              'status' => 'Belum'
-                          ]);
                         }
                         if ($query) {
                             $kodebooking = $this->settings->get('settings.ppk_bpjs').''.date('Ymdhis').''.$decode['kodepoli'].''.$no_reg.'MJKN';
@@ -554,17 +610,25 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $kuota = $this->db()->pdo()->prepare("SELECT jadwal.kuota - (SELECT COUNT(booking_registrasi.tanggal_periksa) FROM booking_registrasi WHERE booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]' AND booking_registrasi.kd_dokter=jadwal.kd_dokter) as sisa_kuota, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter, jadwal.kuota FROM jadwal INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]' GROUP BY jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai, jadwal.kuota, poliklinik.nm_poli, dokter.nm_dokter HAVING sisa_kuota > 0 ORDER BY sisa_kuota DESC LIMIT 1");
+                $ambilAntrianMode = $this->settings->get('jkn_mobile.ambil_antrian') ?: 'booking';
+                if ($ambilAntrianMode == 'nonbooking') {
+                    $countSub = "(SELECT COUNT(reg_periksa.tgl_registrasi) FROM reg_periksa WHERE reg_periksa.tgl_registrasi='$decode[tanggalperiksa]' AND reg_periksa.kd_dokter=jadwal.kd_dokter)";
+                } else {
+                    $countSub = "(SELECT COUNT(booking_registrasi.tanggal_periksa) FROM booking_registrasi WHERE booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]' AND booking_registrasi.kd_dokter=jadwal.kd_dokter)";
+                }
+                $kuota = $this->db()->pdo()->prepare("SELECT jadwal.kuota - {$countSub} as sisa_kuota, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter, jadwal.kuota FROM jadwal INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]' GROUP BY jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai, jadwal.kuota, poliklinik.nm_poli, dokter.nm_dokter HAVING sisa_kuota > 0 ORDER BY sisa_kuota DESC LIMIT 1");
                 $kuota->execute();
                 $kuota = $kuota->fetch();
 
-                $table = ($decode['tanggalperiksa'] == date('Y-m-d'))
+                $table = ($ambilAntrianMode == 'nonbooking' || $decode['tanggalperiksa'] == date('Y-m-d'))
                     ? 'reg_periksa'
                     : 'booking_registrasi';
 
+                $statusColumn = ($table === 'reg_periksa') ? 'stts' : 'status';
+
                 $q = $this->db($table)
                     ->select(['no_reg'])
-                    ->where('stts', 'Belum')
+                    ->where($statusColumn, 'Belum')
                     ->where('kd_dokter', $kddokter['kd_dokter'])
                     ->where('kd_poli', $kdpoli['kd_poli_rs']);
 
@@ -575,12 +639,12 @@ class Site extends SiteModule
                 }
 
                 $max_antrian = $q
-                    ->orderBy('no_reg', 'ASC')
+                    ->orderByRightNumber('no_reg', 3, 'ASC')
                     ->limit(1)
                     ->oneArray();
 
 
-                if(strtotime($decode['tanggalperiksa']) == strtotime(date('Y-m-d'))) {
+                if($ambilAntrianMode == 'nonbooking' || strtotime($decode['tanggalperiksa']) == strtotime(date('Y-m-d'))) {
                   $data = $this->db()->pdo()->prepare("SELECT poliklinik.nm_poli,COUNT(reg_periksa.kd_poli) as total_antrean,dokter.nm_dokter,
                       IFNULL(SUM(CASE WHEN reg_periksa.stts ='Belum' THEN 1 ELSE 0 END),0) as sisa_antrean,
                       ('Datanglah Minimal 30 Menit, jika no antrian anda terlewat, silakan konfirmasi ke layanan pelanggan, Terima Kasih ..') as keterangan
@@ -600,7 +664,7 @@ class Site extends SiteModule
                     $response = array(
                         'response' => array(
                             'namapoli' => $data['nm_poli'],
-                            'namadokter' => $kddokter['nm_dokter'],
+                            'namadokter' => $data['nm_dokter'] ?? ($kddokter['nm_dokter_bpjs'] ?? ''),
                             'totalantrean' => $data['total_antrean'],
                             'sisaantrean' => (int)$data['sisa_antrean'],
                             'antreanpanggil' => "A-".$max_antrian['no_reg'],
@@ -985,6 +1049,18 @@ class Site extends SiteModule
                     ->where('tanggal_periksa', $referensi['tanggal_periksa'])
                     ->oneArray();
                 }
+                if(($this->settings->get('jkn_mobile.ambil_antrian') ?: 'booking') == 'nonbooking' && !empty($pasien['no_rkm_medis']) && !empty($referensi['tanggal_periksa'])) {
+                    // Mode Non-Booking: antrean tersimpan di reg_periksa
+                    $antrean_reg = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $referensi['tanggal_periksa'])->oneArray();
+                    if($antrean_reg) {
+                        $booking_registrasi = [
+                            'status' => ($antrean_reg['stts'] == 'Batal') ? 'Batal' : 'Terdaftar',
+                            'tanggal_periksa' => $antrean_reg['tgl_registrasi'],
+                            'kd_dokter' => $antrean_reg['kd_dokter'],
+                            'kd_poli' => $antrean_reg['kd_poli']
+                        ];
+                    }
+                }
                 if(!$booking_registrasi) {
                     $response = array(
                         'metadata' => array(
@@ -1142,6 +1218,19 @@ class Site extends SiteModule
                     ->where('tanggal_periksa', $referensi['tanggal_periksa'])
                     ->oneArray();
                 }
+                if(($this->settings->get('jkn_mobile.ambil_antrian') ?: 'booking') == 'nonbooking' && !empty($pasien['no_rkm_medis']) && !empty($referensi['tanggal_periksa'])) {
+                    // Mode Non-Booking: antrean tersimpan di reg_periksa
+                    $antrean_reg = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $referensi['tanggal_periksa'])->oneArray();
+                    if($antrean_reg) {
+                        $booking_registrasi = [
+                            'status' => ($antrean_reg['stts'] == 'Batal') ? 'Batal' : (($antrean_reg['stts'] == 'Belum') ? 'Belum' : 'Terdaftar'),
+                            'tanggal_periksa' => $antrean_reg['tgl_registrasi'],
+                            'kd_dokter' => $antrean_reg['kd_dokter'],
+                            'kd_poli' => $antrean_reg['kd_poli'],
+                            'no_rkm_medis' => $antrean_reg['no_rkm_medis']
+                        ];
+                    }
+                }
                 if(!$booking_registrasi) {
                     $response = array(
                         'metadata' => array(
@@ -1168,8 +1257,15 @@ class Site extends SiteModule
                         );
                         http_response_code(201);
                     }else if($booking_registrasi['status']=='Belum'){
-                        $batal = $this->db('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->delete();
-                        if(!$this->db('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->oneArray()){
+                        if(($this->settings->get('jkn_mobile.ambil_antrian') ?: 'booking') == 'nonbooking') {
+                            // Mode Non-Booking: tandai reg_periksa sebagai Batal
+                            $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $referensi['tanggal_periksa'])->where('stts', 'Belum')->update(['stts' => 'Batal']);
+                            $batal_sukses = (bool) $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $referensi['tanggal_periksa'])->where('stts', 'Batal')->oneArray();
+                        } else {
+                            $batal = $this->db('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->delete();
+                            $batal_sukses = !$this->db('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->oneArray();
+                        }
+                        if($batal_sukses){
                             $response = array(
                                 'metadata' => array(
                                     'message' => 'Ok',
@@ -1713,6 +1809,31 @@ class Site extends SiteModule
                     ->where('tanggal_periksa', $referensi['tanggal_periksa'])
                     ->oneArray();
                 }
+                if(($this->settings->get('jkn_mobile.ambil_antrian') ?: 'booking') == 'nonbooking' && !empty($pasien['no_rkm_medis']) && !empty($referensi['tanggal_periksa'])) {
+                    // Mode Non-Booking: pasien sudah terdaftar di reg_periksa, checkin tidak diperlukan
+                    $antrean_reg = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $referensi['tanggal_periksa'])->oneArray();
+                    if($antrean_reg) {
+                        if($antrean_reg['stts'] == 'Batal') {
+                            $response = array(
+                                'metadata' => array(
+                                    'message' => 'Data Booking Sudah Dibatalkan',
+                                    'code' => 201
+                                )
+                            );
+                            http_response_code(201);
+                        } else {
+                            $response = array(
+                                'metadata' => array(
+                                    'message' => 'Ok 1',
+                                    'code' => 200
+                                )
+                            );
+                            http_response_code(200);
+                        }
+                        echo json_encode(htmlspecialchars_array($response));
+                        exit();
+                    }
+                }
                 if(!$booking_registrasi) {
                     $response = array(
                         'metadata' => array(
@@ -1745,11 +1866,11 @@ class Site extends SiteModule
 
                         $cekjam = $this->db("jadwal")->where("kd_poli",$booking_registrasi['kd_poli'])
                         ->where('kd_dokter',$booking_registrasi['kd_dokter'])->where('hari_kerja',$hari)->oneArray();
-                        $interval = $this->db()->pdo()->prepare("SELECT (TO_DAYS('$booking_registrasi[tanggal_periksa]')-TO_DAYS('$tanggal'))");
-                        $interval->execute();
-                        $interval = $interval->fetch();
+                        // Selisih hari antara tanggal periksa dan tanggal checkin
+                        // (portabel: TO_DAYS() hanya ada di MySQL)
+                        $selisihHari = (int) round((strtotime($booking_registrasi['tanggal_periksa']) - strtotime($tanggal)) / 86400);
 
-                        if($interval[0]<=0){
+                        if($selisihHari<=0){
                             if (strtotime($jam) >= strtotime($cekjam['jam_selesai'])) {
                                 # code...
                                 $response = array(
@@ -1838,7 +1959,7 @@ class Site extends SiteModule
                                             } else {
                                                 $next_antrian = 1;
                                             }
-                                        if (!$mlite_antrian_loket['postdate']) {
+                                        if (empty($mlite_antrian_loket['postdate'])) {
                                             $this->db('mlite_antrian_loket')
                                             ->save([
                                             'type' => 'Loket',

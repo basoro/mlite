@@ -10,31 +10,41 @@ return [
     'pages'         =>  ['e-Vedika Dashboard' => 'vedika'],
     'install'       =>  function () use ($core) {
 
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'carabayar', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'sep', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'skdp', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'operasi', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'individual', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'billing', 'mlite')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'periode', '2023-01')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'verifikasi', '2023-01')");
+        // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+        // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+        $settings = [
+            'carabayar' => '',
+            'sep' => '',
+            'skdp' => '',
+            'operasi' => '',
+            'individual' => '',
+            'billing' => 'mlite',
+            'periode' => '2023-01',
+            'verifikasi' => '2023-01',
+            'inacbgs_prosedur_bedah' => '',
+            'inacbgs_prosedur_non_bedah' => '',
+            'inacbgs_konsultasi' => '',
+            'inacbgs_tenaga_ahli' => '',
+            'inacbgs_keperawatan' => '',
+            'inacbgs_penunjang' => '',
+            'inacbgs_pelayanan_darah' => '',
+            'inacbgs_rehabilitasi' => '',
+            'inacbgs_rawat_intensif' => '',
+            'eklaim_url' => '',
+            'eklaim_key' => '',
+            'eklaim_kelasrs' => 'CP',
+            'eklaim_payor_id' => '3',
+            'eklaim_payor_cd' => 'JKN',
+            'eklaim_cob_cd' => '#',
+        ];
+        foreach ($settings as $field => $value) {
+            $cek = $core->db('mlite_settings')->where('module', 'vedika')->where('field', $field)->oneArray();
+            if (!$cek) {
+                $core->db('mlite_settings')->save(['module' => 'vedika', 'field' => $field, 'value' => $value]);
+            }
+        }
 
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'inacbgs_prosedur_bedah', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'inacbgs_prosedur_non_bedah', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'inacbgs_konsultasi', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'inacbgs_tenaga_ahli', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'inacbgs_keperawatan', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'inacbgs_penunjang', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'inacbgs_pelayanan_darah', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'inacbgs_rehabilitasi', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'inacbgs_rawat_intensif', '')");
 
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'eklaim_url', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'eklaim_key', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'eklaim_kelasrs', 'CP')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'eklaim_payor_id', '3')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'eklaim_payor_cd', 'JKN')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'eklaim_cob_cd', '#')");
 
     },
     'uninstall'     =>  function () use ($core) {

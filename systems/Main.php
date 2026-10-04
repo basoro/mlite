@@ -517,11 +517,14 @@ abstract class Main
         $q = $this->db('booking_registrasi')
             ->where('tanggal_periksa', $date);
 
+        // Nomor antrean booking mengikuti konvensi setNoReg: per poli,
+        // dan per dokter bila settings.dokter_ralan_per_dokter aktif.
+        if ($kd_poli !== null) {
+            $q->where('kd_poli', $kd_poli);
+        }
+
         if ($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
             $q->where('kd_dokter', $kd_dokter);
-        } else {
-            $q->where('kd_poli', $kd_poli)
-            ->where('kd_dokter', $kd_dokter);
         }
 
         $urut = $q->nextRightNumber('no_reg', 3);
@@ -529,6 +532,37 @@ abstract class Main
         $next_no_reg = sprintf('%03d', $urut);
 
         return $next_no_reg;
+    }
+
+    /**
+     * Hitung no_reg antrean berikutnya per kd_poli (dan kd_dokter bila
+     * settings.dokter_ralan_per_dokter aktif) dengan memperhatikan kedua
+     * sumber antrean: reg_periksa (daftar langsung) dan booking_registrasi
+     * (antrean online), sehingga nomor tidak dobel dan tetap berurutan.
+     */
+    public function setNoAntrian($kd_dokter, $kd_poli, $date)
+    {
+        $perDokter = $this->settings->get('settings.dokter_ralan_per_dokter') == 'true';
+
+        $q = $this->db('reg_periksa')
+            ->where('tgl_registrasi', $date)
+            ->where('kd_poli', $kd_poli);
+        if ($perDokter) {
+            $q->where('kd_dokter', $kd_dokter);
+        }
+        $rowReg = $q->select(['max' => $q->maxRightInt('no_reg', 3)])->oneArray();
+        $urutReg = isset($rowReg['max']) ? (int) $rowReg['max'] : 0;
+
+        $q = $this->db('booking_registrasi')
+            ->where('tanggal_periksa', $date)
+            ->where('kd_poli', $kd_poli);
+        if ($perDokter) {
+            $q->where('kd_dokter', $kd_dokter);
+        }
+        $rowBooking = $q->select(['max' => $q->maxRightInt('no_reg', 3)])->oneArray();
+        $urutBooking = isset($rowBooking['max']) ? (int) $rowBooking['max'] : 0;
+
+        return sprintf('%03d', max($urutReg, $urutBooking) + 1);
     }
 
     public function setNoResep($date)

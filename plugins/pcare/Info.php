@@ -10,19 +10,29 @@ return [
     'icon'          =>  'database',
     'install'       =>  function () use ($core) {
 
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'usernamePcare', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'passwordPcare', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'consumerID', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'consumerSecret', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'consumerUserKey', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'consumerUserKeyAntrol', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'PCareApiUrl', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'kode_fktp', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'nama_fktp', '')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'wilayah', 'REGIONAL VIII - Balikpapan')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'cabang', 'BARABAI')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'kabupatenkota', 'Kab. Hulu Sungai Tengah')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'kode_kabupatenkota', '0287')");
+      // Idempoten: setting yang sudah ada dibiarkan (tidak menimpa konfigurasi);
+      // yang belum ada disisipkan. Aman untuk MySQL dan SQLite.
+      $settings = [
+          'usernamePcare' => '',
+          'passwordPcare' => '',
+          'consumerID' => '',
+          'consumerSecret' => '',
+          'consumerUserKey' => '',
+          'consumerUserKeyAntrol' => '',
+          'PCareApiUrl' => '',
+          'kode_fktp' => '',
+          'nama_fktp' => '',
+          'wilayah' => 'REGIONAL VIII - Balikpapan',
+          'cabang' => 'BARABAI',
+          'kabupatenkota' => 'Kab. Hulu Sungai Tengah',
+          'kode_kabupatenkota' => '0287',
+      ];
+      foreach ($settings as $field => $value) {
+          $cek = $core->db('mlite_settings')->where('module', 'pcare')->where('field', $field)->oneArray();
+          if (!$cek) {
+              $core->db('mlite_settings')->save(['module' => 'pcare', 'field' => $field, 'value' => $value]);
+          }
+      }
     },
     'uninstall'     =>  function() use($core)
     {

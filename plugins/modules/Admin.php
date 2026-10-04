@@ -121,11 +121,18 @@ class Admin extends AdminModule
             if (!$this->checkCompatibility(isset_or($info['compatibility']))) {
                 $this->notify('failure', 'Tidak dapat memasang modul %s karena sudah lawas. Silahkan update modul dan coba lagi.', $dir);
             } elseif ($this->db('mlite_modules')->save(['dir' => $dir, 'sequence' => $this->db('mlite_modules')->count()])) {
-                if (isset($info['install'])) {
-                    $info['install']();
-                }
+                try {
+                    if (isset($info['install'])) {
+                        $info['install']();
+                    }
 
-                $this->notify('success', 'Modul %s berhasil diaktifkan.', $dir);
+                    $this->notify('success', 'Modul %s berhasil diaktifkan.', $dir);
+                } catch (\Throwable $e) {
+                    // Gagal install: hapus kembali baris modul agar status tidak setengah terpasang
+                    // dan admin bisa mencoba mengaktifkan lagi setelah masalah diperbaiki.
+                    $this->db('mlite_modules')->where('dir', $dir)->delete();
+                    $this->notify('failure', 'Gagal memasang modul %s: %s', $dir, $e->getMessage());
+                }
             } else {
                 $this->notify('failure', 'Tidak dapat mengaktifkan modul %s.', $dir);
             }
