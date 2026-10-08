@@ -102,7 +102,7 @@
                   {/if}
                 </ul>
               </td>
-              <td style="white-space: nowrap;"><a href="#soap" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}" data-nm_pasien="{?=isset_or($value.nm_pasien)?}">{?=isset_or($value.nm_pasien)?}</a></td>
+              <td style="white-space: nowrap;"><a href="#soap" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}" data-nm_pasien="{?=isset_or($value.nm_pasien)?}">{?=isset_or($value.nm_pasien)?}</a><br><small>{$value.umur_kunjungan}</small></td>
               <td style="white-space: nowrap;"><a href="#layanan_obat" data-no_rawat="{?=isset_or($value.no_rawat)?}" data-no_rkm_medis="{?=isset_or($value.no_rkm_medis)?}" data-nm_pasien="{?=isset_or($value.nm_pasien)?}">{?=isset_or($value.no_rawat)?}</a></td>
               <td style="white-space: nowrap;">
                 <button type="button" name="button" class="btn btn-xs btn-warning antrian"
@@ -111,7 +111,7 @@
                   disabled
                   {/if}
                 ><span class="fa fa-print"></span> {?=isset_or($value.no_reg)?}</button> {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}</td>
-              <td style="white-space: nowrap;">{?=isset_or($value.nm_poli)?}</td>
+              <td style="white-space: nowrap;">{?=isset_or($value.nm_poli)?}<br><small>Kunjungan : {$value.stts_daftar}</small></td>
               <td style="white-space: nowrap;">{?=isset_or($value.nm_dokter)?}</td>
               <td style="white-space: nowrap;">{?=isset_or($value.png_jawab)?} {if: $value.kd_pj == 'BPJ'}{if: $value.potensi_prb != ''}<button class="btn btn-xs btn-danger"><span class="fa fa-wheelchair"></span> {?=isset_or($value.potensi_prb)?}</button>{/if}{if: $this->core->ActiveModule('vclaim')}<a href="{?=url([ADMIN, 'icare', 'riwayat', convertNorawat($value.no_rawat)])?}" class="btn btn-xs btn-info" data-toggle="modal" data-target="#riwayatModal"><span class="fa fa-file"></span> iCare</a>{/if}{if: $this->core->ActiveModule('pcare')}<a href="{?=url([ADMIN, 'icare', 'riwayat', convertNorawat($value.no_rawat), 'fktp'])?}" class="btn btn-xs btn-info" data-toggle="modal" data-target="#riwayatModal"><span class="fa fa-file"></span> iCare</a>{/if}{/if}</td>
               <td style="white-space: nowrap;">{?=isset_or($value.no_peserta)?}</td>

@@ -140,7 +140,8 @@ class Admin extends AdminModule
             pasien.*,
             dokter.*,
             poliklinik.*,
-            penjab.*
+            penjab.*, 
+            pasien.tgl_lahir as umur_kunjungan
           FROM reg_periksa, pasien, dokter, poliklinik, penjab
           WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis
           AND reg_periksa.tgl_registrasi BETWEEN ? AND ?
@@ -166,6 +167,7 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $row['umur_kunjungan'] = hitungUmur($row['umur_kunjungan']);
           $this->assign['list'][] = $row;
         }
 

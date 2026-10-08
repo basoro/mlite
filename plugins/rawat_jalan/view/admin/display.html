@@ -119,7 +119,7 @@
               {/if}
             </ul>
           </td>
-          <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
+          <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a><br><small>{?=hitungUmur($value.umur_kunjungan)?}</small></td>
           <td class="edit" data-no_rawat="{$value.no_rawat}">{$value.no_rawat}</td>
           <td style="white-space: nowrap;">
             <button type="button" name="button" class="btn btn-xs btn-warning antrian"
@@ -140,7 +140,7 @@
             {/if}
             {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)?}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}
           </td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_poli}</td>
+          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_poli}<br><small>Kunjungan : {$value.stts_daftar}</small></td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_dokter}</td>
           <td style="white-space: nowrap;">
           {if: $value.kd_pj == 'BPJ'}
