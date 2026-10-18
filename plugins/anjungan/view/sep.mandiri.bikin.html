@@ -396,8 +396,13 @@
           <div class="form-line">
             <label>Faskes</label>
             <select name="fsks" id="sep_asal_faskes_kode" class="form-control" readonly>
+              {if: $reg_periksa.asalRujuk == '2'}
+              <option value="1">1. Faskes 1</option>
+              <option value="2" selected>2. Faskes 2(RS)</option>
+              {else}
               <option value="1" selected>1. Faskes 1</option>
               <option value="2">2. Faskes 2(RS)</option>
+              {/if}
             </select>
           </div>
         </div>
@@ -648,7 +653,7 @@
       var jenis_kelamin = $('#sep_jenis_kelamin_kode').val();
       var no_kartu = $('#sep_no_kartu').val();
       var tglpulang = "0000-00-00 00:00:00";
-      var asal_rujukan = "1";
+      var asal_rujukan = $('#sep_asal_faskes_kode').val();
       var eksekutif = "0";
       var cob = "0";
       var penjamin = "";

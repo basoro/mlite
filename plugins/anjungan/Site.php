@@ -2935,6 +2935,7 @@ class Site extends SiteModule
       $url = $this->api_url.''.$url;
       $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
       $json = json_decode($output, true);
+      $asalRujuk = "1";
 
       if($json['metaData']['code'] == 201){
         $url = 'Rujukan/RS/' . $slug[3];
@@ -2942,6 +2943,7 @@ class Site extends SiteModule
         $url = $this->api_url . '' . $url;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
+        $asalRujuk = "2";
       }
 
       //var_dump($json);
@@ -3026,6 +3028,7 @@ class Site extends SiteModule
         ->where('reg_periksa.no_rkm_medis', $slug[4])
         ->oneArray();
 
+      $reg_periksa['asalRujuk'] = $asalRujuk;
       $no_surat_kontrol_bpjs = "";
       $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
       //$skdp_bpjs = $this->db('skdp_bpjs')->where('no_rkm_medis', $slug[4])->where('tanggal_datang', $date)->oneArray();
