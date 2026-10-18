@@ -3335,7 +3335,8 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("222","satu_sehat","chlurl","https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/chl"),
 ("223","satu_sehat","shlurl","https://api-satusehat.kemkes.go.id/ssrme/v2/ntl/shl"),
 ("224","satu_sehat","rme_emergency_fallback",""),
-("225","jkn_mobile","ambil_antrian","booking");
+("225","jkn_mobile","ambil_antrian","booking"),
+("226","farmasi","terapkan_no_batch","Iya");
 
 
 CREATE TABLE `mlite_subrekening` (

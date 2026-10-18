@@ -2813,7 +2813,9 @@ switch ($version) {
         break;
 
     case '6.4.2':
-        // Release v6.5.0: stok & harga per-batch (no_batch) untuk farmasi/apotek.
+        // Bagian farmasi ini tidak menaikkan versi: tetap di 6.4.2 agar
+        // migrasi ledger batch & pengaturan "Terapkan Nomor Batch" bersifat
+        // idempoten (aman dijalankan berulang tanpa mengubah nomor versi).
         // - Tabel ledger batch `mlite_farmasi_obat_batch` (harga beli + expire per batch).
         // - Kolom harga_beli / no_batch / expire pada penerimaan obat.
         // - Backfill ledger dari stok gudangbarang yang sudah ada.
@@ -2908,12 +2910,12 @@ switch ($version) {
             }
         } catch (\Exception $e) {}
 
-        $return = '6.5.0';
+        $return = '6.4.2';
         break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.5.0';
+        $return = '6.4.2';
     }
 
 return $return;
