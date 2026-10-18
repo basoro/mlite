@@ -17,6 +17,7 @@ class Admin extends AdminModule
             'Pemesanan Obat & BMHP' => 'pemesananobatbmhp',
             'Penerimaan Obat & BMHP' => 'penerimaanobatbmhp',
             'Stok Opname' => 'opname',
+            'Daftar Batch Obat' => 'batch',
             'Darurat Stok' => 'daruratstok',
             'Detail Pemberian Obat' => 'detailpemberianobat',
             'Riwayat Barang Medis' => 'riwayatbarangmedis',
@@ -33,6 +34,7 @@ class Admin extends AdminModule
         ['name' => 'Pemesanan Obat & BMHP', 'url' => url([ADMIN, 'farmasi', 'pemesananobatbmhp']), 'icon' => 'shopping-cart', 'desc' => 'Pemesanan obat/BMHP dan cetak surat pemesanan'],
         ['name' => 'Penerimaan Obat & BMHP', 'url' => url([ADMIN, 'farmasi', 'penerimaanobatbmhp']), 'icon' => 'download', 'desc' => 'Penerimaan obat/BMHP dan penambahan stok gudang'],
         ['name' => 'Stok Opname', 'url' => url([ADMIN, 'farmasi', 'opname']), 'icon' => 'medkit', 'desc' => 'Tambah stok opname'],
+        ['name' => 'Daftar Batch Obat', 'url' => url([ADMIN, 'farmasi', 'batch']), 'icon' => 'tags', 'desc' => 'Stok tersisa, harga & kedaluwarsa per batch (FEFO)'],
         ['name' => 'Darurat Stok', 'url' => url([ADMIN, 'farmasi', 'daruratstok']), 'icon' => 'warning', 'desc' => 'Monitoring stok darurat obat dan BHP'],
         ['name' => 'Detail Pemberian Obat', 'url' => url([ADMIN, 'farmasi', 'detailpemberianobat']), 'icon' => 'medkit', 'desc' => 'Detail pemberian obat pasien'],
         ['name' => 'Riwayat Barang Medis', 'url' => url([ADMIN, 'farmasi', 'riwayatbarangmedis']), 'icon' => 'medkit', 'desc' => 'Riwayat pergerakan barang medis'],
@@ -41,9 +43,27 @@ class Admin extends AdminModule
       if ($mlite_crud_permissions['can_read'] !== 'true') {
         $sub_modules = [];
       }
+
+      // Peringatan batch kedaluwarsa / segera kedaluwarsa ≤ 90 hari (stok tersisa)
+      $expired_alert = [];
+      $stmt = $this->db()->pdo()->prepare("SELECT b.kode_brng, d.nama_brng, g.nm_bangsal, b.no_batch, b.expire, b.stok, d.kode_sat
+        FROM mlite_farmasi_obat_batch b
+        LEFT JOIN databarang d ON d.kode_brng = b.kode_brng
+        LEFT JOIN bangsal g ON g.kd_bangsal = b.kd_bangsal
+        WHERE b.stok > 0 AND b.expire IS NOT NULL AND b.expire <= ?
+        ORDER BY b.expire ASC, b.kode_brng ASC");
+      $stmt->execute([date('Y-m-d', strtotime('+90 day'))]);
+      foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        $selisih = (int) floor((strtotime((string) $row['expire']) - strtotime(date('Y-m-d'))) / 86400);
+        $row['selisih_hari'] = $selisih;
+        $row['status'] = $selisih < 0 ? 'Kedaluwarsa' : 'Segera Kedaluwarsa';
+        $expired_alert[] = $row;
+      }
+
       return $this->draw('manage.html', [
         'sub_modules' => htmlspecialchars_array($sub_modules),
-        'mlite_crud_permissions' => htmlspecialchars_array($mlite_crud_permissions)
+        'mlite_crud_permissions' => htmlspecialchars_array($mlite_crud_permissions),
+        'expired_alert' => htmlspecialchars_array($expired_alert)
       ]);
     }
 
@@ -64,6 +84,17 @@ class Admin extends AdminModule
             $row['delURL']  = url([ADMIN, 'farmasi', 'delete', $row['kode_brng']]);
             $row['restoreURL']  = url([ADMIN, 'farmasi', 'restore', $row['kode_brng']]);
             $row['gudangbarang'] = $this->db('gudangbarang')->join('bangsal', 'bangsal.kd_bangsal=gudangbarang.kd_bangsal')->where('kode_brng', $row['kode_brng'])->toArray();
+            foreach ($row['gudangbarang'] as &$gb) {
+                $ledger = $this->db('mlite_farmasi_obat_batch')
+                    ->where('kode_brng', $row['kode_brng'])
+                    ->where('kd_bangsal', $gb['kd_bangsal'])
+                    ->where('no_batch', $gb['no_batch'])
+                    ->where('no_faktur', $gb['no_faktur'])
+                    ->oneArray();
+                $gb['expire'] = $ledger['expire'] ?? '';
+                $gb['h_beli_batch'] = $ledger['h_beli'] ?? 0;
+            }
+            unset($gb);
             $result[] = $row;
         }
         return $result;
@@ -91,209 +122,99 @@ class Admin extends AdminModule
 
     public function postSetStok()
     {
-      $databarang = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'])->oneArray();
+      $pdo = $this->db()->pdo();
+      $kode_brng = $_POST['kode_brng'];
+      $kd_bangsal = $_POST['kd_bangsal'];
+      $stok = (float) $_POST['stok'];
+      $no_batch = trim($_POST['no_batch'] ?? '');
+      $no_faktur = trim($_POST['no_faktur'] ?? '');
+      $harga = (float) str_replace(',', '.', trim((string)($_POST['harga'] ?? '0')));
+      $kd_gudang = $this->settings->get('farmasi.gudang');
+      $petugas = $this->core->getUserInfo('fullname', null, true);
+      $databarang = $this->db('databarang')->where('kode_brng', $kode_brng)->oneArray();
 
-      if($this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray()) {
-
-        $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
-        $gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray();
-
-        if($_POST['kd_bangsal'] == $this->settings->get('farmasi.gudang')) {
-          $query = $this->db('riwayat_barang_medis')
-            ->save([
-              'kode_brng' => $_POST['kode_brng'],
-              'stok_awal' => $get_gudangbarang['stok'],
-              'masuk' => $_POST['stok'],
-              'keluar' => '0',
-              'stok_akhir' => $get_gudangbarang['stok'] + $_POST['stok'],
-              'posisi' => 'Pengadaan',
-              'tanggal' => date('Y-m-d'),
-              'jam' => date('H:i:s'),
-              'petugas' => $this->core->getUserInfo('fullname', null, true),
-              'kd_bangsal' => $this->settings->get('farmasi.gudang'),
-              'status' => 'Simpan',
-              'no_batch' => '0',
-              'no_faktur' => '0',
-              'keterangan' => '-'
-            ]);
-            if($query) {
-              $query2 = $this->db('gudangbarang')
-                ->where('kode_brng', $_POST['kode_brng'])
-                ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
-                ->save([
-                  'stok' => $get_gudangbarang['stok'] + $_POST['stok']
-              ]);
-            }
-        } else {
-
-          $query = $this->db('riwayat_barang_medis')
-            ->save([
-              'kode_brng' => $_POST['kode_brng'],
-              'stok_awal' => $get_gudangbarang['stok'],
-              'masuk' => '0',
-              'keluar' => $_POST['stok'],
-              'stok_akhir' => $get_gudangbarang['stok'] - $_POST['stok'],
-              'posisi' => 'Mutasi',
-              'tanggal' => date('Y-m-d'),
-              'jam' => date('H:i:s'),
-              'petugas' => $this->core->getUserInfo('fullname', null, true),
-              'kd_bangsal' => $this->settings->get('farmasi.gudang'),
-              'status' => 'Simpan',
-              'no_batch' => '0',
-              'no_faktur' => '0',
-              'keterangan' => '-'
-            ]);
-
-          $query2 = $this->db('riwayat_barang_medis')
-            ->save([
-              'kode_brng' => $_POST['kode_brng'],
-              'stok_awal' => $gudangbarang['stok'],
-              'masuk' => $_POST['stok'],
-              'keluar' => '0',
-              'stok_akhir' => $gudangbarang['stok'] + $_POST['stok'],
-              'posisi' => 'Mutasi',
-              'tanggal' => date('Y-m-d'),
-              'jam' => date('H:i:s'),
-              'petugas' => $this->core->getUserInfo('fullname', null, true),
-              'kd_bangsal' => $_POST['kd_bangsal'],
-              'status' => 'Simpan',
-              'no_batch' => '0',
-              'no_faktur' => '0',
-              'keterangan' => '-'
-            ]);
-        }
-
-        if($query) {
-          $this->db('gudangbarang')
-            ->where('kode_brng', $_POST['kode_brng'])
-            ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
-            ->save([
-              'stok' => $get_gudangbarang['stok'] - $_POST['stok']
-          ]);
-        }
-        if($query2) {
-          $this->db('gudangbarang')
-            ->where('kode_brng', $_POST['kode_brng'])
-            ->where('kd_bangsal', $_POST['kd_bangsal'])
-            ->save([
-              'stok' => $gudangbarang['stok'] + $_POST['stok']
-          ]);
-        }
-
-        $this->db('mutasibarang')->save([
-          'kode_brng' => $_POST['kode_brng'],
-          'jml' => $_POST['stok'],
-          'harga' => $_POST['harga'] ?? $databarang['dasar'],
-          'kd_bangsaldari' => $this->settings->get('farmasi.gudang'),
-          'kd_bangsalke' => $_POST['kd_bangsal'],
-          'tanggal' => date('Y-m-d H:i:s'),
-          'keterangan' => $_POST['keterangan'] ?? 'Set Stok - Mutasi',
-          'no_batch' => $_POST['no_batch'] ?? '0',
-          'no_faktur' => $_POST['no_faktur'] ?? '0'
+      if ($kd_bangsal == $kd_gudang) {
+        // Pengadaan langsung ke gudang: catat sebagai batch (FEFO menyusul expire)
+        $row = $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_gudang)->oneArray();
+        $stok_awal = (float)($row['stok'] ?? 0);
+        $this->db('riwayat_barang_medis')->save([
+          'kode_brng' => $kode_brng, 'stok_awal' => $stok_awal, 'masuk' => $stok, 'keluar' => '0',
+          'stok_akhir' => $stok_awal + $stok, 'posisi' => 'Pengadaan', 'tanggal' => date('Y-m-d'),
+          'jam' => date('H:i:s'), 'petugas' => $petugas, 'kd_bangsal' => $kd_gudang, 'status' => 'Simpan',
+          'no_batch' => $no_batch !== '' ? $no_batch : '0', 'no_faktur' => $no_faktur !== '' ? $no_faktur : '0', 'keterangan' => '-'
         ]);
-
-      } else {
-
-        $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
-        $stok = '0';
-        if($get_gudangbarang) {
-          $stok = $get_gudangbarang['stok'];
-        }
-        if($_POST['kd_bangsal'] == $this->settings->get('farmasi.gudang')) {
-          $query = $this->db('riwayat_barang_medis')
-            ->save([
-              'kode_brng' => $_POST['kode_brng'],
-              'stok_awal' => '0',
-              'masuk' => $_POST['stok'],
-              'keluar' => '0',
-              'stok_akhir' => $_POST['stok'],
-              'posisi' => 'Pengadaan',
-              'tanggal' => date('Y-m-d'),
-              'jam' => date('H:i:s'),
-              'petugas' => $this->core->getUserInfo('fullname', null, true),
-              'kd_bangsal' => $this->settings->get('farmasi.gudang'),
-              'status' => 'Simpan',
-              'no_batch' => '0',
-              'no_faktur' => '0',
-              'keterangan' => '222'
-            ]);
-            if($query) {
-              $this->db('gudangbarang')->save([
-                'kode_brng' => $_POST['kode_brng'],
-                'kd_bangsal' => $this->settings->get('farmasi.gudang'),
-                'stok' => $_POST['stok'],
-                'no_batch' => '0',
-                'no_faktur' => '0'
-              ]);
-            }
-
-        } else {
-
-          $query = $this->db('riwayat_barang_medis')
-            ->save([
-              'kode_brng' => $_POST['kode_brng'],
-              'stok_awal' => $stok,
-              'masuk' => '0',
-              'keluar' => $_POST['stok'],
-              'stok_akhir' => $stok - $_POST['stok'],
-              'posisi' => 'Mutasi',
-              'tanggal' => date('Y-m-d'),
-              'jam' => date('H:i:s'),
-              'petugas' => $this->core->getUserInfo('fullname', null, true),
-              'kd_bangsal' => $this->settings->get('farmasi.gudang'),
-              'status' => 'Simpan',
-              'no_batch' => '0',
-              'no_faktur' => '0',
-              'keterangan' => '-'
-            ]);
-
-          $query2 = $this->db('riwayat_barang_medis')
-            ->save([
-              'kode_brng' => $_POST['kode_brng'],
-              'stok_awal' => '0',
-              'masuk' => $_POST['stok'],
-              'keluar' => '0',
-              'stok_akhir' => $_POST['stok'],
-              'posisi' => 'Mutasi',
-              'tanggal' => date('Y-m-d'),
-              'jam' => date('H:i:s'),
-              'petugas' => $this->core->getUserInfo('fullname', null, true),
-              'kd_bangsal' => $_POST['kd_bangsal'],
-              'status' => 'Simpan',
-              'no_batch' => '0',
-              'no_faktur' => '0',
-              'keterangan' => ''
-            ]);
-          if($query) {
-            $this->db('gudangbarang')
-              ->where('kode_brng', $_POST['kode_brng'])
-              ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
-              ->save([
-                'stok' => $get_gudangbarang['stok'] - $_POST['stok']
-            ]);
-          }
-          if($query2) {
-            $this->db('gudangbarang')->save([
-              'kode_brng' => $_POST['kode_brng'],
-              'kd_bangsal' => $_POST['kd_bangsal'],
-              'stok' => $_POST['stok'],
-              'no_batch' => '0',
-              'no_faktur' => '0'
-            ]);
-          }
-
-          $this->db('mutasibarang')->save([
-            'kode_brng' => $_POST['kode_brng'],
-            'jml' => $_POST['stok'],
-            'harga' => $_POST['harga'] ?? $databarang['dasar'],
-            'kd_bangsaldari' => $this->settings->get('farmasi.gudang'),
-            'kd_bangsalke' => $_POST['kd_bangsal'],
-            'tanggal' => date('Y-m-d H:i:s'),
-            'keterangan' => $_POST['keterangan'] ?? 'Set Stok - Mutasi',
-            'no_batch' => $_POST['no_batch'] ?? '0',
-            'no_faktur' => $_POST['no_faktur'] ?? '0'
+        \Systems\PharmacyBatches::credit($pdo, $kode_brng, $kd_gudang, $no_batch, $no_faktur, $stok, $harga);
+        if ($row) {
+          $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_gudang)->save([
+            'stok' => $stok_awal + $stok,
+            'no_batch' => $no_batch !== '' ? $no_batch : ($row['no_batch'] ?? '0'),
+            'no_faktur' => $no_faktur !== '' ? $no_faktur : ($row['no_faktur'] ?? '0')
           ]);
+        } else {
+          $this->db('gudangbarang')->save([
+            'kode_brng' => $kode_brng, 'kd_bangsal' => $kd_gudang, 'stok' => $stok,
+            'no_batch' => $no_batch !== '' ? $no_batch : '0', 'no_faktur' => $no_faktur !== '' ? $no_faktur : '0'
+          ]);
+        }
+        $this->db('mutasibarang')->save([
+          'kode_brng' => $kode_brng, 'jml' => $stok, 'harga' => $harga > 0 ? $harga : (float)($databarang['dasar'] ?? 0),
+          'kd_bangsaldari' => $kd_gudang, 'kd_bangsalke' => $kd_gudang, 'tanggal' => date('Y-m-d H:i:s'),
+          'keterangan' => $_POST['keterangan'] ?? 'Set Stok - Pengadaan', 'no_batch' => $no_batch !== '' ? $no_batch : '0',
+          'no_faktur' => $no_faktur !== '' ? $no_faktur : '0'
+        ]);
+      } else {
+        // Mutasi gudang → depot: alokasikan batch FEFO (atau batch pilihan petugas)
+        $row = $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_gudang)->oneArray();
+        $stok_awal = (float)($row['stok'] ?? 0);
+        $portions = \Systems\PharmacyBatches::allocateWithFallback($pdo, $kode_brng, $kd_gudang, $stok, $no_batch !== '' ? $no_batch : null);
+        if ($harga <= 0) {
+          $harga = (float)($databarang['h_beli'] ?? 0);
+        }
+        foreach ($portions as &$portion) {
+          if ((float)$portion['h_beli'] <= 0) {
+            $portion['h_beli'] = $harga > 0 ? $harga : (float)($databarang['dasar'] ?? 0);
+          }
+        }
+        unset($portion);
 
+        $keluar_total = 0;
+        foreach ($portions as $portion) {
+          $keluar_total += (float) $portion['jml'];
+          $this->db('riwayat_barang_medis')->save([
+            'kode_brng' => $kode_brng, 'stok_awal' => $stok_awal, 'masuk' => '0', 'keluar' => $portion['jml'],
+            'stok_akhir' => $stok_awal - $keluar_total, 'posisi' => 'Mutasi', 'tanggal' => date('Y-m-d'),
+            'jam' => date('H:i:s'), 'petugas' => $petugas, 'kd_bangsal' => $kd_gudang, 'status' => 'Simpan',
+            'no_batch' => $portion['no_batch'], 'no_faktur' => $portion['no_faktur'], 'keterangan' => '-'
+          ]);
+          $depot_awal_row = $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_bangsal)->oneArray();
+          $depot_awal = (float)($depot_awal_row['stok'] ?? 0);
+          $this->db('riwayat_barang_medis')->save([
+            'kode_brng' => $kode_brng, 'stok_awal' => $depot_awal, 'masuk' => $portion['jml'], 'keluar' => '0',
+            'stok_akhir' => $depot_awal + $portion['jml'], 'posisi' => 'Mutasi', 'tanggal' => date('Y-m-d'),
+            'jam' => date('H:i:s'), 'petugas' => $petugas, 'kd_bangsal' => $kd_bangsal, 'status' => 'Simpan',
+            'no_batch' => $portion['no_batch'], 'no_faktur' => $portion['no_faktur'], 'keterangan' => '-'
+          ]);
+          // Batch masuk ke depot dengan harga beli & kedaluwarsa batch sumber
+          \Systems\PharmacyBatches::credit($pdo, $kode_brng, $kd_bangsal, $portion['no_batch'], $portion['no_faktur'], $portion['jml'], $portion['h_beli'], $portion['expire'] ?? null);
+          $this->db('mutasibarang')->save([
+            'kode_brng' => $kode_brng, 'jml' => $portion['jml'], 'harga' => $portion['h_beli'],
+            'kd_bangsaldari' => $kd_gudang, 'kd_bangsalke' => $kd_bangsal, 'tanggal' => date('Y-m-d H:i:s'),
+            'keterangan' => $_POST['keterangan'] ?? 'Set Stok - Mutasi', 'no_batch' => $portion['no_batch'], 'no_faktur' => $portion['no_faktur']
+          ]);
+        }
+
+        if ($row) {
+          $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_gudang)->save(['stok' => $stok_awal - $keluar_total]);
+        }
+        $depot_row = $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_bangsal)->oneArray();
+        if ($depot_row) {
+          $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_bangsal)->save(['stok' => (float)$depot_row['stok'] + $keluar_total]);
+        } else {
+          $this->db('gudangbarang')->save([
+            'kode_brng' => $kode_brng, 'kd_bangsal' => $kd_bangsal, 'stok' => $keluar_total,
+            'no_batch' => $portions ? $portions[0]['no_batch'] : '0',
+            'no_faktur' => $portions ? $portions[0]['no_faktur'] : '0'
+          ]);
         }
       }
 
@@ -302,82 +223,121 @@ class Admin extends AdminModule
 
     public function postReStok()
     {
+      $pdo = $this->db()->pdo();
+      $kode_brng = $_POST['kode_brng'];
+      $kd_bangsal = $_POST['kd_bangsal'];
+      $stok = (float) $_POST['stok'];
+      $no_batch = trim($_POST['no_batch'] ?? '');
+      $no_faktur = trim($_POST['no_faktur'] ?? '');
+      $kd_gudang = $this->settings->get('farmasi.gudang');
+      $petugas = $this->core->getUserInfo('fullname', null, true);
+      $databarang = $this->db('databarang')->where('kode_brng', $kode_brng)->oneArray();
 
-      $databarang = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'])->oneArray();
+      // Restok: kembalikan dari depot ke gudang, batch FEFO dari depot
+      $depot_row = $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_bangsal)->oneArray();
+      $gudang_row = $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_gudang)->oneArray();
 
-      $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
-      $gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray();
+      $portions = \Systems\PharmacyBatches::allocateWithFallback($pdo, $kode_brng, $kd_bangsal, $stok, $no_batch !== '' ? $no_batch : null);
 
-      $query = $this->db('riwayat_barang_medis')
-        ->save([
-          'kode_brng' => $_POST['kode_brng'],
-          'stok_awal' => $get_gudangbarang['stok'],
-          'masuk' => $_POST['stok'],
-          'keluar' => '0',
-          'stok_akhir' => $get_gudangbarang['stok'] + $_POST['stok'],
-          'posisi' => 'Mutasi',
-          'tanggal' => date('Y-m-d'),
-          'jam' => date('H:i:s'),
-          'petugas' => $this->core->getUserInfo('fullname', null, true),
-          'kd_bangsal' => $this->settings->get('farmasi.gudang'),
-          'status' => 'Simpan',
-          'no_batch' => '0',
-          'no_faktur' => '0',
-          'keterangan' => ''
+      $masuk_total = 0;
+      foreach ($portions as $portion) {
+        $masuk_total += (float) $portion['jml'];
+        $depot_awal = (float)($depot_row['stok'] ?? 0);
+        $gudang_awal = (float)($gudang_row['stok'] ?? 0);
+        $this->db('riwayat_barang_medis')->save([
+          'kode_brng' => $kode_brng, 'stok_awal' => $depot_awal, 'masuk' => '0', 'keluar' => $portion['jml'],
+          'stok_akhir' => $depot_awal - $masuk_total, 'posisi' => 'Mutasi', 'tanggal' => date('Y-m-d'),
+          'jam' => date('H:i:s'), 'petugas' => $petugas, 'kd_bangsal' => $kd_bangsal, 'status' => 'Simpan',
+          'no_batch' => $portion['no_batch'], 'no_faktur' => $portion['no_faktur'], 'keterangan' => ''
         ]);
-
-      if($query) {
-        $this->db('gudangbarang')
-          ->where('kode_brng', $_POST['kode_brng'])
-          ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
-          ->save([
-            'stok' => $get_gudangbarang['stok'] + $_POST['stok']
+        $this->db('riwayat_barang_medis')->save([
+          'kode_brng' => $kode_brng, 'stok_awal' => $gudang_awal, 'masuk' => $portion['jml'], 'keluar' => '0',
+          'stok_akhir' => $gudang_awal + $masuk_total, 'posisi' => 'Mutasi', 'tanggal' => date('Y-m-d'),
+          'jam' => date('H:i:s'), 'petugas' => $petugas, 'kd_bangsal' => $kd_gudang, 'status' => 'Simpan',
+          'no_batch' => $portion['no_batch'], 'no_faktur' => $portion['no_faktur'], 'keterangan' => ''
+        ]);
+        \Systems\PharmacyBatches::credit($pdo, $kode_brng, $kd_gudang, $portion['no_batch'], $portion['no_faktur'], $portion['jml'], $portion['h_beli'], $portion['expire'] ?? null);
+        $this->db('mutasibarang')->save([
+          'kode_brng' => $kode_brng, 'jml' => $portion['jml'], 'harga' => $portion['h_beli'],
+          'kd_bangsaldari' => $kd_bangsal, 'kd_bangsalke' => $kd_gudang, 'tanggal' => date('Y-m-d H:i:s'),
+          'keterangan' => $_POST['keterangan'] ?? 'Set restok - Mutasi', 'no_batch' => $portion['no_batch'],
+          'no_faktur' => $portion['no_faktur']
         ]);
       }
 
-      $query2 = $this->db('riwayat_barang_medis')
-        ->save([
-          'kode_brng' => $_POST['kode_brng'],
-          'stok_awal' => $gudangbarang['stok'],
-          'masuk' => '0',
-          'keluar' => $_POST['stok'],
-          'stok_akhir' => $gudangbarang['stok'] - $_POST['stok'],
-          'posisi' => 'Mutasi',
-          'tanggal' => date('Y-m-d'),
-          'jam' => date('H:i:s'),
-          'petugas' => $this->core->getUserInfo('fullname', null, true),
-          'kd_bangsal' => $_POST['kd_bangsal'],
-          'status' => 'Simpan',
-          'no_batch' => '0',
-          'no_faktur' => '0',
-          'keterangan' => ''
-        ]);
-
-      if($query2) {
-        $this->db('gudangbarang')
-          ->where('kode_brng', $_POST['kode_brng'])
-          ->where('kd_bangsal', $_POST['kd_bangsal'])
-          ->save([
-            'stok' => $gudangbarang['stok'] - $_POST['stok']
-        ]);
-      }      
-
-      $this->db('mutasibarang')->save([
-        'kode_brng' => $_POST['kode_brng'],
-        'jml' => $_POST['stok'],
-        'harga' => $_POST['harga'] ?? $databarang['dasar'],
-        'kd_bangsaldari' => $this->settings->get('farmasi.gudang'),
-        'kd_bangsalke' => $_POST['kd_bangsal'],
-        'tanggal' => date('Y-m-d H:i:s'),
-        'keterangan' => $_POST['keterangan'] ?? 'Set restok - Mutasi',
-        'no_batch' => $_POST['no_batch'] ?? '0',
-        'no_faktur' => $_POST['no_faktur'] ?? '0'
-      ]);
+      if ($depot_row) {
+        $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_bangsal)->save(['stok' => (float)$depot_row['stok'] - $masuk_total]);
+      }
+      if ($gudang_row) {
+        $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_gudang)->save(['stok' => (float)$gudang_row['stok'] + $masuk_total]);
+      }
 
       exit();
     }
 
     /* End Databarang Section */
+
+    /* Info batch untuk modal Mutasi (tarik harga beli otomatis) */
+    public function getBatchInfo()
+    {
+      header('Content-Type: application/json');
+      $kode_brng = trim($_GET['kode_brng'] ?? '');
+      $no_batch = trim($_GET['no_batch'] ?? '');
+      if ($kode_brng === '' || $no_batch === '') {
+        echo json_encode(['status' => 'error', 'message' => 'Kode barang dan no. batch wajib diisi.']);
+        exit();
+      }
+      $ledger = $this->db('mlite_farmasi_obat_batch')
+        ->where('kode_brng', $kode_brng)
+        ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
+        ->where('no_batch', $no_batch)
+        ->oneArray();
+      if (!$ledger) {
+        echo json_encode(['status' => 'error', 'message' => 'Batch tidak ditemukan di gudang.']);
+        exit();
+      }
+      echo json_encode(htmlspecialchars_array([
+        'status' => 'success',
+        'h_beli' => $ledger['h_beli'] ?? 0,
+        'expire' => $ledger['expire'] ?? '',
+        'stok' => $ledger['stok'] ?? 0
+      ]));
+      exit();
+    }
+
+    public function getBatch($data='')
+    {
+      $this->_addHeaderFiles();
+      $stmt = $this->db()->pdo()->prepare("SELECT b.*, d.nama_brng, d.kode_sat, g.nm_bangsal
+        FROM mlite_farmasi_obat_batch b
+        LEFT JOIN databarang d ON d.kode_brng = b.kode_brng
+        LEFT JOIN bangsal g ON g.kd_bangsal = b.kd_bangsal
+        WHERE b.stok <> 0
+        ORDER BY (b.expire IS NULL) ASC, b.expire ASC, b.kode_brng ASC");
+      $stmt->execute();
+      $batches = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      foreach ($batches as &$batch) {
+        if (!empty($batch['expire'])) {
+          $expireTs = strtotime($batch['expire']);
+          if ($expireTs !== false) {
+            $selisihHari = (int) floor(($expireTs - strtotime(date('Y-m-d'))) / 86400);
+            if ($selisihHari < 0) {
+              $batch['status_expire'] = 'Kedaluwarsa';
+            } elseif ($selisihHari <= 90) {
+              $batch['status_expire'] = 'Segera Kedaluwarsa';
+            } else {
+              $batch['status_expire'] = 'Aman';
+            }
+          } else {
+            $batch['status_expire'] = 'Aman';
+          }
+        } else {
+          $batch['status_expire'] = 'Aman';
+        }
+      }
+      unset($batch);
+      return $this->draw('batch.html', ['batches' => htmlspecialchars_array($batches)]);
+    }
 
     public function getOpname($data='')
     {
@@ -439,9 +399,20 @@ class Admin extends AdminModule
         $opname2->execute([$kode_brng[$count], $h_beli[$count], $tanggal[$count], $real[$count], $stok[$count], $selisih, $nomihilang, $lebih, $nomilebih, $keterangan[$count], $kd_bangsal[$count], $no_batch[$count], $no_faktur[$count]]);
 
         if ($opname2->errorInfo()[2] == ''){
-          $query = "UPDATE gudangbarang SET stok=?, no_batch=?, no_faktur=? WHERE kode_brng=? AND kd_bangsal=?";
+          $query = "UPDATE gudangbarang SET stok=?, no_batch=?, no_faktur=? WHERE kode_brng=? AND kd_bangsal=? AND no_batch=? AND no_faktur=?";
           $opname = $this->db()->pdo()->prepare($query);              
-          $opname->execute([$real[$count], $no_batch[$count], $no_faktur[$count], $kode_brng[$count], $kd_bangsal[$count]]);
+          $opname->execute([$real[$count], $no_batch[$count], $no_faktur[$count], $kode_brng[$count], $kd_bangsal[$count], $no_batch[$count], $no_faktur[$count]]);
+
+          // Sinkronkan stok batch terkait di ledger (stok opname per batch)
+          $batchRow = $this->db()->pdo()->prepare("SELECT id FROM `mlite_farmasi_obat_batch` WHERE kode_brng=? AND kd_bangsal=? AND no_batch=? AND no_faktur=? LIMIT 1");
+          $batchRow->execute([$kode_brng[$count], $kd_bangsal[$count], $no_batch[$count], $no_faktur[$count]]);
+          if ($batchRow->fetch(\PDO::FETCH_ASSOC)) {
+            $this->db()->pdo()->prepare("UPDATE `mlite_farmasi_obat_batch` SET stok=?, updated_at=NOW() WHERE kode_brng=? AND kd_bangsal=? AND no_batch=? AND no_faktur=?")
+              ->execute([$real[$count], $kode_brng[$count], $kd_bangsal[$count], $no_batch[$count], $no_faktur[$count]]);
+          } else {
+            $this->db()->pdo()->prepare("INSERT INTO `mlite_farmasi_obat_batch` (kode_brng, kd_bangsal, no_batch, no_faktur, h_beli, stok, created_at, updated_at) VALUES (?,?,?,?,?,?,NOW(),NOW())")
+              ->execute([$kode_brng[$count], $kd_bangsal[$count], $no_batch[$count], $no_faktur[$count], $h_beli[$count], $real[$count]]);
+          }
           $keluar = '0';
           $masuk = '0';
           if($real[$count]>$stok[$count]) {
@@ -592,7 +563,7 @@ class Admin extends AdminModule
       $stmtPengajuan = $this->db()->pdo()->prepare("SELECT p.id, p.no_pengajuan, p.kode_brng, p.jumlah, d.nama_brng
         FROM mlite_farmasi_pengajuan_obat p
         LEFT JOIN databarang d ON d.kode_brng = p.kode_brng
-        WHERE p.status IN ('Disetujui','Dipesan')
+        WHERE p.status = 'Disetujui'
         ORDER BY p.id DESC");
       $stmtPengajuan->execute();
       $pengajuan = $stmtPengajuan->fetchAll(\PDO::FETCH_ASSOC);
@@ -732,6 +703,9 @@ class Admin extends AdminModule
       $pemesanan_id = (int)($_POST['pemesanan_id'] ?? 0);
       $jumlah_terima = (int)($_POST['jumlah_terima'] ?? 0);
       $nomor_faktur = trim($_POST['nomor_faktur'] ?? '');
+      $harga_beli = (float)str_replace(',', '.', trim((string)($_POST['harga_beli'] ?? '0')));
+      $no_batch = trim($_POST['no_batch'] ?? '');
+      $expire = trim($_POST['expire'] ?? '');
 
       if ($pemesanan_id <= 0 || $jumlah_terima <= 0) {
         $this->notify('failure', 'Pemesanan dan jumlah terima wajib diisi.');
@@ -762,6 +736,9 @@ class Admin extends AdminModule
           'pemesanan_id' => $pemesanan_id,
           'tanggal_penerimaan' => $_POST['tanggal_penerimaan'] ?? date('Y-m-d'),
           'jumlah_terima' => $jumlah_terima,
+          'harga_beli' => $harga_beli,
+          'no_batch' => $no_batch !== '' ? $no_batch : '0',
+          'expire' => $expire ?: null,
           'jenis_pembayaran' => $_POST['jenis_pembayaran'] ?? 'Cash',
           'tanggal_jatuh_tempo' => $_POST['tanggal_jatuh_tempo'] ?: null,
           'nomor_faktur' => $nomor_faktur ?: null,
@@ -795,10 +772,22 @@ class Admin extends AdminModule
           'petugas' => $this->core->getUserInfo('fullname', null, true),
           'kd_bangsal' => $kd_gudang,
           'status' => 'Simpan',
-          'no_batch' => '0',
+          'no_batch' => $no_batch !== '' ? $no_batch : '0',
           'no_faktur' => $nomor_faktur ?: '0',
           'keterangan' => 'Penerimaan dari pemesanan '.$pemesanan['no_pemesanan']
         ]);
+
+        // Catat stok per batch (dengan harga beli & kedaluwarsa batch ini)
+        \Systems\PharmacyBatches::credit(
+          $this->db()->pdo(),
+          $pemesanan['kode_brng'],
+          $kd_gudang,
+          $no_batch !== '' ? $no_batch : '0',
+          $nomor_faktur ?: '0',
+          $jumlah_terima,
+          $harga_beli,
+          $expire ?: null
+        );
 
         if ($gudangbarang) {
           $this->db('gudangbarang')
@@ -806,6 +795,7 @@ class Admin extends AdminModule
             ->where('kd_bangsal', $kd_gudang)
             ->save([
               'stok' => $stok_akhir,
+              'no_batch' => $no_batch !== '' ? $no_batch : '0',
               'no_faktur' => $nomor_faktur ?: '0'
             ]);
         } else {
@@ -813,24 +803,25 @@ class Admin extends AdminModule
             'kode_brng' => $pemesanan['kode_brng'],
             'kd_bangsal' => $kd_gudang,
             'stok' => $stok_akhir,
-            'no_batch' => '0',
+            'no_batch' => $no_batch !== '' ? $no_batch : '0',
             'no_faktur' => $nomor_faktur ?: '0'
           ]);
         }
 
         $databarang = $this->db('databarang')->where('kode_brng', $pemesanan['kode_brng'])->oneArray();
+        $harga_mutasi = $harga_beli > 0 ? $harga_beli : (float)($databarang['dasar'] ?? 0);
         if (!$databarang || !isset($databarang['dasar'])) {
           throw new \Exception('Harga dasar barang tidak ditemukan untuk mutasi penerimaan.');
         }
         $this->db('mutasibarang')->save([
           'kode_brng' => $pemesanan['kode_brng'],
           'jml' => $jumlah_terima,
-          'harga' => $databarang['dasar'],
+          'harga' => $harga_mutasi,
           'kd_bangsaldari' => $kd_gudang,
           'kd_bangsalke' => $kd_gudang,
           'tanggal' => date('Y-m-d H:i:s'),
           'keterangan' => 'Penerimaan dari pemesanan '.$pemesanan['no_pemesanan'],
-          'no_batch' => '0',
+          'no_batch' => $no_batch !== '' ? $no_batch : '0',
           'no_faktur' => $nomor_faktur ?: '0'
         ]);
 
@@ -922,6 +913,13 @@ class Admin extends AdminModule
 
         $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
         $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
+        $no_batch_filter = isset_or($_POST['no_batch_filter'], '');
+        $expire_filter = isset_or($_POST['expire_filter'], 'all');
+        if (!in_array($expire_filter, ['all', 'expired', 'soon', 'safe'])) {
+            $expire_filter = 'all';
+        }
+
+        $hari90 = date('Y-m-d', strtotime('+90 day'));
 
         $searchQuery = " ";
         $params = [];
@@ -934,6 +932,31 @@ class Admin extends AdminModule
         $params[] = $tgl_awal;
         $params[] = $tgl_akhir;
 
+        // Filter no. batch (pemberian)
+        if (trim($no_batch_filter) !== '') {
+            $searchQuery .= " and (detail_pemberian_obat.no_batch like ?) ";
+            $params[] = "%" . $no_batch_filter . "%";
+        }
+
+        // Filter kedaluwarsa batch (expire diambil dari ledger batch)
+        $sell_join = " FROM detail_pemberian_obat
+            LEFT JOIN mlite_farmasi_obat_batch bb
+                ON bb.kode_brng = detail_pemberian_obat.kode_brng
+               AND bb.kd_bangsal = detail_pemberian_obat.kd_bangsal
+               AND bb.no_batch = detail_pemberian_obat.no_batch
+               AND bb.no_faktur = detail_pemberian_obat.no_faktur ";
+        if ($expire_filter === 'expired') {
+            $searchQuery .= " and (bb.expire IS NOT NULL AND bb.expire < ?) ";
+            $params[] = date('Y-m-d');
+        } elseif ($expire_filter === 'soon') {
+            $searchQuery .= " and (bb.expire IS NOT NULL AND bb.expire >= ? AND bb.expire <= ?) ";
+            $params[] = date('Y-m-d');
+            $params[] = $hari90;
+        } elseif ($expire_filter === 'safe') {
+            $searchQuery .= " and (bb.expire IS NULL OR bb.expire > ?) ";
+            $params[] = $hari90;
+        }
+
         ## Total number of records without filtering
         $sel = $this->db()->pdo()->prepare("select count(*) as allcount from detail_pemberian_obat");
         $sel->execute();
@@ -941,13 +964,13 @@ class Admin extends AdminModule
         $totalRecords = $records['allcount'];
 
         ## Total number of records with filtering
-        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from detail_pemberian_obat WHERE 1 ".$searchQuery);
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount " . $sell_join . " WHERE 1 " . $searchQuery);
         $sel->execute($params);
         $records = $sel->fetch();
         $totalRecordwithFilter = $records['allcount'];
 
         ## Fetch records
-        $sel = $this->db()->pdo()->prepare("select * from detail_pemberian_obat WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".(int)$row1.",".(int)$rowperpage);
+        $sel = $this->db()->pdo()->prepare("select detail_pemberian_obat.*, bb.expire as expire " . $sell_join . " WHERE 1 " . $searchQuery . " order by " . $columnName . " " . $columnSortOrder . " limit " . (int)$row1 . "," . (int)$rowperpage);
         $sel->execute($params);
         $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -974,7 +997,8 @@ class Admin extends AdminModule
                 'kd_bangsal'=>$row['kd_bangsal'],
                 'nm_bangsal'=>$bangsal['nm_bangsal'],
                 'no_batch'=>$row['no_batch'],
-                'no_faktur'=>$row['no_faktur']
+                'no_faktur'=>$row['no_faktur'],
+                'expire'=>$row['expire'] ?? ''
             );
         }
 
@@ -1250,6 +1274,414 @@ class Admin extends AdminModule
         echo $this->draw(MODULES.'/farmasi/js/admin/farmasi.js');
         exit();
     }
+
+    /* API Farmasi Section */
+
+    private function _apiAuth($method = 'GET', $action = 'can_read')
+    {
+        $username = $this->core->checkAuth($method);
+        if (!$this->core->checkPermission($username, $action, 'farmasi')) {
+            return false;
+        }
+        return $username;
+    }
+
+    private function _apiInput()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) {
+            $input = $_POST;
+        }
+        return $input;
+    }
+
+    public function apiStokList()
+    {
+        if (!$this->_apiAuth('GET')) {
+            return ['status' => 'error', 'message' => 'You do not have permission to access this resource'];
+        }
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $per_page = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $page = max(1, $page);
+        $per_page = min(100, max(1, $per_page));
+        $offset = ($page - 1) * $per_page;
+        $search = isset($_GET['s']) ? trim($_GET['s']) : '';
+        $kd_bangsal = isset($_GET['kd_bangsal']) ? trim($_GET['kd_bangsal']) : '';
+        $status = isset($_GET['status']) ? ($_GET['status'] === '0' ? '0' : '1') : '1';
+
+        $where = " WHERE 1";
+        $params = [];
+        $where .= " AND d.status = ?";
+        $params[] = $status;
+        if ($kd_bangsal !== '') {
+            $where .= " AND g.kd_bangsal = ?";
+            $params[] = $kd_bangsal;
+        }
+        if ($search !== '') {
+            $where .= " AND (d.kode_brng LIKE ? OR d.nama_brng LIKE ? OR g.nm_bangsal LIKE ?)";
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+        }
+
+        $from = " FROM gudangbarang g
+            LEFT JOIN databarang d ON d.kode_brng = g.kode_brng
+            LEFT JOIN bangsal b ON b.kd_bangsal = g.kd_bangsal".$where;
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS c".$from);
+        $stmt->execute($params);
+        $total = (int)($stmt->fetch(\PDO::FETCH_ASSOC)['c'] ?? 0);
+
+        $stmt = $this->db()->pdo()->prepare("SELECT g.kode_brng, d.nama_brng, d.kode_sat, d.kode_satbesar, d.dasar, d.stokminimal, d.status,
+            g.kd_bangsal, b.nm_bangsal, g.stok, g.no_batch, g.no_faktur".$from.
+            " ORDER BY d.nama_brng ASC LIMIT ".(int)$per_page." OFFSET ".(int)$offset);
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return [
+            'status' => 'success',
+            'data' => htmlspecialchars_array($data),
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $per_page
+        ];
+    }
+
+    public function apiBatchList()
+    {
+        if (!$this->_apiAuth('GET')) {
+            return ['status' => 'error', 'message' => 'You do not have permission to access this resource'];
+        }
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $per_page = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $page = max(1, $page);
+        $per_page = min(100, max(1, $per_page));
+        $offset = ($page - 1) * $per_page;
+        $search = isset($_GET['s']) ? trim($_GET['s']) : '';
+        $kode_brng = isset($_GET['kode_brng']) ? trim($_GET['kode_brng']) : '';
+        $kd_bangsal = isset($_GET['kd_bangsal']) ? trim($_GET['kd_bangsal']) : '';
+        $expire = isset($_GET['expire']) ? trim($_GET['expire']) : 'all';
+        if (!in_array($expire, ['all', 'expired', 'soon', 'safe'])) {
+            $expire = 'all';
+        }
+
+        $hari90 = date('Y-m-d', strtotime('+90 day'));
+        $where = " WHERE b.stok <> 0";
+        $params = [];
+        if ($kode_brng !== '') {
+            $where .= " AND b.kode_brng = ?";
+            $params[] = $kode_brng;
+        }
+        if ($kd_bangsal !== '') {
+            $where .= " AND b.kd_bangsal = ?";
+            $params[] = $kd_bangsal;
+        }
+        if ($search !== '') {
+            $where .= " AND (b.kode_brng LIKE ? OR b.no_batch LIKE ? OR d.nama_brng LIKE ?)";
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+        }
+        if ($expire === 'expired') {
+            $where .= " AND b.expire IS NOT NULL AND b.expire < ?";
+            $params[] = date('Y-m-d');
+        } elseif ($expire === 'soon') {
+            $where .= " AND b.expire IS NOT NULL AND b.expire >= ? AND b.expire <= ?";
+            $params[] = date('Y-m-d');
+            $params[] = $hari90;
+        } elseif ($expire === 'safe') {
+            $where .= " AND (b.expire IS NULL OR b.expire > ?)";
+            $params[] = $hari90;
+        }
+
+        $from = " FROM mlite_farmasi_obat_batch b
+            LEFT JOIN databarang d ON d.kode_brng = b.kode_brng
+            LEFT JOIN bangsal g ON g.kd_bangsal = b.kd_bangsal".$where;
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS c".$from);
+        $stmt->execute($params);
+        $total = (int)($stmt->fetch(\PDO::FETCH_ASSOC)['c'] ?? 0);
+
+        $stmt = $this->db()->pdo()->prepare("SELECT b.*, d.nama_brng, d.kode_sat, g.nm_bangsal".$from.
+            " ORDER BY (b.expire IS NULL) ASC, b.expire ASC, b.kode_brng ASC LIMIT ".(int)$per_page." OFFSET ".(int)$offset);
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($data as &$row) {
+            if (!empty($row['expire'])) {
+                $selisih = (int)floor((strtotime((string)$row['expire']) - strtotime(date('Y-m-d'))) / 86400);
+                $row['selisih_hari'] = $selisih;
+                $row['status_expire'] = $selisih < 0 ? 'Kedaluwarsa' : ($selisih <= 90 ? 'Segera Kedaluwarsa' : 'Aman');
+            } else {
+                $row['selisih_hari'] = null;
+                $row['status_expire'] = 'Aman';
+            }
+        }
+        unset($row);
+
+        return [
+            'status' => 'success',
+            'data' => htmlspecialchars_array($data),
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $per_page
+        ];
+    }
+
+    public function apiPenerimaanList()
+    {
+        if (!$this->_apiAuth('GET')) {
+            return ['status' => 'error', 'message' => 'You do not have permission to access this resource'];
+        }
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $per_page = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $page = max(1, $page);
+        $per_page = min(100, max(1, $per_page));
+        $offset = ($page - 1) * $per_page;
+        $search = isset($_GET['s']) ? trim($_GET['s']) : '';
+        $tgl_awal = isset($_GET['tgl_awal']) ? $_GET['tgl_awal'] : date('Y-m-01');
+        $tgl_akhir = isset($_GET['tgl_akhir']) ? $_GET['tgl_akhir'] : date('Y-m-d');
+        $no_batch = isset($_GET['no_batch']) ? trim($_GET['no_batch']) : '';
+
+        $where = " WHERE t.tanggal_penerimaan BETWEEN ? AND ?";
+        $params = [$tgl_awal, $tgl_akhir];
+        if ($search !== '') {
+            $where .= " AND (p.no_pemesanan LIKE ? OR t.nomor_faktur LIKE ? OR p.kode_brng LIKE ? OR d.nama_brng LIKE ?)";
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+        }
+        if ($no_batch !== '') {
+            $where .= " AND t.no_batch LIKE ?";
+            $params[] = '%'.$no_batch.'%';
+        }
+
+        $from = " FROM mlite_farmasi_penerimaan_obat t
+            LEFT JOIN mlite_farmasi_pemesanan_obat p ON p.id = t.pemesanan_id
+            LEFT JOIN databarang d ON d.kode_brng = p.kode_brng".$where;
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS c".$from);
+        $stmt->execute($params);
+        $total = (int)($stmt->fetch(\PDO::FETCH_ASSOC)['c'] ?? 0);
+
+        $stmt = $this->db()->pdo()->prepare("SELECT t.*, p.no_pemesanan, p.kode_brng, d.nama_brng, d.kode_sat, p.supplier".$from.
+            " ORDER BY t.tanggal_penerimaan DESC, t.id DESC LIMIT ".(int)$per_page." OFFSET ".(int)$offset);
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return [
+            'status' => 'success',
+            'data' => htmlspecialchars_array($data),
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $per_page
+        ];
+    }
+
+    public function apiPemberianList()
+    {
+        if (!$this->_apiAuth('GET')) {
+            return ['status' => 'error', 'message' => 'You do not have permission to access this resource'];
+        }
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $per_page = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $page = max(1, $page);
+        $per_page = min(100, max(1, $per_page));
+        $offset = ($page - 1) * $per_page;
+        $search = isset($_GET['s']) ? trim($_GET['s']) : '';
+        $tgl_awal = isset($_GET['tgl_awal']) ? $_GET['tgl_awal'] : date('Y-m-d');
+        $tgl_akhir = isset($_GET['tgl_akhir']) ? $_GET['tgl_akhir'] : date('Y-m-d');
+        $no_batch = isset($_GET['no_batch']) ? trim($_GET['no_batch']) : '';
+        $kode_brng = isset($_GET['kode_brng']) ? trim($_GET['kode_brng']) : '';
+        $expire = isset($_GET['expire']) ? trim($_GET['expire']) : 'all';
+        if (!in_array($expire, ['all', 'expired', 'soon', 'safe'])) {
+            $expire = 'all';
+        }
+
+        $hari90 = date('Y-m-d', strtotime('+90 day'));
+        $where = " WHERE p.tgl_perawatan BETWEEN ? AND ?";
+        $params = [$tgl_awal, $tgl_akhir];
+        if ($search !== '') {
+            $where .= " AND (p.no_rawat LIKE ? OR p.kode_brng LIKE ? OR d.nama_brng LIKE ?)";
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+        }
+        if ($kode_brng !== '') {
+            $where .= " AND p.kode_brng = ?";
+            $params[] = $kode_brng;
+        }
+        if ($no_batch !== '') {
+            $where .= " AND p.no_batch LIKE ?";
+            $params[] = '%'.$no_batch.'%';
+        }
+        if ($expire === 'expired') {
+            $where .= " AND bb.expire IS NOT NULL AND bb.expire < ?";
+            $params[] = date('Y-m-d');
+        } elseif ($expire === 'soon') {
+            $where .= " AND bb.expire IS NOT NULL AND bb.expire >= ? AND bb.expire <= ?";
+            $params[] = date('Y-m-d');
+            $params[] = $hari90;
+        } elseif ($expire === 'safe') {
+            $where .= " AND (bb.expire IS NULL OR bb.expire > ?)";
+            $params[] = $hari90;
+        }
+
+        $from = " FROM detail_pemberian_obat p
+            LEFT JOIN databarang d ON d.kode_brng = p.kode_brng
+            LEFT JOIN bangsal g ON g.kd_bangsal = p.kd_bangsal
+            LEFT JOIN mlite_farmasi_obat_batch bb
+                ON bb.kode_brng = p.kode_brng AND bb.kd_bangsal = p.kd_bangsal
+               AND bb.no_batch = p.no_batch AND bb.no_faktur = p.no_faktur
+            LEFT JOIN reg_periksa r ON r.no_rawat = p.no_rawat
+            LEFT JOIN pasien ps ON ps.no_rkm_medis = r.no_rkm_medis".$where;
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS c".$from);
+        $stmt->execute($params);
+        $total = (int)($stmt->fetch(\PDO::FETCH_ASSOC)['c'] ?? 0);
+
+        $stmt = $this->db()->pdo()->prepare("SELECT p.*, d.nama_brng, d.kode_sat,
+            g.nm_bangsal, bb.expire, r.no_rkm_medis, ps.nm_pasien".$from.
+            " ORDER BY p.tgl_perawatan DESC, p.jam DESC LIMIT ".(int)$per_page." OFFSET ".(int)$offset);
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return [
+            'status' => 'success',
+            'data' => htmlspecialchars_array($data),
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $per_page
+        ];
+    }
+
+    public function apiPengajuanList()
+    {
+        if (!$this->_apiAuth('GET')) {
+            return ['status' => 'error', 'message' => 'You do not have permission to access this resource'];
+        }
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $per_page = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+        $page = max(1, $page);
+        $per_page = min(100, max(1, $per_page));
+        $offset = ($page - 1) * $per_page;
+        $search = isset($_GET['s']) ? trim($_GET['s']) : '';
+        $status = isset($_GET['status']) ? trim($_GET['status']) : 'all';
+
+        $where = " WHERE 1";
+        $params = [];
+        if (in_array($status, ['Menunggu', 'Disetujui', 'Dipesan'])) {
+            $where .= " AND q.status = ?";
+            $params[] = $status;
+        }
+        if ($search !== '') {
+            $where .= " AND (q.no_pengajuan LIKE ? OR q.kode_brng LIKE ? OR d.nama_brng LIKE ?)";
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+            $params[] = '%'.$search.'%';
+        }
+
+        $from = " FROM mlite_farmasi_pengajuan_obat q
+            LEFT JOIN databarang d ON d.kode_brng = q.kode_brng".$where;
+
+        $stmt = $this->db()->pdo()->prepare("SELECT COUNT(*) AS c".$from);
+        $stmt->execute($params);
+        $total = (int)($stmt->fetch(\PDO::FETCH_ASSOC)['c'] ?? 0);
+
+        $stmt = $this->db()->pdo()->prepare("SELECT q.*, d.nama_brng, d.kode_sat".$from.
+            " ORDER BY q.id DESC LIMIT ".(int)$per_page." OFFSET ".(int)$offset);
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return [
+            'status' => 'success',
+            'data' => htmlspecialchars_array($data),
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $per_page
+        ];
+    }
+
+    public function apiPengajuanSimpan()
+    {
+        if (!$this->_apiAuth('POST', 'can_create')) {
+            return ['status' => 'error', 'message' => 'You do not have permission to access this resource'];
+        }
+
+        $input = $this->_apiInput();
+        $kode_brng = trim((string)($input['kode_brng'] ?? ''));
+        $jumlah = (int)($input['jumlah'] ?? 0);
+
+        if ($kode_brng === '' || $jumlah <= 0) {
+            return ['status' => 'error', 'message' => 'Kode barang dan jumlah wajib diisi.'];
+        }
+
+        $barang = $this->db('databarang')->where('kode_brng', $kode_brng)->oneArray();
+        if (!$barang || $barang['status'] !== '1') {
+            return ['status' => 'error', 'message' => 'Barang tidak ditemukan atau tidak aktif.'];
+        }
+
+        $no_pengajuan = $this->_generateDocumentNumber('mlite_farmasi_pengajuan_obat', 'no_pengajuan', 'PGJ');
+        $saved = $this->db('mlite_farmasi_pengajuan_obat')->save([
+            'no_pengajuan' => $no_pengajuan,
+            'tanggal_pengajuan' => $input['tanggal_pengajuan'] ?? date('Y-m-d'),
+            'kode_brng' => $kode_brng,
+            'jumlah' => $jumlah,
+            'status' => 'Menunggu',
+            'catatan' => $input['catatan'] ?? '',
+            'dibuat_oleh' => $this->core->getUserInfo('fullname', null, true) ?? '-',
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        if (!$saved) {
+            return ['status' => 'error', 'message' => 'Pengajuan gagal disimpan.'];
+        }
+
+        return [
+            'status' => 'success',
+            'id' => (int)$this->db()->pdo()->lastInsertId(),
+            'no_pengajuan' => $no_pengajuan,
+            'kode_brng' => $kode_brng,
+            'nama_brng' => $barang['nama_brng'],
+            'jumlah' => $jumlah
+        ];
+    }
+
+    public function apiPengajuanApprove()
+    {
+        if (!$this->_apiAuth('POST', 'can_update')) {
+            return ['status' => 'error', 'message' => 'You do not have permission to access this resource'];
+        }
+
+        $input = $this->_apiInput();
+        $id = (int)($input['id'] ?? 0);
+        $pengajuan = $this->db('mlite_farmasi_pengajuan_obat')->where('id', $id)->oneArray();
+        if (!$pengajuan) {
+            return ['status' => 'error', 'message' => 'Data pengajuan tidak ditemukan.'];
+        }
+        if ($pengajuan['status'] === 'Disetujui') {
+            return ['status' => 'error', 'message' => 'Pengajuan sudah disetujui sebelumnya.'];
+        }
+
+        $saved = $this->db('mlite_farmasi_pengajuan_obat')->where('id', $id)->save([
+            'status' => 'Disetujui',
+            'disetujui_oleh' => $this->core->getUserInfo('fullname', null, true) ?? '-',
+            'disetujui_at' => date('Y-m-d H:i:s')
+        ]);
+
+        if (!$saved) {
+            return ['status' => 'error', 'message' => 'Pengajuan gagal disetujui.'];
+        }
+
+        return ['status' => 'success', 'id' => $id, 'no_pengajuan' => $pengajuan['no_pengajuan']];
+    }
+    /* End API Farmasi Section */
 
     private function _addHeaderFiles()
     {

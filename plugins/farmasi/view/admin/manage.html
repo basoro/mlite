@@ -3,6 +3,44 @@
         {if: !empty($mlite_crud_permissions) && $mlite_crud_permissions.can_read == 'false'}
         <div class="alert alert-warning">Anda tidak memiliki hak akses baca untuk modul farmasi.</div>
         {/if}
+        {if: !empty($expired_alert)}
+        <div class="alert alert-danger" role="alert">
+            <h4><i class="fa fa-warning"></i> <b>Peringatan Kedaluwarsa Batch (≤ 90 hari)</b></h4>
+            <p class="small">Ada {?=count($expired_alert)?} batch obat/BMHP yang sudah kedaluwarsa atau akan kedaluwarsa dalam 90 hari dengan stok tersisa:</p>
+            <table class="table table-condensed table-bordered" style="margin-bottom:5px;">
+                <thead>
+                    <tr>
+                        <th>Kode</th>
+                        <th>Nama Barang</th>
+                        <th>Depot</th>
+                        <th>Batch</th>
+                        <th>Kedaluwarsa</th>
+                        <th>Stok Tersisa</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loop: $expired_alert}
+                    <tr>
+                        <td>{?=isset_or($value.kode_brng)?}</td>
+                        <td>{?=isset_or($value.nama_brng)?}</td>
+                        <td>{?=isset_or($value.nm_bangsal)?}</td>
+                        <td>{?=isset_or($value.no_batch)?}</td>
+                        <td>{?=isset_or($value.expire)?}</td>
+                        <td>{?=isset_or($value.stok)?} {?=isset_or($value.kode_sat)?}</td>
+                        <td>
+                            {if: $value.selisih_hari < 0}
+                            <span class="label label-danger">Kedaluwarsa ({?=abs($value.selisih_hari)?} hari lewat)</span>
+                            {else}
+                            <span class="label label-warning">Sisa {?=$value.selisih_hari?} hari</span>
+                            {/if}
+                        </td>
+                    </tr>
+                    {/loop}
+                </tbody>
+            </table>
+        </div>
+        {/if}
         <ul class="modules" style="padding:0;margin:0;">
             {loop: $sub_modules}
             <li class="module">

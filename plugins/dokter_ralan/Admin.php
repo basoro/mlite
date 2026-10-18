@@ -1344,6 +1344,19 @@ class Admin extends AdminModule
         ->like('databarang.nama_brng', '%'.htmlspecialchars($_POST['obat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
+      $terapkanBatch = trim((string)$this->settings->get('farmasi.terapkan_no_batch')) !== 'Tidak';
+      foreach ($obat as &$row) {
+        if ($terapkanBatch) {
+          $efo = \Systems\PharmacyBatches::getOldestPortion($this->db()->pdo(), $row['kode_brng'], $this->settings->get('farmasi.deporalan'));
+          if ($efo && trim((string)$efo['no_batch']) !== '' && $efo['no_batch'] !== '0') {
+            $row['no_batch_fefo'] = $efo['no_batch'];
+            $row['expire_fefo'] = $efo['expire'];
+            $row['stok_batch_fefo'] = $efo['stok'];
+            $row['h_beli_batch_fefo'] = $efo['h_beli'];
+          }
+        }
+      }
+      unset($row);
       echo $this->draw('obat.html', ['obat' => htmlspecialchars_array($obat)]);
       exit();
     }
@@ -1357,6 +1370,19 @@ class Admin extends AdminModule
         ->like('databarang.nama_brng', '%'.htmlspecialchars($_POST['obat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
+      $terapkanBatch = trim((string)$this->settings->get('farmasi.terapkan_no_batch')) !== 'Tidak';
+      foreach ($obat as &$row) {
+        if ($terapkanBatch) {
+          $efo = \Systems\PharmacyBatches::getOldestPortion($this->db()->pdo(), $row['kode_brng'], $this->settings->get('farmasi.deporalan'));
+          if ($efo && trim((string)$efo['no_batch']) !== '' && $efo['no_batch'] !== '0') {
+            $row['no_batch_fefo'] = $efo['no_batch'];
+            $row['expire_fefo'] = $efo['expire'];
+            $row['stok_batch_fefo'] = $efo['stok'];
+            $row['h_beli_batch_fefo'] = $efo['h_beli'];
+          }
+        }
+      }
+      unset($row);
       echo $this->draw('obat.racikan.html', ['obat' => htmlspecialchars_array($obat)]);
       exit();
     }
@@ -2199,6 +2225,30 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getSuratPerawatan($no_rawat)
+    {
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat));
+        $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+        $pasien = $this->db('pasien')
+          ->join('kelurahan', 'kelurahan.kd_kel=pasien.kd_kel')
+          ->join('kecamatan', 'kecamatan.kd_kec=pasien.kd_kec')
+          ->join('kabupaten', 'kabupaten.kd_kab=pasien.kd_kab')
+          ->join('propinsi', 'propinsi.kd_prop=pasien.kd_prop')
+          ->where('no_rkm_medis', $no_rkm_medis)
+          ->oneArray();
+        $nm_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+        $sip_dokter = $this->core->getDokterInfo('no_ijn_praktek', $kd_dokter);
+        $this->tpl->set('pasien', $this->tpl->noParse_array(htmlspecialchars_array($pasien)));
+        $this->tpl->set('nm_dokter', $nm_dokter);
+        $this->tpl->set('sip_dokter', $sip_dokter);
+        $this->tpl->set('no_rawat', revertNoRawat($no_rawat));
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
+        $this->tpl->set('surat', $this->db('mlite_surat_perawatan')->where('no_rawat', revertNoRawat($no_rawat))->oneArray());
+        $this->tpl->set('nomor_surat', $this->settings->get('settings.set_nomor_surat').'/'.$this->settings->get('settings.prefix_surat').'/'.getRomawi(date('m')).'/'.date('Y'));
+        echo $this->tpl->draw(MODULES.'/dokter_ralan/view/admin/surat.perawatan.html', true);
+        exit();
+    }
+
     public function getSuratSakit($no_rawat)
     {
         $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat));
@@ -2315,6 +2365,39 @@ class Admin extends AdminModule
         'diagnosa' => $_POST['diagnosa'], 
         'terapi' => $_POST['terapi'], 
         'alasan_dirujuk' => $_POST['alasan_dirujuk'], 
+        'dokter' => $_POST['dokter'], 
+        'petugas' => $_POST['petugas']
+      ]);
+
+      if($query) {
+        $nomor_surat = ltrim($this->settings->get('settings.set_nomor_surat'));
+        $nomor_surat = sprintf('%03s', ($nomor_surat + 1));
+        $this->db('mlite_settings')->where('module', 'settings')->where('field', 'set_nomor_surat')->set('value', $nomor_surat)->update();
+        $data['status'] = 'success';
+        echo json_encode(htmlspecialchars_array($data));
+      } else {
+        $data['status'] = 'error';
+        $data['msg'] = htmlspecialchars($query->errorInfo()['2'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        echo json_encode(htmlspecialchars_array($data));
+      }
+
+      exit();
+    }
+
+    public function postSimpanSuratPerawatan()
+    {
+      $query = $this->db('mlite_surat_perawatan')->save([
+        'nomor_surat' => $_POST['nomor_surat'], 
+        'no_rawat' => $_POST['no_rawat'], 
+        'no_rkm_medis' => $_POST['no_rkm_medis'], 
+        'nm_pasien' => $_POST['nm_pasien'], 
+        'tgl_lahir' => $_POST['tgl_lahir'], 
+        'umur' => $_POST['umur'], 
+        'jk' => $_POST['jk'], 
+        'alamat' => $_POST['alamat'], 
+        'tanggal_perawatan' => $_POST['tanggal_perawatan'], 
+        'diagnosa' => $_POST['diagnosa'], 
+        'keperluan' => $_POST['keperluan'], 
         'dokter' => $_POST['dokter'], 
         'petugas' => $_POST['petugas']
       ]);

@@ -34,6 +34,24 @@
           </div>
           <div class="col-md-2">
             <div class="form-group">
+              <label>Harga Beli (per unit)</label>
+              <input type="text" name="harga_beli" class="form-control" placeholder="Mis. 150" required>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>No. Batch</label>
+              <input type="text" name="no_batch" class="form-control" placeholder="Mis. B2401">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Kedaluwarsa Batch</label>
+              <input type="text" name="expire" class="form-control tanggal" placeholder="Tanggal expire batch">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
               <label>Jenis Pembayaran</label>
               <select name="jenis_pembayaran" class="form-control" required>
                 <option value="Cash">Cash</option>
@@ -43,26 +61,26 @@
           </div>
           <div class="col-md-2">
             <div class="form-group">
-              <label>&nbsp;</label>
-              <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-save"></i> Simpan</button>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-group">
               <label>Nomor Faktur</label>
               <input type="text" name="nomor_faktur" class="form-control" placeholder="Opsional">
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <div class="form-group">
               <label>Tanggal Jatuh Tempo</label>
               <input type="text" name="tanggal_jatuh_tempo" class="form-control tanggal" placeholder="Untuk pembayaran kredit">
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
             <div class="form-group">
               <label>Catatan</label>
               <input type="text" name="catatan" class="form-control" rows="2">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-save"></i> Simpan</button>
             </div>
           </div>
         </form>
@@ -78,6 +96,9 @@
                 <th>Barang</th>
                 <th>Supplier</th>
                 <th>Jumlah Terima</th>
+                <th>Harga Beli</th>
+                <th>No. Batch</th>
+                <th>Kedaluwarsa</th>
                 <th>Jenis Bayar</th>
                 <th>No. Faktur</th>
                 <th>Dibuat Oleh</th>
@@ -92,6 +113,9 @@
                 <td>{?=isset_or($value.kode_brng)?} - {?=isset_or($value.nama_brng)?}</td>
                 <td>{?=isset_or($value.supplier)?}</td>
                 <td>{?=isset_or($value.jumlah_terima)?}</td>
+                <td>Rp. {?= number_format(isset_or($value.harga_beli) ? (float)$value.harga_beli : 0,2,',','.')?}</td>
+                <td>{?=isset_or($value.no_batch)?}</td>
+                <td>{?=isset_or($value.expire)?}</td>
                 <td>{?=isset_or($value.jenis_pembayaran)?}</td>
                 <td>{?=isset_or($value.nomor_faktur)?}</td>
                 <td>{?=isset_or($value.dibuat_oleh)?}</td>

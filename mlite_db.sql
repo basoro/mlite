@@ -1909,6 +1909,9 @@ CREATE TABLE `mlite_farmasi_penerimaan_obat` (
   `pemesanan_id` int(11) NOT NULL,
   `tanggal_penerimaan` date NOT NULL,
   `jumlah_terima` int(11) NOT NULL DEFAULT '0',
+  `harga_beli` double DEFAULT '0',
+  `no_batch` varchar(30) DEFAULT '0',
+  `expire` date DEFAULT NULL,
   `jenis_pembayaran` varchar(10) NOT NULL DEFAULT 'Cash',
   `tanggal_jatuh_tempo` date DEFAULT NULL,
   `nomor_faktur` varchar(100) DEFAULT NULL,
@@ -1917,6 +1920,23 @@ CREATE TABLE `mlite_farmasi_penerimaan_obat` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_pemesanan_id` (`pemesanan_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+CREATE TABLE `mlite_farmasi_obat_batch` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `kode_brng` varchar(15) NOT NULL,
+  `kd_bangsal` char(5) NOT NULL,
+  `no_batch` varchar(30) NOT NULL DEFAULT '0',
+  `no_faktur` varchar(30) NOT NULL DEFAULT '0',
+  `h_beli` double NOT NULL DEFAULT '0',
+  `expire` date DEFAULT NULL,
+  `stok` double NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_batch` (`kode_brng`,`kd_bangsal`,`no_batch`,`no_faktur`),
+  KEY `idx_bill_expire` (`kode_brng`,`kd_bangsal`,`expire`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
@@ -3129,7 +3149,7 @@ INSERT INTO `mlite_settings` VALUES ("1","settings","logo","uploads/settings/log
 ("31","settings","admin_mode","complex"),
 ("32","settings","input_kasir","tidak"),
 ("33","settings","editor","wysiwyg"),
-("34","settings","version","6.4.1"),
+("34","settings","version","6.4.2"),
 ("35","settings","update_check",""),
 ("36","settings","update_changelog",""),
 ("37","settings","update_version","0"),

@@ -39,6 +39,13 @@
                         </select>
                     </div>
                     <div class="form-group">
+                      <label>Terapkan Nomor Batch</label>
+                      <select name="farmasi[terapkan_no_batch]" class="form-control">
+                        <option value="Iya" {if: isset_or($settings.farmasi.terapkan_no_batch, 'Iya') == 'Iya'}selected{/if}>Iya</option>
+                        <option value="Tidak" {if: isset_or($settings.farmasi.terapkan_no_batch, 'Iya') == 'Tidak'}selected{/if}>Tidak</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
                       <label>Keterangan Etiket</label>
                       <input type="text" class="form-control" name="farmasi[keterangan_etiket]" value="{?=isset_or($settings.farmasi.keterangan_etiket, '')?}">
                     </div>

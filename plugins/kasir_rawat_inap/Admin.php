@@ -664,6 +664,28 @@ class Admin extends AdminModule
                 $payload['jml'] = $payload['jml'] ?? $payload['jumlah'] ?? 0;
                 $kd_bangsal = $payload['kd_bangsal'] ?? $this->settings->get('farmasi.deporanap');
                 $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $payload['kode_brng'])->where('kd_bangsal', $kd_bangsal)->oneArray();
+                if (!$get_gudangbarang) { $get_gudangbarang = ['stok' => 0, 'no_batch' => '0', 'no_faktur' => '0']; }
+
+                // Kembalikan stok ke batch yang tercatat sebelum detail dihapus
+                $detail_rows = $this->db('detail_pemberian_obat')
+                    ->where('tgl_perawatan', $payload['tgl_peresepan'])
+                    ->where('jam', $payload['jam_peresepan'])
+                    ->where('no_rawat', $payload['no_rawat'])
+                    ->where('kode_brng', $payload['kode_brng'])
+                    ->where('status', 'Ranap')
+                    ->where('kd_bangsal', $kd_bangsal)
+                    ->toArray();
+                foreach ($detail_rows as $detail_row) {
+                    \Systems\PharmacyBatches::credit(
+                        $this->db()->pdo(),
+                        $payload['kode_brng'],
+                        $kd_bangsal,
+                        $detail_row['no_batch'],
+                        $detail_row['no_faktur'],
+                        $detail_row['jml'],
+                        $detail_row['h_beli']
+                    );
+                }
 
                 $this->db('gudangbarang')
                     ->where('kode_brng', $payload['kode_brng'])
@@ -672,23 +694,85 @@ class Admin extends AdminModule
                         'stok' => $get_gudangbarang['stok'] + $payload['jml']
                     ]);
 
-                $this->db('riwayat_barang_medis')
-                    ->save([
-                        'kode_brng' => $payload['kode_brng'],
-                        'stok_awal' => $get_gudangbarang['stok'],
-                        'masuk' => $payload['jml'],
-                        'keluar' => '0',
-                        'stok_akhir' => $get_gudangbarang['stok'] + $payload['jml'],
-                        'posisi' => 'Pemberian Obat',
-                        'tanggal' => $payload['tgl_peresepan'],
-                        'jam' => $payload['jam_peresepan'],
-                        'petugas' => $this->core->getUserInfo('fullname', null, true),
-                        'kd_bangsal' => $kd_bangsal,
-                        'status' => 'Hapus',
-                        'no_batch' => $get_gudangbarang['no_batch'],
-                        'no_faktur' => $get_gudangbarang['no_faktur'],
-                        'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
-                    ]);
+                // Riwayat Hapus per batch asal
+                if (!empty($detail_rows)) {
+                    foreach ($detail_rows as $detail_row) {
+                        $this->db('riwayat_barang_medis')
+                            ->save([
+                                'kode_brng' => $payload['kode_brng'],
+                                'stok_awal' => $get_gudangbarang['stok'],
+                                'masuk' => $detail_row['jml'],
+                                'keluar' => '0',
+                                'stok_akhir' => $get_gudangbarang['stok'] + $payload['jml'],
+                                'posisi' => 'Pemberian Obat',
+                                'tanggal' => $payload['tgl_peresepan'],
+                                'jam' => $payload['jam_peresepan'],
+                                'petugas' => $this->core->getUserInfo('fullname', null, true),
+                                'kd_bangsal' => $kd_bangsal,
+                                'status' => 'Hapus',
+                                'no_batch' => $detail_row['no_batch'],
+                                'no_faktur' => $detail_row['no_faktur'],
+                                'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
+                            ]);
+                    }
+                } else {
+                    \Systems\PharmacyBatches::credit(
+                        $this->db()->pdo(),
+                        $payload['kode_brng'],
+                        $kd_bangsal,
+                        $get_gudangbarang['no_batch'],
+                        $get_gudangbarang['no_faktur'],
+                        (float) $payload['jml']
+                    );
+                // Riwayat Hapus per batch asal
+                if (!empty($detail_rows)) {
+                    foreach ($detail_rows as $detail_row) {
+                        $this->db('riwayat_barang_medis')
+                            ->save([
+                                'kode_brng' => $payload['kode_brng'],
+                                'stok_awal' => $get_gudangbarang['stok'],
+                                'masuk' => $detail_row['jml'],
+                                'keluar' => '0',
+                                'stok_akhir' => $get_gudangbarang['stok'] + $payload['jml'],
+                                'posisi' => 'Pemberian Obat',
+                                'tanggal' => $payload['tgl_peresepan'],
+                                'jam' => $payload['jam_peresepan'],
+                                'petugas' => $this->core->getUserInfo('fullname', null, true),
+                                'kd_bangsal' => $kd_bangsal,
+                                'status' => 'Hapus',
+                                'no_batch' => $detail_row['no_batch'],
+                                'no_faktur' => $detail_row['no_faktur'],
+                                'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
+                            ]);
+                    }
+                } else {
+                    \Systems\PharmacyBatches::credit(
+                        $this->db()->pdo(),
+                        $payload['kode_brng'],
+                        $kd_bangsal,
+                        $get_gudangbarang['no_batch'],
+                        $get_gudangbarang['no_faktur'],
+                        (float) $payload['jml']
+                    );
+                    $this->db('riwayat_barang_medis')
+                        ->save([
+                            'kode_brng' => $payload['kode_brng'],
+                            'stok_awal' => $get_gudangbarang['stok'],
+                            'masuk' => $payload['jml'],
+                            'keluar' => '0',
+                            'stok_akhir' => $get_gudangbarang['stok'] + $payload['jml'],
+                            'posisi' => 'Pemberian Obat',
+                            'tanggal' => $payload['tgl_peresepan'],
+                            'jam' => $payload['jam_peresepan'],
+                            'petugas' => $this->core->getUserInfo('fullname', null, true),
+                            'kd_bangsal' => $kd_bangsal,
+                            'status' => 'Hapus',
+                            'no_batch' => $get_gudangbarang['no_batch'],
+                            'no_faktur' => $get_gudangbarang['no_faktur'],
+                            'keterangan' => $payload['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $payload['no_rawat']))
+                        ]);
+                }
+                }
 
                 $this->db('detail_pemberian_obat')
                     ->where('tgl_perawatan', $payload['tgl_peresepan'])
@@ -991,51 +1075,78 @@ class Admin extends AdminModule
       }
       if($_POST['kat'] == 'obat') {
 
-        $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
+        $tmp_gudang = $this->db('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
+        $get_gudangbarang = $tmp_gudang ?: ['stok' => 0, 'no_batch' => '0', 'no_faktur' => '0'];
         $get_databarang = $this->db('databarang')->where('kode_brng', $_POST['kd_jenis_prw'])->oneArray();
+
+        // Alokasi FEFO per batch
+        $terapkanBatch = trim((string)$this->settings->get('farmasi.terapkan_no_batch')) !== 'Tidak';
+        $portions = \Systems\PharmacyBatches::allocateWithFallback($this->db()->pdo(), $_POST['kd_jenis_prw'], $this->settings->get('farmasi.deporanap'), (float)$_POST['jml']);
+        foreach ($portions as &$portion) {
+          if ((float)$portion['h_beli'] <= 0) {
+            $portion['h_beli'] = (float) ($get_databarang['h_beli'] ?? 0);
+          }
+        }
+        unset($portion);
+        if (!$terapkanBatch) {
+          $jual_master = (float) ($get_databarang['dasar'] ?? 0);
+          $portions = [[
+            'no_batch' => $portions[0]['no_batch'] ?? ($get_gudangbarang['no_batch'] ?? '0'),
+            'no_faktur' => $portions[0]['no_faktur'] ?? ($get_gudangbarang['no_faktur'] ?? '0'),
+            'h_beli' => $jual_master,
+            'expire' => null,
+            'jml' => (float) $_POST['jml'],
+          ]];
+        }
+        $keluar = 0;
+        foreach ($portions as $portion) {
+          $keluar += (float) $portion['jml'];
+        }
 
         $this->db('gudangbarang')
           ->where('kode_brng', $_POST['kd_jenis_prw'])
           ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
           ->update([
-            'stok' => $get_gudangbarang['stok'] - $_POST['jml']
+            'stok' => $get_gudangbarang['stok'] - $keluar
           ]);
 
-        $this->db('riwayat_barang_medis')
-          ->save([
-            'kode_brng' => $_POST['kd_jenis_prw'],
-            'stok_awal' => $get_gudangbarang['stok'],
-            'masuk' => '0',
-            'keluar' => $_POST['jml'],
-            'stok_akhir' => $get_gudangbarang['stok'] - $_POST['jml'],
-            'posisi' => 'Pemberian Obat',
-            'tanggal' => $_POST['tgl_perawatan'],
-            'jam' => $_POST['jam_rawat'],
-            'petugas' => $this->core->getUserInfo('fullname', null, true),
-            'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
-            'status' => 'Simpan',
-            'no_batch' => $get_gudangbarang['no_batch'],
-            'no_faktur' => $get_gudangbarang['no_faktur'],
-            'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
-          ]);
+        foreach ($portions as $portion) {
+          $this->db('riwayat_barang_medis')
+            ->save([
+              'kode_brng' => $_POST['kd_jenis_prw'],
+              'stok_awal' => $get_gudangbarang['stok'],
+              'masuk' => '0',
+              'keluar' => $portion['jml'],
+              'stok_akhir' => $get_gudangbarang['stok'] - $keluar,
+              'posisi' => 'Pemberian Obat',
+              'tanggal' => $_POST['tgl_perawatan'],
+              'jam' => $_POST['jam_rawat'],
+              'petugas' => $this->core->getUserInfo('fullname', null, true),
+              'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
+              'status' => 'Simpan',
+              'no_batch' => $portion['no_batch'],
+              'no_faktur' => $portion['no_faktur'],
+              'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
+            ]);
 
-        $this->db('detail_pemberian_obat')
-          ->save([
-            'tgl_perawatan' => $_POST['tgl_perawatan'],
-            'jam' => $_POST['jam_rawat'],
-            'no_rawat' => $_POST['no_rawat'],
-            'kode_brng' => $_POST['kd_jenis_prw'],
-            'h_beli' => $get_databarang['h_beli'],
-            'biaya_obat' => $_POST['biaya'],
-            'jml' => $_POST['jml'],
-            'embalase' => '0',
-            'tuslah' => '0',
-            'total' => $_POST['biaya'] * $_POST['jml'],
-            'status' => 'Ranap',
-            'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
-            'no_batch' => $get_gudangbarang['no_batch'],
-            'no_faktur' => $get_gudangbarang['no_faktur']
-          ]);
+          $this->db('detail_pemberian_obat')
+            ->save([
+              'tgl_perawatan' => $_POST['tgl_perawatan'],
+              'jam' => $_POST['jam_rawat'],
+              'no_rawat' => $_POST['no_rawat'],
+              'kode_brng' => $_POST['kd_jenis_prw'],
+              'h_beli' => $portion['h_beli'],
+              'biaya_obat' => $_POST['biaya'],
+              'jml' => $portion['jml'],
+              'embalase' => '0',
+              'tuslah' => '0',
+              'total' => $_POST['biaya'] * $portion['jml'],
+              'status' => 'Ranap',
+              'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
+              'no_batch' => $portion['no_batch'],
+              'no_faktur' => $portion['no_faktur']
+            ]);
+        }
 
         $this->db('aturan_pakai')
           ->save([
@@ -1205,6 +1316,27 @@ class Admin extends AdminModule
       }
 
       $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
+      if (!$get_gudangbarang) { $get_gudangbarang = ['stok' => 0, 'no_batch' => '0', 'no_faktur' => '0']; }
+
+      // Kembalikan stok ke batch yang tercatat di detail pemberian
+      $detail_rows = $this->db('detail_pemberian_obat')
+        ->where('tgl_perawatan', $_POST['tgl_peresepan'])
+        ->where('jam', $_POST['jam_peresepan'])
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('kode_brng', $_POST['kode_brng'])
+        ->where('status', 'Ranap')
+        ->toArray();
+      foreach ($detail_rows as $detail_row) {
+        \Systems\PharmacyBatches::credit(
+          $this->db()->pdo(),
+          $_POST['kode_brng'],
+          $this->settings->get('farmasi.deporanap'),
+          $detail_row['no_batch'],
+          $detail_row['no_faktur'],
+          $detail_row['jml'],
+          $detail_row['h_beli']
+        );
+      }
 
       $this->db('gudangbarang')
         ->where('kode_brng', $_POST['kode_brng'])
@@ -1213,23 +1345,46 @@ class Admin extends AdminModule
           'stok' => $get_gudangbarang['stok'] + $_POST['jml']
         ]);
 
-      $this->db('riwayat_barang_medis')
-        ->save([
-          'kode_brng' => $_POST['kode_brng'],
-          'stok_awal' => $get_gudangbarang['stok'],
-          'masuk' => $_POST['jml'],
-          'keluar' => '0',
-          'stok_akhir' => $get_gudangbarang['stok'] + $_POST['jml'],
-          'posisi' => 'Pemberian Obat',
-          'tanggal' => $_POST['tgl_peresepan'],
-          'jam' => $_POST['jam_peresepan'],
-          'petugas' => $this->core->getUserInfo('fullname', null, true),
-          'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
-          'status' => 'Hapus',
-          'no_batch' => $get_gudangbarang['no_batch'],
-          'no_faktur' => $get_gudangbarang['no_faktur'],
-          'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
-        ]);
+      // Riwayat Hapus per batch asal (detail pemberian sudah dibaca sebelum dihapus)
+      if (!empty($detail_rows)) {
+        foreach ($detail_rows as $detail_row) {
+          $this->db('riwayat_barang_medis')
+            ->save([
+              'kode_brng' => $_POST['kode_brng'],
+              'stok_awal' => $get_gudangbarang['stok'],
+              'masuk' => $detail_row['jml'],
+              'keluar' => '0',
+              'stok_akhir' => $get_gudangbarang['stok'] + $_POST['jml'],
+              'posisi' => 'Pemberian Obat',
+              'tanggal' => $_POST['tgl_peresepan'],
+              'jam' => $_POST['jam_peresepan'],
+              'petugas' => $this->core->getUserInfo('fullname', null, true),
+              'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
+              'status' => 'Hapus',
+              'no_batch' => $detail_row['no_batch'],
+              'no_faktur' => $detail_row['no_faktur'],
+              'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
+            ]);
+        }
+      } else {
+        $this->db('riwayat_barang_medis')
+          ->save([
+            'kode_brng' => $_POST['kode_brng'],
+            'stok_awal' => $get_gudangbarang['stok'],
+            'masuk' => $_POST['jml'],
+            'keluar' => '0',
+            'stok_akhir' => $get_gudangbarang['stok'] + $_POST['jml'],
+            'posisi' => 'Pemberian Obat',
+            'tanggal' => $_POST['tgl_peresepan'],
+            'jam' => $_POST['jam_peresepan'],
+            'petugas' => $this->core->getUserInfo('fullname', null, true),
+            'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
+            'status' => 'Hapus',
+            'no_batch' => $get_gudangbarang['no_batch'],
+            'no_faktur' => $get_gudangbarang['no_faktur'],
+            'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
+          ]);
+      }
 
       $this->db('detail_pemberian_obat')
         ->where('tgl_perawatan', $_POST['tgl_peresepan'])
@@ -1610,6 +1765,19 @@ class Admin extends AdminModule
         ->like('databarang.nama_brng', '%'.htmlspecialchars($_POST['obat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
+      $terapkanBatch = trim((string)$this->settings->get('farmasi.terapkan_no_batch')) !== 'Tidak';
+      foreach ($obat as &$row) {
+        if ($terapkanBatch) {
+          $efo = \Systems\PharmacyBatches::getOldestPortion($this->db()->pdo(), $row['kode_brng'], $this->settings->get('farmasi.deporanap'));
+          if ($efo && trim((string)$efo['no_batch']) !== '' && $efo['no_batch'] !== '0') {
+            $row['no_batch_fefo'] = $efo['no_batch'];
+            $row['expire_fefo'] = $efo['expire'];
+            $row['stok_batch_fefo'] = $efo['stok'];
+            $row['h_beli_batch_fefo'] = $efo['h_beli'];
+          }
+        }
+      }
+      unset($row);
       echo $this->draw('obat.html', ['obat' => htmlspecialchars_array($obat)]);
       exit();
     }

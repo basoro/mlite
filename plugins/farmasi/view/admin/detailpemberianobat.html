@@ -32,6 +32,19 @@
                             <div class="form-group" style="margin-left: 10px;">
                                 <input type="text" class="form-control" id="search_text" name="search_text" placeholder="Kata kunci...">
                             </div>
+                            <div class="form-group" style="margin-left: 10px;">
+                                <label for="no_batch_filter">No. Batch:</label>
+                                <input type="text" class="form-control" id="no_batch_filter" name="no_batch_filter" placeholder="Mis. B2401">
+                            </div>
+                            <div class="form-group" style="margin-left: 10px;">
+                                <label for="expire_filter">Kedaluwarsa:</label>
+                                <select class="form-control" id="expire_filter" name="expire_filter">
+                                    <option value="all">Semua</option>
+                                    <option value="expired">Sudah Kedaluwarsa</option>
+                                    <option value="soon">≤ 90 Hari</option>
+                                    <option value="safe">Aman (&gt; 90 Hari)</option>
+                                </select>
+                            </div>
                             <button type="button" class="btn btn-primary" id="btn_cari" style="margin-left: 10px;">
                                 <i class="fa fa-search"></i> Cari
                             </button>
@@ -63,6 +76,7 @@
                                 <th>Bangsal</th>
                                 <th>Batch</th>
                                 <th>Faktur</th>
+                                <th>Kedaluwarsa</th>
                             </tr>
                         </thead>
                         <tbody>

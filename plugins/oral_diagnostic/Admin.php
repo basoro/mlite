@@ -729,6 +729,19 @@ class Admin extends AdminModule
         ->like('databarang.nama_brng', '%'.htmlspecialchars($_POST['obat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'%')
         ->limit(10)
         ->toArray();
+      $terapkanBatch = trim((string)$this->settings->get('farmasi.terapkan_no_batch')) !== 'Tidak';
+      foreach ($obat as &$row) {
+        if ($terapkanBatch) {
+          $efo = \Systems\PharmacyBatches::getOldestPortion($this->db()->pdo(), $row['kode_brng'], $this->settings->get('farmasi.oral_diagnostic'));
+          if ($efo && trim((string)$efo['no_batch']) !== '' && $efo['no_batch'] !== '0') {
+            $row['no_batch_fefo'] = $efo['no_batch'];
+            $row['expire_fefo'] = $efo['expire'];
+            $row['stok_batch_fefo'] = $efo['stok'];
+            $row['h_beli_batch_fefo'] = $efo['h_beli'];
+          }
+        }
+      }
+      unset($row);
       echo $this->draw('obat.html', ['obat' => htmlspecialchars_array($obat)]);
       exit();
     }

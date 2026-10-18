@@ -12,6 +12,8 @@ jQuery(function($) {
                 d.search_text_detail_pemberian_obat = $('#search_text').val();
                 d.tgl_awal = $('#tgl_awal').val();
                 d.tgl_akhir = $('#tgl_akhir').val();
+                d.no_batch_filter = $('#no_batch_filter').val();
+                d.expire_filter = $('#expire_filter').val();
             }
         },
         'columns': [
@@ -67,7 +69,20 @@ jQuery(function($) {
             },
             { data: 'nm_bangsal' },
             { data: 'no_batch' },
-            { data: 'no_faktur' }
+            { data: 'no_faktur' },
+            {
+                data: 'expire',
+                render: function(data, type, row) {
+                    if (!data || data === '-' || data === '') return '-';
+                    var d = new Date(data);
+                    if (isNaN(d.getTime())) return data;
+                    var now = new Date();
+                    var hari = Math.floor((d - now) / 86400000);
+                    if (hari < 0) return '<span class="label label-danger">' + data + ' (Kedaluwarsa)</span>';
+                    if (hari <= 90) return '<span class="label label-warning">' + data + ' (≤ 90 hari)</span>';
+                    return '<span class="label label-success">' + data + '</span>';
+                }
+            }
         ],
         'paging': true,
         'lengthChange': false,
@@ -108,6 +123,8 @@ jQuery(function($) {
         $('#tgl_akhir').val('{?=date("Y-m-d")?}');
         $('#search_field').val('tgl_perawatan');
         $('#search_text').val('');
+        $('#no_batch_filter').val('');
+        $('#expire_filter').val('all');
         dataTable.draw();
     });
 

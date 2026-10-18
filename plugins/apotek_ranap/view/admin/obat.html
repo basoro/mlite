@@ -8,23 +8,24 @@
             <th>Nama Obat</th>
             <th>Stok Depo</th>
             <th>Stok Minimal</th>
+            <th>Batch FEFO</th>
             <th>Harga</th>
           </tr>
         </thead>
         <tbody>
           {if: $obat}
           {loop: $obat}
-          <tr class="pilih_obat" data-kode_brng="{?=isset_or($value.kode_brng)?}" data-nama_brng="{?=isset_or($value.nama_brng)?}" data-ranap="{?=isset_or($value.dasar)?}" data-stok="{?=isset_or($value.stok)?}" data-stokminimal="{?=isset_or($value.stokminimal)?}" data-kat="obat">
+          <tr class="pilih_obat" data-kode_brng="{?=isset_or($value.kode_brng)?}" data-nama_brng="{?=isset_or($value.nama_brng)?}" data-ranap="{?=isset_or($value.dasar)?}" data-stok="{?=isset_or($value.stok)?}" data-stokminimal="{?=isset_or($value.stokminimal)?}" data-no_batch="{?=isset_or($value.no_batch_fefo)?}" data-expire="{?=isset_or($value.expire_fefo)?}" data-kat="obat">
             <td>{?=isset_or($value.kode_brng)?}</td>
             <td>{?=isset_or($value.nama_brng)?}</td>
             <td>{?=isset_or($value.stok)?}</td>
             <td>{?=isset_or($value.stokminimal)?}</td>
-            <td>Rp. <span class="pull-right">{?= number_format($value.ralan,2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format(isset($value.h_beli_batch_fefo) && $value.h_beli_batch_fefo > 0 ? $value.h_beli_batch_fefo : $value.dasar,2,',','.')?}</span></td>
           </tr>
           {/loop}
           {else}
           <tr>
-            <td colspan="2">Tidak ada data obat.</td>
+            <td colspan="6">Tidak ada data obat.</td>
           </tr>
           {/if}
         </tbody>

@@ -89,6 +89,7 @@
                 <tr>
                   <th>ID</th>
                   <th>Nama Obat</th>
+                  <th>Batch FEFO</th>
                   <th>Harga</th>
                   <th>Stok</th>
                 </tr>
@@ -101,16 +102,19 @@
                   data-nama_barang="{?=isset_or($value.nama_barang)?}" 
                   data-harga="{?=isset_or($value.harga)?}"
                   data-stok="{?=isset_or($value.stok)?}"
+                  data-no_batch="{?=isset_or($value.no_batch_fefo)?}"
+                  data-expire="{?=isset_or($value.expire_fefo)?}"
                 >
                   <td>{?=isset_or($value.id)?}</td>
                   <td>{?=isset_or($value.nama_barang)?}</td>
+                  <td>{if: isset($value.no_batch_fefo)}{?=isset_or($value.no_batch_fefo)?}{if: isset($value.expire_fefo) && $value.expire_fefo} <span class="text-danger">{?=isset_or($value.expire_fefo)?}</span>{/if}{else}<span class="text-muted">-</span>{/if}</td>
                   <td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
                   <td>{?=isset_or($value.stok)?}</td>
                 </tr>
                 {/loop}
                 {else}
                 <tr>
-                  <td colspan="4"class="text-center">Data obat jualan tidak ditemukan.</td>
+                  <td colspan="5"class="text-center">Data obat jualan tidak ditemukan.</td>
                 </tr>
                 {/if}
               </tbody>

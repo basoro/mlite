@@ -1,0 +1,55 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h5 class="panel-title">Daftar Batch Obat &amp; BMHP (Stok Tersisa per Batch)</h5>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+          <table class="table table-striped no-margin dataTables" width="100%">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>Nama Barang</th>
+                <th>Depot/Bangsal</th>
+                <th>No. Batch</th>
+                <th>No. Faktur</th>
+                <th>Harga Beli</th>
+                <th>Stok Tersisa</th>
+                <th>Kedaluwarsa</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $batches}
+              <tr>
+                <td>{?=isset_or($value.kode_brng)?}</td>
+                <td>{?=isset_or($value.nama_brng)?}</td>
+                <td>{?=isset_or($value.nm_bangsal)?}</td>
+                <td>{?=isset_or($value.no_batch)?}</td>
+                <td>{?=isset_or($value.no_faktur)?}</td>
+                <td>Rp. {?= number_format(isset_or($value.h_beli) ? (float)$value.h_beli : 0,2,',','.')?}</td>
+                <td>{?=isset_or($value.stok)?} {?=isset_or($value.kode_sat)?}</td>
+                <td>{?=isset_or($value.expire)?}</td>
+                <td>{?=isset_or($value.status_expire)?}</td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('.dataTables').DataTable({
+      "order": [[ 6, "asc" ]],
+      "pageLength": 20,
+      "pagingType": "full",
+      "lengthChange": false,
+      "scrollX": true,
+      dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+  });
+</script>

@@ -16,6 +16,7 @@ return [
             'igd' => '-',
             'deporanap' => '-',
             'gudang' => '-',
+            'terapkan_no_batch' => 'Iya',
             'keterangan_etiket' => '',
             'embalase' => '',
             'tuslah' => '',
@@ -28,6 +29,20 @@ return [
             }
         }
         if (defined('DBDRIVER') && DBDRIVER === 'sqlite') {
+            // Tabel stok per batch: satu baris per (obat, bangsal, batch, faktur)
+            $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS mlite_farmasi_obat_batch (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            kode_brng TEXT NOT NULL,
+            kd_bangsal TEXT NOT NULL,
+            no_batch TEXT NOT NULL DEFAULT '0',
+            no_faktur TEXT NOT NULL DEFAULT '0',
+            h_beli REAL NOT NULL DEFAULT 0,
+            expire TEXT,
+            stok REAL NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            updated_at TEXT,
+            CONSTRAINT uq_batch UNIQUE (kode_brng, kd_bangsal, no_batch, no_faktur)
+        )");
             $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS mlite_farmasi_pengajuan_obat (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             no_pengajuan TEXT NOT NULL,
@@ -62,14 +77,32 @@ return [
             pemesanan_id INTEGER NOT NULL,
             tanggal_penerimaan TEXT NOT NULL,
             jumlah_terima INTEGER NOT NULL DEFAULT 0,
+            harga_beli REAL DEFAULT 0,
+            no_batch TEXT DEFAULT '0',
+            expire TEXT,
             jenis_pembayaran TEXT NOT NULL DEFAULT 'Cash',
             tanggal_jatuh_tempo TEXT,
             nomor_faktur TEXT,
             catatan TEXT,
             dibuat_oleh TEXT DEFAULT '-',
             created_at TEXT NOT NULL
-        )");
+        )"); 
         } else {
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_obat_batch` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `kode_brng` varchar(15) NOT NULL,
+          `kd_bangsal` char(5) NOT NULL,
+          `no_batch` varchar(30) NOT NULL DEFAULT '0',
+          `no_faktur` varchar(30) NOT NULL DEFAULT '0',
+          `h_beli` double NOT NULL DEFAULT 0,
+          `expire` date DEFAULT NULL,
+          `stok` double NOT NULL DEFAULT 0,
+          `created_at` datetime NOT NULL,
+          `updated_at` datetime DEFAULT NULL,
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `uq_batch` (`kode_brng`,`kd_bangsal`,`no_batch`,`no_faktur`),
+          KEY `idx_bill_expire` (`kode_brng`,`kd_bangsal`,`expire`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;");
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_pengajuan_obat` (
           `id` int(11) NOT NULL AUTO_INCREMENT,
           `no_pengajuan` varchar(30) NOT NULL,
@@ -110,6 +143,9 @@ return [
           `pemesanan_id` int(11) NOT NULL,
           `tanggal_penerimaan` date NOT NULL,
           `jumlah_terima` int(11) NOT NULL DEFAULT 0,
+          `harga_beli` double DEFAULT 0,
+          `no_batch` varchar(30) DEFAULT '0',
+          `expire` date DEFAULT NULL,
           `jenis_pembayaran` varchar(10) NOT NULL DEFAULT 'Cash',
           `tanggal_jatuh_tempo` date DEFAULT NULL,
           `nomor_faktur` varchar(100) DEFAULT NULL,

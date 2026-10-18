@@ -32,7 +32,9 @@
                         {loop: $value.gudangbarang as $data}
                         <ul>
                           <li>
-                            Lokasi: {?=isset_or($data.nm_bangsal)?} ({?=isset_or($data.kd_bangsal)?}) - Stok: {?=isset_or($data.stok)?} 
+                            Lokasi: {?=isset_or($data.nm_bangsal)?} ({?=isset_or($data.kd_bangsal)?}) - Stok: {?=isset_or($data.stok)?}
+                            {if: isset($data.no_batch) && $data.no_batch != '0' && $data.no_batch != ''} - Batch: {?=isset_or($data.no_batch)?}{/if}
+                            {if: isset($data.expire) && $data.expire != ''} - Kedaluwarsa: {?=isset_or($data.expire)?}{/if}
                             {if: $data.kd_bangsal != $this->core->settings->get('farmasi.gudang')}
                             <a href="#re_stok" data-kode_brng="{?=isset_or($value.kode_brng)?}" data-kd_bangsal="{?=isset_or($data.kd_bangsal)?}">
                               <i class="fa fa-undo text-danger"></i>
@@ -90,6 +92,16 @@
         + '<label for="status_keluar">Stok</label>'
         + '<input name="stok" id="stok" class="form-control">'
         + '</div>'
+{if: $this->core->settings->get('farmasi.terapkan_no_batch') != 'Tidak'}
+        + '<div class="form-group">'
+        + '<label for="no_batch">No. Batch <small class="text-muted">(opsional - kosongkan untuk FEFO otomatis dari gudang; isi bila menambah stok ke gudang)</small></label>'
+        + '<input name="no_batch" id="no_batch" class="form-control">'
+        + '</div>'
+        + '<div class="form-group">'
+        + '<label for="harga">Harga Beli <small class="text-muted">(terisi otomatis dari batch, bisa diubah)</small></label>'
+        + '<input name="harga" id="harga" class="form-control" placeholder="Harga beli per satuan">'
+        + '</div>'
+{/if}
         + '';
 
     // tampilkan dialog konfirmasi
@@ -103,11 +115,15 @@
           callback() {
             var kd_bangsal = $('#kd_bangsal').val();
             var stok = $('#stok').val();
+            var no_batch = $('#no_batch').length ? $('#no_batch').val() : '';
+            var harga = $('#harga').length ? $('#harga').val() : '';
             //console.log(tgl_keluar);
             $.post(url, {
               kode_brng: kode_brng,
               kd_bangsal: kd_bangsal,
               stok: stok,
+              no_batch: no_batch,
+              harga: harga,
             } ,function(data) {
               alert('Set Stok telah disimpan!');
               window.location.href = baseURL + '/farmasi/mutasi?t=' + mlite.token;
@@ -116,6 +132,7 @@
         }
       }
     });
+    $('#no_batch').attr('data-kode_brng', kode_brng);
     $('select').selectator();
     event.stopPropagation();
     return false;
@@ -133,6 +150,12 @@
         + '<label for="status_keluar">Re-Stok ke Gudang</label>'
         + '<input name="stok" id="stok" class="form-control" placeholder="Jumlah re-stok">'
         + '</div>'
+{if: $this->core->settings->get('farmasi.terapkan_no_batch') != 'Tidak'}
+        + '<div class="form-group">'
+        + '<label for="no_batch">No. Batch <small class="text-muted">(opsional - kosongkan untuk FEFO otomatis)</small></label>'
+        + '<input name="no_batch" id="no_batch" class="form-control">'
+        + '</div>'
+{/if}
         + '';
 
     // tampilkan dialog konfirmasi
@@ -145,11 +168,13 @@
           className: 'btn-primary',
           callback() {
             var stok = $('#stok').val();
+            var no_batch = $('#no_batch').length ? $('#no_batch').val() : '';
             //console.log(tgl_keluar);
             $.post(url, {
               kode_brng: kode_brng,
               kd_bangsal: kd_bangsal,
               stok: stok,
+              no_batch: no_batch,
             } ,function(data) {
               alert('Set Stok telah disimpan!');
               window.location.href = baseURL + '/farmasi/mutasi?t=' + mlite.token;
@@ -158,10 +183,29 @@
         }
       }
     });
+    $('#no_batch').attr('data-kode_brng', kode_brng);
     $('select').selectator();
     event.stopPropagation();
     return false;
-  });  
+  });
+  
+  // Tarik harga beli otomatis dari ledger batch saat No. Batch diisi
+  $(document).on('input change', '#no_batch', function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var kode = $(this).attr('data-kode_brng');
+    var nb = $(this).val();
+    if (!kode || !nb || nb === '0') {
+      if ($('#harga').length) { $('#harga').val(''); }
+      return;
+    }
+    $.get(baseURL + '/farmasi/batchinfo?t=' + mlite.token + '&kode_brng=' + encodeURIComponent(kode) + '&no_batch=' + encodeURIComponent(nb), function(data){
+      if (data.status === 'success') {
+        if ($('#harga').length) { $('#harga').val(data.h_beli); }
+      } else {
+        if ($('#harga').length) { $('#harga').val(''); }
+      }
+    }, 'json');
+  });
   $(document).ready(function(){
     $('.dataTables').DataTable({
       "order": [[ 1, "asc" ]],

@@ -171,7 +171,7 @@ class Admin extends AdminModule
                 $auto_gen_ok = false;
                 $pdf_no_rawat_slash = null;
                 if (!empty($ref_type) && !empty($ref_id)) {
-                    if (($ref_type === 'pdf' || $ref_type === 'resep' || in_array($ref_type, ['surat.sakit','surat.rujukan','surat.sehat']))) {
+                    if (($ref_type === 'pdf' || $ref_type === 'resep' || in_array($ref_type, ['surat.sakit','surat.rujukan','surat.sehat','surat.perawatan']))) {
                         if (is_string($ref_id) && ctype_digit($ref_id) && strlen($ref_id) >= 12) {
                             $rv = @revertNoRawat($ref_id);
                             if (!empty($rv)) {
@@ -181,7 +181,7 @@ class Admin extends AdminModule
                         }
                     }
                     // Surat types: ref_id = sudah convertNorawat 14 digit
-                    if ($pdf_no_rawat_slash === null && in_array($ref_type, ['surat.sakit','surat.rujukan','surat.sehat'])) {
+                    if ($pdf_no_rawat_slash === null && in_array($ref_type, ['surat.sakit','surat.rujukan','surat.sehat','surat.perawatan'])) {
                         $rv = @revertNoRawat($ref_id);
                         if (!empty($rv)) {
                             $cek = $this->db('reg_periksa')->where('no_rawat', $rv)->oneArray();
@@ -364,7 +364,7 @@ class Admin extends AdminModule
         $mpdf->watermarkTextAlpha = 0.05;
 
         // Check if this is a known surat type
-        $surat_types = ['surat.sakit', 'surat.rujukan', 'surat.sehat', 'resep'];
+        $surat_types = ['surat.sakit', 'surat.rujukan', 'surat.sehat', 'surat.perawatan', 'resep'];
         if (in_array($ref_type, $surat_types)) {
             if ($ref_type == 'resep') {
                 $resep_obat = $this->db('resep_obat')->where('no_resep', $ref_id)->oneArray();
@@ -431,7 +431,8 @@ class Admin extends AdminModule
                 $table_map = [
                     'surat.sakit' => 'mlite_surat_sakit',
                     'surat.rujukan' => 'mlite_surat_rujukan',
-                    'surat.sehat' => 'mlite_surat_sehat'
+                    'surat.sehat' => 'mlite_surat_sehat',
+                    'surat.perawatan' => 'mlite_surat_perawatan'
                 ];
                 $surat_data = $this->db($table_map[$ref_type])->where('no_rawat', $no_rawat)->oneArray();
                 $this->tpl->set('surat', $surat_data);
