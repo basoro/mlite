@@ -13,6 +13,8 @@ Plugin untuk mengelola berbagai laporan rekam medis pada mLITE, mencakup laporan
   - Laporan Antrian Online
   - 10 Besar Penyakit Ralan
   - 10 Besar Penyakit Ranap
+  - Audit dan Review Rekam Medis
+  - Penilaian Efektifitas ERM
 
 ## Panduan Pengguna (Petugas)
 
@@ -46,6 +48,23 @@ Plugin untuk mengelola berbagai laporan rekam medis pada mLITE, mencakup laporan
    - Atur rentang tanggal, lalu lihat 10 diagnosis terbanyak dari pasien rawat inap.
    - Tersedia ekspor Excel dan cetak PDF.
 
+6. **Audit dan Review Rekam Medis**
+   - Buka **Laporan → Audit dan Review Rekam Medis**.
+   - Atur rentang tanggal registrasi dan filter status layanan (Semua/Rawat Jalan/Rawat Inap).
+   - Klik **Tampilkan Laporan** untuk memuat daftar kunjungan beserta status kelengkapan tiap komponen ERM: anamnesis & pemeriksaan, diagnosis, peresepan, berkas digital, dan resume medis (khusus rawat inap).
+   - Setiap baris menampilkan skor kelengkapan (0–100), status audit (Lengkap/Kurang Lengkap), dan komponen yang masih kurang.
+   - Ringkasan di atas tabel menampilkan total kunjungan, jumlah rekam medis lengkap/kurang lengkap, dan rata-rata skor (dihitung untuk seluruh rentang, bukan hanya halaman yang tampil).
+   - Daftar kunjungan memakai paginasi server (50 baris per halaman) dengan kontrol halaman di bawah tabel; klik **Tampilkan Laporan** untuk kembali ke halaman pertama, dan gunakan pautan halaman untuk berpindah. Pencarian/pengurutan pada tabel hanya berlaku untuk halaman yang sedang tampil.
+   - Gunakan **Export Excel** atau **Cetak PDF** untuk dokumentasi hasil audit — keduanya tetap memuat seluruh baris pada rentang tersebut.
+
+7. **Penilaian Efektifitas ERM**
+   - Buka **Laporan → Penilaian Efektifitas ERM**.
+   - Atur rentang tanggal dan filter status layanan.
+   - Laporan menampilkan indikator kelengkapan ERM per komponen (basis, terpenuhi, persentase, penilaian Baik/Cukup/Kurang) serta rekapitulasi per status layanan.
+   - Skor efektivitas keseluruhan (rata-rata seluruh indikator) dipakai untuk menentukan predikat: **Sangat Efektif** (≥90%), **Efektif** (≥75%), atau **Kurang Efektif** (<75%).
+   - Resume medis hanya dinilai pada kunjungan rawat inap (ditandai N/A untuk rawat jalan).
+   - Gunakan **Export Excel** atau **Cetak PDF** untuk dokumentasi.
+
 ## Panduan Admin
 
 1. **Pastikan Data Sumber Tersedia**
@@ -59,7 +78,9 @@ Plugin untuk mengelola berbagai laporan rekam medis pada mLITE, mencakup laporan
 
 ## Catatan
 
+- Audit dan Review Rekam Medis serta Penilaian Efektifitas ERM disusun dari tabel yang sudah ada (`reg_periksa`, `pemeriksaan_ralan`/`pemeriksaan_ranap`, `diagnosa_pasien`, `resep_obat`, `berkas_digital_perawatan`, `resume_pasien`/`resume_pasien_ranap`); tidak ada tabel atau proses tambahan yang dibuat.
 - Semua laporan mendukung filter rentang tanggal; jika tidak diisi, rentang default digunakan (awal tahun s.d. akhir tahun, atau awal bulan s.d. hari ini tergantung jenis laporan).
 - Ekspor Excel mengunduh file langsung ke browser; pastikan pop-up tidak diblokir.
 - Cetak PDF membuka halaman baru yang dapat dicetak atau disimpan sebagai PDF dari browser.
 - Data laporan bersumber langsung dari database; tidak ada proses agregasi tambahan di luar waktu eksekusi laporan.
+- Audit dan Review Rekam Medis memakai paginasi server-side dan query agregat untuk ringkasan, sehingga halaman tetap ringan meski rentang tanggal memuat puluhan ribu kunjungan (jumlah baris per halaman diatur lewat konstanta `AUDIT_REVIEW_PER_HALAMAN` di `Admin.php`).

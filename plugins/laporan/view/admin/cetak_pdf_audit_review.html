@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audit dan Review Rekam Medis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            margin: 0;
+        }
+        .header p {
+            margin: 5px 0;
+        }
+        .ringkasan {
+            margin-bottom: 15px;
+        }
+        .ringkasan span {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 5px;
+        }
+        table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>{?=isset_or($settings.nama_instansi)?}</h2>
+        <p>{?=isset_or($settings.alamat)?} - {?=isset_or($settings.kota)?}</p>
+        <h3>Audit dan Review Rekam Medis</h3>
+        <p>Periode: {?=isset_or($tgl_awal)?} s/d {?=isset_or($tgl_akhir)?} &mdash; Status: {?=isset_or($status)?}</p>
+    </div>
+
+    <div class="ringkasan">
+        <span><b>Total Kunjungan:</b> {?=isset_or($ringkasan.total)?}</span>
+        <span><b>Lengkap:</b> {?=isset_or($ringkasan.lengkap)?}</span>
+        <span><b>Kurang Lengkap:</b> {?=isset_or($ringkasan.kurang)?}</span>
+        <span><b>Rata-rata Skor:</b> {?=isset_or($ringkasan.rata_rata_skor)?}%</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th width="3%">No</th>
+                <th width="10%">No. Rawat</th>
+                <th width="7%">No. RM</th>
+                <th width="15%">Nama Pasien</th>
+                <th width="8%">Tgl Registrasi</th>
+                <th width="7%">Status</th>
+                <th width="10%">Anamnesis</th>
+                <th width="7%">Diagnosis</th>
+                <th width="7%">Peresepan</th>
+                <th width="7%">Berkas</th>
+                <th width="7%">Resume</th>
+                <th width="5%">Skor</th>
+                <th>Status Audit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $laporan}
+            <tr>
+                <td align="center">{?=$key+1?}</td>
+                <td>{?=isset_or($value.no_rawat)?}</td>
+                <td>{?=isset_or($value.no_rkm_medis)?}</td>
+                <td>{?=isset_or($value.nm_pasien)?}</td>
+                <td>{?=isset_or($value.tgl_registrasi)?}</td>
+                <td align="center">{if: $value.status_lanjut == 'Ranap'}Ranap{else}Ralan{/if}</td>
+                <td align="center">{if: $value.ada_pemeriksaan}Ya{else}Tidak{/if}</td>
+                <td align="center">{if: $value.ada_diagnosa}Ya{else}Tidak{/if}</td>
+                <td align="center">{if: $value.ada_resep}Ya{else}Tidak{/if}</td>
+                <td align="center">{if: $value.ada_berkas}Ya{else}Tidak{/if}</td>
+                <td align="center">{if: $value.status_lanjut != 'Ranap'}N/A{elseif: $value.ada_resume}Ya{else}Tidak{/if}</td>
+                <td align="center">{?=isset_or($value.skor_kelengkapan)?}</td>
+                <td>{?=isset_or($value.hasil_audit)?} ({?=isset_or($value.komponen_kurang)?})</td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+
+    <script>
+        window.print();
+    </script>
+</body>
+</html>

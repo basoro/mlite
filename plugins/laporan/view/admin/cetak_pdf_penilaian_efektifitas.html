@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Penilaian Efektifitas ERM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            margin: 0;
+        }
+        .header p {
+            margin: 5px 0;
+        }
+        .ringkasan {
+            margin-bottom: 15px;
+        }
+        .ringkasan span {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        h4 {
+            margin: 15px 0 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 5px;
+        }
+        table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>{?=isset_or($settings.nama_instansi)?}</h2>
+        <p>{?=isset_or($settings.alamat)?} - {?=isset_or($settings.kota)?}</p>
+        <h3>Penilaian Efektifitas ERM</h3>
+        <p>Periode: {?=isset_or($tgl_awal)?} s/d {?=isset_or($tgl_akhir)?} &mdash; Status: {?=isset_or($status)?}</p>
+    </div>
+
+    <div class="ringkasan">
+        <span><b>Total Kunjungan:</b> {?=isset_or($total_kunjungan)?}</span>
+        <span><b>Rawat Inap:</b> {?=isset_or($total_ranap)?}</span>
+        <span><b>Skor Efektivitas:</b> {?=isset_or($skor)?}%</span>
+        <span><b>Predikat:</b> {?=isset_or($predikat)?}</span>
+    </div>
+
+    <h4>Indikator Kelengkapan ERM</h4>
+    <table>
+        <thead>
+            <tr>
+                <th width="5%">No</th>
+                <th>Komponen ERM</th>
+                <th width="15%">Basis Penilaian</th>
+                <th width="15%">Terpenuhi</th>
+                <th width="15%">Persentase (%)</th>
+                <th width="15%">Penilaian</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $indikator}
+            <tr>
+                <td align="center">{?=$key+1?}</td>
+                <td>{?=isset_or($value.nama)?}</td>
+                <td align="center">{?=isset_or($value.basis)?}</td>
+                <td align="center">{?=isset_or($value.terpenuhi)?}</td>
+                <td align="center">{?=isset_or($value.persen)?}</td>
+                <td align="center">{?=isset_or($value.penilaian)?}</td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+
+    <h4>Rekapitulasi per Status Layanan</h4>
+    <table>
+        <thead>
+            <tr>
+                <th width="5%">No</th>
+                <th>Status Layanan</th>
+                <th width="10%">Kunjungan</th>
+                <th width="10%">Anamnesis (%)</th>
+                <th width="10%">Diagnosis (%)</th>
+                <th width="10%">Peresepan (%)</th>
+                <th width="10%">Berkas Digital (%)</th>
+                <th width="10%">Resume (%)</th>
+                <th width="8%">Skor (%)</th>
+                <th width="12%">Predikat</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $per_status}
+            <tr>
+                <td align="center">{?=$key+1?}</td>
+                <td>{if: $value.status == 'Ranap'}Rawat Inap{else}Rawat Jalan{/if}</td>
+                <td align="center">{?=isset_or($value.jumlah)?}</td>
+                <td align="center">{?=isset_or($value.persen_pemeriksaan)?}</td>
+                <td align="center">{?=isset_or($value.persen_diagnosa)?}</td>
+                <td align="center">{?=isset_or($value.persen_resep)?}</td>
+                <td align="center">{?=isset_or($value.persen_berkas)?}</td>
+                <td align="center">{if: $value.persen_resume === null}N/A{else}{?=isset_or($value.persen_resume)?}{/if}</td>
+                <td align="center">{?=isset_or($value.skor)?}</td>
+                <td align="center">{?=isset_or($value.predikat)?}</td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+
+    <script>
+        window.print();
+    </script>
+</body>
+</html>
