@@ -210,6 +210,19 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     evaluasi : evaluasi,
     spo2 : spo2
     }, function(data) {
+      var res = data;
+      try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+      if (res && (res.status == 'success' || res.status == 'error')) {
+        var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+        audio.play();
+      }
+      if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        let payload = {
+            'action' : 'simpan',
+            'modul' : 'dokter_ralan'
+        }
+        ws.send(JSON.stringify(payload));
+      }
       // tampilkan data
       $("#display").hide();
       var url = baseURL + '/dokter_ralan/soap?t=' + mlite.token;
@@ -357,6 +370,19 @@ $("#soap").on("click",".hapus_soap", function(event){
         tgl_perawatan: tgl_perawatan,
         jam_rawat: jam_rawat
       } ,function(data) {
+        var res = data;
+        try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+        if (res && (res.status == 'success' || res.status == 'error')) {
+          var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+          audio.play();
+        }
+        if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+          let payload = {
+              'action' : 'simpan',
+              'modul' : 'dokter_ralan'
+          }
+          ws.send(JSON.stringify(payload));
+        }
         var url = baseURL + '/dokter_ralan/soap?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
@@ -1660,10 +1686,22 @@ $(document).on('click', 'a[href="#hapus_rujukan_internal"]', function(event){
     var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
   {/if}
 
-  var ws = new WebSocket(URL_WEBSOCKET);
+  var ws;
   var baseURL = mlite.url + '/' + mlite.admin;
-  
-  ws.onmessage = function(response){
+
+  function koneksiWebsocket() {
+    ws = new WebSocket(URL_WEBSOCKET);
+    ws.onmessage = ws_onmessage;
+
+    ws.onclose = function(){
+      // Jika terputus dari websocket server, maka mencoba terhubung kembali
+      // tiap 5 detik; onmessage dan onclose ikut terpasang ulang pada
+      // koneksi yang baru sehingga update tetap berjalan setelah reconnect.
+      setTimeout(koneksiWebsocket, 5000);
+    };
+  }
+
+  var ws_onmessage = function(response){
     try{
       output = JSON.parse(response.data);
       if(output['action'] == 'simpan'){
@@ -1677,18 +1715,6 @@ $(document).on('click', 'a[href="#hapus_rujukan_internal"]', function(event){
   }
   
   
-  ws.onclose = function(){
-    // Jika terputus dari websocket server, maka mencoba terhubung kembali.
-    var interval_reconnect_ws = setInterval(function(){
-      if(ws.readyState != 0){
-        if(ws.readyState == 1){ // readyState = 1 (Open) , berarti sudah terhubung dengan websocket. Maka gak perlu interval lagi.
-          clearInterval(interval_reconnect_ws);
-        }else{
-          ws = new WebSocket(URL_WEBSOCKET);	
-        }
-      }
-      
-    },5000);
-  }   
+  koneksiWebsocket();
 
 {/if}

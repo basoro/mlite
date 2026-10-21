@@ -85,6 +85,47 @@ $ cd mlite/docker && docker-compose build && docker-compose up -d
 1. Buka browser Anda dan navigasikan ke alamat URL\_ADDRESS:8088.
 2. Silahkan login dengan Username: admin dan Password: admin
 
+## Menjalankan Websocket (workerman.php)
+
+mLITE mendukung update data secara realtime antar klien (misalnya daftar antrian/display di beberapa tab atau monitor sekaligus) dan notifikasi suara resep. Fitur ini berjalan di atas server websocket [Workerman](https://www.workerman.net/) yang disediakan dalam file `workerman.php` pada folder root, mendengarkan di port **3892**.
+
+### Prasyarat
+
+- Dependensi workerman sudah termasuk di `composer.json` (`workerman/workerman`). Jalankan `composer install` bila vendor belum ada.
+- Ekstensi PHP `pcntl` (dan `posix`) untuk mode daemon — tersedia bawaan pada Linux/macOS.
+- Port **3892** terbuka di firewall server Anda, karena diakses langsung oleh browser.
+
+### Menjalankan server
+
+Dari folder root mLITE:
+
+```
+$ php workerman.php start        # jalankan di foreground (untuk uji coba)
+$ php workerman.php start -d     # jalankan sebagai daemon (untuk produksi)
+$ php workerman.php status       # cek status worker
+$ php workerman.php restart      # restart setelah perubahan konfigurasi
+$ php workerman.php stop         # hentikan server
+```
+
+Saat klien terhubung/terputus, IP klien akan tercetak di layar (mode foreground) atau dicatat ke file log `vendor/workerman/workerman.log` (mode daemon).
+
+### Mengaktifkan fitur di panel admin
+
+1. Masuk ke panel admin → menu **Pengaturan** → tab **Umum**.
+2. Setel **Websocket** menjadi **Ya** (default-nya `tidak`, sehingga fitur realtime & suara nonaktif sampai diaktifkan).
+3. Isi **Websocket proxy** hanya jika mLITE diakses di belakang reverse proxy HTTPS (misalnya `wss://domain-anda/ws` yang di-proxy ke port 3892). Biarkan kosong jika diakses langsung, maka browser akan mencoba `wss://<host>:3892` secara otomatis.
+
+### Menghubungkan sisi klien
+
+Setiap modul admin memuat JavaScript realtime dari `plugins/<modul>/js/admin/<modul>.js`. Saat setting websocket aktif, skrip akan terhubung ke `URL_WEBSOCKET`, memuat ulang tampilan ketika menerima pesan `action: simpan`, membunyikan suara `assets/sound/alarm.mp3` untuk resep baru dari modul dokter, serta mengirim pesan `action: simpan` ke semua klien setiap kali data disimpan/dihapus. File suara yang tersedia: `success.mp3`, `error.mp3`, dan `alarm.mp3` di folder `assets/sound/`.
+
+### Verifikasi & pemecahan masalah
+
+- Jalankan `php workerman.php status` — worker harus berstatus `running`.
+- Buka `wss://<host>:3892` dari DevTools browser (tab Network) untuk memastikan port terjangkau.
+- Jika tidak ada update realtime: pastikan setting **Websocket** = `Ya` dan URL pada `websocket_proxy` sesuai (harus diawali `wss://` jika halaman dibuka via HTTPS).
+- Jika server memerlukan SSL sendiri, lebih mudah me-proxy-nya lewat nginx/Apache (isi `websocket_proxy`) daripada mengonfigurasi TLS di workerman.
+
 ## Catatan:
 
 Untuk setiap kali update, silahkan jalankan perintah

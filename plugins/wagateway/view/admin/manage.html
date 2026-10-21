@@ -69,7 +69,7 @@ let socket;
 socket = io('{if: $waapiserver == "https://mlite.id"}https://wa.mlite.id{else}{?=isset_or($waapiserver)?}{/if}', {
     transports: ['websocket', 'polling', 'flashsocket']
 });
-socket.emit('StartConnection','{?=isset_or($waapiphonenumber)?}')
+socket.emit('StartConnection', { sender: '{?=isset_or($waapiphonenumber)?}' })
 socket.on('QrGenerated', (url) => {
     $('.imageee').html(` <img src="${url}" height="300px" alt="">`)
     let count = 0;
@@ -96,9 +96,12 @@ socket.on('Authenticated',data => {
                                         <span class="" role="status" aria-hidden="true"></span>
                                        Connected
                                     </button>`)
-                                    $('.logoutbutton').html(` <button class="btn btn-danger" class="logout"  id="logout"  onclick="logout({?=isset_or($waapiphonenumber)?})">
+                                    $('.logoutbutton').html(` <button class="btn btn-danger" class="logout"  id="logout"  onclick="logout('{?=isset_or($waapiphonenumber)?}')">
                                        Logout
                                    </button>`)
+})
+socket.on('message', (log) => {
+    console.log('[WA Gateway]', log)
 })
 socket.on('Proccess',()=> {
     $('.statusss').html(`  <button class="btn btn-success" type="button" disabled>
@@ -120,6 +123,6 @@ socket.on('Unauthorized',()=> {
 })
 
 function logout(device){
- socket.emit('LogoutDevice',device)
+ socket.emit('LogoutDevice', { sender: device })
 }
 </script>

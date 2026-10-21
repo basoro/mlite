@@ -432,6 +432,19 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   }, function(data) {
     // tampilkan data
     console.log(data);
+    var res = data;
+    try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+    if (res && (res.status == 'success' || res.status == 'error')) {
+      var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+      audio.play();
+    }
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+      let payload = {
+          'action' : 'simpan',
+          'modul' : 'apotek_ranap'
+      }
+      ws.send(JSON.stringify(payload));
+    }
     $("#display").hide();
     var url = baseURL + '/apotek_ranap/rincian?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
@@ -475,6 +488,19 @@ $("#rincian").on("click",".hapus_resep_obat", function(event){
         tgl_peresepan: tgl_peresepan,
         jam_peresepan: jam_peresepan
       } ,function(data) {
+        var res = data;
+        try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+        if (res && (res.status == 'success' || res.status == 'error')) {
+          var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+          audio.play();
+        }
+        if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+          let payload = {
+              'action' : 'simpan',
+              'modul' : 'apotek_ranap'
+          }
+          ws.send(JSON.stringify(payload));
+        }
         var url = baseURL + '/apotek_ranap/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
@@ -592,6 +618,19 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
         kandungan: JSON.stringify(kandunganData),
         aturan_pakai: JSON.stringify(aturanPakaiData)
       } ,function(data) {
+        var res = data;
+        try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+        if (res && (res.status == 'success' || res.status == 'error')) {
+          var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+          audio.play();
+        }
+        if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+          let payload = {
+              'action' : 'simpan',
+              'modul' : 'apotek_ranap'
+          }
+          ws.send(JSON.stringify(payload));
+        }
         var url = baseURL + '/apotek_ranap/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
@@ -827,6 +866,19 @@ $("#rincian").on("click", ".hapus_obat", function(event){
         tgl_peresepan: tgl_peresepan,
         jam_peresepan: jam_peresepan
       } ,function(data) {
+        var res = data;
+        try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+        if (res && (res.status == 'success' || res.status == 'error')) {
+          var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+          audio.play();
+        }
+        if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+          let payload = {
+              'action' : 'simpan',
+              'modul' : 'apotek_ranap'
+          }
+          ws.send(JSON.stringify(payload));
+        }
         var url = baseURL + '/apotek_ranap/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
@@ -867,6 +919,19 @@ $("#rincian").on("click",".hapus_obat_racikan", function(event){
         no_racik: no_racik,
         jml: jml
       } ,function(data) {
+        var res = data;
+        try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+        if (res && (res.status == 'success' || res.status == 'error')) {
+          var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+          audio.play();
+        }
+        if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+          let payload = {
+              'action' : 'simpan',
+              'modul' : 'apotek_ranap'
+          }
+          ws.send(JSON.stringify(payload));
+        }
         console.log(data);
         var url = baseURL + '/apotek_ranap/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
@@ -990,3 +1055,50 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
         dropdown.appendTo('body');
     }
 });
+
+{if: $mlite.websocket == 'ya'}
+
+  {if: $mlite.websocket_proxy != ''}
+    var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
+  {else}
+    var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+  {/if}
+
+  var ws;
+  var baseURL = mlite.url + '/' + mlite.admin;
+
+  function koneksiWebsocket() {
+    ws = new WebSocket(URL_WEBSOCKET);
+    ws.onmessage = ws_onmessage;
+
+    ws.onclose = function(){
+      // Jika terputus dari websocket server, maka mencoba terhubung kembali
+      // tiap 5 detik; onmessage dan onclose ikut terpasang ulang pada
+      // koneksi yang baru sehingga update tetap berjalan setelah reconnect.
+      setTimeout(koneksiWebsocket, 5000);
+    };
+  }
+
+  var ws_onmessage = function(response){
+    try{
+      output = JSON.parse(response.data);
+      if(output['action'] == 'simpan'){
+        if(output['modul'] == 'apotek_ranap'){
+          $("#apotek_ranap #display").show().load(baseURL + '/apotek_ranap/display?t=' + mlite.token);
+        }
+      }
+      if(output['action'] == 'permintaan_resep'){
+        if(output['modul'] == 'dokter_ralan' || output['modul'] == 'dokter_ranap'){
+          var audio = new Audio('{?=url()?}/assets/sound/alarm.mp3');
+          audio.play();    
+        }
+      }
+    }catch(e){
+      console.log(e);
+    }
+  }
+  
+  
+  koneksiWebsocket();
+
+{/if}

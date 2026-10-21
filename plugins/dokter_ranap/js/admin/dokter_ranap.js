@@ -212,6 +212,19 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     evaluasi : evaluasi,
     spo2 : spo2
     }, function(data) {
+      var res = data;
+      try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+      if (res && (res.status == 'success' || res.status == 'error')) {
+        var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+        audio.play();
+      }
+      if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        let payload = {
+            'action' : 'simpan',
+            'modul' : 'dokter_ranap'
+        }
+        ws.send(JSON.stringify(payload));
+      }
       // tampilkan data
       $("#display").hide();
       var url = baseURL + '/dokter_ranap/soap?t=' + mlite.token;
@@ -318,6 +331,19 @@ $("#soap").on("click",".hapus_soap", function(event){
         tgl_perawatan: tgl_perawatan,
         jam_rawat: jam_rawat
       } ,function(data) {
+        var res = data;
+        try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+        if (res && (res.status == 'success' || res.status == 'error')) {
+          var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+          audio.play();
+        }
+        if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+          let payload = {
+              'action' : 'simpan',
+              'modul' : 'dokter_ranap'
+          }
+          ws.send(JSON.stringify(payload));
+        }
         var url = baseURL + '/dokter_ranap/soap?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
@@ -777,6 +803,35 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   informasi_tambahan : informasi_tambahan,
   diagnosa_klinis      : diagnosa_klinis
   }, function(data) {
+    var res = data;
+    try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+    if (res && (res.status == 'success' || res.status == 'error')) {
+      var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+      audio.play();
+    }
+    if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+      if(kat == 'obat' || kat == 'racikan') {
+        let payload = {
+            'action' : 'permintaan_resep',
+            'modul' : 'dokter_ranap'
+        }
+        ws.send(JSON.stringify(payload));
+      }
+      if(kat == 'laboratorium') {
+        let payload = {
+            'action' : 'permintaan_laboratorium',
+            'modul' : 'dokter_ranap'
+        }
+        ws.send(JSON.stringify(payload));
+      }
+      if(kat == 'radiologi') {
+        let payload = {
+            'action' : 'permintaan_radiologi',
+            'modul' : 'dokter_ranap'
+        }
+        ws.send(JSON.stringify(payload));
+      }
+    }
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/dokter_ranap/rincian?t=' + mlite.token;
@@ -1661,3 +1716,43 @@ function createVitalSignsChart(chartData) {
 function updateVitalSignsChart() {
   loadVitalSignsChart();
 }
+
+{if: $mlite.websocket == 'ya'}
+
+  {if: $mlite.websocket_proxy != ''}
+    var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
+  {else}
+    var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+  {/if}
+
+  var ws;
+  var baseURL = mlite.url + '/' + mlite.admin;
+
+  function koneksiWebsocket() {
+    ws = new WebSocket(URL_WEBSOCKET);
+    ws.onmessage = ws_onmessage;
+
+    ws.onclose = function(){
+      // Jika terputus dari websocket server, maka mencoba terhubung kembali
+      // tiap 5 detik; onmessage dan onclose ikut terpasang ulang pada
+      // koneksi yang baru sehingga update tetap berjalan setelah reconnect.
+      setTimeout(koneksiWebsocket, 5000);
+    };
+  }
+
+  var ws_onmessage = function(response){
+    try{
+      var output = JSON.parse(response.data);
+      if(output['action'] == 'simpan'){
+        if(output['modul'] == 'dokter_ranap'){
+          $("#dokter_ranap #display").show().load(baseURL + '/dokter_ranap/display?t=' + mlite.token);
+        }
+      }
+    }catch(e){
+      // console.log(e);
+    }
+  };
+
+  koneksiWebsocket();
+
+{/if}

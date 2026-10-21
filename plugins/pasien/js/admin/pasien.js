@@ -354,10 +354,22 @@ $(function (event) {
     var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
   {/if}
 
-  var ws = new WebSocket(URL_WEBSOCKET);
+  var ws;
   var baseURL = mlite.url + '/' + mlite.admin;
-  
-  ws.onmessage = function(response){
+
+  function koneksiWebsocket() {
+    ws = new WebSocket(URL_WEBSOCKET);
+    ws.onmessage = ws_onmessage;
+
+    ws.onclose = function(){
+      // Jika terputus dari websocket server, maka mencoba terhubung kembali
+      // tiap 5 detik; onmessage dan onclose ikut terpasang ulang pada
+      // koneksi yang baru sehingga update tetap berjalan setelah reconnect.
+      setTimeout(koneksiWebsocket, 5000);
+    };
+  }
+
+  var ws_onmessage = function(response){
     try{
       output = JSON.parse(response.data);
       if(output['action'] == 'simpan'){
@@ -375,18 +387,6 @@ $(function (event) {
   }
   
   
-  ws.onclose = function(){
-    // Jika terputus dari websocket server, maka mencoba terhubung kembali.
-    var interval_reconnect_ws = setInterval(function(){
-      if(ws.readyState != 0){
-        if(ws.readyState == 1){ // readyState = 1 (Open) , berarti sudah terhubung dengan websocket. Maka gak perlu interval lagi.
-          clearInterval(interval_reconnect_ws);
-        }else{
-          ws = new WebSocket(URL_WEBSOCKET);	
-        }
-      }
-      
-    },5000);
-  }   
+  koneksiWebsocket();
 
 {/if}

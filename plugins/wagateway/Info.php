@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul Whatsapp Gateway mLITE',
     'author'        =>  'Basoro',
     'category'      =>  'bridging', 
-    'version'       =>  '1.0',
+    'version'       =>  '1.1',
     'compatibility' =>  '6.*.*',
     'icon'          =>  'whatsapp',
     'install'       =>  function () use ($core) {

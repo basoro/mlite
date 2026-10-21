@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Upload &amp; Kirim Gambar</h3>
+            </div>
+            <div class="panel-body">
+              <form method="POST" action="{?=url([ADMIN,'wagateway','uploadimage'])?}" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label>Nomor Tujuan :</label>
+                  <input type="text" class="form-control" name="number" placeholder="081234567890">
+                </div>
+                <div class="form-group">
+                  <label>File Gambar :</label>
+                  <input type="file" class="form-control" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
+                  <small class="text-muted">Format: JPG, JPEG, PNG, GIF, atau WEBP, maksimal 50MB.</small>
+                </div>
+                <div class="form-group">
+                  <label>Caption :</label>
+                  <textarea name="message" class="form-control" rows="4" placeholder="Ini caption"></textarea>
+                </div>
+                <p class="text-muted">File dikirim langsung tanpa perlu hosting URL publik.</p>
+                <button type="submit" class="btn btn-primary" name="submit">SEND</button>
+              </form>
+            </div>
+        </div>
+    </div>
+</div>

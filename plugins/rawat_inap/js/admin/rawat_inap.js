@@ -81,7 +81,21 @@ $("#form").on("click", "#simpan", function(event){
       lama: lama,
       diagnosa_awal: diagnosa_awal
     } ,function(data) {
-      $("#display").show().load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+      var res = data;
+      try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+      if (res && (res.status == 'success' || res.status == 'error')) {
+        var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+        audio.play();
+      }
+      if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        let payload = {
+            'action' : 'simpan',
+            'modul' : 'rawat_inap'
+        }
+        ws.send(JSON.stringify(payload));
+      } else {
+        $("#display").show().load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+      }
       bersih();
       $("#status_pendaftaran").hide();
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
@@ -120,7 +134,21 @@ $("#form").on("click", "#simpan_keluar", function(event){
       stts_pulang: stts_pulang,
       kd_pj: kd_pj
     } ,function(data) {
-      $("#display").show().load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+      var res = data;
+      try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+      if (res && (res.status == 'success' || res.status == 'error')) {
+        var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+        audio.play();
+      }
+      if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        let payload = {
+            'action' : 'simpan',
+            'modul' : 'rawat_inap'
+        }
+        ws.send(JSON.stringify(payload));
+      } else {
+        $("#display").show().load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+      }
       bersih();
       $("#status_pendaftaran").hide();
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
@@ -200,8 +228,22 @@ $("#form").on("click","#hapus", function(event){
         tgl_masuk: tgl_masuk,
         jam_masuk: jam_masuk
       } ,function(data) {
-        // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-        $("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+        var res = data;
+        try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
+        if (res && (res.status == 'success' || res.status == 'error')) {
+          var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
+          audio.play();
+        }
+        if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+          let payload = {
+              'action' : 'simpan',
+              'modul' : 'rawat_inap'
+          }
+          ws.send(JSON.stringify(payload));
+        } else {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          $("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+        }
         bersih();
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
         "Data pasien telah dihapus!"+
@@ -1715,3 +1757,43 @@ function createVitalSignsChart(chartData) {
 function updateVitalSignsChart() {
   loadVitalSignsChart();
 }
+
+{if: $mlite.websocket == 'ya'}
+
+  {if: $mlite.websocket_proxy != ''}
+    var URL_WEBSOCKET = "{$mlite.websocket_proxy}";
+  {else}
+    var URL_WEBSOCKET = "wss://<?php echo $_SERVER['HTTP_HOST'] ?>:3892";
+  {/if}
+
+  var ws;
+  var baseURL = mlite.url + '/' + mlite.admin;
+
+  function koneksiWebsocket() {
+    ws = new WebSocket(URL_WEBSOCKET);
+    ws.onmessage = ws_onmessage;
+
+    ws.onclose = function(){
+      // Jika terputus dari websocket server, maka mencoba terhubung kembali
+      // tiap 5 detik; onmessage dan onclose ikut terpasang ulang pada
+      // koneksi yang baru sehingga update tetap berjalan setelah reconnect.
+      setTimeout(koneksiWebsocket, 5000);
+    };
+  }
+
+  var ws_onmessage = function(response){
+    try{
+      var output = JSON.parse(response.data);
+      if(output['action'] == 'simpan'){
+        if(output['modul'] == 'rawat_inap'){
+          $("#rawat_inap #display").show().load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+        }
+      }
+    }catch(e){
+      // console.log(e);
+    }
+  };
+
+  koneksiWebsocket();
+
+{/if}
