@@ -374,6 +374,12 @@ class Admin extends AdminModule
       if($_POST['penyerahan'] == 'penyerahan') {
         $this->db('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_penyerahan' => $tgl_rawat, 'jam_penyerahan' => $jam_rawat]);
       } else {
+        // Validasi dijalankan dalam satu transaksi: bila ada kegagalan di tengah
+        // (mis. bentrok primary key), seluruh perubahan stok & tagihan ikut
+        // dibatalkan agar resep tidak tersangkut setengah jadi.
+        $pdo = $this->db()->pdo();
+        $pdo->beginTransaction();
+        try {
         $get_resep_dokter_nonracikan = $this->db('resep_dokter')
           ->select([
               'kode_brng' => 'kode_brng',
@@ -397,6 +403,17 @@ class Admin extends AdminModule
           ->where('resep_dokter_racikan.no_resep', $_POST['no_resep'])
           ->toArray();
         $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
+
+        // Obat yang sama bisa tercatat lebih dari sekali dalam satu resep
+        // (diresepkan berulang, atau terbagi di beberapa grup racikan).
+        // Jumlahnya dijumlahkan agar stok & tagihan dikeluarkan hanya sekali
+        // dan tidak bentrok primary key pada detail_pemberian_obat/aturan_pakai.
+        $jumlah_per_barang = [];
+        foreach ($get_resep_dokter as $item) {
+          $kd = $item['kode_brng'];
+          $jumlah_per_barang[$kd] = (isset($jumlah_per_barang[$kd]) ? $jumlah_per_barang[$kd] : 0) + (float) $item['jml'];
+        }
+        $sudah_ditagih = [];
 
         $embalaseData = isset($_POST['embalase']) ? json_decode($_POST['embalase'], true) : [];
         $tuslahData = isset($_POST['tuslah']) ? json_decode($_POST['tuslah'], true) : [];
@@ -436,7 +453,14 @@ class Admin extends AdminModule
 
         foreach ($get_resep_dokter as $item) {
 
-          $jumlah = isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml'];
+          $kd_barang = $item['kode_brng'];
+          $baris_pertama = !isset($sudah_ditagih[$kd_barang]);
+          $sudah_ditagih[$kd_barang] = true;
+
+          // $jumlah_grup = jumlah baris/grup ini, $jumlah = jumlah total per obat
+          // (dipakai untuk pengeluaran stok & tagihan).
+          $jumlah_grup = isset($jumlahData[$kd_barang]) ? $jumlahData[$kd_barang] : $item['jml'];
+          $jumlah = isset($jumlahData[$kd_barang]) ? $jumlahData[$kd_barang] : $jumlah_per_barang[$kd_barang];
           $kandungan = isset($kandunganData[$item['kode_brng']]) ? $kandunganData[$item['kode_brng']] : (isset($item['kandungan']) ? $item['kandungan'] : 0);
           
           if (isset($aturanPakaiData[$item['kode_brng']])) {
@@ -447,7 +471,37 @@ class Admin extends AdminModule
 
           if(isset($item['no_racik'])) {
              $jumlah_racik = isset($item['jml_dr']) ? $item['jml_dr'] : (isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml']);
-             $jumlah = isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml'];             
+             $jumlah = isset($jumlahData[$kd_barang]) ? $jumlahData[$kd_barang] : $jumlah_per_barang[$kd_barang];
+          }
+
+          // Baris kembar (obat sama pada resep/racikan lain): stok & tagihan sudah
+          // dihitung di baris pertama, sisanya hanya pembaruan data racikan grup ini.
+          if (!$baris_pertama) {
+            if (isset($item['no_racik'])) {
+              $this->db('resep_dokter_racikan')
+                ->where('no_resep', $_POST['no_resep'])
+                ->where('no_racik', $item['no_racik'])
+                ->update([
+                  'jml_dr' => $jumlah_racik
+                ]);
+              $this->db('resep_dokter_racikan_detail')
+                ->where('no_resep', $_POST['no_resep'])
+                ->where('no_racik', $item['no_racik'])
+                ->where('kode_brng', $item['kode_brng'])
+                ->update([
+                  'jml' => $jumlah_grup,
+                  'kandungan' => $kandungan
+                ]);
+              $this->db('detail_obat_racikan')
+                ->save([
+                  'tgl_perawatan' => $tgl_rawat,
+                  'jam' => $jam_rawat,
+                  'no_rawat' => $_POST['no_rawat'],
+                  'no_racik' => $item['no_racik'],
+                  'kode_brng' => $item['kode_brng']
+                ]);
+            }
+            continue;
           }
 
           $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
@@ -497,7 +551,8 @@ class Admin extends AdminModule
               ->where('no_racik', $item['no_racik'])
               ->where('kode_brng', $item['kode_brng'])
               ->update([
-                'jml' => $jumlah,
+
+                'jml' => $jumlah_grup,
                 'kandungan' => $kandungan
               ]);
           } else {
@@ -505,7 +560,7 @@ class Admin extends AdminModule
               ->where('no_resep', $_POST['no_resep'])
               ->where('kode_brng', $item['kode_brng'])
               ->update([
-                'jml' => $jumlah
+                'jml' => $jumlah_grup
               ]);
           }
 
@@ -573,6 +628,13 @@ class Admin extends AdminModule
         }
 
         $this->db('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => $tgl_rawat, 'jam' => $jam_rawat]);
+        $pdo->commit();
+        } catch (\Throwable $e) {
+          if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+          }
+          throw $e;
+        }
       }
       exit();
     }
@@ -2128,6 +2190,10 @@ class Admin extends AdminModule
         if(isset($input['penyerahan']) && $input['penyerahan'] == 'penyerahan') {
             $this->db('resep_obat')->where('no_resep', $no_resep)->save(['tgl_penyerahan' => $tgl_rawat, 'jam_penyerahan' => $jam_rawat]);
         } else {
+            // Transaksi agar validasi gagal total (rollback) tanpa data setengah jadi
+            $pdo = $this->db()->pdo();
+            $pdo->beginTransaction();
+            try {
             $get_resep_dokter_nonracikan = $this->db('resep_dokter')
               ->select([
                   'kode_brng' => 'kode_brng',
@@ -2152,6 +2218,16 @@ class Admin extends AdminModule
               ->toArray();
             $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
 
+            // Obat yang sama bisa tercatat lebih dari sekali dalam satu resep;
+            // jumlahnya dijumlahkan agar stok & tagihan hanya sekali keluar dan
+            // tidak bentrok primary key pada detail_pemberian_obat/aturan_pakai.
+            $jumlah_per_barang = [];
+            foreach ($get_resep_dokter as $item) {
+                $kd = $item['kode_brng'];
+                $jumlah_per_barang[$kd] = (isset($jumlah_per_barang[$kd]) ? $jumlah_per_barang[$kd] : 0) + (float) $item['jml'];
+            }
+            $sudah_ditagih = [];
+
             $embalaseData = isset($input['embalase']) ? (is_array($input['embalase']) ? $input['embalase'] : json_decode($input['embalase'], true)) : [];
             $tuslahData = isset($input['tuslah']) ? (is_array($input['tuslah']) ? $input['tuslah'] : json_decode($input['tuslah'], true)) : [];
             $jumlahData = isset($input['jumlah']) ? (is_array($input['jumlah']) ? $input['jumlah'] : json_decode($input['jumlah'], true)) : [];
@@ -2166,9 +2242,10 @@ class Admin extends AdminModule
                     }
                 }
                 
-                $aturan_pakai_racikan = isset($aturanPakaiData[$racikan['kd_racik']]) ? $aturanPakaiData[$racikan['kd_racik']] : $racikan['aturan_pakai'];
-
                 foreach ($racikan_unique as $racikan) {
+                    // Aturan pakai racikan diambil per grup (sebelumnya dihitung dari
+                    // $racikan yang belum terdefinisi sehingga selalu kosong)
+                    $aturan_pakai_racikan = isset($aturanPakaiData[$racikan['kd_racik']]) ? $aturanPakaiData[$racikan['kd_racik']] : $racikan['aturan_pakai'];
                     $this->db('obat_racikan')->save(
                         [
                             'tgl_perawatan' => $tgl_rawat,
@@ -2187,13 +2264,49 @@ class Admin extends AdminModule
 
             foreach ($get_resep_dokter as $item) {
 
-              $jumlah = isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml'];
+              $kd_barang = $item['kode_brng'];
+              $baris_pertama = !isset($sudah_ditagih[$kd_barang]);
+              $sudah_ditagih[$kd_barang] = true;
+
+              // $jumlah_grup = jumlah baris/grup ini, $jumlah = jumlah total per obat
+              $jumlah_grup = isset($jumlahData[$kd_barang]) ? $jumlahData[$kd_barang] : $item['jml'];
+              $jumlah = isset($jumlahData[$kd_barang]) ? $jumlahData[$kd_barang] : $jumlah_per_barang[$kd_barang];
               $kandungan = isset($kandunganData[$item['kode_brng']]) ? $kandunganData[$item['kode_brng']] : (isset($item['kandungan']) ? $item['kandungan'] : 0);
               $aturan_pakai = isset($aturanPakaiData[$item['kode_brng']]) ? $aturanPakaiData[$item['kode_brng']] : (isset($item['aturan_pakai']) ? $item['aturan_pakai'] : '');
 
               if(isset($item['no_racik'])) {
                  $jumlah_racik = isset($item['jml_dr']) ? $item['jml_dr'] : (isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml']);
-                 $jumlah = isset($jumlahData[$item['kode_brng']]) ? $jumlahData[$item['kode_brng']] : $item['jml'];
+                 $jumlah = isset($jumlahData[$kd_barang]) ? $jumlahData[$kd_barang] : $jumlah_per_barang[$kd_barang];
+              }
+
+              // Baris kembar: stok & tagihan sudah dihitung di baris pertama,
+              // sisanya hanya pembaruan data racikan grup ini
+              if (!$baris_pertama) {
+                if (isset($item['no_racik'])) {
+                  $this->db('resep_dokter_racikan')
+                    ->where('no_resep', $no_resep)
+                    ->where('no_racik', $item['no_racik'])
+                    ->update([
+                      'jml_dr' => $jumlah_racik
+                    ]);
+                  $this->db('resep_dokter_racikan_detail')
+                    ->where('no_resep', $no_resep)
+                    ->where('no_racik', $item['no_racik'])
+                    ->where('kode_brng', $item['kode_brng'])
+                    ->update([
+                      'jml' => $jumlah_grup,
+                      'kandungan' => $kandungan
+                    ]);
+                  $this->db('detail_obat_racikan')
+                    ->save([
+                      'tgl_perawatan' => $tgl_rawat,
+                      'jam' => $jam_rawat,
+                      'no_rawat' => $no_rawat,
+                      'no_racik' => $item['no_racik'],
+                      'kode_brng' => $item['kode_brng']
+                    ]);
+                }
+                continue;
               }
 
               $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
@@ -2239,7 +2352,7 @@ class Admin extends AdminModule
                   ->where('no_racik', $item['no_racik'])
                   ->where('kode_brng', $item['kode_brng'])
                   ->update([
-                    'jml' => $jumlah,
+                    'jml' => $jumlah_grup,
                     'kandungan' => $kandungan
                   ]);
               } else {
@@ -2247,7 +2360,7 @@ class Admin extends AdminModule
                   ->where('no_resep', $no_resep)
                   ->where('kode_brng', $item['kode_brng'])
                   ->update([
-                    'jml' => $jumlah
+                    'jml' => $jumlah_grup
                   ]);
               }
 
@@ -2315,6 +2428,13 @@ class Admin extends AdminModule
             }
 
             $this->db('resep_obat')->where('no_resep', $no_resep)->save(['tgl_perawatan' => $tgl_rawat, 'jam' => $jam_rawat]);
+            $pdo->commit();
+            } catch (\Throwable $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                throw $e;
+            }
         }
         
         return ['status' => 'success'];

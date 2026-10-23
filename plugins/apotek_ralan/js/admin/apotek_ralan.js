@@ -433,6 +433,24 @@ $("#rincian").on("click",".hapus_resep_obat", function(event){
   });
 });
 
+// Ambil pesan error dari respons validasi.
+// Saat terjadi exception, admin/index.php mengembalikan alert HTML dengan HTTP 200,
+// sehingga kegagalan validasi sebelumnya tidak pernah terlihat pengguna.
+function mlitePesanErrorValidasi(data) {
+  if (typeof data !== 'string' || data.indexOf('alert-danger') === -1) {
+    return '';
+  }
+  var wrapper = document.createElement('div');
+  wrapper.innerHTML = data;
+  var judul = wrapper.querySelector('h4');
+  var isi = wrapper.querySelector('p');
+  var teks = judul ? judul.textContent.trim() : '';
+  if (isi && isi.textContent.trim()) {
+    teks += (teks ? ': ' : '') + isi.textContent.trim();
+  }
+  return teks || 'terjadi kesalahan pada server';
+}
+
 // ketika tombol validasi_resep_obat ditekan
 $("#rincian").on("click",".validasi_resep_obat", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -535,13 +553,14 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
         aturan_pakai: JSON.stringify(aturanPakaiData)
       } ,function(data) {
         console.log(data);
+        var errValidasi = mlitePesanErrorValidasi(data);
         var res = data;
         try { if (typeof res === 'string') res = JSON.parse(res); } catch(e) { res = {}; }
-        if (res && (res.status == 'success' || res.status == 'error')) {
+        if (!errValidasi && res && (res.status == 'success' || res.status == 'error')) {
           var audio = new Audio('{?=url()?}/assets/sound/' + res.status + '.mp3');
           audio.play();
         }
-        if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
+        if(!errValidasi && typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
           let payload = {
               'action' : 'simpan',
               'modul' : 'apotek_ralan'
@@ -554,8 +573,23 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
           // tampilkan data
           $("#rincian").html(data).show();
         });
+        if (errValidasi) {
+          // kegagalan validasi ditampilkan ke pengguna, bukan diam-diam
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Validasi resep gagal. " + errValidasi +
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+          return;
+        }
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
         "Data rincian rawat jalan telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      })
+      .fail(function(xhr) {
+        var errValidasi = mlitePesanErrorValidasi(xhr ? xhr.responseText : '');
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Validasi resep gagal" + (xhr && xhr.status ? " (HTTP " + xhr.status + ")" : "") + ". " + (errValidasi || 'koneksi ke server gagal') +
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
