@@ -3277,6 +3277,108 @@
                             ]
                         }
                     }
+                },
+                {
+                    "name": "Save Rujukan Internal",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/saverujukaninternal",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "saverujukaninternal"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_poli\": \"INT\",\n    \"kd_dokter\": \"D001\",\n    \"catatan\": \"Rujuk ke poli internis\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menyimpan rujukan internal pasien dari IGD ke poli tujuan (tabel mlite_rujukan_internal_poli).\n\nButuh izin can_create modul igd.\n\nBody (JSON):\n- no_rawat (wajib) nomor rawat pasien\n- kd_poli (wajib) kode poli tujuan\n- kd_dokter (wajib) kode dokter penerima\n- catatan (opsional) isi rujukan/catatan klinis\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"no_rawat\": \"202610210001\",\n        \"kd_poli\": \"INT\",\n        \"kd_dokter\": \"D001\",\n        \"isi_rujukan\": \"Rujuk ke poli internis\"\n    }\n}",
+                    "response": []
+                },
+                {
+                    "name": "Delete Rujukan Internal",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/igd/deleterujukaninternal",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "igd",
+                                "deleterujukaninternal"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_poli\": \"INT\",\n    \"kd_dokter\": \"D001\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menghapus rujukan internal pasien berdasarkan kombinasi no_rawat + kd_poli + kd_dokter.\n\nButuh izin can_delete (kode modul yang dicek: rawat_inap).\n\nBody (JSON):\n- no_rawat (wajib) nomor rawat pasien\n- kd_poli (wajib) kode poli tujuan\n- kd_dokter (wajib) kode dokter penerima\n\nContoh respon:\n{\n    \"status\": \"success\"\n}",
+                    "response": []
                 }
             ]
         },
@@ -4354,6 +4456,108 @@
                             ]
                         }
                     }
+                },
+                {
+                    "name": "Save Rujukan Internal",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_inap/saverujukaninternal",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_inap",
+                                "saverujukaninternal"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_poli\": \"INT\",\n    \"kd_dokter\": \"D001\",\n    \"catatan\": \"Evaluasi ke poli internis\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menyimpan rujukan internal pasien dari rawat inap ke poli tujuan (tabel mlite_rujukan_internal_poli).\n\nButuh izin can_create modul rawat_inap.\n\nBody (JSON):\n- no_rawat (wajib) nomor rawat pasien\n- kd_poli (wajib) kode poli tujuan\n- kd_dokter (wajib) kode dokter penerima\n- catatan (opsional) isi rujukan/catatan klinis\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"no_rawat\": \"202610210001\",\n        \"kd_poli\": \"INT\",\n        \"kd_dokter\": \"D001\",\n        \"isi_rujukan\": \"Evaluasi ke poli internis\"\n    }\n}",
+                    "response": []
+                },
+                {
+                    "name": "Delete Rujukan Internal",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/rawat_inap/deleterujukaninternal",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "rawat_inap",
+                                "deleterujukaninternal"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kd_poli\": \"INT\",\n    \"kd_dokter\": \"D001\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menghapus rujukan internal pasien berdasarkan kombinasi no_rawat + kd_poli + kd_dokter.\n\nButuh izin can_delete modul rawat_inap.\n\nBody (JSON):\n- no_rawat (wajib) nomor rawat pasien\n- kd_poli (wajib) kode poli tujuan\n- kd_dokter (wajib) kode dokter penerima\n\nContoh respon:\n{\n    \"status\": \"success\"\n}",
+                    "response": []
                 }
             ]
         },
@@ -6736,6 +6940,422 @@
             ]
         },
         {
+            "name": "Farmasi",
+            "item": [
+                {
+                    "name": "Stok List",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/farmasi/stoklist?page={{page}}&per_page={{per_page}}&s={{s}}&status=1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "farmasi",
+                                "stoklist"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "{{page}}"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "{{per_page}}"
+                                },
+                                {
+                                    "key": "s",
+                                    "value": "{{s}}"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    },
+                    "description": "Menampilkan daftar stok obat per depo (gudangbarang) beserta data barang (databarang) dan nama bangsal. Setiap baris menyertakan no_batch dan no_faktur.\n\nButuh izin can_read modul farmasi.\n\nParameter query:\n- page (opsional, default 1)\n- per_page (opsional, default 10, maksimal 100)\n- s (opsional) pencarian: kode_brng, nama_brng, atau nm_bangsal\n- kd_bangsal (opsional) filter satu depo/bangsal\n- status (opsional, default '1') status barang: 1=aktif, 0=nonaktif\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"kode_brng\": \"G001\",\n            \"nama_brng\": \"Paracetamol 500mg\",\n            \"kode_sat\": \"TAB\",\n            \"kode_satbesar\": \"KOT\",\n            \"kd_bangsal\": \"apar\",\n            \"nm_bangsal\": \"Apotek Rawat Jalan\",\n            \"stok\": \"1200\",\n            \"no_batch\": \"B2026001\",\n            \"no_faktur\": \"F-001\"\n        }\n    ],\n    \"total\": 45,\n    \"page\": 1,\n    \"per_page\": 10\n}",
+                    "response": []
+                },
+                {
+                    "name": "Batch List",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/farmasi/batchlist?page={{page}}&per_page={{per_page}}&s={{s}}&expire=all",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "farmasi",
+                                "batchlist"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "{{page}}"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "{{per_page}}"
+                                },
+                                {
+                                    "key": "s",
+                                    "value": "{{s}}"
+                                },
+                                {
+                                    "key": "expire",
+                                    "value": "all"
+                                }
+                            ]
+                        }
+                    },
+                    "description": "Menampilkan stok obat per batch dari tabel mlite_farmasi_obat_batch — sumber pemilihan batch (FEFO) saat validasi resep. Diurutkan dari tanggal kedaluwarsa terdekat. Setiap baris menyertakan selisih_hari (rentang terhadap hari ini) dan status_expire (Kedaluwarsa / Segera Kedaluwarsa / Aman).\n\nButuh izin can_read modul farmasi.\n\nParameter query:\n- page (opsional, default 1)\n- per_page (opsional, default 10, maksimal 100)\n- s (opsional) pencarian: kode_brng, no_batch, atau nama_brng\n- kode_brng (opsional) filter satu jenis barang\n- kd_bangsal (opsional) filter satu depo/bangsal\n- expire (opsional, default 'all') filter kedaluwarsa: all | expired (lewat) | soon (dalam 90 hari) | safe (lebih dari 90 hari / tanpa tanggal)\n\nCatatan: hanya batch dengan stok <> 0 yang ditampilkan.\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 12,\n            \"kode_brng\": \"G001\",\n            \"kd_bangsal\": \"apar\",\n            \"no_batch\": \"B2026001\",\n            \"no_faktur\": \"F-001\",\n            \"stok\": \"500\",\n            \"h_beli\": \"350\",\n            \"expire\": \"2026-11-01\",\n            \"nama_brng\": \"Paracetamol 500mg\",\n            \"kode_sat\": \"TAB\",\n            \"nm_bangsal\": \"Apotek Rawat Jalan\",\n            \"selisih_hari\": 9,\n            \"status_expire\": \"Segera Kedaluwarsa\"\n        }\n    ],\n    \"total\": 23,\n    \"page\": 1,\n    \"per_page\": 10\n}",
+                    "response": []
+                },
+                {
+                    "name": "Penerimaan List",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/farmasi/penerimaanlist?page={{page}}&per_page={{per_page}}&s={{s}}&tgl_awal={{tgl_awal}}&tgl_akhir={{tgl_akhir}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "farmasi",
+                                "penerimaanlist"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "{{page}}"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "{{per_page}}"
+                                },
+                                {
+                                    "key": "s",
+                                    "value": "{{s}}"
+                                },
+                                {
+                                    "key": "tgl_awal",
+                                    "value": "{{tgl_awal}}"
+                                },
+                                {
+                                    "key": "tgl_akhir",
+                                    "value": "{{tgl_akhir}}"
+                                }
+                            ]
+                        }
+                    },
+                    "description": "Menampilkan riwayat penerimaan obat dari supplier (mlite_farmasi_penerimaan_obat) beserta nomor pemesanan, nomor faktur, nomor batch, dan tanggal expire batch yang diterima.\n\nButuh izin can_read modul farmasi.\n\nParameter query:\n- page (opsional, default 1)\n- per_page (opsional, default 10, maksimal 100)\n- s (opsional) pencarian: no_pemesanan, nomor_faktur, kode_brng, atau nama_brng\n- tgl_awal (opsional, default awal bulan berjalan) tanggal penerimaan awal (YYYY-MM-DD)\n- tgl_akhir (opsional, default hari ini) tanggal penerimaan akhir (YYYY-MM-DD)\n- no_batch (opsional) filter nomor batch (mengandung)\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 3,\n            \"pemesanan_id\": 2,\n            \"tanggal_penerimaan\": \"2026-10-15\",\n            \"nomor_faktur\": \"SF-2026-002\",\n            \"no_batch\": \"B2026001\",\n            \"expire\": \"2026-11-01\",\n            \"jumlah\": \"500\",\n            \"no_pemesanan\": \"PMB202610140001\",\n            \"kode_brng\": \"G001\",\n            \"nama_brng\": \"Paracetamol 500mg\",\n            \"kode_sat\": \"TAB\",\n            \"supplier\": \"PT Sehat Abadi\"\n        }\n    ],\n    \"total\": 8,\n    \"page\": 1,\n    \"per_page\": 10\n}",
+                    "response": []
+                },
+                {
+                    "name": "Pemberian List",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/farmasi/pemberianlist?page={{page}}&per_page={{per_page}}&s={{s}}&tgl_awal={{tgl_awal}}&tgl_akhir={{tgl_akhir}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "farmasi",
+                                "pemberianlist"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "{{page}}"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "{{per_page}}"
+                                },
+                                {
+                                    "key": "s",
+                                    "value": "{{s}}"
+                                },
+                                {
+                                    "key": "tgl_awal",
+                                    "value": "{{tgl_awal}}"
+                                },
+                                {
+                                    "key": "tgl_akhir",
+                                    "value": "{{tgl_akhir}}"
+                                }
+                            ]
+                        }
+                    },
+                    "description": "Menampilkan riwayat pemberian obat kepada pasien (detail_pemberian_obat) lengkap dengan nomor batch, tanggal expire batch yang dipakai, nomor rekam medis, dan nama pasien.\n\nButuh izin can_read modul farmasi.\n\nParameter query:\n- page (opsional, default 1)\n- per_page (opsional, default 10, maksimal 100)\n- s (opsional) pencarian: no_rawat, kode_brng, atau nama_brng\n- tgl_awal (opsional, default hari ini) tanggal pemberian awal (YYYY-MM-DD)\n- tgl_akhir (opsional, default hari ini) tanggal pemberian akhir (YYYY-MM-DD)\n- kode_brng (opsional) filter satu jenis obat\n- no_batch (opsional) filter nomor batch (mengandung)\n- expire (opsional, default 'all') filter kedaluwarsa batch yang dipakai: all | expired | soon | safe\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"no_rawat\": \"202610210001\",\n            \"tgl_perawatan\": \"2026-10-21\",\n            \"jam\": \"09:15:00\",\n            \"kode_brng\": \"G001\",\n            \"no_batch\": \"B2026001\",\n            \"no_faktur\": \"F-001\",\n            \"jml\": \"5\",\n            \"h_beli\": \"350\",\n            \"status\": \"Ralan\",\n            \"nama_brng\": \"Paracetamol 500mg\",\n            \"kode_sat\": \"TAB\",\n            \"nm_bangsal\": \"Apotek Rawat Jalan\",\n            \"expire\": \"2026-11-01\",\n            \"no_rkm_medis\": \"000001\",\n            \"nm_pasien\": \"Pasien Contoh\"\n        }\n    ],\n    \"total\": 15,\n    \"page\": 1,\n    \"per_page\": 10\n}",
+                    "response": []
+                },
+                {
+                    "name": "Pengajuan List",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/farmasi/pengajuanlist?page={{page}}&per_page={{per_page}}&s={{s}}&status=all",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "farmasi",
+                                "pengajuanlist"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "{{page}}"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "{{per_page}}"
+                                },
+                                {
+                                    "key": "s",
+                                    "value": "{{s}}"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "all"
+                                }
+                            ]
+                        }
+                    },
+                    "description": "Menampilkan daftar pengajuan pembelian obat (mlite_farmasi_pengajuan_obat).\n\nButuh izin can_read modul farmasi.\n\nParameter query:\n- page (opsional, default 1)\n- per_page (opsional, default 10, maksimal 100)\n- s (opsional) pencarian: no_pengajuan, kode_brng, atau nama_brng\n- status (opsional, default 'all') filter status: all | Menunggu | Disetujui | Dipesan\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 5,\n            \"no_pengajuan\": \"PGJ202610230001\",\n            \"tanggal_pengajuan\": \"2026-10-23\",\n            \"kode_brng\": \"G001\",\n            \"jumlah\": \"100\",\n            \"status\": \"Menunggu\",\n            \"catatan\": \"Stok menipis\",\n            \"dibuat_oleh\": \"Basoro\",\n            \"nama_brng\": \"Paracetamol 500mg\",\n            \"kode_sat\": \"TAB\"\n        }\n    ],\n    \"total\": 5,\n    \"page\": 1,\n    \"per_page\": 10\n}",
+                    "response": []
+                },
+                {
+                    "name": "Simpan Pengajuan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/farmasi/pengajuansimpan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "farmasi",
+                                "pengajuansimpan"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"kode_brng\": \"{{kode_brng}}\",\n    \"jumlah\": 100,\n    \"tanggal_pengajuan\": \"2026-10-23\",\n    \"catatan\": \"Stok menipis\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Membuat pengajuan pembelian obat baru. Nomor pengajuan digenerate otomatis (format PGJ+Tanggal+urut 4 digit). Status awal selalu 'Menunggu'.\n\nButuh izin can_create modul farmasi.\n\nBody (JSON):\n- kode_brng (wajib) kode barang, harus ada dan aktif (status='1')\n- jumlah (wajib) jumlah yang diajukan, harus > 0\n- tanggal_pengajuan (opsional, default hari ini, format YYYY-MM-DD)\n- catatan (opsional) keterangan pengajuan\n\nContoh respon sukses:\n{\n    \"status\": \"success\",\n    \"id\": 6,\n    \"no_pengajuan\": \"PGJ202610230002\",\n    \"kode_brng\": \"G001\",\n    \"nama_brng\": \"Paracetamol 500mg\",\n    \"jumlah\": 100\n}\n\nContoh respon gagal:\n{\n    \"status\": \"error\",\n    \"message\": \"Kode barang dan jumlah wajib diisi.\"\n}",
+                    "response": []
+                },
+                {
+                    "name": "Approve Pengajuan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/farmasi/pengajuanapprove",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "farmasi",
+                                "pengajuanapprove"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"id\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menyetujui pengajuan pembelian obat. Mengubah status pengajuan menjadi 'Disetujui' beserta catatan siapa dan kapan disetujui. Gagal jika pengajuan tidak ditemukan atau sudah pernah disetujui.\n\nButuh izin can_update modul farmasi.\n\nBody (JSON):\n- id (wajib) ID pengajuan dari Pengajuan List\n\nContoh respon sukses:\n{\n    \"status\": \"success\",\n    \"id\": 5,\n    \"no_pengajuan\": \"PGJ202610230001\"\n}\n\nContoh respon gagal:\n{\n    \"status\": \"error\",\n    \"message\": \"Pengajuan sudah disetujui sebelumnya.\"\n}",
+                    "response": []
+                }
+            ],
+            "description": "API modul manajemen farmasi: stok & batch obat, riwayat penerimaan/pemberian, serta alur pengajuan pembelian obat."
+        },
+        {
             "name": "Kasir",
             "item": [
                 {
@@ -7031,6 +7651,210 @@
                             ]
                         }
                     }
+                },
+                {
+                    "name": "Simpan Kasir (Rawat Jalan)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_jalan/simpankasir",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "kasir_rawat_jalan",
+                                "simpankasir"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"jumlah_harus_bayar\": 150000,\n    \"potongan\": 0,\n    \"bayar\": 150000,\n    \"tgl_bayar\": \"2026-10-23\",\n    \"jam_bayar\": \"04:21:21\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menyimpan pembayaran tagihan pasien rawat jalan (tabel mlite_billing) dan menandai status_bayar pasien menjadi 'Sudah Bayar'. Nomor billing digenerate otomatis (RJ.dd.mm.yyyy.H.i.s).\n\nButuh izin can_create modul kasir_rawat_jalan. Ditolak (billing lock) jika periode/tagihan rawat jalan tersebut sudah ditutup.\n\nBody (JSON):\n- no_rawat (wajib) nomor rawat pasien\n- jumlah_harus_bayar (wajib) total tagihan\n- potongan (wajib) potongan/diskon (isi 0 bila tidak ada)\n- bayar (wajib) uang yang dibayarkan pasien\n- tgl_bayar (opsional, default hari ini, format YYYY-MM-DD)\n- jam_bayar (opsional, default sekarang, format HH:MM:SS)\n- jurnal_pendaftaran, jurnal_tindakan_ralan, jurnal_obat_bhp, jurnal_laboratorium, jurnal_radiologi (opsional) nominal pendapatan per pos yang ikut diposting ke jurnal bila modul jurnal kasir aktif di pengaturan keuangan (isi 0 atau kosongkan untuk lewati)\n\nContoh respon sukses:\n{\n    \"status\": \"success\",\n    \"message\": \"Pembayaran berhasil disimpan\"\n}",
+                    "response": []
+                },
+                {
+                    "name": "Simpan Item (Rawat Jalan)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_jalan/simpanitem",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "kasir_rawat_jalan",
+                                "simpanitem"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"kat\": \"tindakan\",\n    \"provider\": \"rawat_jl_dr\",\n    \"kd_jenis_prw\": \"{{kd_jenis_prw}}\",\n    \"kode_provider\": \"D001\",\n    \"tgl_perawatan\": \"2026-10-23\",\n    \"jam_rawat\": \"04:21:21\",\n    \"jml_tindakan\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menambahkan item tagihan pada kasir rawat jalan: tindakan (rawat_jl_dr / rawat_jl_pr / rawat_jl_drpr) atau obat (memotong stok depo apotek rawat jalan dengan pemilihan batch FEFO dan mencatat riwayat barang).\n\nTidak ada pemeriksaan izin user khusus, tetapi ditolak (billing lock) jika tagihan rawat jalan sudah ditutup.\n\nBody (JSON):\n- no_rawat (wajib) nomor rawat pasien\n- kat (wajib) kategori item: 'tindakan' atau 'obat'\n- Untuk kat=tindakan:\n  - provider (wajib) 'rawat_jl_dr' | 'rawat_jl_pr' | 'rawat_jl_drpr'\n  - kd_jenis_prw (wajib) kode jenis tindakan\n  - kode_provider (wajib untuk provider dr/drpr) kode dokter\n  - kode_provider2 (wajib untuk provider pr/drpr) NIP perawat\n  - tgl_perawatan (wajib, YYYY-MM-DD), jam_rawat (wajib, HH:MM:SS)\n  - jml_tindakan (wajib) jumlah pengulangan tindakan\n- Untuk kat=obat:\n  - kd_jenis_prw (wajib) kode barang (kode_brng)\n  - jumlah (wajib) jumlah obat yang dikeluarkan\n  - tgl_peresepan (wajib, YYYY-MM-DD), jam_peresepan (wajib, HH:MM:SS) — harus sama dengan data resep yang tervalidasi\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"message\": \"Item berhasil disimpan\"\n}",
+                    "response": []
+                },
+                {
+                    "name": "Hapus Item (Rawat Jalan)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_jalan/hapusitem",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "kasir_rawat_jalan",
+                                "hapusitem"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"type\": \"obat\",\n    \"kode_brng\": \"{{kode_brng}}\",\n    \"jml\": 5,\n    \"tgl_peresepan\": \"2026-10-23\",\n    \"jam_peresepan\": \"04:21:21\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menghapus satu item tagihan kasir rawat jalan. Untuk obat, stok dikembalikan ke batch asal (per no_batch/no_faktur tercatat di detail_pemberian_obat) dan riwayat barang dengan status 'Hapus' dicatat.\n\nDitolak (billing lock) jika tagihan rawat jalan sudah ditutup.\n\nBody (JSON):\n- no_rawat (wajib) nomor rawat pasien\n- type (wajib) jenis item: 'tindakan' | 'obat' | 'lab' | 'rad'\n- Untuk type=tindakan:\n  - provider (wajib) 'rawat_jl_dr' | 'rawat_jl_pr' | 'rawat_jl_drpr'\n  - kd_jenis_prw, tgl_perawatan, jam_rawat (wajib) kunci baris yang dihapus\n- Untuk type=obat:\n  - kode_brng (wajib), jml (wajib, alias jumlah), tgl_peresepan, jam_peresepan (wajib) kunci baris di detail_pemberian_obat (status='Ralan')\n  - kd_bangsal (opsional, default depo apotek rawat jalan dari pengaturan farmasi)\n- Untuk type=lab atau type=rad:\n  - kd_jenis_prw, tgl_perawatan, jam_rawat (wajib) kunci baris periksa_lab / periksa_radiologi (status='Ralan')\n\nContoh respon sukses:\n{\n    \"status\": \"success\",\n    \"message\": \"Item berhasil dihapus {...}\"\n}",
+                    "response": []
+                },
+                {
+                    "name": "Hapus Item (Rawat Inap)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/kasir_rawat_inap/hapusitem",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "kasir_rawat_inap",
+                                "hapusitem"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"type\": \"obat\",\n    \"kode_brng\": \"{{kode_brng}}\",\n    \"jml\": 5,\n    \"tgl_peresepan\": \"2026-10-23\",\n    \"jam_peresepan\": \"04:21:21\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menghapus item obat pada kasir rawat inap. Stok dikembalikan ke batch asal (per no_batch/no_faktur tercatat di detail_pemberian_obat, status='Ranap') dan riwayat barang dengan status 'Hapus' dicatat per batch.\n\nDitolak (billing lock) jika tagihan rawat inap sudah ditutup.\n\nBody (JSON):\n- no_rawat (wajib) nomor rawat pasien\n- type (wajib) 'obat'\n- kode_brng (wajib) kode barang\n- jml (wajib, alias jumlah) jumlah obat yang dikembalikan\n- tgl_peresepan (wajib, YYYY-MM-DD), jam_peresepan (wajib, HH:MM:SS) kunci baris di detail_pemberian_obat\n- kd_bangsal (opsional, default depo apotek rawat inap dari pengaturan farmasi)\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"message\": \"Item berhasil dihapus\"\n}",
+                    "response": []
                 }
             ]
         },
@@ -7292,6 +8116,249 @@
                             "raw": "{{baseUrl}}/admin/api/mini_pacs/instancejpg/{{instance_id}}"
                         }
                     }
+                },
+                {
+                    "name": "Study List (Internal)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/list",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "mini_pacs",
+                                "list"
+                            ]
+                        },
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "draw",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "start",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "length",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "search[value]",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    },
+                    "description": "Menampilkan daftar study DICOM dari database PACS lokal (mlite_mini_pacs_study) dengan format server-side DataTables — berbeda dari 'Study List' yang meneruskan permintaan ke Orthanc remote.\n\nEndpoint internal server-to-server (dipanggil antar instance mLITE); tidak memeriksa token/izin user.\n\nBody (form):\n- draw (opsional) nomor urut permintaan DataTables\n- start (opsional) offset baris, default 0\n- length (opsional) jumlah baris, default 10\n- search[value] (opsional) pencarian: nm_pasien, no_rkm_medis, no_rawat, modality, description\n- columns[1..n][search][value] (opsional) filter per kolom (tgl_lahir, study_date, dsb)\n\nContoh respon:\n{\n    \"draw\": \"1\",\n    \"recordsTotal\": 25,\n    \"recordsFiltered\": 3,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"no_rawat\": \"202610210001\",\n            \"study_instance_uid\": \"1.2.840.113619.2.1.1\",\n            \"study_date\": \"2026-10-21 08:30:00\",\n            \"modality\": \"CR\",\n            \"description\": \"Thorax\",\n            \"nm_pasien\": \"Pasien Contoh\",\n            \"no_rkm_medis\": \"000001\"\n        }\n    ]\n}",
+                    "response": []
+                },
+                {
+                    "name": "Study Detail (Internal)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/detail/{{study_id}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "mini_pacs",
+                                "detail",
+                                "{{study_id}}"
+                            ]
+                        }
+                    },
+                    "description": "Menampilkan detail satu study dari database PACS lokal: data pasien, accession number, jumlah series/instance, serta metadata DICOM pertama (StudyDate, InstitutionName, dsb).\n\nEndpoint internal server-to-server; tidak memeriksa token/izin user.\n\nParameter path:\n- study_id (wajib) ID study di tabel mlite_mini_pacs_study\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"study\": {\n        \"id\": 1,\n        \"no_rawat\": \"202610210001\",\n        \"nm_pasien\": \"Pasien Contoh\",\n        \"no_rkm_medis\": \"000001\",\n        \"modality\": \"CR\",\n        \"description\": \"Thorax\",\n        \"accession_number\": \"RDL202610210001\"\n    },\n    \"series\": []\n}",
+                    "response": []
+                },
+                {
+                    "name": "Delete Study",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/delete/{{study_id}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "mini_pacs",
+                                "delete",
+                                "{{study_id}}"
+                            ]
+                        }
+                    },
+                    "description": "Menghapus satu study DICOM beserta seluruh series, instance, metadata, dan file DICOM di disk (file_path tiap instance dihapus dari filesystem).\n\nEndpoint internal server-to-server; tidak memeriksa token/izin user. Hati-hati: aksi ini tidak dapat dibatalkan.\n\nParameter path:\n- study_id (wajib) ID study di tabel mlite_mini_pacs_study\n\nContoh respon:\n{\n    \"status\": \"success\",\n    \"message\": \"Hapus sukses\"\n}",
+                    "response": []
+                },
+                {
+                    "name": "Store Instance",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/store",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "mini_pacs",
+                                "store"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"no_rawat\": \"{{no_rawat}}\",\n    \"study_instance_uid\": \"1.2.840.113619.2.1.1\",\n    \"series_instance_uid\": \"1.2.840.113619.2.1.2\",\n    \"sop_instance_uid\": \"1.2.840.113619.2.1.3\",\n    \"file_path\": \"/path/to/file.dcm\",\n    \"modality\": \"CR\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "description": "Menyimpan/menyinkronkan satu instance DICOM ke database PACS lokal: membuat study & series bila belum ada, lalu menyimpan instance beserta jalur file DICOM-nya.\n\nButuh autentikasi pengguna (checkAuth POST).\n\nBody (JSON):\n- no_rawat (wajib) nomor rawat pasien\n- study_instance_uid (wajib) UID study DICOM\n- series_instance_uid (wajib) UID series DICOM\n- sop_instance_uid (wajib) UID instance (SOP) DICOM\n- file_path (wajib) jalur absolut file DICOM di server\n- modality (opsional, default 'UNKNOWN') modalitas pemeriksaan (CR, CT, MR, dsb)\n\nContoh respon sukses:\n{\n    \"status\": \"success\",\n    \"message\": \"Instance stored\",\n    \"instance\": {\n        \"id\": 10,\n        \"series_id\": 2\n    }\n}\n\nContoh respon gagal:\n{\n    \"status\": \"error\",\n    \"message\": \"Missing required UIDs or no_rawat\"\n}",
+                    "response": []
+                },
+                {
+                    "name": "Download DICOM (Internal)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Api-Key",
+                                "value": "{{apiKey}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Username-Permission",
+                                "value": "{{username_permission}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "X-Password-Permission",
+                                "value": "{{password_permission}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/api/mini_pacs/dicomfile/{{instance_id}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "api",
+                                "mini_pacs",
+                                "dicomfile",
+                                "{{instance_id}}"
+                            ]
+                        }
+                    },
+                    "description": "Men-stream file mentah satu instance DICOM dari server PACS lokal (Content-Type: application/dicom). Berbeda dari 'Download DICOM' yang meneruskan permintaan ke Orthanc remote.\n\nEndpoint internal server-to-server; tidak memeriksa token/izin user.\n\nParameter path:\n- instance_id (wajib) ID instance di tabel mlite_mini_pacs_instance\n\nRespons berupa file binary; jika instance tidak ada atau filenya hilang di disk, server membalas 404.",
+                    "response": []
                 }
             ]
         }
@@ -7365,6 +8432,26 @@
         {
             "key": "tgl_akhir",
             "value": "2027-01-01",
+            "type": "string"
+        },
+        {
+            "key": "kode_brng",
+            "value": "G001",
+            "type": "string"
+        },
+        {
+            "key": "study_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "instance_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "no_batch",
+            "value": "B2026001",
             "type": "string"
         }
     ]
