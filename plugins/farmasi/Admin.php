@@ -123,6 +123,11 @@ class Admin extends AdminModule
     public function postSetStok()
     {
       $pdo = $this->db()->pdo();
+      $transaksi_set_stok = !$pdo->inTransaction();
+      if ($transaksi_set_stok) {
+        $pdo->beginTransaction();
+      }
+      try {
       $kode_brng = $_POST['kode_brng'];
       $kd_bangsal = $_POST['kd_bangsal'];
       $stok = (float) $_POST['stok'];
@@ -217,6 +222,20 @@ class Admin extends AdminModule
           ]);
         }
       }
+      if ($transaksi_set_stok && $pdo->inTransaction()) {
+        $pdo->commit();
+      }
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success', 'message' => 'Set stok berhasil disimpan.']);
+      } catch (\Throwable $e) {
+        if ($transaksi_set_stok && $pdo->inTransaction()) {
+          $pdo->rollBack();
+        }
+        error_log('Set stok (farmasi, kode_brng=' . (isset($kode_brng) ? $kode_brng : '-') . ') gagal: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        header('Content-Type: application/json');
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Set stok gagal disimpan: ' . $e->getMessage()]);
+      }
 
       exit();
     }
@@ -224,6 +243,11 @@ class Admin extends AdminModule
     public function postReStok()
     {
       $pdo = $this->db()->pdo();
+      $transaksi_re_stok = !$pdo->inTransaction();
+      if ($transaksi_re_stok) {
+        $pdo->beginTransaction();
+      }
+      try {
       $kode_brng = $_POST['kode_brng'];
       $kd_bangsal = $_POST['kd_bangsal'];
       $stok = (float) $_POST['stok'];
@@ -270,6 +294,20 @@ class Admin extends AdminModule
       }
       if ($gudang_row) {
         $this->db('gudangbarang')->where('kode_brng', $kode_brng)->where('kd_bangsal', $kd_gudang)->save(['stok' => (float)$gudang_row['stok'] + $masuk_total]);
+      }
+      if ($transaksi_re_stok && $pdo->inTransaction()) {
+        $pdo->commit();
+      }
+      header('Content-Type: application/json');
+      echo json_encode(['status' => 'success', 'message' => 'Restok berhasil disimpan.']);
+      } catch (\Throwable $e) {
+        if ($transaksi_re_stok && $pdo->inTransaction()) {
+          $pdo->rollBack();
+        }
+        error_log('Restok (farmasi, kode_brng=' . (isset($kode_brng) ? $kode_brng : '-') . ') gagal: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        header('Content-Type: application/json');
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Restok gagal disimpan: ' . $e->getMessage()]);
       }
 
       exit();
@@ -730,7 +768,11 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'farmasi', 'penerimaanobatbmhp']));
       }
 
-      $this->db()->pdo()->beginTransaction();
+      $pdo = $this->db()->pdo();
+      $transaksi_penerimaan = !$pdo->inTransaction();
+      if ($transaksi_penerimaan) {
+        $pdo->beginTransaction();
+      }
       try {
         $saved = $this->db('mlite_farmasi_penerimaan_obat')->save([
           'pemesanan_id' => $pemesanan_id,
@@ -831,10 +873,15 @@ class Admin extends AdminModule
           'status_pemesanan' => $status_pemesanan
         ]);
 
-        $this->db()->pdo()->commit();
+        if ($transaksi_penerimaan && $pdo->inTransaction()) {
+          $pdo->commit();
+        }
         $this->notify('success', 'Penerimaan berhasil disimpan dan stok diperbarui.');
-      } catch (\Exception $e) {
-        $this->db()->pdo()->rollBack();
+      } catch (\Throwable $e) {
+        if ($transaksi_penerimaan && $pdo->inTransaction()) {
+          $pdo->rollBack();
+        }
+        error_log('Penerimaan obat (farmasi, pemesanan_id=' . (isset($_POST['pemesanan_id']) ? $_POST['pemesanan_id'] : '-') . ') gagal: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
         $this->notify('failure', 'Penerimaan gagal disimpan: '.$e->getMessage());
       }
       redirect(url([ADMIN, 'farmasi', 'penerimaanobatbmhp']));

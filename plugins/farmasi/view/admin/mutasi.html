@@ -127,6 +127,14 @@
             } ,function(data) {
               alert('Set Stok telah disimpan!');
               window.location.href = baseURL + '/farmasi/mutasi?t=' + mlite.token;
+            }).fail(function(xhr) {
+              var pesan = 'Set stok gagal disimpan.';
+              if (xhr.responseJSON && xhr.responseJSON.message) {
+                pesan = xhr.responseJSON.message;
+              } else if (xhr.status === 0) {
+                pesan = 'Koneksi ke server terputus. Periksa jaringan Anda.';
+              }
+              alert(pesan);
             });
           }
         }
@@ -178,6 +186,14 @@
             } ,function(data) {
               alert('Set Stok telah disimpan!');
               window.location.href = baseURL + '/farmasi/mutasi?t=' + mlite.token;
+            }).fail(function(xhr) {
+              var pesan = 'Restok gagal disimpan.';
+              if (xhr.responseJSON && xhr.responseJSON.message) {
+                pesan = xhr.responseJSON.message;
+              } else if (xhr.status === 0) {
+                pesan = 'Koneksi ke server terputus. Periksa jaringan Anda.';
+              }
+              alert(pesan);
             });
           }
         }
