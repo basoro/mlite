@@ -378,7 +378,10 @@ class Admin extends AdminModule
         // (mis. bentrok primary key), seluruh perubahan stok & tagihan ikut
         // dibatalkan agar resep tidak tersangkut setengah jadi.
         $pdo = $this->db()->pdo();
-        $pdo->beginTransaction();
+        $transaksi_validasi = !$pdo->inTransaction();
+        if ($transaksi_validasi) {
+          $pdo->beginTransaction();
+        }
         try {
         $get_resep_dokter_nonracikan = $this->db('resep_dokter')
           ->select([
@@ -628,11 +631,14 @@ class Admin extends AdminModule
         }
 
         $this->db('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => $tgl_rawat, 'jam' => $jam_rawat]);
-        $pdo->commit();
+        if ($transaksi_validasi) {
+          $pdo->commit();
+        }
         } catch (\Throwable $e) {
-          if ($pdo->inTransaction()) {
+          if ($transaksi_validasi && $pdo->inTransaction()) {
             $pdo->rollBack();
           }
+          error_log('Validasi resep (apotek_ralan, no_resep=' . (isset($_POST['no_resep']) ? $_POST['no_resep'] : '-') . ') gagal: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
           throw $e;
         }
       }
@@ -2192,7 +2198,10 @@ class Admin extends AdminModule
         } else {
             // Transaksi agar validasi gagal total (rollback) tanpa data setengah jadi
             $pdo = $this->db()->pdo();
-            $pdo->beginTransaction();
+            $transaksi_validasi = !$pdo->inTransaction();
+            if ($transaksi_validasi) {
+                $pdo->beginTransaction();
+            }
             try {
             $get_resep_dokter_nonracikan = $this->db('resep_dokter')
               ->select([
@@ -2428,11 +2437,14 @@ class Admin extends AdminModule
             }
 
             $this->db('resep_obat')->where('no_resep', $no_resep)->save(['tgl_perawatan' => $tgl_rawat, 'jam' => $jam_rawat]);
-            $pdo->commit();
+            if ($transaksi_validasi) {
+                $pdo->commit();
+            }
             } catch (\Throwable $e) {
-                if ($pdo->inTransaction()) {
+                if ($transaksi_validasi && $pdo->inTransaction()) {
                     $pdo->rollBack();
                 }
+                error_log('Validasi resep API (apotek_ralan, no_resep=' . $no_resep . ') gagal: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
                 throw $e;
             }
         }
