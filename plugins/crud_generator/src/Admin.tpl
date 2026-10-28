@@ -31,8 +31,21 @@ class Admin extends AdminModule
         $search_field_$$$$= $_POST['search_field_$$$$'];
         $search_text_$$$$ = $_POST['search_text_$$$$'];
 
+        ## Peta kolom aman untuk order & search (t0 = tabel utama, r* = tabel relasi)
+RELASI_ORDER_MAP
+
+        if (!isset($urutkan[$columnName])) {
+            $columnName = array_keys($urutkan)[0];
+        }
+        $columnName = $urutkan[$columnName];
+        if (isset($urutkan[$search_field_$$$$])) {
+            $search_field_$$$$ = $urutkan[$search_field_$$$$];
+        } else {
+            $search_field_$$$$ = '';
+        }
+
         $searchQuery = " ";
-        if($search_text_$$$$ != ''){
+        if($search_text_$$$$ != '' && $search_field_$$$$ != ''){
             $searchQuery .= " and (".$search_field_$$$$." like '%".$search_text_$$$$."%' ) ";
         }
 
@@ -43,13 +56,13 @@ class Admin extends AdminModule
         $totalRecords = $records['allcount'];
 
         ## Total number of records with filtering
-        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from $$$$ WHERE 1 ".$searchQuery);
+        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from $$$$ t0 RELASI_JOIN WHERE 1 ".$searchQuery);
         $sel->execute();
         $records = $sel->fetch();
         $totalRecordwithFilter = $records['allcount'];
 
         ## Fetch records
-        $sel = $this->db()->pdo()->prepare("select * from $$$$ WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
+        $sel = $this->db()->pdo()->prepare("select t0.* RELASI_SELECT_FIELDS from $$$$ t0 RELASI_JOIN WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row1.",".$rowperpage);
         $sel->execute();
         $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -123,12 +136,21 @@ class Admin extends AdminModule
             $search_field_$$$$= $_POST['search_field_$$$$'];
             $search_text_$$$$ = $_POST['search_text_$$$$'];
 
+            ## Peta kolom aman untuk search (t0 = tabel utama, r* = tabel relasi)
+RELASI_ORDER_MAP
+
+            if (isset($urutkan[$search_field_$$$$])) {
+                $search_field_$$$$ = $urutkan[$search_field_$$$$];
+            } else {
+                $search_field_$$$$ = '';
+            }
+
             $searchQuery = " ";
-            if($search_text_$$$$ != ''){
+            if($search_text_$$$$ != '' && $search_field_$$$$ != ''){
                 $searchQuery .= " and (".$search_field_$$$$." like '%".$search_text_$$$$."%' ) ";
             }
 
-            $user_lihat = $this->db()->pdo()->prepare("SELECT * from NAMA_TABLE WHERE 1 ".$searchQuery);
+            $user_lihat = $this->db()->pdo()->prepare("SELECT t0.* RELASI_SELECT_FIELDS from $$$$ t0 RELASI_JOIN WHERE 1 ".$searchQuery);
             $user_lihat->execute();
             $result = $user_lihat->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -145,9 +167,13 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function getDetail($GET_DETAIL)
+    public function getDetail()
     {
-        $detail = $this->db('NAMA_TABLE')->where('GET_DETAIL', $GET_DETAIL)->toArray();
+        // PK dikirim lewat query string agar aman untuk nilai berisi "/" (mis. no_rawat)
+        $GET_DETAIL = isset($_GET['GET_DETAIL']) ? $_GET['GET_DETAIL'] : '';
+        $get_detail = $this->db()->pdo()->prepare("SELECT t0.* RELASI_SELECT_FIELDS from $$$$ t0 RELASI_JOIN WHERE GET_DETAIL = ?");
+        $get_detail->execute([$GET_DETAIL]);
+        $detail = $get_detail->fetchAll(\PDO::FETCH_ASSOC);
         $settings =  $this->settings('settings');
         echo $this->draw('detail.html', ['detail' => $detail, 'settings' => $settings]);
         exit();
@@ -204,6 +230,16 @@ class Admin extends AdminModule
         echo $this->draw(MODULES.'/MODULE_NAME/js/admin/scripts.js', ['settings' => $settings]);
         exit();
     }
+
+    /**
+     * Validasi nama tabel/kolom sebelum dipakai dalam query (cegah SQL injection).
+     */
+    private function _ident($nama)
+    {
+        return is_string($nama) && preg_match('/^[A-Za-z0-9_]+$/', $nama) === 1;
+    }
+
+    RELASI_ENDPOINTS
 
     private function _addHeaderFiles()
     {

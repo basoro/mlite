@@ -3,6 +3,9 @@
     <h4 class="modal-title">Detail NAMA_TABLE</h4>
 </div>
 <div class="modal-body">
+    {if: !$detail}
+    <div class="alert alert-warning">Data tidak ditemukan.</div>
+    {/if}
     <table id="tbl_detail_NAMA_TABLE" class="table table-bordered table-striped" style="width:100%">
         <thead>
         </thead>

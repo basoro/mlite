@@ -8,11 +8,11 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div style="margin-top: 10px;margin-bottom: 10px;">
-                            <label class="input-group-text" for="inputGroupSelect01" style="width: 100px;">Nama Modul</label>
-                            <input type="text" id="module_txt" class="form-control" name=""module_txt>
+                            <label class="input-group-text" for="module_txt" style="width: 100px;">Nama Modul</label>
+                            <input type="text" id="module_txt" class="form-control" name="module_txt">
                         </div>
                         <div style="margin-top: 10px;margin-bottom: 10px;">
-                            <label class="input-group-text" for="inputGroupSelect01" style="width: 150px;">Kategori Modul</label>
+                            <label class="input-group-text" for="module_category" style="width: 150px;">Kategori Modul</label>
                             <select name="module_category" class="form-control" id="module_category">
                                 <option value="main">Main</option>
                                 <option value="layanan">Layanan</option>
@@ -24,11 +24,11 @@
                             </select>
                         </div>
                         <div style="margin-top: 10px;margin-bottom: 10px;">
-                            <label class="input-group-text" for="inputGroupSelect01" style="width: 150px;">Icon Modul</label>
+                            <label class="input-group-text" for="icon_module" style="width: 150px;">Icon Modul</label>
                             <input type="text" id="icon_module" class="form-control" name="icon_module">
                         </div>
                         <div style="margin-top: 10px;margin-bottom: 10px;">
-                            <label class="input-group-text" for="inputGroupSelect01" style="width: 100px;">Tables</label>
+                            <label class="input-group-text" for="table_txt" style="width: 100px;">Tables</label>
                             <div class="input-group">
                                 <select id="table_txt" class="form-control" name="table_txt">    
                                 </select>
@@ -37,7 +37,7 @@
                             </div>
                         </div>
                         <div style="margin-top: 10px;margin-bottom: 20px;">
-                          <label class="input-group-text" for="inputGroupSelect01" style="width: 100px;">Fields</label>
+                          <label class="input-group-text" for="fields_txt" style="width: 100px;">Fields</label>
                           <div class="input-group">
                             <select id="fields_txt" class="form-control" name="fields_txt">
                             </select>
@@ -45,9 +45,14 @@
                           </div>
                         </div>
                         <div style="margin-top: 10px;margin-bottom: 20px;">
-                          <label class="input-group-text" for="inputGroupSelect01"=>Chart Datashets</label>
+                          <label class="input-group-text" for="fields_chart" style="width: 100px;">Chart Datasets</label>
                         <select id="fields_chart" class="form-control" name="fields_chart">
                         </select>
+                        </div>
+                        <div style="margin-top: 10px;margin-bottom: 10px;">
+                          <label class="input-group-text" style="width: 100px;">Relasi</label>
+                          <div class="text-muted" style="font-size: 12px; margin-top: 5px;">Pilih tabel referensi per field (opsional). Kolom nilai &amp; tampilan terisi otomatis.</div>
+                          <div id="relasi_container" style="margin-top: 5px;"></div>
                         </div>
                         <div class="row">
                             <div class="col-md-4">
@@ -156,7 +161,7 @@
                         <label class='form-label' for='default'>Default</label>
                         <div class="input-group">
                             <input type='text' class='form-control' id='column_default' name='column_default[]' />
-                            <span class="input-group-addon btn-success btn-add" id="field_remove"><i class="fa fa-plus"></i></span>
+                            <span class="input-group-addon btn-success btn-add"><i class="fa fa-plus"></i></span>
                         </div>
                         <div class='error'></div>
                         </div>
@@ -177,7 +182,13 @@
 <div id="modal_search_icons" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
       <div class="modal-content">
-        ...
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Pilih Icon Modul</h4>
+        </div>
+        <div class="modal-body">
+            <div id="icons-placeholder">Memuat daftar ikon...</div>
+        </div>
       </div>
     </div>
 </div>

@@ -247,6 +247,29 @@ class Admin extends AdminModule
       exit();
     }
 
+    /**
+     * Daftar berkas template yang boleh diakses generator.
+     * Whitelist mencegah path traversal lewat parameter "file".
+     */
+    private function templateFiles()
+    {
+      return ['javascript.tpl', 'Info.tpl', 'Admin.tpl', 'manage.tpl', 'detail.tpl', 'chart.tpl', 'style.tpl', 'snippets.tpl'];
+    }
+
+    /**
+     * Ambil isi semua template generator sekaligus (JSON: nama_file => isi).
+     */
+    public function postAmbiltemplate()
+    {
+      $data = array();
+      foreach ($this->templateFiles() as $file) {
+        $path = MODULES.'/crud_generator/src/'.$file;
+        $data[$file] = is_file($path) ? file_get_contents($path) : '';
+      }
+      echo json_encode($data);
+      exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');

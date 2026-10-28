@@ -83,46 +83,89 @@ function showIconAlert(iconClass) {
 }
 
 $(document).ready(function () {
+    // ==== State konfigurasi relasi ====//
+    var relasiState = {}; // field -> {tabel, nilai, tampilan}
+
+    // Ambil daftar kolom sebuah tabel dari server (endpoint "table")
+    function muatKolomTabel(nama_table, callback) {
+        $.ajax({
+            url: "{?=url([ADMIN,'crud_generator','table'])?}",
+            type: "POST",
+            data: {nama_table: nama_table},
+            dataType: 'json',
+            success: function (res) { callback(res); }
+        });
+    }
+
+    // Isi select kolom (nilai + tampilan) pada sebuah baris relasi
+    function muatKolomRelasi(field, tabel) {
+        var $row = $('#relasi_container .relasi-row[data-field="' + field + '"]');
+        if (!tabel) {
+            $row.find('.relasi_nilai').html('<option value="">kolom nilai</option>');
+            $row.find('.relasi_tampilan').html('<option value="">kolom tampilan</option>');
+            return;
+        }
+        muatKolomTabel(tabel, function (res) {
+            var st = relasiState[field] || {};
+            var $nilai = $row.find('.relasi_nilai').html('<option value="">kolom nilai</option>');
+            var $tampilan = $row.find('.relasi_tampilan').html('<option value="">kolom tampilan</option>');
+            for (var i = 0; i < res.length; i++) {
+                var kolom = res[i]['COLUMN_NAME'];
+                $nilai.append('<option value="' + kolom + '">' + kolom + '</option>');
+                $tampilan.append('<option value="' + kolom + '">' + kolom + '</option>');
+            }
+            if (st.nilai) { $nilai.val(st.nilai); }
+            if (st.tampilan) { $tampilan.val(st.tampilan); }
+        });
+    }
+
+    // Render baris konfigurasi relasi untuk setiap field terpilih
+    function renderRelasiRows() {
+        var $container = $('#relasi_container');
+        $container.empty();
+        $('#fields_txt').find('option').each(function () {
+            var field = $(this).val();
+            var st = relasiState[field] || {};
+            var $row = $('<div class="input-group input-group-sm mb-1 relasi-row"></div>').attr('data-field', field);
+            $row.append($('<span class="input-group-addon"></span>').css('min-width', '120px').text(field));
+            var $tabel = $('<select class="form-control relasi_tabel"><option value="">(bukan relasi)</option></select>');
+            $('#table_txt').find('option').each(function () {
+                $tabel.append('<option value="' + $(this).val() + '">' + $(this).val() + '</option>');
+            });
+            if (st.tabel) { $tabel.val(st.tabel); }
+            $row.append($tabel);
+            $row.append($('<select class="form-control relasi_nilai"><option value="">kolom nilai</option></select>'));
+            $row.append($('<select class="form-control relasi_tampilan"><option value="">kolom tampilan</option></select>'));
+            $container.append($row);
+            muatKolomRelasi(field, st.tabel || '');
+        });
+    }
+
+    // Mapping nama berkas template -> textarea tujuan
+    var templateTargets = {
+        'Info.tpl': '#t4_info',
+        'Admin.tpl': '#t4_index',
+        'manage.tpl': '#t4_view_data',
+        'detail.tpl': '#t4_view_detail',
+        'chart.tpl': '#t4_view_chart',
+        'javascript.tpl': '#t4_javascript',
+        'style.tpl': '#t4_styles',
+        'snippets.tpl': '#t4_snippets'
+    };
+
     $("#open").click(function() {
+        // Satu request ke endpoint server (whitelisted), bukan fetch langsung ke file .tpl
         $.ajax({
-            url : "{?=url()?}/plugins/crud_generator/src/javascript.tpl",
-            dataType: "text",
-            success : function (data) { $("#t4_javascript").text(data); }
-        });
-        $.ajax({
-            url : "{?=url()?}/plugins/crud_generator/src/Info.tpl",
-            dataType: "text",
-            success : function (data) { $("#t4_info").text(data); }
-        });
-        $.ajax({
-            url : "{?=url()?}/plugins/crud_generator/src/Admin.tpl",
-            dataType: "text",
-            success : function (data) { $("#t4_index").text(data); }
-        });
-        $.ajax({
-            url : "{?=url()?}/plugins/crud_generator/src/manage.tpl",
-            dataType: "text",
-            success : function (data) { $("#t4_view_data").text(data); }
-        });
-        $.ajax({
-            url : "{?=url()?}/plugins/crud_generator/src/detail.tpl",
-            dataType: "text",
-            success : function (data) { $("#t4_view_detail").text(data); }
-        });
-        $.ajax({
-            url : "{?=url()?}/plugins/crud_generator/src/chart.tpl",
-            dataType: "text",
-            success : function (data) { $("#t4_view_chart").text(data); }
-        });
-        $.ajax({
-            url : "{?=url()?}/plugins/crud_generator/src/style.tpl",
-            dataType: "text",
-            success : function (data) { $("#t4_styles").text(data); }
-        });
-        $.ajax({
-            url : "{?=url()?}/plugins/crud_generator/src/snippets.tpl",
-            dataType: "text",
-            success : function (data) { $("#t4_snippets").text(data); }
+            url: "{?=url([ADMIN,'crud_generator','ambiltemplate'])?}",
+            type: "POST",
+            dataType: 'json',
+            success: function (res) {
+                $.each(templateTargets, function (file, target) {
+                    if (typeof res[file] !== 'undefined') {
+                        $(target).text(res[file]);
+                    }
+                });
+            }
         });
     });
 
@@ -146,7 +189,24 @@ $(document).ready(function () {
         $(this).parents('.outer').remove();//remove closest class .outer
         return false;
     });
-    
+
+    // ==== Perubahan konfigurasi relasi per field ====//
+    $(document).on('change', '#relasi_container .relasi_tabel', function () {
+        var field = $(this).closest('.relasi-row').attr('data-field');
+        relasiState[field] = relasiState[field] || {};
+        relasiState[field].tabel = $(this).val();
+        relasiState[field].nilai = '';
+        relasiState[field].tampilan = '';
+        muatKolomRelasi(field, $(this).val());
+    });
+    $(document).on('change', '#relasi_container .relasi_nilai, #relasi_container .relasi_tampilan', function () {
+        var $row = $(this).closest('.relasi-row');
+        var field = $row.attr('data-field');
+        relasiState[field] = relasiState[field] || {};
+        relasiState[field].nilai = $row.find('.relasi_nilai').val();
+        relasiState[field].tampilan = $row.find('.relasi_tampilan').val();
+    });
+
     $("form[name='form_crud_generator']").validate({
         rules: {
         },
@@ -219,6 +279,7 @@ $(document).ready(function () {
                 }
                 $('#fields_txt').selectator();
                 $('#fields_chart').selectator();
+                renderRelasiRows();
             }
         });
     });
@@ -230,6 +291,101 @@ $(document).ready(function () {
         var icon_module = $("#icon_module").val(); 
         var nama_table = $("#table_txt").val();
         var nama_field = document.getElementById('fields_txt');
+
+        // ==== KONFIGURASI RELASI (belongs-to, JOIN) ====//
+        var modul_url = nama_module.toLowerCase().replace(/ /g, '_');
+        var pk_field = nama_field.options[0].value;
+
+        var relasiRows = [];
+        $('#relasi_container .relasi-row').each(function () {
+            var fRow = $(this).attr('data-field');
+            var tabelRow = $(this).find('.relasi_tabel').val();
+            var nilaiRow = $(this).find('.relasi_nilai').val();
+            var tampilanRow = $(this).find('.relasi_tampilan').val();
+            if (tabelRow && nilaiRow && tampilanRow) {
+                relasiRows.push({field: fRow, tabel: tabelRow, kolom_nilai: nilaiRow, kolom_tampilan: tampilanRow});
+            }
+        });
+
+        var relasiJson = {};
+        var relasiAlias = {};
+        var ISI_RELASI_SELECT = '';
+        var ISI_RELASI_JOIN = '';
+        for (var ri = 0; ri < relasiRows.length; ri++) {
+            var rowRel = relasiRows[ri];
+            var aliasRel = 'r' + (ri + 1);
+            relasiAlias[rowRel.field] = aliasRel;
+            relasiJson[rowRel.field] = {tabel: rowRel.tabel, kolom_nilai: rowRel.kolom_nilai, kolom_tampilan: rowRel.kolom_tampilan};
+            ISI_RELASI_SELECT += ' , ' + aliasRel + '.' + rowRel.kolom_tampilan + ' AS ref_' + rowRel.field;
+            ISI_RELASI_JOIN += ' LEFT JOIN ' + rowRel.tabel + ' ' + aliasRel + ' ON t0.' + rowRel.field + ' = ' + aliasRel + '.' + rowRel.kolom_nilai;
+        }
+
+        // Peta kolom aman untuk ORDER BY & pencarian (PHP)
+        var mapEntries = [];
+        for (i = 0; i < nama_field.options.length; i++) {
+            var fMap = nama_field.options[i].value;
+            mapEntries.push("'" + fMap + "' => 't0." + fMap + "'");
+            if (relasiJson[fMap]) {
+                mapEntries.push("'ref_" + fMap + "' => '" + relasiAlias[fMap] + "." + relasiJson[fMap].kolom_tampilan + "'");
+            }
+        }
+        var ISI_ORDER_MAP = "$urutkan = [\n    " + mapEntries.join(",\n    ") + "\n];";
+
+        // Endpoint relasi (PHP) untuk modul hasil generate
+        var ISI_ENDPOINTS = '';
+        if (relasiRows.length > 0) {
+            ISI_ENDPOINTS = [
+                "    /**",
+                "     * Relasi: opsi dropdown dari tabel referensi (JSON: nilai, label).",
+                "     */",
+                "    public function postRefdata()",
+                "    {",
+                "        $tabel = isset($_POST['tabel']) ? $_POST['tabel'] : '';",
+                "        $kolom_nilai = isset($_POST['kolom_nilai']) ? $_POST['kolom_nilai'] : '';",
+                "        $kolom_tampilan = isset($_POST['kolom_tampilan']) ? $_POST['kolom_tampilan'] : '';",
+                "        if (!$this->_ident($tabel) || !$this->_ident($kolom_nilai) || !$this->_ident($kolom_tampilan)) {",
+                "            echo json_encode([]);",
+                "            exit();",
+                "        }",
+                '        $q = $this->db()->pdo()->prepare("SELECT `$kolom_nilai` AS nilai, `$kolom_tampilan` AS label FROM `$tabel` ORDER BY `$kolom_tampilan`");',
+                "        $q->execute();",
+                "        echo json_encode($q->fetchAll(\\PDO::FETCH_ASSOC));",
+                "        exit();",
+                "    }",
+                ""
+            ].join('\n');
+        }
+        // Potongan javascript modul untuk relasi (diisi ke javascript.tpl)
+        var ISI_FUNGSI_JS = '        // (tanpa relasi)';
+        if (relasiRows.length > 0) {
+            var urlRefdata = "                url: mlite.url + '/' + mlite.admin + '/" + modul_url + "/refdata?t=' + mlite.token,";
+            ISI_FUNGSI_JS = [
+                '        $.each(relasiConfig, function (field, cfg) {',
+                '            $.ajax({',
+                urlRefdata,
+                "                method: 'POST',",
+                '                data: {tabel: cfg.tabel, kolom_nilai: cfg.kolom_nilai, kolom_tampilan: cfg.kolom_tampilan},',
+                "                dataType: 'json',",
+                '                success: function (res) {',
+                "                    var $sel = $('#' + field);",
+                '                    $sel[\'find\'](\'option\')[\'remove\']();',
+                '                    $sel[\'append\']($(\'<option></option>\').attr(\'value\', \'\').text(\'- pilih -\'));',
+                '                    $.each(res, function (i, row) {',
+                '                        $sel[\'append\']($(\'<option></option>\').attr(\'value\', row.nilai).text(row.label));',
+                '                    });',
+                '                    if (rowData) { $sel[\'val\'](rowData[field]); }',
+                '                }',
+                '            });',
+                '        });',
+                ''
+            ].join('\n');
+        }
+
+        var ISI_SET_EDIT = '';
+        if (relasiRows.length > 0) { ISI_SET_EDIT += 'muatDropdownRelasi(rowData);'; }
+
+        var ISI_SET_ADD = '';
+        if (relasiRows.length > 0) { ISI_SET_ADD += 'muatDropdownRelasi(null);'; }
 
         // ========= BAGIAN INFO =========//
         var text = $("#t4_info").text();
@@ -267,6 +423,12 @@ $(document).ready(function () {
         {
             isi = isi + "'" + nama_field.options[i].value + "'=>$row['" + nama_field.options[i].value + "'],\n" ;
         }
+        }
+
+        // relasi: sertakan kolom hasil JOIN (ref_*) pada data tabel
+        for (i = 0; i < relasiRows.length; i++) {
+            var fRelI = relasiRows[i].field;
+            isi = isi.replace("'" + fRelI + "'=>$row['" + fRelI + "']", "'" + fRelI + "'=>$row['" + fRelI + "'], 'ref_" + fRelI + "'=>isset($row['ref_" + fRelI + "'])?$row['ref_" + fRelI + "']:''");
         }
 
         text_index = text_index.replace('ISI_LOAD_DATA', isi);
@@ -323,6 +485,12 @@ $(document).ready(function () {
         text_index = text_index.replace("WHERE_EDIT", ISI_WHERE_EDIT);
         text_index = text_index.replace("POST_DELETE", ISI_POST_DELETE);
         text_index = text_index.replace("WHERE_DELETE", ISI_WHERE_DELETE);
+        // relasi: sertakan kolom hasil JOIN (ref_*) pada data lihat
+        for (i = 0; i < relasiRows.length; i++) {
+            var fRelL = relasiRows[i].field;
+            ISI_LIHAT_ISI = ISI_LIHAT_ISI.replace("'" + fRelL + "'=>$row['" + fRelL + "']", "'" + fRelL + "'=>$row['" + fRelL + "'], 'ref_" + fRelL + "'=>isset($row['ref_" + fRelL + "'])?$row['ref_" + fRelL + "']:''");
+        }
+
         text_index = text_index.replace("LIHAT_ISI", ISI_LIHAT_ISI);
         text_index = text_index.replace("VALUES_ISI_EDIT", ISI_VALUES_ISI_EDIT);
         text_index = text_index.replace("ISI_VALUES", ISI_ISI_VALUES);
@@ -336,6 +504,12 @@ $(document).ready(function () {
         var chart = $('#fields_chart').find(":selected").val();
 
         text_index = text_index.replace(/CHART/g, chart);
+
+        // relasi: SELECT tambahan, JOIN, peta kolom aman, endpoint
+        text_index = text_index.replaceAll('RELASI_SELECT_FIELDS', ISI_RELASI_SELECT);
+        text_index = text_index.replaceAll('RELASI_JOIN', ISI_RELASI_JOIN);
+        text_index = text_index.replaceAll('RELASI_ORDER_MAP', ISI_ORDER_MAP);
+        text_index = text_index.replace('RELASI_ENDPOINTS', ISI_ENDPOINTS);
 
         $("#t4_index").text(text_index);
 
@@ -379,6 +553,19 @@ $(document).ready(function () {
         view_data = view_data.replace('HEAD_TABLE', ISI_HEAD_TABLE);
         view_data = view_data.replace('FORM_EDIT', ISI_FORM_EDIT);
 
+        // relasi: dropdown pada form + label kolom referensi
+        for (i = 0; i < relasiRows.length; i++) {
+            var fRel = relasiRows[i].field;
+            var lblRel = titleCase(relasiJson[fRel].kolom_tampilan.replace(/_/g, ' '));
+            var rawRel = titleCase(fRel.replace(/_/g, ' '));
+            view_data = view_data.replace("<option value='" + fRel + "'>" + rawRel + "</option>", "<option value='ref_" + fRel + "'>" + lblRel + "</option>");
+            view_data = view_data.replace("<th>" + rawRel + "</th>", "<th>" + lblRel + "</th>");
+            view_data = view_data.replace(
+                "      <label class='form-label' for='" + fRel + "'>" + rawRel + "</label>\n      <input type='text' class='form-control' id='" + fRel + "' name='" + fRel + "' />",
+                "      <label class='form-label' for='" + fRel + "'>" + lblRel + "</label>\n      <select class='form-control' id='" + fRel + "' name='" + fRel + "'><option value=''>- pilih -</option></select>"
+            );
+        }
+
 
         $("#t4_view_data").text(view_data);
 
@@ -392,6 +579,14 @@ $(document).ready(function () {
         }
         view_detail = view_detail.replace(/NAMA_TABLE/g, nama_table);
         view_detail = view_detail.replace('TABLE_DETAIL', ISI_VIEW_DETAIL);
+
+        // relasi: label & nilai JOIN pada tabel detail
+        for (i = 0; i < relasiRows.length; i++) {
+            var fRelD = relasiRows[i].field;
+            var lblRelD = titleCase(relasiJson[fRelD].kolom_tampilan.replace(/_/g, ' '));
+            var rawRelD = titleCase(fRelD.replace(/_/g, ' '));
+            view_detail = view_detail.replace("<tr><td>" + rawRelD + "</td><td>{$value." + fRelD + "}</td>", "<tr><td>" + lblRelD + "</td><td>{$value.ref_" + fRelD + "}</td>");
+        }
 
         $("#t4_view_detail").text(view_detail);
 
@@ -460,6 +655,16 @@ $(document).ready(function () {
         }
         }
 
+        // relasi: kolom tabel, header lihat, dan isi sel memakai hasil JOIN (ref_*)
+        for (i = 0; i < relasiRows.length; i++) {
+            var fRelJ = relasiRows[i].field;
+            var lblRelJ = titleCase(relasiJson[fRelJ].kolom_tampilan.replace(/_/g, ' '));
+            var rawRelJ = titleCase(fRelJ.replace(/_/g, ' '));
+            ISI_COLUMNS_ISI = ISI_COLUMNS_ISI.replace("{ 'data': '" + fRelJ + "' }", "{ 'data': 'ref_" + fRelJ + "' }");
+            ISI_HEADER_ISI = ISI_HEADER_ISI.replace("<th>" + rawRelJ + "</th>", "<th>" + lblRelJ + "</th>");
+            ISI_ETABLE_ISI = ISI_ETABLE_ISI.replace("eTable += '<td>' + res[i]['" + fRelJ + "'] + '</td>';", "eTable += '<td>' + (res[i]['ref_" + fRelJ + "'] || '') + '</td>';");
+        }
+
         ISI_DATA_ISI = "var " + nama_field.options[0].value + " = rowData['" + nama_field.options[0].value + "'];";
         ISI_DELETE_ISI = "var " + nama_field.options[0].value + " = rowData['" + nama_field.options[0].value + "'];";
 
@@ -482,6 +687,12 @@ $(document).ready(function () {
         text_javascript = text_javascript.replace("HEADER_ISI", ISI_HEADER_ISI);
         text_javascript = text_javascript.replace("ETABLE_ISI", ISI_ETABLE_ISI);
         text_javascript = text_javascript.replace("TAMBAH_ISI", ISI_TAMBAH_ISI);
+
+        // relasi pada javascript modul
+        text_javascript = text_javascript.replace('RELASI_JSON', JSON.stringify(relasiJson));
+        text_javascript = text_javascript.replace('RELASI_FUNGSI_ISI', ISI_FUNGSI_JS);
+        text_javascript = text_javascript.replace('RELASI_SET_EDIT', ISI_SET_EDIT);
+        text_javascript = text_javascript.replace('RELASI_SET_ADD', ISI_SET_ADD);
 
         $("#t4_javascript").text(text_javascript); 
 
@@ -581,6 +792,7 @@ $(document).ready(function () {
         $('#fields_txt').selectator('destroy');
         $('#fields_txt').find('option:selected').remove();
         $('#fields_txt').selectator();
+        renderRelasiRows();
     });
 
     $("#icon_module").click(function (event) {
