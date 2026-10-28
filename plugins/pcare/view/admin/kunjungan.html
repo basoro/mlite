@@ -217,35 +217,35 @@
 </script>
 <script>
     {if: isset($_GET['kunjungan']) && isset($_GET['noRujukan']) && $_GET['noRujukan'] != ''}
-        $.get("{?=url([ADMIN, 'pcare', 'kunjungan', 'rujukan', $_GET['noRujukan']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'kunjungan', 'rujukan', rawurlencode($_GET['noRujukan'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['kunjungan']) && isset($_GET['noKartu']) && $_GET['noKartu'] != ''}
-        $.get("{?=url([ADMIN, 'pcare', 'kunjungan', 'peserta', $_GET['noKartu']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'kunjungan', 'peserta', rawurlencode($_GET['noKartu'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['addkunjungan']) && isset($_GET['kdDokter']) && isset($_GET['noKartu']) && isset($_GET['tglDaftar']) && isset($_GET['kdPoli'])}
-        $.get("{?=url([ADMIN, 'pcare', 'addkunjungan', $_GET['kdDokter'], $_GET['tglDaftar'], $_GET['noKartu'],$_GET['kdPoli']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'addkunjungan', rawurlencode($_GET['kdDokter']), rawurlencode($_GET['tglDaftar']), rawurlencode($_GET['noKartu']),rawurlencode($_GET['kdPoli'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['editkunjungan']) && isset($_GET['noKunjungan']) && isset($_GET['noKartu']) && isset($_GET['kdSadar']) && $_GET['tglPulang'] && $_GET['kdDokter']}
-        $.get("{?=url([ADMIN, 'pcare', 'editkunjungan', $_GET['noKunjungan'], $_GET['noKartu'], $_GET['kdSadar'], $_GET['tglPulang'], $_GET['kdDokter']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'editkunjungan', rawurlencode($_GET['noKunjungan']), rawurlencode($_GET['noKartu']), rawurlencode($_GET['kdSadar']), rawurlencode($_GET['tglPulang']), rawurlencode($_GET['kdDokter'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['delkunjungan'])}
-        $.get("{?=url([ADMIN, 'pcare', 'delkunjungan', $_GET['noKunjungan']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'delkunjungan', rawurlencode($_GET['noKunjungan'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);

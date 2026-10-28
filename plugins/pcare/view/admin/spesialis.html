@@ -277,7 +277,7 @@
         });
     {/if}
     {if: isset($_GET['subspesialis'])}
-        $.get("{?=url([ADMIN, 'pcare', 'subspesialis', $_GET['subspesialis']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'subspesialis', rawurlencode($_GET['subspesialis'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
@@ -298,21 +298,21 @@
         });
     {/if}
     {if: isset($_GET['faskesspesialis'])}
-        $.get("{?=url([ADMIN, 'pcare', 'faskesspesialis', $_GET['kodesubspesialis'], $_GET['kodesarana'], $_GET['tglrujuk']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'faskesspesialis', rawurlencode($_GET['kodesubspesialis']), rawurlencode($_GET['kodesarana']), rawurlencode($_GET['tglrujuk'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['faskeskhusus1'])}
-        $.get("{?=url([ADMIN, 'pcare', 'faskeskhusus', $_GET['kodekhusus1'], '0', $_GET['noKartu'], $_GET['tglrujuk']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'faskeskhusus', rawurlencode($_GET['kodekhusus1']), '0', rawurlencode($_GET['noKartu']), rawurlencode($_GET['tglrujuk'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['faskeskhusus2'])}
-        $.get("{?=url([ADMIN, 'pcare', 'faskeskhusus', $_GET['kodekhusus2'], $_GET['kodesubspesialis'], $_GET['noKartu'], $_GET['tglrujuk']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'faskeskhusus', rawurlencode($_GET['kodekhusus2']), rawurlencode($_GET['kodesubspesialis']), rawurlencode($_GET['noKartu']), rawurlencode($_GET['tglrujuk'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);

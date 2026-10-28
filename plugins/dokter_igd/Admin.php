@@ -820,12 +820,12 @@ class Admin extends AdminModule
       }
 
       echo $this->draw('rincian.html', [
-        'rawat_jl_dr' => $rawat_jl_dr,
-        'rawat_jl_pr' => $rawat_jl_pr,
-        'rawat_jl_drpr' => $rawat_jl_drpr,
-        'resep' => $resep,
+        'rawat_jl_dr' => htmlspecialchars_array($rawat_jl_dr),
+        'rawat_jl_pr' => htmlspecialchars_array($rawat_jl_pr),
+        'rawat_jl_drpr' => htmlspecialchars_array($rawat_jl_drpr),
+        'resep' => htmlspecialchars_array($resep),
         'resep_racikan' => htmlspecialchars_array($resep_racikan),
-        'data_resep' => $data_resep,
+        'data_resep' => htmlspecialchars_array($data_resep),
         'laboratorium' => htmlspecialchars_array($laboratorium),
         'radiologi' => htmlspecialchars_array($radiologi),
         'jumlah_total' => $jumlah_total,
@@ -917,7 +917,7 @@ class Admin extends AdminModule
       }
 
       echo $this->draw('rincian.eresep.html', [
-        'resep' => $resep,
+        'resep' => htmlspecialchars_array($resep),
         'resep_racikan' => htmlspecialchars_array($resep_racikan),
         'data_resep' => $data_resep,
         'jumlah_total_resep' => $jumlah_total_resep,
@@ -1514,7 +1514,7 @@ class Admin extends AdminModule
       }
 
       echo $this->draw('eresep.html', [
-        'resep' => $resep,
+        'resep' => htmlspecialchars_array($resep),
         'resep_racikan' => htmlspecialchars_array($resep_racikan),
         'data_resep' => $data_resep,
         'jumlah_total_resep' => $jumlah_total_resep,
@@ -1924,9 +1924,9 @@ class Admin extends AdminModule
       $data_resume['diagnosa'] = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ralan')->oneArray();
       $data_resume['prosedur'] = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ralan')->oneArray();
       echo $this->draw('resume.html', [
-        'reg_periksa' => $this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
+        'reg_periksa' => htmlspecialchars_array($this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()),
         'resume_pasien' => htmlspecialchars_array($this->db('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=resume_pasien.kd_dokter')->oneArray()),
-        'data_resume' => $data_resume
+        'data_resume' => htmlspecialchars_array($data_resume)
       ]);
       exit();
     }
@@ -2097,11 +2097,11 @@ class Admin extends AdminModule
       }
       
       echo $this->draw('medis.igd.html', [
-        'reg_periksa' => $this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
-        'penilaian_medis_igd' => $penilaian_medis_igd,
-        'pasien'  => $this->db('pasien')->where('no_rawat', revertNoRawat($no_rawat))->join('reg_periksa','pasien.no_rkm_medis=reg_periksa.no_rkm_medis')->oneArray(),
-        'dokter'  => $this->db('dokter')->where('no_rawat', revertNoRawat($no_rawat))->join('reg_periksa','dokter.kd_dokter=reg_periksa.kd_dokter')->oneArray(),
-        'data_medisIgd' => $data_medisIgd
+        'reg_periksa' => htmlspecialchars_array($this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()),
+        'penilaian_medis_igd' => htmlspecialchars_array($penilaian_medis_igd),
+        'pasien'  => htmlspecialchars_array($this->db('pasien')->where('no_rawat', revertNoRawat($no_rawat))->join('reg_periksa','pasien.no_rkm_medis=reg_periksa.no_rkm_medis')->oneArray()),
+        'dokter'  => htmlspecialchars_array($this->db('dokter')->where('no_rawat', revertNoRawat($no_rawat))->join('reg_periksa','dokter.kd_dokter=reg_periksa.kd_dokter')->oneArray()),
+        'data_medisIgd' => htmlspecialchars_array($data_medisIgd)
       ]);
       exit();
     }

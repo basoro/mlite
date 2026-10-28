@@ -192,28 +192,28 @@
 </script>
 <script>
     {if: isset($_GET['getpendaftarannourut']) && isset($_GET['noUrut']) && isset($_GET['tglDaftar'])}
-        $.get("{?=url([ADMIN, 'pcare', 'getpendaftarannourut', $_GET['noUrut'], $_GET['tglDaftar']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'getpendaftarannourut', rawurlencode($_GET['noUrut']), rawurlencode($_GET['tglDaftar'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['getpendaftaranprovider']) && isset($_GET['tglDaftar'])}
-        $.get("{?=url([ADMIN, 'pcare', 'getpendaftaranprovider', $_GET['tglDaftar']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'getpendaftaranprovider', rawurlencode($_GET['tglDaftar'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['addpendaftaran']) && isset($_GET['kdProviderPeserta']) && isset($_GET['tglDaftar']) && isset($_GET['noKartu']) && isset($_GET['kdPoli'])}
-        $.get("{?=url([ADMIN, 'pcare', 'addpendaftaran', $_GET['kdProviderPeserta'], $_GET['tglDaftar'], $_GET['noKartu'], $_GET['kdPoli']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'addpendaftaran', rawurlencode($_GET['kdProviderPeserta']), rawurlencode($_GET['tglDaftar']), rawurlencode($_GET['noKartu']), rawurlencode($_GET['kdPoli'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['delpendaftaran']) && isset($_GET['noKartu']) && isset($_GET['tglDaftar']) && isset($_GET['noUrut']) && isset($_GET['kdPoli'])}
-        $.get("{?=url([ADMIN, 'pcare', 'delpendaftaran', $_GET['noKartu'], $_GET['tglDaftar'], $_GET['noUrut'], $_GET['kdPoli']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'delpendaftaran', rawurlencode($_GET['noKartu']), rawurlencode($_GET['tglDaftar']), rawurlencode($_GET['noUrut']), rawurlencode($_GET['kdPoli'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);

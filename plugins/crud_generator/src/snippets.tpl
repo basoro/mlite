@@ -35,13 +35,21 @@ DI ADD AKSI
 
 $temp = "img/";
 $fileupload      = $_FILES['fileToUpload']['tmp_name'];
-$ImageName       = $_FILES['fileToUpload']['name'];
-$ImageType       = $_FILES['fileToUpload']['type'];
+// Validasi ekstensi + isi berkas sebelum menyimpan (wajib, jangan pakai MIME klien)
+$cekUpload      = validateUploadedFile($_FILES['fileToUpload'], ['jpg', 'jpeg', 'png', 'pdf'], ['image/jpeg', 'image/png', 'application/pdf'], 2 * 1024 * 1024); // maks 2MB
+if (isset($cekUpload['error'])) {
+    die($cekUpload['error']);
+}
+$ImageName       = basename($_FILES['fileToUpload']['name']);
 move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $temp.$ImageName); // Menyimpan file
 
 DI EDIT AKSI
 ============
 
+$cekUpload          = validateUploadedFile($_FILES['fileToUpload'], ['jpg', 'jpeg', 'png', 'pdf'], ['image/jpeg', 'image/png', 'application/pdf'], 2 * 1024 * 1024); // maks 2MB
+if (isset($cekUpload['error'])) {
+    die($cekUpload['error']);
+}
 $nama_file          = basename($_FILES["fileToUpload"]["name"]);
 $target_file = $target_dir . $nama_file;
 move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);

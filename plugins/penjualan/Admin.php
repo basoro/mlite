@@ -55,7 +55,7 @@ class Admin extends AdminModule
             }
             $penjualan[] = $row;
         }
-        return $this->draw('index.html', ['penjualan' => $penjualan]);
+        return $this->draw('index.html', ['penjualan' => htmlspecialchars_array($penjualan)]);
     }
 
     public function getOrder($id_penjualan = '')
@@ -92,7 +92,7 @@ class Admin extends AdminModule
         'harga' => 'harga'
       ])
       ->toArray();
-      return $this->draw('order.html', ['barang' => array_merge($barang, $obat), 'penjualan' => $penjualan, 'rincian_penjualan' => $rincian_penjualan, 'total_tagihan' => $total_tagihan, 'id_penjualan' => isset_or($id_penjualan, '')]);
+      return $this->draw('order.html', ['barang' => htmlspecialchars_array(array_merge($barang, $obat)), 'penjualan' => htmlspecialchars_array($penjualan), 'rincian_penjualan' => htmlspecialchars_array($rincian_penjualan), 'total_tagihan' => htmlspecialchars_array($total_tagihan), 'id_penjualan' => htmlspecialchars_array(isset_or($id_penjualan, ''))]);
     }
 
     public function getBarang()
@@ -122,7 +122,7 @@ class Admin extends AdminModule
             }
         }
         unset($row);
-        return $this->draw('barang.html', ['barang' => $this->db('mlite_penjualan_barang')->toArray(), 'obat' => htmlspecialchars_array($obat)]);
+        return $this->draw('barang.html', ['barang' => htmlspecialchars_array($this->db('mlite_penjualan_barang')->toArray()), 'obat' => htmlspecialchars_array($obat)]);
     }
 
     public function postSaveBarang()
@@ -335,7 +335,7 @@ class Admin extends AdminModule
             $row['no'] = $no++;
             $rincian_penjualan[] = $row;
         }
-        echo $this->draw('rincian.penjualan.html', ['rincian_penjualan' => $rincian_penjualan]);
+        echo $this->draw('rincian.penjualan.html', ['rincian_penjualan' => htmlspecialchars_array($rincian_penjualan)]);
         exit();
     }
 
@@ -349,7 +349,7 @@ class Admin extends AdminModule
             $row['nama_barang'] = htmlspecialchars($row['nama_barang'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $form_rincian_penjualan[] = $row;
         }
-        echo $this->draw('form.rincian.penjualan.html', ['form_rincian_penjualan' => htmlspecialchars_array($form_rincian_penjualan), 'total_tagihan' => $total_tagihan]);
+        echo $this->draw('form.rincian.penjualan.html', ['form_rincian_penjualan' => htmlspecialchars_array($form_rincian_penjualan), 'total_tagihan' => htmlspecialchars_array($total_tagihan)]);
         exit();
     }
 
@@ -543,9 +543,9 @@ class Admin extends AdminModule
                     ->oneArray();
 
                 echo $this->draw('billing.kecil.html', [
-                    'billing' => $billing,
-                    'pembeli' => $pembeli,
-                    'fullname' => $this->core->getUserInfo('fullname', null, true)
+                    'billing' => htmlspecialchars_array($billing),
+                    'pembeli' => htmlspecialchars_array($pembeli),
+                    'fullname' => htmlspecialchars_array($this->core->getUserInfo('fullname', null, true))
                 ]);
             break;
         }

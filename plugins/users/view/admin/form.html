@@ -47,7 +47,23 @@
     	            </div>
     	            <div class="form-group">
     	                <label>Kata kunci {if: isset($users.form.id)}<a href="#" id="passwordChange" class="btn btn-default btn-xs">Ubah</a>{/if}</label>
-    	                <input type="password" name="password" class="form-control" pattern=".{5,}" title="Kata kunci terlalu pendek" {if: isset($users.form.id)}value="********" placeholder="Kata kunci baru" disabled {else}required{/if}/>
+    	                <input type="password" name="password" id="password" class="form-control" pattern=".{8,}" title="Password minimal 8 karakter, memuat huruf besar, huruf kecil, dan angka" autocomplete="new-password" {if: isset($users.form.id)}value="********" placeholder="Kata kunci baru" disabled {else}required{/if}/>
+    	                <div id="passwordStrength" style="display:none; margin-top:8px;">
+    	                    <div class="progress" style="height:8px; margin-bottom:6px;">
+    	                        <div id="passwordStrengthBar" class="progress-bar" role="progressbar" style="width:0%;"></div>
+    	                    </div>
+    	                    <small id="passwordStrengthLabel">Kekuatan: <strong>-</strong></small>
+    	                    <ul class="list-unstyled" style="margin:6px 0 0; font-size:12px;">
+    	                        <li id="pwRuleLen"><i class="fa fa-times text-danger"></i> Minimal 8 karakter</li>
+    	                        <li id="pwRuleLower"><i class="fa fa-times text-danger"></i> Huruf kecil (a-z)</li>
+    	                        <li id="pwRuleUpper"><i class="fa fa-times text-danger"></i> Huruf besar (A-Z)</li>
+    	                        <li id="pwRuleDigit"><i class="fa fa-times text-danger"></i> Angka (0-9)</li>
+    	                    </ul>
+    	                </div>
+    	            </div>
+    	            <div class="form-group" id="passwordConfirmGroup">
+    	                <label>Ulangi kata kunci</label>
+    	                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Ulangi kata kunci" autocomplete="new-password" {if: isset($users.form.id)}disabled{else}required{/if}/>
     	            </div>
                   <div class="form-group">
                       <label>Role (Bisa lebih dari satu)</label>
@@ -115,12 +131,101 @@
 		reader.readAsDataURL(this.files[0]);
 	});
 
+	// Password: indikator kekuatan & konfirmasi
+	// catatan: jangan pakai nama variabel ber-prefix $ (di-ganti mesin template)
+	var pwInput   = $("input[name=password]");
+	var pwConfirm = $("input[name=password_confirmation]");
+
+	function pwRules(value) {
+		return {
+			len:    value.length >= 8,
+			lower:  /[a-z]/.test(value),
+			upper:  /[A-Z]/.test(value),
+			digit:  /[0-9]/.test(value)
+		};
+	}
+
+	function pwEvaluateConfirm() {
+		var value = pwInput.val();
+		var confValue = pwConfirm.val();
+		var active = !pwConfirm.prop('disabled') && !pwInput.prop('disabled') && value !== '********';
+
+		if (!active) {
+			pwConfirm[0].setCustomValidity("");
+			return;
+		}
+		var mismatch = confValue !== '' && confValue !== value;
+		pwConfirm[0].setCustomValidity(mismatch ? 'Konfirmasi password tidak cocok.' : '');
+	}
+
+	function pwEvaluate() {
+		var value = pwInput.val();
+		var active = !pwInput.prop('disabled') && value !== '********';
+
+		if (!active) {
+			$("#passwordStrength").hide();
+			pwInput[0].setCustomValidity("");
+			pwEvaluateConfirm();
+			return;
+		}
+
+		$("#passwordStrength").show();
+
+		var rules = pwRules(value);
+		var states = [
+			['#pwRuleLen', rules.len],
+			['#pwRuleLower', rules.lower],
+			['#pwRuleUpper', rules.upper],
+			['#pwRuleDigit', rules.digit]
+		];
+		var passed = 0;
+		$.each(states, function (i, item) {
+			if (item[1]) passed++;
+			$(item[0]).find('i').attr('class', item[1] ? 'fa fa-check text-success' : 'fa fa-times text-danger');
+		});
+
+		var levels = [
+			{ min: 0, label: 'Lemah',       color: '#d9534f' },
+			{ min: 2, label: 'Sedang',      color: '#f0ad4e' },
+			{ min: 3, label: 'Kuat',        color: '#5bc0de' },
+			{ min: 4, label: 'Sangat kuat', color: '#5cb85c' }
+		];
+		var level = levels[0];
+		$.each(levels, function (i, item) {
+			if (passed >= item.min) level = item;
+		});
+
+		$("#passwordStrengthBar").css({
+			width: (passed / states.length * 100) + '%',
+			'background-color': level.color
+		});
+		$("#passwordStrengthLabel").html('Kekuatan: <strong>' + level.label + '</strong>');
+
+		// blokir submit lewat validasi native browser
+		var missing = [];
+		if (!rules.len) missing.push('minimal 8 karakter');
+		if (!rules.lower) missing.push('huruf kecil');
+		if (!rules.upper) missing.push('huruf besar');
+		if (!rules.digit) missing.push('angka');
+		pwInput[0].setCustomValidity((value !== '' && missing.length) ? ('Password harus memuat ' + missing.join(', ') + '.') : '');
+
+		pwEvaluateConfirm();
+	}
+
+	pwInput.on('input focus', pwEvaluate);
+	pwConfirm.on('input', pwEvaluateConfirm);
+
 	// Password
 	$("#passwordChange").on("click", function() {
-		$("input[name=password]").val("").attr('disabled', false);
+		pwInput.val("").attr('disabled', false).attr('required', true);
+		pwConfirm.attr('disabled', false).attr('required', true);
 		$(this).remove();
+		pwEvaluate();
+		pwInput.focus();
 		return false;
 	})
+
+	pwEvaluate();
 
 	// Tombol copy akses
     $('#btnToggleCopyAccess').on('click', function() {

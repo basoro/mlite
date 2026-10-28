@@ -1702,7 +1702,7 @@ class Site extends SiteModule
                     $query = $this->db('pasien')->save($_POST);
 
                     if($query) {
-                        $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+                        $this->db()->pdo()->prepare("UPDATE set_no_rkm_medis SET no_rkm_medis = ?")->execute([$_POST['no_rkm_medis']]);
                     }
 
                     $pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();

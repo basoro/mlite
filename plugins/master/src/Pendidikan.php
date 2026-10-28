@@ -47,7 +47,7 @@ class Pendidikan
           ];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function anyDisplay()
@@ -90,7 +90,7 @@ class Pendidikan
           $return['halaman'] = $_POST['halaman'];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function postSave()

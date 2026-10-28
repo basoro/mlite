@@ -26,9 +26,9 @@
     <div class="row clearfix">
       <div class="col col-md-6">
         <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}
-          <a href="{?=url()?}/veda/perbaikan/excel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
-          <a href="{?=url()?}/veda/perbaikan/excel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
-          <a href="{?=url()?}/veda/perbaikan/excel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
+          <a href="{?=url()?}/veda/perbaikan/excel?start_date={if: isset($_GET['start_date'])}{?=e($_GET['start_date'])?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=e($_GET['end_date'])?}{else}{?=date('Y-m-d')?}{/if}&t={?=e($_GET['t'])?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
+          <a href="{?=url()?}/veda/perbaikan/excel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=e($_GET['start_date'])?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=e($_GET['end_date'])?}{else}{?=date('Y-m-d')?}{/if}&t={?=e($_GET['t'])?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
+          <a href="{?=url()?}/veda/perbaikan/excel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=e($_GET['start_date'])?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=e($_GET['end_date'])?}{else}{?=date('Y-m-d')?}{/if}&t={?=e($_GET['t'])?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
         </h3>
       </div>
       <div class="col col-md-6">
@@ -36,7 +36,7 @@
             <div class="col col-md-4">
               <div class="row">
                 <div class="input-group">
-                    <input type="text" name="start_date" value="{if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}" minlength="3" class="form-control tanggal" placeholder="Tanggal Awal">
+                    <input type="text" name="start_date" value="{if: isset($_GET['start_date'])}{?=e($_GET['start_date'])?}{else}{?=date('Y-m-d')?}{/if}" minlength="3" class="form-control tanggal" placeholder="Tanggal Awal">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-calendar"></span></button>
                     </span>
@@ -46,7 +46,7 @@
             <div class="col col-md-4">
               <div class="row">
                 <div class="input-group">
-                    <input type="text" name="end_date" value="{if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}" minlength="3" class="form-control tanggal" placeholder="Tanggal Akhir">
+                    <input type="text" name="end_date" value="{if: isset($_GET['end_date'])}{?=e($_GET['end_date'])?}{else}{?=date('Y-m-d')?}{/if}" minlength="3" class="form-control tanggal" placeholder="Tanggal Akhir">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-calendar"></span></button>
                     </span>
@@ -57,7 +57,7 @@
               <div class="row">
                 <div class="input-group">
                     <input type="text" name="s" minlength="3" class="form-control" placeholder="No.RM/SEP">
-                    <input type="hidden" name="t" value="{?=$_GET['t']?}">
+                    <input type="hidden" name="t" value="{?=e($_GET['t'])?}">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
                     </span>

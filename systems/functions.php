@@ -12,6 +12,36 @@ function checkEmptyFields(array $keys, array $array)
 }
 
 
+/**
+ * Aturan kekuatan kata sandi yang berlaku di seluruh aplikasi.
+ *
+ * Minimal 8 karakter dan memuat kombinasi huruf kecil, huruf besar, serta angka.
+ * dipakai oleh modul Pengguna (admin) dan Ganti Password (profil) agar aturannya sama.
+ *
+ * @param  string $password Kata sandi yang akan diperiksa
+ * @return string|null Pesan kesalahan bila tidak lolos, atau null bila lolos
+ */
+function passwordStrengthError($password)
+{
+    $password = (string) $password;
+
+    if (strlen($password) < 8) {
+        return 'Password terlalu pendek. Minimal 8 karakter.';
+    }
+    if (!preg_match('/[a-z]/', $password)) {
+        return 'Password harus memuat minimal satu huruf kecil.';
+    }
+    if (!preg_match('/[A-Z]/', $password)) {
+        return 'Password harus memuat minimal satu huruf besar.';
+    }
+    if (!preg_match('/[0-9]/', $password)) {
+        return 'Password harus memuat minimal satu angka.';
+    }
+
+    return null;
+}
+
+
 function deleteDir($path)
 {
     return !empty($path) && is_file($path)
@@ -53,8 +83,124 @@ function revertNorawat($text)
     return $result;
 }
 
-function htmlspecialchars_array(array $array)
+/**
+ * Escape a value for HTML output (text node or attribute).
+ *
+ * Dipakai template untuk mengeluarkan data request tanpa membuka celah XSS.
+ *
+ * @param  mixed  $value
+ * @return string
+ */
+function e($value)
 {
+    return htmlspecialchars((string)($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+}
+
+/**
+ * Header keamanan standar yang dikirim pada setiap response aplikasi.
+ */
+function sendSecurityHeaders()
+{
+    if (headers_sent()) {
+        return;
+    }
+
+    // Cegah sniffing tipe konten (mis. HTML yang dibaca sebagai script).
+    header('X-Content-Type-Options: nosniff');
+
+    // Cegah clickjacking: halaman hanya boleh diframe oleh origin yang sama.
+    header('X-Frame-Options: SAMEORIGIN');
+
+    // CSP: kunci object/base/frame-ancestors tanpa memutus gaya & script inline
+    // yang dipakai luas oleh tema dan modul yang ada.
+    header("Content-Security-Policy: default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; object-src 'self'; base-uri 'self'; frame-ancestors 'self'");
+}
+
+/**
+ * Token CSRF yang tersimpan di sesi (untuk form & AJAX admin).
+ *
+ * @return string
+ */
+function csrfToken()
+{
+    return isset($_SESSION['token']) ? (string) $_SESSION['token'] : '';
+}
+
+/**
+ * Ambil token CSRF yang dikirim klien: field _token, header X-CSRF-Token, atau parameter t.
+ *
+ * @return string|null
+ */
+function csrfTokenFromRequest()
+{
+    if (isset($_POST['_token']) && is_string($_POST['_token'])) {
+        return $_POST['_token'];
+    }
+    if (isset($_SERVER['HTTP_X_CSRF_TOKEN']) && is_string($_SERVER['HTTP_X_CSRF_TOKEN'])) {
+        return $_SERVER['HTTP_X_CSRF_TOKEN'];
+    }
+    if (isset($_GET['t']) && is_string($_GET['t'])) {
+        return $_GET['t'];
+    }
+
+    return null;
+}
+
+/**
+ * Validasi token CSRF untuk permintaan state-changing (POST/PUT/PATCH/DELETE).
+ *
+ * Dilindungi hanya permintaan yang memakai cookie sesi browser; klien API
+ * (API key / Bearer) dan permintaan sebelum login (form login & OTP) dikecualikan.
+ *
+ * @return bool
+ */
+function verifyCsrfToken()
+{
+    $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET';
+    if (in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
+        return true;
+    }
+
+    // Klien API tidak memakai cookie sesi sehingga tidak rentan CSRF.
+    $apiKey = !empty($_SERVER['HTTP_X_API_KEY']) || !empty($_SERVER['X_API_KEY'])
+        || !empty($_SERVER['HTTP_API_KEY']) || !empty($_SERVER['API_KEY'])
+        || !empty($_SERVER['HTTP_AUTHORIZATION']);
+    if ($apiKey) {
+        return true;
+    }
+
+    // Form login dan verifikasi OTP berjalan sebelum sesi login terbentuk.
+    if (empty($_SESSION['mlite_user'])) {
+        return true;
+    }
+
+    $expected = csrfToken();
+    $provided = csrfTokenFromRequest();
+
+    return $expected !== '' && is_string($provided) && hash_equals($expected, $provided);
+}
+
+/**
+ * Escape rekursif seluruh nilai array untuk output HTML.
+ *
+ * Toleran terhadap null (hasil query tanpa baris) dan skalar, agar pemakaian
+ * sebagai pembungkus data template tidak memicu TypeError di PHP 8.
+ *
+ * @param  mixed  $array
+ * @return mixed
+ */
+function htmlspecialchars_array($array)
+{
+    if ($array === null) {
+        return [];
+    }
+    if (!is_array($array)) {
+        if ($array instanceof Closure) {
+            return $array;
+        }
+        return htmlspecialchars((string) $array, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
     foreach ($array as $key => $value) {
         if (is_array($value)) {
             $array[$key] = htmlspecialchars_array($value);
@@ -69,6 +215,195 @@ function htmlspecialchars_array(array $array)
     return $array;
 }
 
+
+/**
+ * Daftar ekstensi yang DITOLAK di semua unggahan, apa pun allowlist pemanggil.
+ * SVG bisa berisi <script> (XSS tersimpan bila dibuka langsung), HTML/XML bisa
+ * mengeksekusi skrip, dan sisanya berkas eksekusi/format berbahaya.
+ */
+function uploadBlockedExtensions()
+{
+    return [
+        'svg', 'svgz', 'xml', 'xsl', 'xslt', 'xsd',
+        'html', 'htm', 'xhtml', 'shtml', 'hta', 'mhtml', 'mht',
+        'js', 'jse', 'vbs', 'vbe', 'wsf', 'wsh', 'ps1', 'reg',
+        'svg', 'swf', 'jar', 'apk', 'ipa', 'deb', 'rpm', 'msi', 'app',
+        'php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'pht', 'phar', 'phps', 'cgi', 'pl', 'py', 'rb', 'sh', 'bash', 'zsh',
+        'exe', 'bat', 'cmd', 'com', 'dll', 'so', 'dylib', 'bin', 'elf', 'msi',
+        'jsp', 'asp', 'aspx', 'cer', 'cdx', 'aspq', 'inc',
+        'htaccess', 'htpasswd', 'ini', 'conf', 'cfg', 'env', 'lock',
+        'doc', 'docm', 'dotm', 'xls', 'xlsm', 'xltm', 'xlsb', 'pptm', 'potm', 'ppam', 'sldm', // makro Office
+        'lnk', 'scp', 'desktop',
+    ];
+}
+
+/**
+ * Batas ukuran upload per jenis ekstensi (byte).
+ * Dipakai validateUploadedFile() sebagai batas bawaan bila pemanggil
+ * tidak menentukan $maxBytes sendiri (atau batas pemanggil lebih longgar).
+ */
+function uploadSizeLimits()
+{
+    $MB = 1024 * 1024;
+    return [
+        // gambar
+        'jpg' => 5 * $MB, 'jpeg' => 5 * $MB, 'png' => 5 * $MB, 'gif' => 5 * $MB,
+        'webp' => 5 * $MB, 'bmp' => 5 * $MB,
+        // dokumen
+        'pdf' => 20 * $MB,
+        'doc' => 10 * $MB, 'docx' => 10 * $MB, 'xls' => 10 * $MB, 'xlsx' => 10 * $MB,
+        'ppt' => 20 * $MB, 'pptx' => 20 * $MB, 'txt' => 2 * $MB, 'csv' => 10 * $MB,
+        // arsip & data
+        'zip' => 50 * $MB, 'rar' => 50 * $MB, '7z' => 50 * $MB,
+        'dcm' => 100 * $MB,
+        // media
+        'mp3' => 20 * $MB, 'wav' => 50 * $MB,
+        'mp4' => 100 * $MB, 'avi' => 100 * $MB, 'mkv' => 100 * $MB,
+    ];
+}
+
+/**
+ * Format ukuran byte untuk pesan error (mis. "5 MB", "100 KB").
+ */
+function sizeForDisplay($bytes)
+{
+    $bytes = (int) $bytes;
+    if ($bytes >= 1024 * 1024) {
+        $val = $bytes / (1024 * 1024);
+        return (floor($val) == $val ? number_format($val) : number_format($val, 1)) . ' MB';
+    }
+    if ($bytes >= 1024) {
+        return number_format($bytes / 1024) . ' KB';
+    }
+    return number_format($bytes) . ' byte';
+}
+
+/**
+ * Peta kecocokan ekstensi berkas dengan MIME yang sah untuknya.
+ * Dipakai validateUploadedFile() untuk menolak berkas yang ekstensinya
+ * sengaja dibedakan dengan isinya (mis. gambar.php.jpg).
+ */
+function uploadExtensionMimeMap()
+{
+    return [
+        'jpg'  => ['image/jpeg'],
+        'jpeg' => ['image/jpeg'],
+        'png'  => ['image/png'],
+        'gif'  => ['image/gif'],
+        'webp' => ['image/webp'],
+        'bmp'  => ['image/bmp', 'image/x-ms-bmp'],
+        'pdf'  => ['application/pdf'],
+        'zip'  => ['application/zip', 'application/x-zip-compressed', 'multipart/x-zip'],
+        'dcm'  => ['application/dicom', 'application/octet-stream', 'image/jpeg', 'image/png'],
+    ];
+}
+
+/**
+ * Validasi unggahan: ekstensi nama berkas + kecocokan dengan isi berkas.
+ *
+ * Pemeriksaan yang dilakukan, berurutan:
+ *  1. kode error PHP dan (opsional) batas ukuran;
+ *  2. ekstensi terakhir nama berkas harus termasuk daftar izin;
+ *  3. nama berkas tidak boleh mengandung ekstensi berbahaya lain
+ *     (mis. "dokumen.php.jpg" ditolak);
+ *  4. MIME hasil pembacaan isi berkas (finfo - bukan tipe yang dikirim
+ *     klien) harus termasuk daftar izin;
+ *  5. MIME isi harus cocok dengan ekstensi yang diklaim;
+ *  6. berkas gambar harus benar-benar terbaca oleh getimagesize().
+ *
+ * @param  array $file             entri dari $_FILES
+ * @param  array $allowedExtensions daftar ekstensi yang diizinkan (huruf kecil)
+ * @param  array $allowedMimes     daftar MIME isi yang diizinkan
+ * @param  int   $maxBytes         batas ukuran opsional (0 = tanpa batas)
+ * @return array ['mime' => ..., 'extension' => ...] bila valid,
+ *                atau ['error' => ...] bila ditolak.
+ */
+function validateUploadedFile(array $file, array $allowedExtensions, array $allowedMimes, int $maxBytes = 0)
+{
+    if (!isset($file['error']) || is_array($file['error'])) {
+        return ['error' => 'Upload file gagal.'];
+    }
+    if ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE) {
+        return ['error' => 'Ukuran file terlalu besar.'];
+    }
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['error' => 'Upload file gagal (kode error ' . $file['error'] . ').'];
+    }
+
+    $tmp = (string) ($file['tmp_name'] ?? '');
+    if ($tmp === '' || !(is_uploaded_file($tmp) || is_file($tmp))) {
+        return ['error' => 'File tidak ditemukan.'];
+    }
+    if ($maxBytes > 0 && (int) ($file['size'] ?? 0) > $maxBytes) {
+        return ['error' => 'Ukuran file terlalu besar. Maksimal ' . sizeForDisplay($maxBytes) . '.'];
+    }
+
+    // Batas ukuran per jenis ekstensi (berlaku meski pemanggil tidak
+    // menentukan $maxBytes sendiri) - kecuali pemanggil sudah lebih ketat.
+    $extLimits = uploadSizeLimits();
+    $extGuess  = strtolower(pathinfo(basename(str_replace('\\', '/', (string) ($file['name'] ?? ''))), PATHINFO_EXTENSION));
+    if (($maxBytes <= 0 || (int) ($file['size'] ?? 0) > $maxBytes)
+        && isset($extLimits[$extGuess])
+        && (int) ($file['size'] ?? 0) > $extLimits[$extGuess]) {
+        return ['error' => 'Ukuran file .' . $extGuess . ' terlalu besar. Maksimal ' . sizeForDisplay($extLimits[$extGuess]) . '.'];
+    }
+
+    $original = str_replace('\\', '/', (string) ($file['name'] ?? ''));
+    $base = basename($original);
+    if ($base === '' || $base === '.' || $base === '/') {
+        return ['error' => 'Nama file tidak valid.'];
+    }
+
+    // 1. Ekstensi nama berkas
+    $allowedExtensions = array_map('strtolower', $allowedExtensions);
+    $extension = strtolower(pathinfo($base, PATHINFO_EXTENSION));
+    if ($extension === '' || !in_array($extension, $allowedExtensions, true)) {
+        return ['error' => 'Tipe file tidak diizinkan. Ekstensi yang diperbolehkan: ' . implode(', ', $allowedExtensions) . '.'];
+    }
+
+    // 1b. Tolak ekstensi yang berbahaya apa pun konteksnya (termasuk SVG/HTML/XML)
+    if (in_array($extension, uploadBlockedExtensions(), true)) {
+        return ['error' => 'File dengan ekstensi .' . $extension . ' tidak diizinkan (berpotensi berbahaya).'];
+    }
+
+    // 2. Tolak ekstensi ganda berbahaya pada nama berkas
+    $dangerous = uploadBlockedExtensions();
+    $segments = explode('.', strtolower($base));
+    array_pop($segments); // ekstensi terakhir sudah sah
+    foreach ($segments as $segment) {
+        if (in_array($segment, $dangerous, true)) {
+            return ['error' => 'Nama file mengandung ekstensi yang tidak diizinkan.'];
+        }
+    }
+
+    // 3. MIME isi berkas - dibaca dari file, bukan dari klaim klien
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime = $finfo ? (string) finfo_file($finfo, $tmp) : '';
+    if ($finfo) {
+        finfo_close($finfo);
+    }
+    if ($mime === '') {
+        $mime = strtolower((string) ($file['type'] ?? ''));
+    }
+    $mime = strtolower($mime);
+    $allowedMimes = array_map('strtolower', $allowedMimes);
+    if (!in_array($mime, $allowedMimes, true)) {
+        return ['error' => 'Isi file tidak sesuai dengan ekstensi .' . $extension . '.'];
+    }
+
+    // 4. Ekstensi harus cocok dengan isi berkas
+    $compat = uploadExtensionMimeMap();
+    if (isset($compat[$extension]) && !in_array($mime, $compat[$extension], true)) {
+        return ['error' => 'Ekstensi .' . $extension . ' tidak cocok dengan isi file.'];
+    }
+
+    // 5. Gambar wajib benar-benar terbaca sebagai gambar
+    if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'], true) && @getimagesize($tmp) === false) {
+        return ['error' => 'File gambar rusak atau bukan gambar yang valid.'];
+    }
+
+    return ['mime' => $mime, 'extension' => $extension];
+}
 
 function htmlentities_array(array $array)
 {

@@ -71,7 +71,7 @@ class Site extends SiteModule
             $page = [
                 'title' => 'VEDA',
                 'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
-                'content' => $this->draw('login.html', ['mlite' => $this->mlite])
+                'content' => $this->draw('login.html', ['mlite' => htmlspecialchars_array($this->mlite)])
             ];
         }
 
@@ -107,7 +107,7 @@ class Site extends SiteModule
         $page = [
             'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
-            'content' => $this->draw('login.html', ['mlite' => $this->mlite])
+            'content' => $this->draw('login.html', ['mlite' => htmlspecialchars_array($this->mlite)])
         ];
       }
       $this->setTemplate('fullpage.html');
@@ -179,7 +179,7 @@ class Site extends SiteModule
               $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['resumeURL']  = url(['veda', 'resume', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url(['veda', 'billing', $this->convertNorawat($row['no_rawat'])]);
-              $this->assign['list'][] = $row;
+              $this->assign['list'][] = htmlspecialchars_array($row);
           }
       }
 
@@ -214,7 +214,7 @@ class Site extends SiteModule
         $page = [
             'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
-            'content' => $this->draw('login.html', ['mlite' => $this->mlite])
+            'content' => $this->draw('login.html', ['mlite' => htmlspecialchars_array($this->mlite)])
         ];
       }
       $this->setTemplate('fullpage.html');
@@ -291,7 +291,7 @@ class Site extends SiteModule
               $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['resumeURL']  = url(['veda', 'resume', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url(['veda', 'billing', $this->convertNorawat($row['no_rawat'])]);
-              $this->assign['list'][] = $row;
+              $this->assign['list'][] = htmlspecialchars_array($row);
           }
       }
 
@@ -326,7 +326,7 @@ class Site extends SiteModule
         $page = [
             'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
-            'content' => $this->draw('login.html', ['mlite' => $this->mlite])
+            'content' => $this->draw('login.html', ['mlite' => htmlspecialchars_array($this->mlite)])
         ];
       }
       $this->setTemplate('fullpage.html');
@@ -398,7 +398,7 @@ class Site extends SiteModule
               $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['resumeURL']  = url(['veda', 'resume', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url(['veda', 'billing', $this->convertNorawat($row['no_rawat'])]);
-              $this->assign['list'][] = $row;
+              $this->assign['list'][] = htmlspecialchars_array($row);
           }
       }
 
@@ -449,7 +449,7 @@ class Site extends SiteModule
       }
       $content = $this->draw('perbaikan_excel.html', [
         'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-        'display' => $display
+        'display' => htmlspecialchars_array($display)
       ]);
 
       $assign = [
@@ -496,7 +496,7 @@ class Site extends SiteModule
         $page = [
             'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
-            'content' => $this->draw('login.html', ['mlite' => $this->mlite])
+            'content' => $this->draw('login.html', ['mlite' => htmlspecialchars_array($this->mlite)])
         ];
       }
       $this->setTemplate('fullpage.html');
@@ -538,7 +538,7 @@ class Site extends SiteModule
         $page = [
             'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
-            'content' => $this->draw('login.html', ['mlite' => $this->mlite])
+            'content' => $this->draw('login.html', ['mlite' => htmlspecialchars_array($this->mlite)])
         ];
       }
 
@@ -628,7 +628,7 @@ class Site extends SiteModule
               $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['resumeURL']  = url(['veda', 'resume', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url(['veda', 'billing', $this->convertNorawat($row['no_rawat'])]);
-              $this->assign['list'][] = $row;
+              $this->assign['list'][] = htmlspecialchars_array($row);
           }
       }
 
@@ -667,7 +667,7 @@ class Site extends SiteModule
               $row['catatanURL'] = url(['veda', 'catatan', $this->convertNorawat($row['no_rawat'])]);
               $row['resumeURL']  = url(['veda', 'resume', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url(['veda', 'billing', $this->convertNorawat($row['no_rawat'])]);
-              $this->assign['list'][] = $row;
+              $this->assign['list'][] = htmlspecialchars_array($row);
           }
       }
 

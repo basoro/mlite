@@ -19,7 +19,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $mlite_users = $this->db('mlite_users')->toArray();
-        return $this->draw('manage.html', ['mlite_users' => $mlite_users]);
+        return $this->draw('manage.html', ['mlite_users' => htmlspecialchars_array($mlite_users)]);
     }
 
     public function postData()
@@ -207,7 +207,7 @@ class Admin extends AdminModule
     {
         $detail = $this->db('mlite_api_key')->where('id', $id)->toArray();
         $settings = $this->settings('settings');
-        echo $this->draw('detail.html', ['detail' => $detail, 'settings' => $settings]);
+        echo $this->draw('detail.html', ['detail' => htmlspecialchars_array($detail), 'settings' => htmlspecialchars_array($settings)]);
         exit();
     }
 
@@ -237,7 +237,7 @@ class Admin extends AdminModule
         $stmt->execute([$nama_table]);
         $result = $stmt->fetchAll();
 
-        echo $this->draw('chart.html', ['type' => $type, 'column' => htmlspecialchars_array($result), 'labels' => $labels, 'datasets' => $datasets, 'slug' => $slug]);
+        echo $this->draw('chart.html', ['type' => htmlspecialchars_array($type), 'column' => htmlspecialchars_array($result), 'labels' => $labels, 'datasets' => $datasets, 'slug' => $slug]);
         exit();
     }
 

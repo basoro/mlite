@@ -62,7 +62,7 @@ class JnsPerawatanLab
           ];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function anyTemplateLaboratorium()
@@ -122,7 +122,7 @@ class JnsPerawatanLab
           $return['halaman'] = $_POST['halaman'];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function postSave()

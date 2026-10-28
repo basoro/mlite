@@ -61,9 +61,17 @@ class Admin extends AdminModule
         if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             return ['status' => 'error', 'message' => 'Email salah.'];
         }
-        // check if password is longer than 5 characters
-        if (isset($_POST['password']) && !empty($_POST['password']) && strlen($_POST['password']) < 8) {
-            return ['status' => 'error', 'message' => 'Password terlalu pendek. Minimal 8 karakter.'];
+        // validate password strength when a new password is supplied
+        if (isset($_POST['password']) && $_POST['password'] === '********') {
+            unset($_POST['password']); // masked placeholder, password is not changed
+        }
+        if (!empty($_POST['password'])) {
+            if (($error = passwordStrengthError($_POST['password'])) !== null) {
+                return ['status' => 'error', 'message' => $error];
+            }
+            if (isset($_POST['password_confirmation']) && $_POST['password_confirmation'] !== $_POST['password']) {
+                return ['status' => 'error', 'message' => 'Konfirmasi password tidak cocok.'];
+            }
         }
 
         // access and cap are already strings from frontend
@@ -149,7 +157,7 @@ class Admin extends AdminModule
         $this->core->addCSS(url([ADMIN, 'users', 'css']));
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
-        return $this->draw('manage.html', ['myId' => $this->core->getUserInfo('id'), 'users' => $rows]);
+        return $this->draw('manage.html', ['myId' => $this->core->getUserInfo('id'), 'users' => htmlspecialchars_array($rows)]);
     }
 
     /**
@@ -246,11 +254,20 @@ class Admin extends AdminModule
             $errors++;
             $this->notify('failure', 'Email salah');
         }
-        // check if password is longer than 5 characters
-        if (isset($_POST['password']) && strlen($_POST['password']) < 8) {
-            $errors++;
-            $this->notify('failure', 'Password terlalu pendek. Minimal 8 karakter serta memuat kombinasi huruf besar, huruf kecil, angka, dan karakter khusus ');
+        // validate password strength when a new password is supplied
+        if (isset($_POST['password']) && $_POST['password'] === '********') {
+            unset($_POST['password']); // masked placeholder, password is not changed
         }
+        if (isset($_POST['password']) && $_POST['password'] !== '') {
+            if (($error = passwordStrengthError($_POST['password'])) !== null) {
+                $errors++;
+                $this->notify('failure', $error);
+            } elseif (!isset($_POST['password_confirmation']) || $_POST['password_confirmation'] !== $_POST['password']) {
+                $errors++;
+                $this->notify('failure', 'Konfirmasi password tidak cocok.');
+            }
+        }
+        unset($_POST['password_confirmation']);
         $_POST['role'] = $this->_normalizeRoleInput($_POST['role'] ?? []);
         // access to modules
         if ((count($_POST['access']) == count($this->_getModules())) || ($id == 1)) {
@@ -272,6 +289,8 @@ class Admin extends AdminModule
 
             if (!empty($_POST['password'])) {
                 $_POST['password'] = password_hash($_POST['password'], PASSWORD_BCRYPT);
+            } else {
+                unset($_POST['password']); // empty means "keep the current password"
             }
 
             if (($photo = isset_or($_FILES['photo']['tmp_name'], false)) || !$id) {
@@ -386,7 +405,7 @@ class Admin extends AdminModule
             ];
         }
         
-        return $this->draw('permission.html', ['user' => $user, 'permissions' => $permissions]);
+        return $this->draw('permission.html', ['user' => htmlspecialchars_array($user), 'permissions' => htmlspecialchars_array($permissions)]);
     }
 
     /**

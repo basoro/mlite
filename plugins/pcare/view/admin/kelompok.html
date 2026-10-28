@@ -61,7 +61,7 @@
 </script>
 <script type="text/javascript">
     {if: isset($_GET['gettindakankelompok'])}
-    $.get("{?=url([ADMIN, 'pcare', 'kelompok', $_GET['kdClub']])?}", function (data) {
+    $.get("{?=url([ADMIN, 'pcare', 'kelompok', rawurlencode($_GET['kdClub'])])?}", function (data) {
       var data = JSON.parse(data);
       var data = JSON.stringify(data, null, '\t');
       $("pre").text(data);

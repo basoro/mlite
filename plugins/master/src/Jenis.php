@@ -45,7 +45,7 @@ class Jenis
           ];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function anyDisplay()
@@ -87,7 +87,7 @@ class Jenis
           $return['halaman'] = $_POST['halaman'];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function postSave()

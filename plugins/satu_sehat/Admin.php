@@ -992,7 +992,7 @@ class Admin extends AdminModule
 
     curl_close($curl);
     if ($render) {
-      echo $this->draw('encounter.html', ['pesan' => $pesan, 'response' => $response, 'json' => $json]);
+      echo $this->draw('encounter.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response), 'json' => $json]);
     } else {
       $data = json_decode($response);
       echo $data ? json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : $response;
@@ -1919,7 +1919,7 @@ class Admin extends AdminModule
     if ($param == "all") {
       return json_decode($response);
     } else {
-      echo $this->draw('encounter.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('encounter.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
       exit();
     }
   }
@@ -1986,7 +1986,7 @@ class Admin extends AdminModule
       ];
       $response = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('condition.html', ['pesan' => 'Gagal mengirim condition platform Satu Sehat!!', 'response' => $response]);
+        echo $this->draw('condition.html', ['pesan' => 'Gagal mengirim condition platform Satu Sehat!!', 'response' => htmlspecialchars_array($response)]);
       } else {
         echo $response;
       }
@@ -2074,7 +2074,7 @@ class Admin extends AdminModule
 
     curl_close($curl);
     if ($render) {
-      echo $this->draw('condition.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('condition.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       $data = json_decode($response);
       echo $data ? json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : $response;
@@ -2154,7 +2154,7 @@ class Admin extends AdminModule
       if ($val === '') {
         $response = json_encode(['error' => 'Data tidak lengkap untuk Observation', 'missing' => ['nadi' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2174,7 +2174,7 @@ class Admin extends AdminModule
       if ($val === '') {
         $response = json_encode(['error' => 'Data tidak lengkap untuk Observation', 'missing' => ['respirasi' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2194,7 +2194,7 @@ class Admin extends AdminModule
       if ($val === '') {
         $response = json_encode(['error' => 'Data tidak lengkap untuk Observation', 'missing' => ['suhu_tubuh' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2214,7 +2214,7 @@ class Admin extends AdminModule
       if ($val === '') {
         $response = json_encode(['error' => 'Data tidak lengkap untuk Observation', 'missing' => ['spo2' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2234,7 +2234,7 @@ class Admin extends AdminModule
       if ($val === '') {
         $response = json_encode(['error' => 'Data tidak lengkap untuk Observation', 'missing' => ['gcs' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2253,7 +2253,7 @@ class Admin extends AdminModule
       if ($val === '') {
         $response = json_encode(['error' => 'Data tidak lengkap untuk Observation', 'missing' => ['tinggi' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2273,7 +2273,7 @@ class Admin extends AdminModule
       if ($val === '') {
         $response = json_encode(['error' => 'Data tidak lengkap untuk Observation', 'missing' => ['berat' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2293,7 +2293,7 @@ class Admin extends AdminModule
       if ($val === '') {
         $response = json_encode(['error' => 'Data tidak lengkap untuk Observation', 'missing' => ['lingkar_perut' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2319,7 +2319,7 @@ class Admin extends AdminModule
         ];
         $response = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2338,7 +2338,7 @@ class Admin extends AdminModule
       if ($val === '') {
         $response = json_encode(['error' => 'Data tidak lengkap untuk Observation', 'missing' => ['kesadaran' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($render) {
-          echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+          echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
         } else {
           echo $response;
         }
@@ -2365,7 +2365,7 @@ class Admin extends AdminModule
       ];
       $response = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('observation.html', ['pesan' => 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!', 'response' => $response]);
+        echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array('Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!'), 'response' => htmlspecialchars_array($response)]);
       } else {
         echo $response;
       }
@@ -2593,7 +2593,7 @@ class Admin extends AdminModule
 
     curl_close($curl);
     if ($render) {
-      echo $this->draw('observation.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('observation.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       $data = json_decode($response);
       echo $data ? json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : $response;
@@ -2608,7 +2608,7 @@ class Admin extends AdminModule
       ->join('template_laboratorium', 'template_laboratorium.id_template = mlite_satu_sehat_mapping_lab.id_template')
       ->toArray();
     $template_laboratorium = $this->db('template_laboratorium')->toArray();
-    return $this->draw('mapping.lab.html', ['mapping_lab_satu_sehat' => $mapping_lab, 'template_laboratorium' => $template_laboratorium]);
+    return $this->draw('mapping.lab.html', ['mapping_lab_satu_sehat' => htmlspecialchars_array($mapping_lab), 'template_laboratorium' => htmlspecialchars_array($template_laboratorium)]);
   }
 
   public function getMappingRad()
@@ -2618,7 +2618,7 @@ class Admin extends AdminModule
       ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = mlite_satu_sehat_mapping_rad.kd_jenis_prw')
       ->toArray();
     $jns_perawatan_radiologi = $this->db('jns_perawatan_radiologi')->toArray();
-    return $this->draw('mapping.rad.html', ['mapping_rad_satu_sehat' => $mapping_rad, 'jns_perawatan_radiologi' => $jns_perawatan_radiologi]);
+    return $this->draw('mapping.rad.html', ['mapping_rad_satu_sehat' => htmlspecialchars_array($mapping_rad), 'jns_perawatan_radiologi' => htmlspecialchars_array($jns_perawatan_radiologi)]);
   }
 
   public function getLookupMaster()
@@ -2950,7 +2950,7 @@ class Admin extends AdminModule
     if (!is_array($prosedur_pasien) || !isset($prosedur_pasien['kode']) || !isset($prosedur_pasien['deskripsi_panjang'])) {
       $resp = json_encode(['error' => 'Data tidak lengkap untuk Procedure', 'missing' => ['prosedur_pasien.kode' => 'missing', 'prosedur_pasien.deskripsi_panjang' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('procedure.html', ['pesan' => 'Gagal mengirim procedure platform Satu Sehat!!', 'response' => $resp]);
+        echo $this->draw('procedure.html', ['pesan' => 'Gagal mengirim procedure platform Satu Sehat!!', 'response' => htmlspecialchars_array($resp)]);
       } else {
         echo $resp;
       }
@@ -2971,7 +2971,7 @@ class Admin extends AdminModule
     if ($id_pasien === '') {
       $resp = json_encode(['error' => 'Data tidak lengkap untuk Procedure', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('procedure.html', ['pesan' => 'Gagal mengirim procedure platform Satu Sehat!!', 'response' => $resp]);
+        echo $this->draw('procedure.html', ['pesan' => 'Gagal mengirim procedure platform Satu Sehat!!', 'response' => htmlspecialchars_array($resp)]);
       } else {
         echo $resp;
       }
@@ -3062,7 +3062,7 @@ class Admin extends AdminModule
     curl_close($curl);
     // echo $response;
     if ($render) {
-      echo $this->draw('procedure.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('procedure.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       $data = json_decode($response);
       echo $data ? json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : $response;
@@ -3110,7 +3110,7 @@ class Admin extends AdminModule
     if ($id_pasien === '') {
       $resp = json_encode(['error' => 'Data tidak lengkap untuk Diet Gizi', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('dietgizi.html', ['pesan' => 'Gagal mengirim diet gizi platform Satu Sehat!!', 'response' => $resp]);
+        echo $this->draw('dietgizi.html', ['pesan' => 'Gagal mengirim diet gizi platform Satu Sehat!!', 'response' => htmlspecialchars_array($resp)]);
       } else {
         echo $resp;
       }
@@ -3233,7 +3233,7 @@ class Admin extends AdminModule
     // echo $response;
     // echo '<pre>' . $data . '</pre>';
     if ($render) {
-      echo $this->draw('dietgizi.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('dietgizi.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       echo $response;
     }
@@ -3280,7 +3280,7 @@ class Admin extends AdminModule
     if ($id_pasien === '') {
       $resp = json_encode(['error' => 'Data tidak lengkap untuk Diet Gizi', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('dietgizi.html', ['pesan' => 'Gagal mengirim diet gizi platform Satu Sehat!!', 'response' => $resp]);
+        echo $this->draw('dietgizi.html', ['pesan' => 'Gagal mengirim diet gizi platform Satu Sehat!!', 'response' => htmlspecialchars_array($resp)]);
       } else {
         echo $resp;
       }
@@ -3373,7 +3373,7 @@ class Admin extends AdminModule
     // echo $response;
     // echo '<pre>' . $data . '</pre>';
     if ($render) {
-      echo $this->draw('questionnaire.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('questionnaire.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       echo $response;
     }
@@ -3425,7 +3425,7 @@ class Admin extends AdminModule
     if ($id_pasien === '') {
       $resp = json_encode(['error' => 'Data tidak lengkap untuk Vaksin', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('vaksin.html', ['pesan' => 'Gagal mengirim vaksin platform Satu Sehat!!', 'response' => $resp]);
+        echo $this->draw('vaksin.html', ['pesan' => 'Gagal mengirim vaksin platform Satu Sehat!!', 'response' => htmlspecialchars_array($resp)]);
       } else {
         echo $resp;
       }
@@ -3577,7 +3577,7 @@ class Admin extends AdminModule
     }
 
     if ($render) {
-      echo $this->draw('vaksin.html', ['pesan' => isset($pesan) ? $pesan : '', 'response' => isset($response) ? $response : '']);
+      echo $this->draw('vaksin.html', ['pesan' => htmlspecialchars_array(isset($pesan) ? $pesan : ''), 'response' => htmlspecialchars_array(isset($response) ? $response : '')]);
     } else {
       echo isset($response) ? $response : '';
     }
@@ -3631,7 +3631,7 @@ class Admin extends AdminModule
     if ($id_pasien === '') {
       $resp = json_encode(['error' => 'Data tidak lengkap untuk Clinical Impression', 'missing' => ['patient_id' => 'missing']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('clinical.impression.html', ['pesan' => 'Gagal mengirim clinical impression platform Satu Sehat!!', 'response' => $resp]);
+        echo $this->draw('clinical.impression.html', ['pesan' => 'Gagal mengirim clinical impression platform Satu Sehat!!', 'response' => htmlspecialchars_array($resp)]);
       } else {
         echo $resp;
       }
@@ -3727,7 +3727,7 @@ class Admin extends AdminModule
     // echo '<pre>' . $data . '</pre>';
 
     if ($render) {
-      echo $this->draw('clinical.impression.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('clinical.impression.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       echo $response;
     }
@@ -4371,8 +4371,8 @@ class Admin extends AdminModule
 
     if ($render) {
       echo $this->draw('medication.html', [
-        'pesan' => isset_or($pesan, ''),
-        'response' => isset_or($response, '')
+        'pesan' => htmlspecialchars_array(isset_or($pesan, '')),
+        'response' => htmlspecialchars_array(isset_or($response, ''))
       ]);
     } else {
       echo isset($response) ? $response : '';
@@ -4931,7 +4931,7 @@ class Admin extends AdminModule
     ;
 
     if ($render) {
-      echo $this->draw('laboratory.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('laboratory.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       echo $response;
     }
@@ -5641,7 +5641,7 @@ class Admin extends AdminModule
       }
     }
     if ($render) {
-      echo $this->draw('radiology.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('radiology.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       echo $response;
     }
@@ -5746,7 +5746,7 @@ class Admin extends AdminModule
       ];
       $response = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('careplan.html', ['pesan' => 'Gagal mengirim careplan platform Satu Sehat!!', 'response' => $response]);
+        echo $this->draw('careplan.html', ['pesan' => 'Gagal mengirim careplan platform Satu Sehat!!', 'response' => htmlspecialchars_array($response)]);
       } else {
         echo $response;
       }
@@ -5833,7 +5833,7 @@ class Admin extends AdminModule
     curl_close($curl);
 
     if ($render) {
-      echo $this->draw('careplan.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('careplan.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       echo $response;
     }
@@ -5907,7 +5907,7 @@ class Admin extends AdminModule
       ];
       $response = json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
       if ($render) {
-        echo $this->draw('allergy.html', ['pesan' => 'Gagal mengirim allergy platform Satu Sehat!!', 'response' => $response]);
+        echo $this->draw('allergy.html', ['pesan' => 'Gagal mengirim allergy platform Satu Sehat!!', 'response' => htmlspecialchars_array($response)]);
       } else {
         echo $response;
       }
@@ -6060,7 +6060,7 @@ class Admin extends AdminModule
     curl_close($curl);
 
     if ($render) {
-      echo $this->draw('allergy.html', ['pesan' => $pesan, 'response' => $response]);
+      echo $this->draw('allergy.html', ['pesan' => htmlspecialchars_array($pesan), 'response' => htmlspecialchars_array($response)]);
     } else {
       echo $response;
     }
@@ -6073,7 +6073,7 @@ class Admin extends AdminModule
         $this->notify('failure', 'Anda tidak memiliki hak akses untuk halaman ini.');
         redirect(url([ADMIN, 'satu_sehat', 'praktisi']));
     }
-    return $this->draw('settings.html', ['satu_sehat' => $this->settings->get('satu_sehat'), 'mapping_lokasi' => $this->db('mlite_satu_sehat_lokasi')->toArray(), 'bidang' => $this->db('bidang')->toArray()]);
+    return $this->draw('settings.html', ['satu_sehat' => htmlspecialchars_array($this->settings->get('satu_sehat')), 'mapping_lokasi' => htmlspecialchars_array($this->db('mlite_satu_sehat_lokasi')->toArray()), 'bidang' => htmlspecialchars_array($this->db('bidang')->toArray())]);
   }
 
   public function postSaveSettings()
@@ -6096,7 +6096,7 @@ class Admin extends AdminModule
     if (isset($_POST['nik_dokter']) && $_POST['nik_dokter'] != '') {
       $response = json_decode($this->getPractitioner($_POST['nik_dokter']));
     }
-    return $this->draw('praktisi.html', ['response' => json_encode($response, JSON_PRETTY_PRINT)]);
+    return $this->draw('praktisi.html', ['response' => htmlspecialchars_array(json_encode($response, JSON_PRETTY_PRINT))]);
   }
 
   public function anyPasien()
@@ -6105,7 +6105,7 @@ class Admin extends AdminModule
     if (isset($_POST['nik_pasien']) && $_POST['nik_pasien'] != '') {
       $response = json_decode($this->getPatient($_POST['nik_pasien']));
     }
-    return $this->draw('pasien.html', ['response' => json_encode($response, JSON_PRETTY_PRINT)]);
+    return $this->draw('pasien.html', ['response' => htmlspecialchars_array(json_encode($response, JSON_PRETTY_PRINT))]);
   }
 
   public function getDepartemen()
@@ -6121,7 +6121,7 @@ class Admin extends AdminModule
       $value['nama'] = $nama;
       $satu_sehat[] = $value;
     }
-    return $this->draw('departemen.html', ['departemen' => $this->db('departemen')->toArray(), 'poli' => $poli, 'satu_sehat_departemen' => $satu_sehat]);
+    return $this->draw('departemen.html', ['departemen' => htmlspecialchars_array($this->db('departemen')->toArray()), 'poli' => $poli, 'satu_sehat_departemen' => htmlspecialchars_array($satu_sehat)]);
   }
 
   public function getLokasi()
@@ -6136,12 +6136,12 @@ class Admin extends AdminModule
     ])->toArray();
     $lokasi = array_merge($poliklinik, $bangsal);
     return $this->draw('lokasi.html', [
-      'lokasi' => $lokasi,
-      'satu_sehat_departemen' => $this->db('mlite_satu_sehat_departemen')->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')->toArray(),
-      'satu_sehat_lokasi' => $this->db('mlite_satu_sehat_lokasi')
+      'lokasi' => htmlspecialchars_array($lokasi),
+      'satu_sehat_departemen' => htmlspecialchars_array($this->db('mlite_satu_sehat_departemen')->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')->toArray()),
+      'satu_sehat_lokasi' => htmlspecialchars_array($this->db('mlite_satu_sehat_lokasi')
         ->join('mlite_satu_sehat_departemen', 'mlite_satu_sehat_departemen.id_organisasi_satusehat=mlite_satu_sehat_lokasi.id_organisasi_satusehat')
         ->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')
-        ->toArray()
+        ->toArray())
     ]);
   }
 
@@ -6234,7 +6234,7 @@ class Admin extends AdminModule
     $apoteker = $this->db('pegawai')->where('stts_aktif', 'AKTIF')->where('bidang', $apotek_setting)->toArray();
     $lab = $this->db('pegawai')->where('stts_aktif', 'AKTIF')->where('bidang', $lab_setting)->toArray();
     $lab_apoteker = array_merge($lab, $apoteker);
-    return $this->draw('mapping.praktisi.html', ['mapping_praktisi' => $unique, 'dokter' => $dokter, 'apoteker' => $lab_apoteker]);
+    return $this->draw('mapping.praktisi.html', ['mapping_praktisi' => htmlspecialchars_array($unique), 'dokter' => htmlspecialchars_array($dokter), 'apoteker' => htmlspecialchars_array($lab_apoteker)]);
   }
 
   public function postSaveMappingPraktisi()
@@ -6358,7 +6358,7 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
     $databarang = $this->db('databarang')->where('status', '1')->toArray();
     $mapping_obat = $this->db('mlite_satu_sehat_mapping_obat')->toArray();
-    return $this->draw('mapping.obat.html', ['databarang' => $databarang, 'mapping_obat_satu_sehat' => $mapping_obat]);
+    return $this->draw('mapping.obat.html', ['databarang' => htmlspecialchars_array($databarang), 'mapping_obat_satu_sehat' => htmlspecialchars_array($mapping_obat)]);
   }
 
   public function getMappingObatSearch()
@@ -6467,8 +6467,8 @@ class Admin extends AdminModule
       ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = mlite_satu_sehat_mapping_tindakan.kd_jenis_prw')
       ->toArray();
     return $this->draw('mapping.tindakan.html', [
-      'tindakan_satu_sehat' => $tindakan,
-      'mapping_tindakan_satu_sehat' => $mapping,
+      'tindakan_satu_sehat' => htmlspecialchars_array($tindakan),
+      'mapping_tindakan_satu_sehat' => htmlspecialchars_array($mapping),
     ]);
   }
 
@@ -7125,13 +7125,13 @@ class Admin extends AdminModule
       $url = $validation_web["data"]["url"];
       error_log('Satu Sehat KYC URL generated successfully');
 
-      return $this->draw('kyc.html', ['url' => $url]);
+      return $this->draw('kyc.html', ['url' => htmlspecialchars_array($url)]);
 
     } catch (\Exception $e) {
       error_log('Satu Sehat KYC Exception: ' . $e->getMessage());
       return $this->draw('error.html', [
         'title' => 'KYC Generation Error',
-        'message' => 'An error occurred while generating KYC URL: ' . $e->getMessage()
+        'message' => htmlspecialchars_array('An error occurred while generating KYC URL: ' . $e->getMessage())
       ]);
     }
   }
@@ -8694,8 +8694,8 @@ public function getRme($no_rawat = null)
     $no_rawat = revertNoRawat($no_rawat);
     $resolved = $this->resolveSsrmePayload($no_rawat);
     echo $this->draw('rme.html', [
-      'no_rawat' => $no_rawat,
-      'resolved' => $resolved,
+      'no_rawat' => htmlspecialchars_array($no_rawat),
+      'resolved' => htmlspecialchars_array($resolved),
       'ssrme_base_url' => $this->getSsrmeBaseUrl()
     ]);
     exit();

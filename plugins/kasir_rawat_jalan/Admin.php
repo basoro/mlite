@@ -1459,36 +1459,36 @@ class Admin extends AdminModule
         'rawat_jl_dr' => $rawat_jl_dr,
         'rawat_jl_pr' => $rawat_jl_pr,
         'rawat_jl_drpr' => $rawat_jl_drpr,
-        'tindakan' => $tindakan,
-        'jumlah_total' => $jumlah_total,
-        'jumlah_total_obat' => $jumlah_total_obat,
-        'jumlah_total_embalase' => $jumlah_total_embalase,
-        'jumlah_total_tuslah' => $jumlah_total_tuslah,
+        'tindakan' => htmlspecialchars_array($tindakan),
+        'jumlah_total' => htmlspecialchars_array($jumlah_total),
+        'jumlah_total_obat' => htmlspecialchars_array($jumlah_total_obat),
+        'jumlah_total_embalase' => htmlspecialchars_array($jumlah_total_embalase),
+        'jumlah_total_tuslah' => htmlspecialchars_array($jumlah_total_tuslah),
         'jumlah_total_harga_beli' => $jumlah_total_harga_beli,
         'poliklinik' => htmlspecialchars_array($poliklinik),
         'biaya_registrasi' => htmlspecialchars_array($poliklinik)['registrasi'],
         'detail_pemberian_obat' => htmlspecialchars_array($detail_pemberian_obat),
-        'periksa_lab' => $periksa_lab,
-        'jumlah_total_lab' => $jumlah_total_lab,
-        'periksa_radiologi' => $periksa_radiologi,
-        'jumlah_total_radiologi' => $jumlah_total_radiologi,
-        'jumlah_total_operasi' => $jumlah_total_operasi,
-        'jumlah_total_obat_operasi' => $jumlah_total_obat_operasi,
+        'periksa_lab' => htmlspecialchars_array($periksa_lab),
+        'jumlah_total_lab' => htmlspecialchars_array($jumlah_total_lab),
+        'periksa_radiologi' => htmlspecialchars_array($periksa_radiologi),
+        'jumlah_total_radiologi' => htmlspecialchars_array($jumlah_total_radiologi),
+        'jumlah_total_operasi' => htmlspecialchars_array($jumlah_total_operasi),
+        'jumlah_total_obat_operasi' => htmlspecialchars_array($jumlah_total_obat_operasi),
         'resep_pulang' => htmlspecialchars_array($resep_pulang),
-        'jumlah_total_obat_pulang' => $jumlah_total_obat_pulang,
-        'tambahan_biaya' => $tambahan_biaya,
-        'jumlah_total_tambahan' => $jumlah_total_tambahan,
-        'total_tagihan' => $totalTagihan,
+        'jumlah_total_obat_pulang' => htmlspecialchars_array($jumlah_total_obat_pulang),
+        'tambahan_biaya' => htmlspecialchars_array($tambahan_biaya),
+        'jumlah_total_tambahan' => htmlspecialchars_array($jumlah_total_tambahan),
+        'total_tagihan' => htmlspecialchars_array($totalTagihan),
         'billing_terakhir' => htmlspecialchars_array($billingTerakhir ?? []),
-        'potongan_aktif' => $potonganAktif,
-        'jumlah_harus_bayar_aktif' => $jumlahHarusBayarAktif,
-        'jumlah_bayar_aktif' => $jumlahBayarAktif,
-        'kembalian_aktif' => $kembalianAktif > 0 ? $kembalianAktif : 0,
+        'potongan_aktif' => htmlspecialchars_array($potonganAktif),
+        'jumlah_harus_bayar_aktif' => htmlspecialchars_array($jumlahHarusBayarAktif),
+        'jumlah_bayar_aktif' => htmlspecialchars_array($jumlahBayarAktif),
+        'kembalian_aktif' => htmlspecialchars_array($kembalianAktif > 0 ? $kembalianAktif : 0),
         'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
         'billing_control' => htmlspecialchars_array($billingControl),
         'billing_parsial_enabled' => $billingParsialEnabled ? 'true' : 'false',
-        'split_bill' => $splitBill,
-        'split_history' => $splitHistory
+        'split_bill' => htmlspecialchars_array($splitBill),
+        'split_history' => htmlspecialchars_array($splitHistory)
       ]);
       exit();
     }
@@ -2947,7 +2947,7 @@ class Admin extends AdminModule
         $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
-        echo $this->draw('billing.kecil.html', ['billing' => htmlspecialchars_array($result), 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
+        echo $this->draw('billing.kecil.html', ['billing' => htmlspecialchars_array($result), 'pasien' => htmlspecialchars_array($pasien), 'fullname' => htmlspecialchars_array($this->core->getUserInfo('fullname', null, true))]);
         break;
       }
       exit();
@@ -3133,7 +3133,7 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $user_id = $this->core->getUserInfo('id');
         $open_shift = $this->db('mlite_kasir_shift')->where('user_id', $user_id)->isNull('waktu_tutup')->desc('id_shift')->oneArray();
-        return $this->draw('shift.html', ['open_shift' => $open_shift]);
+        return $this->draw('shift.html', ['open_shift' => htmlspecialchars_array($open_shift)]);
     }
 
     public function postOpenKasir()
@@ -3295,8 +3295,8 @@ class Admin extends AdminModule
         $data = $this->fetchObatSalesData($awal, $akhir);
 
         return $this->draw('obat.sales.html', [
-            'awal' => $awal,
-            'akhir' => $akhir,
+            'awal' => htmlspecialchars_array($awal),
+            'akhir' => htmlspecialchars_array($akhir),
             'groups' => htmlspecialchars_array($data['groups']),
             'rekap' => htmlspecialchars_array($data['rekap']),
             'total_qty' => $data['total_qty'],
@@ -3305,7 +3305,7 @@ class Admin extends AdminModule
             'total_embalase' => $data['total_embalase'],
             'total_tuslah' => $data['total_tuslah'],
             'total_margin' => $data['total_margin'],
-            'settings' => $this->settings('settings')
+            'settings' => htmlspecialchars_array($this->settings('settings'))
         ]);
     }
 
@@ -3370,7 +3370,7 @@ class Admin extends AdminModule
         $detailStmt->execute([$awal, $akhir]);
         $details = $detailStmt->fetchAll();
 
-        return $this->draw('report.html', ['awal' => $awal, 'akhir' => $akhir, 'rows' => $rows, 'details' => $details, 'settings' => $this->settings('settings')]);
+        return $this->draw('report.html', ['awal' => htmlspecialchars_array($awal), 'akhir' => htmlspecialchars_array($akhir), 'rows' => $rows, 'details' => $details, 'settings' => htmlspecialchars_array($this->settings('settings'))]);
     }
 
     public function anyReportExport()
@@ -3398,7 +3398,7 @@ class Admin extends AdminModule
         $stmt = $pdo->prepare("SELECT s.id_shift, s.user_id, COALESCE(p.nama, u.fullname) AS nama_kasir, s.waktu_buka, s.waktu_tutup, IFNULL(s.kas_awal,0) kas_awal, IFNULL(s.total_transaksi,0) total_transaksi, IFNULL(s.kas_akhir,0) kas_akhir, IFNULL(s.selisih,0) selisih, s.keterangan FROM mlite_kasir_shift s LEFT JOIN mlite_users u ON u.id=s.user_id LEFT JOIN pegawai p ON p.nik=u.username WHERE (s.waktu_buka BETWEEN ? AND ?) OR (s.waktu_tutup BETWEEN ? AND ?) OR (s.waktu_buka <= ? AND (s.waktu_tutup IS NULL OR s.waktu_tutup >= ?)) ORDER BY s.waktu_buka ASC, s.id_shift ASC");
         $stmt->execute([$awal, $akhir, $awal, $akhir, $awal, $akhir]);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return $this->draw('shift.report.html', ['awal' => $awal, 'akhir' => $akhir, 'rows' => $rows, 'settings' => $this->settings('settings')]);
+        return $this->draw('shift.report.html', ['awal' => htmlspecialchars_array($awal), 'akhir' => htmlspecialchars_array($akhir), 'rows' => $rows, 'settings' => htmlspecialchars_array($this->settings('settings'))]);
     }
 
     public function anyShiftReportExport()

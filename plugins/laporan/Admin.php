@@ -69,7 +69,7 @@ class Admin extends AdminModule
             return $this->exportToExcel($query, 'Laporan_TB_' . $tgl_awal . '_' . $tgl_akhir);
         }
 
-        return $this->draw('laporan_tb.html', ['laporan' => $query, 'tgl_awal' => $tgl_awal, 'tgl_akhir' => $tgl_akhir]);
+        return $this->draw('laporan_tb.html', ['laporan' => htmlspecialchars_array($query), 'tgl_awal' => htmlspecialchars_array($tgl_awal), 'tgl_akhir' => htmlspecialchars_array($tgl_akhir)]);
     }
 
     public function anyLaporanSep()
@@ -101,7 +101,7 @@ class Admin extends AdminModule
             return $this->exportSepToExcel($query, 'Laporan_SEP_' . $tgl_awal . '_' . $tgl_akhir);
         }
 
-        return $this->draw('laporan_sep.html', ['laporan' => $query, 'tgl_awal' => $tgl_awal, 'tgl_akhir' => $tgl_akhir]);
+        return $this->draw('laporan_sep.html', ['laporan' => htmlspecialchars_array($query), 'tgl_awal' => htmlspecialchars_array($tgl_awal), 'tgl_akhir' => htmlspecialchars_array($tgl_akhir)]);
     }
 
     public function anyLaporanAntrian()
@@ -130,7 +130,7 @@ class Admin extends AdminModule
             ->where('reg_periksa.status_lanjut', '=', 'Ralan')
             ->toArray();
 
-        return $this->draw('laporan_antrian.html', ['laporan' => $query, 'tgl_awal' => $tgl_awal, 'tgl_akhir' => $tgl_akhir]);
+        return $this->draw('laporan_antrian.html', ['laporan' => htmlspecialchars_array($query), 'tgl_awal' => htmlspecialchars_array($tgl_awal), 'tgl_akhir' => htmlspecialchars_array($tgl_akhir)]);
     }
 
     public function anyLaporanPenyakitRalan()
@@ -160,7 +160,7 @@ class Admin extends AdminModule
             return $this->exportPenyakitToExcel($query, 'Laporan_10_Besar_Penyakit_Ralan_' . $tgl_awal . '_' . $tgl_akhir);
         }
 
-        return $this->draw('laporan_penyakit_ralan.html', ['laporan' => $query, 'tgl_awal' => $tgl_awal, 'tgl_akhir' => $tgl_akhir]);
+        return $this->draw('laporan_penyakit_ralan.html', ['laporan' => htmlspecialchars_array($query), 'tgl_awal' => htmlspecialchars_array($tgl_awal), 'tgl_akhir' => htmlspecialchars_array($tgl_akhir)]);
     }
 
     public function anyLaporanPenyakitRanap()
@@ -190,7 +190,7 @@ class Admin extends AdminModule
             return $this->exportPenyakitToExcel($query, 'Laporan_10_Besar_Penyakit_Ranap_' . $tgl_awal . '_' . $tgl_akhir);
         }
 
-        return $this->draw('laporan_penyakit_ranap.html', ['laporan' => $query, 'tgl_awal' => $tgl_awal, 'tgl_akhir' => $tgl_akhir]);
+        return $this->draw('laporan_penyakit_ranap.html', ['laporan' => htmlspecialchars_array($query), 'tgl_awal' => htmlspecialchars_array($tgl_awal), 'tgl_akhir' => htmlspecialchars_array($tgl_akhir)]);
     }
 
     public function anyAuditDanReview()
@@ -215,16 +215,16 @@ class Admin extends AdminModule
         $data = $this->_auditReviewData($tgl_awal, $tgl_akhir, $status, $halaman, self::AUDIT_REVIEW_PER_HALAMAN);
 
         return $this->draw('laporan_audit_review.html', [
-            'laporan' => $data['laporan'],
-            'ringkasan' => $data['ringkasan'],
-            'halaman' => $data['halaman'],
+            'laporan' => htmlspecialchars_array($data['laporan']),
+            'ringkasan' => htmlspecialchars_array($data['ringkasan']),
+            'halaman' => htmlspecialchars_array($data['halaman']),
             'total_halaman' => $data['total_halaman'],
             'total_data' => $data['total_data'],
-            'dari' => $data['dari'],
+            'dari' => htmlspecialchars_array($data['dari']),
             'sampai' => $data['sampai'],
-            'daftar_halaman' => $data['daftar_halaman'],
-            'tgl_awal' => $tgl_awal,
-            'tgl_akhir' => $tgl_akhir,
+            'daftar_halaman' => htmlspecialchars_array($data['daftar_halaman']),
+            'tgl_awal' => htmlspecialchars_array($tgl_awal),
+            'tgl_akhir' => htmlspecialchars_array($tgl_akhir),
             'status' => $status
         ]);
     }
@@ -247,14 +247,14 @@ class Admin extends AdminModule
         }
 
         return $this->draw('laporan_penilaian_efektifitas.html', [
-            'indikator' => $data['indikator'],
-            'per_status' => $data['per_status'],
-            'skor' => $data['skor'],
-            'predikat' => $data['predikat'],
-            'total_kunjungan' => $data['total_kunjungan'],
-            'total_ranap' => $data['total_ranap'],
-            'tgl_awal' => $tgl_awal,
-            'tgl_akhir' => $tgl_akhir,
+            'indikator' => htmlspecialchars_array($data['indikator']),
+            'per_status' => htmlspecialchars_array($data['per_status']),
+            'skor' => htmlspecialchars_array($data['skor']),
+            'predikat' => htmlspecialchars_array($data['predikat']),
+            'total_kunjungan' => htmlspecialchars_array($data['total_kunjungan']),
+            'total_ranap' => htmlspecialchars_array($data['total_ranap']),
+            'tgl_awal' => htmlspecialchars_array($tgl_awal),
+            'tgl_akhir' => htmlspecialchars_array($tgl_akhir),
             'status' => $status
         ]);
     }
@@ -272,11 +272,11 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
 
         echo $this->draw('cetak_pdf_audit_review.html', [
-            'laporan' => $data['laporan'],
-            'ringkasan' => $data['ringkasan'],
+            'laporan' => htmlspecialchars_array($data['laporan']),
+            'ringkasan' => htmlspecialchars_array($data['ringkasan']),
             'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-            'status' => $status,
+            'status' => htmlspecialchars_array($status),
             'settings' => htmlspecialchars_array($settings)
         ]);
         exit();
@@ -295,15 +295,15 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
 
         echo $this->draw('cetak_pdf_penilaian_efektifitas.html', [
-            'indikator' => $data['indikator'],
-            'per_status' => $data['per_status'],
-            'skor' => $data['skor'],
-            'predikat' => $data['predikat'],
-            'total_kunjungan' => $data['total_kunjungan'],
-            'total_ranap' => $data['total_ranap'],
+            'indikator' => htmlspecialchars_array($data['indikator']),
+            'per_status' => htmlspecialchars_array($data['per_status']),
+            'skor' => htmlspecialchars_array($data['skor']),
+            'predikat' => htmlspecialchars_array($data['predikat']),
+            'total_kunjungan' => htmlspecialchars_array($data['total_kunjungan']),
+            'total_ranap' => htmlspecialchars_array($data['total_ranap']),
             'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-            'status' => $status,
+            'status' => htmlspecialchars_array($status),
             'settings' => htmlspecialchars_array($settings)
         ]);
         exit();
@@ -733,10 +733,10 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
         
         return $this->draw('cetak_pdf_semua.html', [
-            'laporan' => $query,
-            'tgl_awal' => $tgl_awal,
-            'tgl_akhir' => $tgl_akhir,
-            'settings' => $settings
+            'laporan' => htmlspecialchars_array($query),
+            'tgl_awal' => htmlspecialchars_array($tgl_awal),
+            'tgl_akhir' => htmlspecialchars_array($tgl_akhir),
+            'settings' => htmlspecialchars_array($settings)
         ]);
     }
 
@@ -777,8 +777,8 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
         
         return $this->draw('cetak_pdf_individual.html', [
-            'data' => $data,
-            'settings' => $settings
+            'data' => htmlspecialchars_array($data),
+            'settings' => htmlspecialchars_array($settings)
         ]);
     }
 
@@ -808,10 +808,10 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
         
         return $this->draw('cetak_pdf_sep.html', [
-            'laporan' => $query,
-            'tgl_awal' => $tgl_awal,
-            'tgl_akhir' => $tgl_akhir,
-            'settings' => $settings
+            'laporan' => htmlspecialchars_array($query),
+            'tgl_awal' => htmlspecialchars_array($tgl_awal),
+            'tgl_akhir' => htmlspecialchars_array($tgl_akhir),
+            'settings' => htmlspecialchars_array($settings)
         ]);
     }
 
@@ -843,10 +843,10 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
         
         return $this->draw('cetak_pdf_antrian.html', [
-            'laporan' => $query,
-            'tgl_awal' => $tgl_awal,
-            'tgl_akhir' => $tgl_akhir,
-            'settings' => $settings
+            'laporan' => htmlspecialchars_array($query),
+            'tgl_awal' => htmlspecialchars_array($tgl_awal),
+            'tgl_akhir' => htmlspecialchars_array($tgl_akhir),
+            'settings' => htmlspecialchars_array($settings)
         ]);
     }
 
@@ -874,7 +874,7 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
         
         echo $this->draw('cetak_pdf_penyakit_ralan.html', [
-            'laporan' => $query,
+            'laporan' => htmlspecialchars_array($query),
             'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'settings' => htmlspecialchars_array($settings)
@@ -906,7 +906,7 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
         
         echo $this->draw('cetak_pdf_penyakit_ranap.html', [
-            'laporan' => $query,
+            'laporan' => htmlspecialchars_array($query),
             'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'settings' => htmlspecialchars_array($settings)

@@ -1676,11 +1676,11 @@ class Admin extends AdminModule
 
       // ==== RENDER HTML ====
       $html = $this->draw('cetak.etiket.html', [
-        'pasien'   => $pasien,
-        'no_rm'    => $no_rm,
-        'tanggal'  => $tanggal,
-        'settings' => $this->settings('settings'),
-        'farmasi'  => $this->settings('farmasi'),
+        'pasien'   => htmlspecialchars_array($pasien),
+        'no_rm'    => htmlspecialchars_array($no_rm),
+        'tanggal'  => htmlspecialchars_array($tanggal),
+        'settings' => htmlspecialchars_array($this->settings('settings')),
+        'farmasi'  => htmlspecialchars_array($this->settings('farmasi')),
         'detail'   => htmlspecialchars_array($detail_pemberian_obat)
       ]);
 
@@ -1786,12 +1786,12 @@ class Admin extends AdminModule
 
       /* ================= RENDER HTML ================= */
       $html = $this->draw('cetak.eresep.html', [
-        'pasien'   => $pasien,
+        'pasien'   => htmlspecialchars_array($pasien),
         'no_rm'    => $no_rm,
-        'umur'     => $umur . ' ' . $sttsumur,
-        'alamat'   => $alamat,
-        'tanggal'  => $tanggal,
-        'settings' => $this->settings('settings'),
+        'umur'     => htmlspecialchars_array($umur . ' ' . $sttsumur),
+        'alamat'   => htmlspecialchars_array($alamat),
+        'tanggal'  => htmlspecialchars_array($tanggal),
+        'settings' => htmlspecialchars_array($this->settings('settings')),
         'detail'   => htmlspecialchars_array($detail_pemberian_obat)
       ]);
 
@@ -1945,7 +1945,7 @@ class Admin extends AdminModule
       ];
 
       $html = $this->draw('cetak.telaah_resep.html', [
-        'settings' => $this->settings('settings'),
+        'settings' => htmlspecialchars_array($this->settings('settings')),
         'header' => htmlspecialchars_array($header),
         'detail' => htmlspecialchars_array($detail),
         'checklist' => htmlspecialchars_array($checklist)

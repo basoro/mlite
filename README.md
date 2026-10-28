@@ -154,6 +154,13 @@ location ^~ /systems/data/ {
     return 403;
 }
 
+# Larangan eksekusi script di folder konten pengguna & aset statis
+# (harus berada sebelum location ~ \.php$)
+location ~* ^/(uploads|assets)/.*\.(php[0-9]*|phtml|phar|pl|py|cgi|sh|shtml|asp|aspx|jsp|exe)$ {
+    deny all;
+    return 403;
+}
+
 location ~* \.(sdb|txt|env|md)$ {
     deny all;
     return 403;

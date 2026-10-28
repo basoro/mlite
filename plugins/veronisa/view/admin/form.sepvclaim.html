@@ -5,7 +5,7 @@
 <div class="modal-body">
   <div class="row">
   	<form name="veronisa" action="{?=url(ADMIN.'/veronisa/savesep/'.@$veronisa.no_sep)?}" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="no_rawat" class="form-control" value="{?=$_GET['no_rawat']?}" />
+      <input type="hidden" name="no_rawat" class="form-control" value="{?=e($_GET['no_rawat'])?}" />
       <div class="col-md-6">
         <div class="form-group">
             <label>Nomor SEP</label>

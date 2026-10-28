@@ -45,7 +45,7 @@ class JenjangJabatan
           ];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function anyDisplay()
@@ -88,7 +88,7 @@ class JenjangJabatan
           $return['halaman'] = $_POST['halaman'];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function postSave()

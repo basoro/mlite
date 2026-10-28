@@ -60,7 +60,7 @@
 
 <script>
     {if: isset($_GET['jenis']) && $_GET['jenis']  !=  ''}
-        $.get("{?=url([ADMIN, 'pcare', 'alergi', $_GET['jenis']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'alergi', rawurlencode($_GET['jenis'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);

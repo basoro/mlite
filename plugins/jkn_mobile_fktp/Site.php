@@ -100,7 +100,7 @@ class Site extends SiteModule
         $vidio_anjungan = isset_or($settings['vidio_anjungan']);
         $running_text = isset_or($settings['running_text']);
         
-        echo $this->draw('display.html', ['powered' => $powered, 'fktp' => $fktp, 'total_antrean' => $total_antrean, 'sisa_antrean' => $sisa_antrean, 'antrean' => $antrean, 'running_text' => $running_text, 'vidio_anjungan' => $vidio_anjungan]);
+        echo $this->draw('display.html', ['powered' => $powered, 'fktp' => htmlspecialchars_array($fktp), 'total_antrean' => htmlspecialchars_array($total_antrean), 'sisa_antrean' => htmlspecialchars_array($sisa_antrean), 'antrean' => htmlspecialchars_array($antrean), 'running_text' => htmlspecialchars_array($running_text), 'vidio_anjungan' => htmlspecialchars_array($vidio_anjungan)]);
         exit();
     }
 

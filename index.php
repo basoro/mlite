@@ -29,6 +29,9 @@ if (DEV_MODE) {
 
 require_once('systems/lib/Autoloader.php');
 
+// Header keamanan (CSP, X-Frame-Options, nosniff) untuk semua response
+sendSecurityHeaders();
+
 // Start output buffering with license verification callback
 ob_start(base64_decode('XFN5c3RlbXNcTWFpbjo6dmVyaWZ5TGljZW5zZQ=='));
 

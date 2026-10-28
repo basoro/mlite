@@ -57,7 +57,7 @@
 
 <script>
     {if: isset($_GET['statuspulang']) && $_GET['statuspulang']  !=  ''}
-        $.get("{?=url([ADMIN, 'pcare', 'statuspulang', $_GET['statuspulang']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'statuspulang', rawurlencode($_GET['statuspulang'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);

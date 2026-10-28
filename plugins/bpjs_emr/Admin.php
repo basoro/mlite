@@ -2973,11 +2973,11 @@ class Admin extends AdminModule
         $devices = $this->db('mlite_bpjs_emr_device')->select('id, device_id, nama_alkes, kategori, kode_produk, manufacturer, model')->asc('nama_alkes')->toArray();
 
         return $this->draw('mapping.html', [
-            'lab' => $lab,
-            'rad' => $rad,
-            'proc' => $proc,
-            'proc_ranap' => $proc_ranap,
-            'operasi' => $operasi,
+            'lab' => htmlspecialchars_array($lab),
+            'rad' => htmlspecialchars_array($rad),
+            'proc' => htmlspecialchars_array($proc),
+            'proc_ranap' => htmlspecialchars_array($proc_ranap),
+            'operasi' => htmlspecialchars_array($operasi),
             'devices' => $devices
         ]);
     }

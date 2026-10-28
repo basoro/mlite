@@ -182,7 +182,7 @@
 </script>
 <script>
     {if: isset($_GET['sep']) && $_GET['sep'] != ''}
-        $.get("{?=url([ADMIN, 'vclaim', 'carisep', $_GET['sep']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'carisep', rawurlencode($_GET['sep'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);

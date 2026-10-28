@@ -1160,7 +1160,12 @@ class Admin extends AdminModule
         if (!$this->_isMono()) {
             $data = $_POST;
             if (isset($_FILES['file_image'])) {
-                $data['file_image'] = new \CURLFile($_FILES['file_image']['tmp_name'], $_FILES['file_image']['type'], $_FILES['file_image']['name']);
+                $cekUpload = validateUploadedFile($_FILES['file_image'], ['dcm', 'png', 'jpg', 'jpeg'], ['application/dicom', 'application/octet-stream', 'image/png', 'image/jpeg'], 100 * 1024 * 1024);
+                if (isset($cekUpload['error'])) {
+                    $this->notify('failure', $cekUpload['error']);
+                    redirect(url([ADMIN, 'mini_pacs', 'manage']));
+                }
+                $data['file_image'] = new \CURLFile($_FILES['file_image']['tmp_name'], $cekUpload['mime'], $_FILES['file_image']['name']);
             }
             $response = $this->_remoteCall('POST', '/admin/api/mini_pacs/apiupload', $data);
             if (is_array($response) && (($response['status'] ?? '') === 'success' || (isset($response['raw']) && strpos($response['raw'], 'sukses') !== false))) {
@@ -1181,6 +1186,16 @@ class Admin extends AdminModule
 
         if ($file['error'] !== UPLOAD_ERR_OK) {
             $this->notify('failure', 'Upload error');
+            if ($_POST['main'] == "main") {
+                redirect(url([ADMIN, 'mini_pacs', 'main']));
+            } else {
+                redirect(url([ADMIN, 'mini_pacs', 'manage']));
+            }
+        }
+
+        $cekUpload = validateUploadedFile($file, ['dcm', 'png', 'jpg', 'jpeg'], ['application/dicom', 'application/octet-stream', 'image/png', 'image/jpeg'], 100 * 1024 * 1024);
+        if (isset($cekUpload['error'])) {
+            $this->notify('failure', $cekUpload['error']);
             if ($_POST['main'] == "main") {
                 redirect(url([ADMIN, 'mini_pacs', 'main']));
             } else {
@@ -1380,10 +1395,14 @@ class Admin extends AdminModule
         if (!$this->_isMono()) {
             header('Content-Type: application/json');
             $data = $_POST;
-            if (isset($_FILES['file_image'])) {
-                $data['file_image'] = new \CURLFile($_FILES['file_image']['tmp_name'], $_FILES['file_image']['type'], $_FILES['file_image']['name']);
-            } elseif (isset($_FILES['file'])) {
-                $data['file_image'] = new \CURLFile($_FILES['file']['tmp_name'], $_FILES['file']['type'], $_FILES['file']['name']);
+            $uploadFile = $_FILES['file_image'] ?? $_FILES['file'] ?? null;
+            if ($uploadFile !== null) {
+                $cekUpload = validateUploadedFile($uploadFile, ['dcm', 'png', 'jpg', 'jpeg'], ['application/dicom', 'application/octet-stream', 'image/png', 'image/jpeg'], 100 * 1024 * 1024);
+                if (isset($cekUpload['error'])) {
+                    echo json_encode(['status' => 'error', 'message' => $cekUpload['error']]);
+                    exit();
+                }
+                $data['file_image'] = new \CURLFile($uploadFile['tmp_name'], $cekUpload['mime'], $uploadFile['name']);
             }
             $response = $this->_remoteCall('POST', '/admin/api/mini_pacs/apiupload', $data);
             echo json_encode($response);
@@ -1397,6 +1416,12 @@ class Admin extends AdminModule
 
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
             echo json_encode(['status' => 'error', 'message' => 'Upload error']);
+            exit;
+        }
+
+        $cekUpload = validateUploadedFile($file, ['dcm', 'png', 'jpg', 'jpeg'], ['application/dicom', 'application/octet-stream', 'image/png', 'image/jpeg'], 100 * 1024 * 1024);
+        if (isset($cekUpload['error'])) {
+            echo json_encode(['status' => 'error', 'message' => $cekUpload['error']]);
             exit;
         }
 

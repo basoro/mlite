@@ -988,7 +988,7 @@ public function postHapusResepResponse()
     $this->_addHeaderFiles();
     $this->assign['row'] = $this->db('mlite_apotek_online_maping_obat')->toArray();
     $this->assign['obat'] = $this->db('databarang')->where('status', '1')->toArray();
-    return $this->draw('mappingobat.html', ['obat' => $this->assign['obat'], 'row' => $this->assign['row']]);
+    return $this->draw('mappingobat.html', ['obat' => htmlspecialchars_array($this->assign['obat']), 'row' => htmlspecialchars_array($this->assign['row'])]);
   }
 
   public function postSaveObat()

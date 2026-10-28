@@ -36,7 +36,7 @@ class Admin extends AdminModule
           ['name' => 'Upload File', 'url' => url([ADMIN, 'wagateway', 'uploadfile']), 'icon' => 'cubes', 'desc' => 'Upload & kirim dokumen langsung'],
           ['name' => 'Settings', 'url' => url([ADMIN, 'wagateway', 'settings']), 'icon' => 'cubes', 'desc' => 'Settings WA Getaway'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules), 'waapiserver' => $waapiserver, 'waapiphonenumber' => $waapiphonenumber]);
+      return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules), 'waapiserver' => htmlspecialchars_array($waapiserver), 'waapiphonenumber' => htmlspecialchars_array($waapiphonenumber)]);
     }
 
     public function getWebHook()
@@ -53,7 +53,7 @@ class Admin extends AdminModule
         $wagateway['server'] = $this->settings->get('wagateway.server');
       $wagateway['token'] = $this->settings->get('wagateway.token');
       $wagateway['phonenumber'] = $this->settings->get('wagateway.phonenumber');
-      return $this->draw('settings.html', ['wagateway' => $wagateway]);
+      return $this->draw('settings.html', ['wagateway' => htmlspecialchars_array($wagateway)]);
     }
 
     private function isSafeUrl($url) {
@@ -292,35 +292,9 @@ class Admin extends AdminModule
      */
     private function validateUpload(array $file, array $allowedExtensions, array $allowedMimes)
     {
-        if (!isset($file['error']) || is_array($file['error'])) {
-            return ['error' => 'Upload file gagal.'];
-        }
-        if ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE) {
-            return ['error' => 'Ukuran file terlalu besar. Maksimal 50MB.'];
-        }
-        if ($file['error'] !== UPLOAD_ERR_OK) {
-            return ['error' => 'Upload file gagal (kode error '.$file['error'].').'];
-        }
-        if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
-            return ['error' => 'File tidak ditemukan.'];
-        }
-        if ((int) $file['size'] > 50 * 1024 * 1024) {
-            return ['error' => 'Ukuran file terlalu besar. Maksimal 50MB.'];
-        }
-        $allowedMessage = 'Tipe file tidak diizinkan. Hanya PDF, JPG, JPEG, PNG, GIF, dan WEBP yang didukung.';
-        $extension = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
-        if (!in_array($extension, $allowedExtensions, true)) {
-            return ['error' => $allowedMessage];
-        }
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = $finfo ? finfo_file($finfo, $file['tmp_name']) : (string) $file['type'];
-        if ($finfo) {
-            finfo_close($finfo);
-        }
-        if (!in_array($mime, $allowedMimes, true)) {
-            return ['error' => $allowedMessage];
-        }
-        return ['mime' => $mime];
+        // Validasi terpusat: ekstensi nama berkas, larangan ekstensi ganda,
+        // MIME isi berkas (finfo), kecocokan ekstensi<->isi, dan batas 50MB.
+        return validateUploadedFile($file, $allowedExtensions, $allowedMimes);
     }
 
     public function anySendButton()

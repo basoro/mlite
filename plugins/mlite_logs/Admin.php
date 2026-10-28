@@ -167,7 +167,7 @@ $username = $_POST['username'];
     {
         $detail = $this->db('mlite_query_logs')->where('id', $id)->toArray();
         $settings =  $this->settings('settings');
-        echo $this->draw('detail.html', ['detail' => $detail, 'settings' => $settings]);
+        echo $this->draw('detail.html', ['detail' => htmlspecialchars_array($detail), 'settings' => htmlspecialchars_array($settings)]);
         exit();
     }
 
@@ -196,7 +196,7 @@ $username = $_POST['username'];
         $stmt->execute([$database, $nama_table]);
         $result = $stmt->fetchAll();
 
-        echo $this->draw('chart.html', ['type' => $type, 'column' => htmlspecialchars_array($result), 'labels' => $labels, 'datasets' => $datasets]);
+        echo $this->draw('chart.html', ['type' => htmlspecialchars_array($type), 'column' => htmlspecialchars_array($result), 'labels' => $labels, 'datasets' => $datasets]);
         exit();
     }
 

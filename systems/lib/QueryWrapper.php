@@ -378,13 +378,21 @@ class QueryWrapper
 
     public function limit($num)
     {
+        // Cast to integer to keep user input out of the SQL string.
+        // MySQL/SQLite "LIMIT offset,count" form is preserved, both parts cast.
+        if (is_string($num) && strpos($num, ',') !== false) {
+            list($offset, $count) = explode(',', $num, 2);
+            $num = (int) $offset . ',' . (int) $count;
+        } else {
+            $num = (int) $num;
+        }
         $this->limit = " LIMIT $num";
         return $this;
     }
 
     public function offset($num)
     {
-        $this->offset = " OFFSET $num";
+        $this->offset = " OFFSET " . (int) $num;
         return $this;
     }
 

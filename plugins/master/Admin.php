@@ -1003,7 +1003,7 @@ class Admin extends AdminModule
       if($id_template !='') {
         $template = $this->db('template_laboratorium')->where('id_template', $id_template)->oneArray();
       }
-      echo $this->draw('jnsperawatanlab.template.form.html', ['kd_jenis_prw' => $kd_jenis_prw, 'id_template' => $id_template, 'template' => $template]);
+      echo $this->draw('jnsperawatanlab.template.form.html', ['kd_jenis_prw' => $kd_jenis_prw, 'id_template' => $id_template, 'template' => htmlspecialchars_array($template)]);
       exit();
     }
 

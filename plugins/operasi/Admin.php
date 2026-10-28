@@ -168,7 +168,7 @@ class Admin extends AdminModule
           ->where('operasi.no_rawat', $no_rawat)
           ->oneArray();
         echo $this->draw('form.html', [
-          'operasi' => $this->assign
+          'operasi' => htmlspecialchars_array($this->assign)
         ]);
       } else {
         $this->assign['operasi'] = [
@@ -192,7 +192,7 @@ class Admin extends AdminModule
           'status' => ''
         ];
         echo $this->draw('form.html', [
-          'operasi' => $this->assign
+          'operasi' => htmlspecialchars_array($this->assign)
         ]);
       }
       exit();
@@ -366,7 +366,7 @@ class Admin extends AdminModule
       }
 
       echo $this->draw('rincian.html', [
-        'beri_obat_operasi' => $beri_obat_operasi,
+        'beri_obat_operasi' => htmlspecialchars_array($beri_obat_operasi),
         'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
       ]);
       exit();
@@ -430,7 +430,7 @@ class Admin extends AdminModule
         $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']));
         $booking_operasi[] = $row;
       }
-      return $this->draw('bookingoperasi.html', ['bookingoperasi' => $booking_operasi, 'status' => $status, 'dokter' => htmlspecialchars_array($dokter), 'ruang_ok' => $ruang_ok, 'paket_operasi' => $paket_operasi]);
+      return $this->draw('bookingoperasi.html', ['bookingoperasi' => htmlspecialchars_array($booking_operasi), 'status' => htmlspecialchars_array($status), 'dokter' => htmlspecialchars_array($dokter), 'ruang_ok' => htmlspecialchars_array($ruang_ok), 'paket_operasi' => htmlspecialchars_array($paket_operasi)]);
     }
 
     public function postSaveBookingOperasi()
@@ -477,7 +477,7 @@ class Admin extends AdminModule
         $row['png_jawab'] = $rows['png_jawab'];
         $paketoperasi[] = $row;
       }
-      return $this->draw('paketoperasi.html', ['paketoperasi' => $paketoperasi, 'kategori' => $kategori, 'penjab' => $penjab, 'kelas' => $kelas]);
+      return $this->draw('paketoperasi.html', ['paketoperasi' => htmlspecialchars_array($paketoperasi), 'kategori' => htmlspecialchars_array($kategori), 'penjab' => htmlspecialchars_array($penjab), 'kelas' => htmlspecialchars_array($kelas)]);
     }
 
     public function postSavePaketOperasi()
@@ -512,7 +512,7 @@ class Admin extends AdminModule
       $obatoperasi = $this->db('obatbhp_ok')
         ->join('kodesatuan', 'kodesatuan.kode_sat=obatbhp_ok.kode_sat')
         ->toArray();
-      return $this->draw('obatoperasi.html', ['obatoperasi' => htmlspecialchars_array($obatoperasi), 'satuan' => $satuan]);
+      return $this->draw('obatoperasi.html', ['obatoperasi' => htmlspecialchars_array($obatoperasi), 'satuan' => htmlspecialchars_array($satuan)]);
     }
 
     public function postSaveObatOperasi()
@@ -555,7 +555,7 @@ class Admin extends AdminModule
         $laporanoperasi[] = $row;
       }
 
-      return $this->draw('laporanoperasi.html', ['laporanoperasi' => $laporanoperasi, 'permintaan_pa' => $permintaan_pa]);
+      return $this->draw('laporanoperasi.html', ['laporanoperasi' => htmlspecialchars_array($laporanoperasi), 'permintaan_pa' => htmlspecialchars_array($permintaan_pa)]);
     }
 
     public function postSaveLaporanOperasi()

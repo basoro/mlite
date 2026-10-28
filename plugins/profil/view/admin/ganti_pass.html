@@ -12,7 +12,7 @@
                     </div>
                     <div class="form-group">
                         <label>Password Baru</label>
-                        <input type="text" name="pass_baru" id="pass_baru" class="form-control" value=""/>
+                        <input type="text" name="pass_baru" id="pass_baru" class="form-control" value="" required pattern=".{8,}" title="Password minimal 8 karakter, memuat huruf besar, huruf kecil, dan angka"/>
                     </div>
                     <div class="form-group" style="display:{?= isset($_SESSION['mlite_force_change']) && $_SESSION['mlite_force_change'] ? 'block' : 'none' ?}">
                         <label>OTP WhatsApp</label>

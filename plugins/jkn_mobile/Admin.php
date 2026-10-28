@@ -87,11 +87,11 @@ class Admin extends AdminModule
         return $this->draw('wsrs.html', [
             'referensi_poli' => $referensi_poli,
             'referensi_dokter' => $referensi_dokter,
-            'header_username' => $this->settings->get('jkn_mobile.header_username'),
-            'header_password' => $this->settings->get('jkn_mobile.header_password'),
-            'x_username' => $this->settings->get('jkn_mobile.x_username'),
-            'x_password' => $this->settings->get('jkn_mobile.x_password'),
-            'header_token' => $this->settings->get('jkn_mobile.header_token'),
+            'header_username' => htmlspecialchars_array($this->settings->get('jkn_mobile.header_username')),
+            'header_password' => htmlspecialchars_array($this->settings->get('jkn_mobile.header_password')),
+            'x_username' => htmlspecialchars_array($this->settings->get('jkn_mobile.x_username')),
+            'x_password' => htmlspecialchars_array($this->settings->get('jkn_mobile.x_password')),
+            'header_token' => htmlspecialchars_array($this->settings->get('jkn_mobile.header_token')),
             'token' => $this->settings->get('jkn_mobile.token')
         ]);
     }
@@ -164,7 +164,7 @@ class Admin extends AdminModule
         $no_rawat = $this->db('reg_periksa')->where('no_rkm_medis',$carinorkmmedis['no_rkm_medis'])->where('tgl_registrasi',$tgl)->oneArray();
         $url = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($no_rawat['no_rawat']).''.$no_rawat['no_reg'];
       }
-      echo $this->draw('form.onsite.html', ['no_peserta' => $no_peserta, 'json' => $url , 'jenispasien' => $jenispasien]);
+      echo $this->draw('form.onsite.html', ['no_peserta' => htmlspecialchars_array($no_peserta), 'json' => htmlspecialchars_array($url) , 'jenispasien' => htmlspecialchars_array($jenispasien)]);
       exit();
     }
 
@@ -206,7 +206,7 @@ class Admin extends AdminModule
     public function getMappingPoli()
     {
         $this->_addHeaderFiles();
-        return $this->draw('mappingpoli.html', ['row' => $this->db('maping_poli_bpjs')->toArray()]);
+        return $this->draw('mappingpoli.html', ['row' => htmlspecialchars_array($this->db('maping_poli_bpjs')->toArray())]);
     }
 
     public function getAddMappingPoli()
@@ -286,7 +286,7 @@ class Admin extends AdminModule
     public function getMappingDokter()
     {
         $this->_addHeaderFiles();
-        return $this->draw('mappingdokter.html', ['row' => $this->db('maping_dokter_dpjpvclaim')->toArray()]);
+        return $this->draw('mappingdokter.html', ['row' => htmlspecialchars_array($this->db('maping_dokter_dpjpvclaim')->toArray())]);
     }
 
 
@@ -333,7 +333,7 @@ class Admin extends AdminModule
     {
         $this->getCssCard();
         $poli = $this->db('maping_poli_bpjs')->toArray();
-        return $this->draw('jadwaldokter.html',['poli'=>$poli]);
+        return $this->draw('jadwaldokter.html',['poli'=>htmlspecialchars_array($poli)]);
     }
 
     public function postHfis() {
@@ -484,7 +484,7 @@ class Admin extends AdminModule
       }
 
       $taskid = $rows;
-      return $this->draw('taskid.html', ['taskid' => $taskid]);
+      return $this->draw('taskid.html', ['taskid' => htmlspecialchars_array($taskid)]);
     }
 
     public function getTaskIDInput($no_rawat)
@@ -580,7 +580,7 @@ class Admin extends AdminModule
       if($status_antrol) {
         $status_kirim_antrol = $status_antrol['status_kirim'];
       }
-      echo $this->draw('taskid.input.html', ['pasien' => $pasien, 'taskid' => $taskid, 'nomor_referensi' => $nomor_referensi, 'kode_booking' => $kode_booking, 'status_kirim_antrol' => $status_kirim_antrol]);
+      echo $this->draw('taskid.input.html', ['pasien' => htmlspecialchars_array($pasien), 'taskid' => htmlspecialchars_array($taskid), 'nomor_referensi' => htmlspecialchars_array($nomor_referensi), 'kode_booking' => htmlspecialchars_array($kode_booking), 'status_kirim_antrol' => htmlspecialchars_array($status_kirim_antrol)]);
       exit();
     }
 
@@ -1171,7 +1171,7 @@ class Admin extends AdminModule
       $rows[] = $a;
 
       $taskid = $rows;
-      return $this->draw('logtaskid.html', ['taskid' => $taskid,'tgl'=>$date]);
+      return $this->draw('logtaskid.html', ['taskid' => htmlspecialchars_array($taskid),'tgl'=>htmlspecialchars_array($date)]);
     }
 
     public function anyAntrolLocal()
@@ -1192,7 +1192,7 @@ class Admin extends AdminModule
         }
 
         $taskid = $rows;
-        return $this->draw('antrollocal.html', ['taskid' => $taskid, 'tgl' => $date]);
+        return $this->draw('antrollocal.html', ['taskid' => htmlspecialchars_array($taskid), 'tgl' => $date]);
     }
 
     public function getSettings()
@@ -1395,7 +1395,7 @@ class Admin extends AdminModule
         $stats['taskid5'] = $taskid5;
         $stats['taskid6'] = $taskid6;
         $stats['taskid7'] = $taskid7;
-        return $this->draw('manage.qurate.html', ['stats' => $stats]);
+        return $this->draw('manage.qurate.html', ['stats' => htmlspecialchars_array($stats)]);
     }
 
     public function getAjax()
@@ -1519,7 +1519,7 @@ class Admin extends AdminModule
     public function getBookingAntrol()
     {
         $this->_addHeaderFiles();
-        return $this->draw('bookingantrol.html', ['row' => $this->db('mlite_antrian_referensi')->toArray()]);
+        return $this->draw('bookingantrol.html', ['row' => htmlspecialchars_array($this->db('mlite_antrian_referensi')->toArray())]);
     }
 
     public function getModalAntrol($noref)
@@ -1613,7 +1613,7 @@ class Admin extends AdminModule
             }
         }
         //exit();
-        return $this->draw('hapusantrol.html', ['row' => $this->db('mlite_antrian_referensi')->toArray(), 'notif' => $notif]);
+        return $this->draw('hapusantrol.html', ['row' => $this->db('mlite_antrian_referensi')->toArray(), 'notif' => htmlspecialchars_array($notif)]);
     }
 
     public function postSaveTaskID1()

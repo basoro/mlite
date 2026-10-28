@@ -25,10 +25,10 @@
                               </select>
                             </span>
                             <span class="input-group-addon" style="width:50px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
-                              <input class='form-control periode_tanggal' name='tgl_awal' id='tgl_awal' value="{?=isset_or($_GET['tgl_awal'], date('Y-m-d'))?}" type='search' placeholder='Tanggal Awal' />                              
+                              <input class='form-control periode_tanggal' name='tgl_awal' id='tgl_awal' value="{?=e(isset_or($_GET['tgl_awal'], date('Y-m-d')))?}" type='search' placeholder='Tanggal Awal' />                              
                             </span>
                             <span class="input-group-addon" style="width:50px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
-                              <input class='form-control periode_tanggal' name='tgl_akhir' id='tgl_akhir' value="{?=isset_or($_GET['tgl_akhir'], date('Y-m-d'))?}" type='search' placeholder='Tanggal Akhir' />                              
+                              <input class='form-control periode_tanggal' name='tgl_akhir' id='tgl_akhir' value="{?=e(isset_or($_GET['tgl_akhir'], date('Y-m-d')))?}" type='search' placeholder='Tanggal Akhir' />                              
                             </span>
                             <span class="input-group-addon" style="margin: 0;padding: 0;">
                               <input type="submit" class="form-control btn-primary" value="Go">

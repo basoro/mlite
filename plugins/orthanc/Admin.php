@@ -33,7 +33,7 @@ class Admin extends AdminModule
         $orthanc['server'] = $this->settings->get('orthanc.server');
       $orthanc['username'] = $this->settings->get('orthanc.username');
       $orthanc['password'] = $this->settings->get('orthanc.password');
-      return $this->draw('settings.html', ['orthanc' => $orthanc]);
+      return $this->draw('settings.html', ['orthanc' => htmlspecialchars_array($orthanc)]);
     }
 
     public function postSaveSettings()
@@ -452,7 +452,7 @@ class Admin extends AdminModule
         return $this->draw('studies.html', [
             'orthanc' => $orthanc, 
             'baseUrl' => url().'/'.ADMIN.'/orthanc',
-            'pagination' => $pagination
+            'pagination' => htmlspecialchars_array($pagination)
         ]);
     }
     

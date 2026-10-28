@@ -717,7 +717,7 @@ class Admin extends AdminModule
     }
     $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
     $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
-    return $this->draw('manage.html', ['rawat_jalan' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim), 'type' => $type, 'no_rawat_baru' => '', 'no_reg_baru' => '']);
+    return $this->draw('manage.html', ['rawat_jalan' => htmlspecialchars_array($this->assign), 'cek_vclaim' => htmlspecialchars_array($cek_vclaim), 'type' => htmlspecialchars_array($type), 'no_rawat_baru' => '', 'no_reg_baru' => '']);
   }
 
   public function anyDisplay()
@@ -1387,11 +1387,11 @@ class Admin extends AdminModule
     }
 
     echo $this->draw('cetakpermintaan.html', [
-      'permintaan_laboratorium' => $permintaan_laboratorium,
-      'qrCode' => $qrCode,
-      'pj_lab' => $pj_lab['nm_dokter'],
+      'permintaan_laboratorium' => htmlspecialchars_array($permintaan_laboratorium),
+      'qrCode' => htmlspecialchars_array($qrCode),
+      'pj_lab' => htmlspecialchars_array($pj_lab['nm_dokter']),
       'dokter_perujuk' => htmlspecialchars_array($dokter_perujuk)['nama'],
-      'pasien' => $pasien,
+      'pasien' => htmlspecialchars_array($pasien),
       'no_rawat' => htmlspecialchars($_GET['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
     ]);
     exit();
@@ -1793,7 +1793,7 @@ class Admin extends AdminModule
     $parsialHistory = $billingParsialEnabled ? $this->getParsialHistory($_POST['no_rawat']) : [];
 
     echo $this->draw('rincian.html', [
-      'periksa_lab' => $periksa_lab,
+      'periksa_lab' => htmlspecialchars_array($periksa_lab),
       'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
       'laboratorium' => htmlspecialchars_array($laboratorium),
       'pasien' => $pasien,

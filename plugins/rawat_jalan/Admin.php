@@ -1212,7 +1212,7 @@ class Admin extends AdminModule
           ->where('no_rawat', $_POST['no_rawat'])
           ->oneArray();
         echo $this->draw('form.html', [
-          'rawat_jalan' => $this->assign
+          'rawat_jalan' => htmlspecialchars_array($this->assign)
         ]);
       } else {
         $this->assign['reg_periksa'] = [
@@ -1244,7 +1244,7 @@ class Admin extends AdminModule
           'pekerjaan' => ''
         ];
         echo $this->draw('form.html', [
-          'rawat_jalan' => $this->assign
+          'rawat_jalan' => htmlspecialchars_array($this->assign)
         ]);
       }
       exit();
@@ -1558,7 +1558,7 @@ class Admin extends AdminModule
       }
 
       $this->assign['searchUrl'] =  url([ADMIN, 'rawat_jalan', 'booking', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
-      return $this->draw('booking.html', ['booking' => htmlspecialchars_array($this->assign), 'waapitoken' => $waapitoken, 'waapiphonenumber' => $waapiphonenumber, 'nama_instansi' => $nama_instansi]);
+      return $this->draw('booking.html', ['booking' => htmlspecialchars_array($this->assign), 'waapitoken' => htmlspecialchars_array($waapitoken), 'waapiphonenumber' => htmlspecialchars_array($waapiphonenumber), 'nama_instansi' => htmlspecialchars_array($nama_instansi)]);
 
     }
 
@@ -1785,7 +1785,7 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
         $this->_addHeaderFiles();
         if (!empty($redirectData = getRedirectData())) {
-            $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
+            $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         } else {
             $this->assign['form'] = [
               'kd_dokter' => '',
@@ -3438,12 +3438,12 @@ class Admin extends AdminModule
         $data_assessment['penilaian_awal_keperawatan_ralan'] = $existing_assessment;
         $data_petugas = $this->db('petugas')->select('nip, nama')->where('status', '1')->toArray();
         echo $this->draw('assesment.html', [
-            'reg_periksa' => $this->db('reg_periksa')->where('no_rawat', $no_rawat_reverted)->oneArray(),
+            'reg_periksa' => htmlspecialchars_array($this->db('reg_periksa')->where('no_rawat', $no_rawat_reverted)->oneArray()),
             'penilaian_awal_keperawatan_ralan' => htmlspecialchars_array($penilaian_awal_keperawatan_ralan),
             'pasien' => $this->db('pasien')->where('no_rawat', $no_rawat_reverted)->join('reg_periksa','pasien.no_rkm_medis=reg_periksa.no_rkm_medis')->oneArray(),
             'petugas' => $existing_assessment ? $this->db('petugas')->where('no_rawat', $no_rawat_reverted)->join('penilaian_awal_keperawatan_ralan','petugas.nip=penilaian_awal_keperawatan_ralan.nip')->oneArray() : [],
             'data_assessment' => $data_assessment, 
-            'petugas_list' => $data_petugas 
+            'petugas_list' => htmlspecialchars_array($data_petugas) 
         ]);
         exit();
     }
@@ -3776,8 +3776,8 @@ class Admin extends AdminModule
             $data_tb['umur'] = $umur;
             
             $html = $this->draw('form.data_tb.html', [
-                'data_tb' => $data_tb,
-                'no_rawat' => $no_rawat,
+                'data_tb' => htmlspecialchars_array($data_tb),
+                'no_rawat' => htmlspecialchars_array($no_rawat),
                 'no_rkm_medis' => $no_rkm_medis,
                 'nm_pasien' => $nm_pasien
             ]);

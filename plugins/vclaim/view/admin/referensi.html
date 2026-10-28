@@ -440,28 +440,28 @@
 
 <script>
     {if: isset($_GET['diagnosa']) && $_GET['diagnosa'] != ''}
-        $.get("{?=url([ADMIN, 'vclaim', 'diagnosa', $_GET['diagnosa']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'diagnosa', rawurlencode($_GET['diagnosa'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['poli']) && $_GET['poli'] != ''}
-        $.get("{?=url([ADMIN, 'vclaim', 'poli', $_GET['poli']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'poli', rawurlencode($_GET['poli'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['kode_faskes']) && $_GET['kode_faskes'] != '' && isset($_GET['jenis_faskes']) && $_GET['jenis_faskes'] != ''}
-        $.get("{?=url([ADMIN, 'vclaim', 'faskes', $_GET['kode_faskes'], $_GET['jenis_faskes']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'faskes', rawurlencode($_GET['kode_faskes']), rawurlencode($_GET['jenis_faskes'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['jenis_pelayanan']) && $_GET['jenis_pelayanan'] != '' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan'] != '' && isset($_GET['kode_spesialis']) && $_GET['kode_spesialis'] != ''}
-        $.get("{?=url([ADMIN, 'vclaim', 'dokterdpjp', $_GET['jenis_pelayanan'], $_GET['tgl_pelayanan'], $_GET['kode_spesialis']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'dokterdpjp', rawurlencode($_GET['jenis_pelayanan']), rawurlencode($_GET['tgl_pelayanan']), rawurlencode($_GET['kode_spesialis'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
@@ -475,21 +475,21 @@
         });
     {/if}
     {if: isset($_GET['kode_propinsi']) && $_GET['kode_propinsi'] != ''}
-        $.get("{?=url([ADMIN, 'vclaim', 'kabupaten', $_GET['kode_propinsi']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'kabupaten', rawurlencode($_GET['kode_propinsi'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['kode_kabupaten']) && $_GET['kode_kabupaten'] != ''}
-        $.get("{?=url([ADMIN, 'vclaim', 'kecamatan', $_GET['kode_kabupaten']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'kecamatan', rawurlencode($_GET['kode_kabupaten'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['procedure']) && $_GET['procedure'] != ''}
-        $.get("{?=url([ADMIN, 'vclaim', 'procedure', $_GET['procedure']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'procedure', rawurlencode($_GET['procedure'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
@@ -503,7 +503,7 @@
         });
     {/if}
     {if: isset($_GET['dokter']) && $_GET['dokter'] != ''}
-        $.get("{?=url([ADMIN, 'vclaim', 'dokter', $_GET['dokter']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'dokter', rawurlencode($_GET['dokter'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);

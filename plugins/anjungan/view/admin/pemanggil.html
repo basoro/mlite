@@ -150,7 +150,7 @@
     <form action="">
       <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
       <input type="hidden" name="show" value="{?=isset_or($panggil_loket)?}">
-      <input type="hidden" name="reset" value="{?=isset($_GET['loket'])?$_GET['loket']:'1'?}">
+      <input type="hidden" name="reset" value="{?=e(isset($_GET['loket'])?$_GET['loket']:'1')?}">
       <div class="row">
         <div class="col">
             <div class="input-group input-group-lg">
@@ -178,7 +178,7 @@
   function panggil(noantrian) {
     var loket = '';
     {if: isset($_GET['loket']) && $_GET['loket'] != ''}
-  	var loket = "{?=$_GET['loket']?}";
+  	var loket = "{?=e($_GET['loket'])?}";
     {/if}
     alert('Panggil ' + loket + ' - ' + noantrian);
   	$.ajax({
@@ -186,7 +186,7 @@
   		dataType: 'json',
   		data: {
   			noantrian: noantrian,
-  			type: '{?=str_replace("panggil_","",isset_or($_GET['show'], ''))?}',
+  			type: '{?=rawurlencode(str_replace("panggil_","",isset_or($_GET['show'], '')))?}',
   			loket: loket,
   		},
   		success: function(data) {
@@ -201,7 +201,7 @@
   $("#form_simpan_no_rkm_medis_{?=isset_or($value)?}").on("click", ".simpan_no_rkm_medis_{?=isset_or($value)?}", function(event){
     var noantrian = $('input:hidden[name=noantrian]').val();
     var no_rkm_medis = $('input:text[name=no_rkm_medis_{?=isset_or($value)?}]').val();
-    var type = '{?=str_replace("panggil_","",$_GET['show'])?}';
+    var type = '{?=rawurlencode(str_replace("panggil_","",$_GET['show']))?}';
     alert(no_rkm_medis);
     $.ajax({
         url: '{?=url()?}/anjungan/simpannorm',

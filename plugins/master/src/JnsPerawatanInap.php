@@ -67,7 +67,7 @@ class JnsPerawatanInap
           ];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function anyDisplay()
@@ -121,7 +121,7 @@ class JnsPerawatanInap
           $return['halaman'] = $_POST['halaman'];
         }
 
-        return $return;
+        return htmlspecialchars_array($return);
     }
 
     public function postSave()

@@ -77,7 +77,7 @@ class Site extends SiteModule
             $page = [
                 'title' => 'Veronisa',
                 'desc' => 'Dashboard Verifikasi Obat Kronis',
-                'content' => $this->draw('login.html', ['mlite' => $this->mlite])
+                'content' => $this->draw('login.html', ['mlite' => htmlspecialchars_array($this->mlite)])
             ];
         }
 
@@ -218,7 +218,7 @@ class Site extends SiteModule
 
               $row['pdfURL'] = url(['vero', 'pdf', $this->convertNorawat($no_rawat)]);
               $row['downloadURL'] = url(['vero', 'downloadpdf', $this->convertNorawat($no_rawat)]);
-              $this->assign['list'][] = $row;
+              $this->assign['list'][] = htmlspecialchars_array($row);
           }
       }
       return $this->draw('index.html', ['veronisa' => $this->assign]);

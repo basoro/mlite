@@ -13,10 +13,23 @@ Options -Indexes
     </IfModule>
 </Files>
 
+# Security headers untuk file statis (dan diseragamkan untuk response PHP).
+# Nilai CSP identik dengan sendSecurityHeaders() di systems/functions.php.
+<IfModule mod_headers.c>
+    Header always unset X-Content-Type-Options
+    Header always unset X-Frame-Options
+    Header always unset Content-Security-Policy
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Content-Security-Policy "default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; object-src 'self'; base-uri 'self'; frame-ancestors 'self'"
+</IfModule>
+
 # URL rewrites
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteRule ^(systems/|themes/|tmp/).*\.(php)$ - [F,L]
+    # Konten pengguna & aset statis: larang total eksekusi script.
+    RewriteRule ^(uploads|assets)/.*\.(?i:php[0-9]*|phtml|phar|pl|py|cgi|sh|shtml|asp|aspx|jsp|exe)$ - [F,L]
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.php [L]

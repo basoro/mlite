@@ -174,28 +174,28 @@
 </script>
 <script type="text/javascript">
     {if: isset($_GET['getobatreferensi'])}
-        $.get("{?=url([ADMIN, 'pcare', 'obatreferensi', $_GET['dpho']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'obatreferensi', rawurlencode($_GET['dpho'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['getobatkunjungan']) && isset($_GET['noKunjungan'])}
-        $.get("{?=url([ADMIN, 'pcare', 'getobatkunjungan', $_GET['noKunjungan']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'getobatkunjungan', rawurlencode($_GET['noKunjungan'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['addobat']) && isset($_GET['noKunjungan']) && isset($_GET['kdObat']) && isset($_GET['signa1']) && isset($_GET['signa2']) && isset($_GET['jumlah'])}
-        $.get("{?=url([ADMIN, 'pcare', 'addobat', $_GET['noKunjungan'], $_GET['kdObat'], $_GET['signa1'], $_GET['signa2'], $_GET['jumlah']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'addobat', rawurlencode($_GET['noKunjungan']), rawurlencode($_GET['kdObat']), rawurlencode($_GET['signa1']), rawurlencode($_GET['signa2']), rawurlencode($_GET['jumlah'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);
         });
     {/if}
     {if: isset($_GET['delobat']) && isset($_GET['kdObatSK']) && isset($_GET['noKunjungan'])}
-        $.get("{?=url([ADMIN, 'pcare', 'delobat', $_GET['kdObatSK'], $_GET['noKunjungan']])?}", function(data){
+        $.get("{?=url([ADMIN, 'pcare', 'delobat', rawurlencode($_GET['kdObatSK']), rawurlencode($_GET['noKunjungan'])])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
           $("pre").text(data);

@@ -282,8 +282,8 @@ class Admin extends AdminModule
           ->where('no_rawat', $_POST['no_rawat'])
           ->oneArray();
         echo $this->draw('stts.daftar.html', [
-          'stts_daftar' => $rawat['stts_daftar'],
-          'stts_daftar_hidden' => $rawat['stts_daftar'],
+          'stts_daftar' => htmlspecialchars_array($rawat['stts_daftar']),
+          'stts_daftar_hidden' => htmlspecialchars_array($rawat['stts_daftar']),
           'bg_status' => ''
         ]);
       }
@@ -665,7 +665,7 @@ class Admin extends AdminModule
         }
         $resep[] = $row;
       }
-      echo $this->draw('rincian.html', ['rawat_jl_dr' => $rawat_jl_dr, 'rawat_jl_pr' => $rawat_jl_pr, 'rawat_jl_drpr' => $rawat_jl_drpr, 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' => htmlspecialchars_array($resep), 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
+      echo $this->draw('rincian.html', ['rawat_jl_dr' => htmlspecialchars_array($rawat_jl_dr), 'rawat_jl_pr' => htmlspecialchars_array($rawat_jl_pr), 'rawat_jl_drpr' => htmlspecialchars_array($rawat_jl_drpr), 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' => htmlspecialchars_array($resep), 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
       exit();
     }
 
@@ -1042,7 +1042,7 @@ class Admin extends AdminModule
       echo $this->draw('odontogram.html', [
         'odontogram' => htmlspecialchars_array($this->db('mlite_odontogram')->where('no_rkm_medis', $no_rkm_medis)->toArray()), 
         'ohis' => htmlspecialchars_array($this->db('mlite_ohis')->where('no_rkm_medis', $no_rkm_medis)->toArray()), 
-        'odt' => $odt
+        'odt' => htmlspecialchars_array($odt)
       ]);
       exit();
     }
@@ -1676,7 +1676,7 @@ class Admin extends AdminModule
       $cetak = $this->db('mlite_temporary')->toArray();
 
       $html = $this->draw('cetak.igd.html', [
-        'cetak' => $cetak
+        'cetak' => htmlspecialchars_array($cetak)
       ]);
 
       $mpdf = new \Mpdf\Mpdf([

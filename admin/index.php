@@ -45,6 +45,9 @@ try {
     require_once('../systems/lib/Autoloader.php');
     //ob_start(base64_decode('XFN5c3RlbXNcTWFpbjo6dmVyaWZ5TGljZW5zZQ=='));
 
+    // Header keamanan (CSP, X-Frame-Options, nosniff) untuk semua response admin
+    sendSecurityHeaders();
+
     $core = new Systems\Admin;
 
     // Register API routes available regardless of login state
@@ -164,13 +167,22 @@ try {
             $skipApi = true;
             break;
         }
-    }
-
-    if (!$skipApi && strpos($__path, 'api/') === 0) {
+    }    if (!$skipApi && strpos($__path, 'api/') === 0) {
         $core->router->execute();
         return;
     }
 
+    // Proteksi CSRF: tolak permintaan state-changing dari sesi browser
+    // yang tidak membawa token yang valid.
+    if (!verifyCsrfToken()) {
+        http_response_code(403);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status'  => 'error',
+            'message' => 'CSRF token tidak valid. Muat ulang halaman lalu coba lagi.'
+        ]);
+        exit;
+    }
 
     if ($core->loginCheck()) {
         $core->loadModules();

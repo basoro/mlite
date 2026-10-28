@@ -1,0 +1,13 @@
+# Folder aset statis (CSS, JS, gambar, font).
+# Dilarang mengeksekusi script apa pun dari direktori ini.
+# Berlaku turunan ke seluruh sub-direktori.
+<Files ~ "(?i)^.*\.(php[0-9]*|phtml|phar|pl|py|cgi|sh|shtml|asp|aspx|jsp|exe|htaccess)$">
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+        Satisfy All
+    </IfModule>
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</Files>

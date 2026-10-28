@@ -185,7 +185,7 @@ class Admin extends AdminModule
           ->where('no_rawat', $no_rawat)
           ->oneArray();
         echo $this->draw('form.html', [
-          'rawat_jalan' => $this->assign
+          'rawat_jalan' => htmlspecialchars_array($this->assign)
         ]);
       } else {
         $this->assign['mlite_pendaftaran_oral_diagnostic'] = [
@@ -217,7 +217,7 @@ class Admin extends AdminModule
           'pekerjaan' => ''
         ];
         echo $this->draw('form.html', [
-          'rawat_jalan' => $this->assign
+          'rawat_jalan' => htmlspecialchars_array($this->assign)
         ]);
       }
       exit();
@@ -617,7 +617,7 @@ class Admin extends AdminModule
         }
         $resep[] = $row;
       }
-      echo $this->draw('rincian.html', ['rawat_jl_dr' => $rawat_jl_dr, 'rawat_jl_pr' => $rawat_jl_pr, 'rawat_jl_drpr' => $rawat_jl_drpr, 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' => htmlspecialchars_array($resep), 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
+      echo $this->draw('rincian.html', ['rawat_jl_dr' => htmlspecialchars_array($rawat_jl_dr), 'rawat_jl_pr' => htmlspecialchars_array($rawat_jl_pr), 'rawat_jl_drpr' => htmlspecialchars_array($rawat_jl_drpr), 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' => htmlspecialchars_array($resep), 'no_rawat' => htmlspecialchars($_POST['no_rawat'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')]);
       exit();
     }
 
@@ -1221,7 +1221,7 @@ class Admin extends AdminModule
         $cetak = $this->db('mlite_temporary')->toArray();
 
         echo $this->draw('cetak.oral_diagnostic.html', [
-            'cetak' => $cetak,
+            'cetak' => htmlspecialchars_array($cetak),
             'tgl_awal' => htmlspecialchars($tgl_awal, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'tgl_akhir' => htmlspecialchars($tgl_akhir, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
         ]);
@@ -1385,8 +1385,8 @@ class Admin extends AdminModule
         $data_assessment['penilaian_awal_keperawatan_ralan'] = $existing_assessment;
         
         echo $this->draw('assesment.html', [
-            'reg_periksa' => $this->db('reg_periksa')->where('no_rawat', $no_rawat_reverted)->oneArray(),
-            'penilaian_awal_keperawatan_ralan' => $penilaian_awal_keperawatan_ralan,
+            'reg_periksa' => htmlspecialchars_array($this->db('reg_periksa')->where('no_rawat', $no_rawat_reverted)->oneArray()),
+            'penilaian_awal_keperawatan_ralan' => htmlspecialchars_array($penilaian_awal_keperawatan_ralan),
             'pasien' => $this->db('pasien')->where('no_rawat', $no_rawat_reverted)->join('reg_periksa','pasien.no_rkm_medis=reg_periksa.no_rkm_medis')->oneArray(),
             'petugas' => $existing_assessment ? $this->db('petugas')->where('no_rawat', $no_rawat_reverted)->join('penilaian_awal_keperawatan_ralan','petugas.nip=penilaian_awal_keperawatan_ralan.nip')->oneArray() : [],
             'data_assessment' => $data_assessment
@@ -1537,7 +1537,7 @@ class Admin extends AdminModule
             $penilaian_awal_keperawatan_ralan['nm_petugas'] = $penilaian_awal_keperawatan_ralan['nama'];
         }
         
-        echo $this->draw('assesment.tampil.html', ['penilaian_awal_keperawatan_ralan' => $penilaian_awal_keperawatan_ralan]);
+        echo $this->draw('assesment.tampil.html', ['penilaian_awal_keperawatan_ralan' => htmlspecialchars_array($penilaian_awal_keperawatan_ralan)]);
         exit();
     }
 

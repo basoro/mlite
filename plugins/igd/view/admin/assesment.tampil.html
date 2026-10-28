@@ -381,7 +381,7 @@
   {else}
   <div class="alert alert-info">
     <i class="fa fa-info-circle"></i> Belum ada data assessment untuk pasien ini.
-    <button type="button" class="btn btn-primary btn-sm pull-right buat_assesment" data-no_rawat="{?=isset_or($_GET.no_rawat)?}">
+    <button type="button" class="btn btn-primary btn-sm pull-right buat_assesment" data-no_rawat="{?=e(isset_or($_GET.no_rawat))?}">
       <i class="fa fa-plus"></i> Buat Assessment
     </button>
   </div>

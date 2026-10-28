@@ -43,8 +43,8 @@ class Admin extends AdminModule
 
         return $this->draw('manage.html', [
             'signatures' => htmlspecialchars_array($signatures),
-            'pagination' => $this->assign['pagination'],
-            'phrase' => $phrase
+            'pagination' => htmlspecialchars_array($this->assign['pagination']),
+            'phrase' => htmlspecialchars_array($phrase)
         ]);
     }
 
@@ -79,11 +79,11 @@ class Admin extends AdminModule
         $signer_role = $this->_resolveSignerRole($raw_role, $signer_name, $signer_id);
 
         exit($this->draw('sign.html', [
-            'ref_type' => $ref_type,
-            'ref_id' => $ref_id,
-            'signer_role' => $signer_role,
-            'signer_id' => $signer_id,
-            'signer_name' => $signer_name
+            'ref_type' => htmlspecialchars_array($ref_type),
+            'ref_id' => htmlspecialchars_array($ref_id),
+            'signer_role' => htmlspecialchars_array($signer_role),
+            'signer_id' => htmlspecialchars_array($signer_id),
+            'signer_name' => htmlspecialchars_array($signer_name)
         ]));
     }
 

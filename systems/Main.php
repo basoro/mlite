@@ -230,8 +230,14 @@ abstract class Main
                 } else {
                     redirect(url([ADMIN, 'dashboard', 'main']));
                 }
-            } elseif (!isset($_GET['t']) || ($_SESSION['token'] != @$_GET['t'])) {
-                return false;
+            } else {
+                $expected = (string) ($_SESSION['token'] ?? '');
+                $provided = csrfTokenFromRequest();
+
+                // Token CSRF bisa dikirim lewat query ?t=, field _token, atau header X-CSRF-Token
+                if ($expected === '' || $provided === null || !hash_equals($expected, (string) $provided)) {
+                    return false;
+                }
             }
 
             return true;

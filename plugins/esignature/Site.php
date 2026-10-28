@@ -31,6 +31,6 @@ class Site extends SiteModule
             ->where('kode', $this->settings('esignature.kode_berkasdigital'))
             ->oneArray();
         
-        exit ($this->draw('verify.html', ['signature' => $signature, 'berkas_perawatan' => $berkas_perawatan, 'valid' => true]));
+        exit ($this->draw('verify.html', ['signature' => htmlspecialchars_array($signature), 'berkas_perawatan' => $berkas_perawatan, 'valid' => true]));
     }
 }

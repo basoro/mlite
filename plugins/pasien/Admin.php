@@ -99,9 +99,9 @@ class Admin extends AdminModule
       'cek_vclaim' => htmlspecialchars_array($cek_vclaim),
       'cek_pcare' => $cek_pcare,
       'offset' => $offset,
-      'admin_mode' => $this->settings->get('settings.admin_mode'),
-      'mlite_crud_permissions' => $this->core->loadCrudPermissions('pasien'),
-      'token' => $_SESSION['token']
+      'admin_mode' => htmlspecialchars_array($this->settings->get('settings.admin_mode')),
+      'mlite_crud_permissions' => htmlspecialchars_array($this->core->loadCrudPermissions('pasien')),
+      'token' => htmlspecialchars_array($_SESSION['token'])
     ]);
   }
 
@@ -872,7 +872,7 @@ class Admin extends AdminModule
 
     // Render HTML langsung (tanpa echo & tmp)
     $html = $this->draw('kartu.html', [
-      'kartu' => $kartu
+      'kartu' => htmlspecialchars_array($kartu)
     ]);
 
     $mpdf = new \Mpdf\Mpdf([
@@ -918,11 +918,21 @@ class Admin extends AdminModule
         ->toArray();
     }
     $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
-    return $this->draw('folder.html', ['pasien' => $pasien, 'reg_periksa' => $reg_periksa, 'berkas_digital_perawatan' => $berkas_digital_perawatan, 'master_berkas_digital' => htmlspecialchars_array($master_berkas_digital)]);
+    return $this->draw('folder.html', ['pasien' => htmlspecialchars_array($pasien), 'reg_periksa' => htmlspecialchars_array($reg_periksa), 'berkas_digital_perawatan' => htmlspecialchars_array($berkas_digital_perawatan), 'master_berkas_digital' => htmlspecialchars_array($master_berkas_digital)]);
   }
 
   public function postSaveBerkasDigital()
   {
+    $cekUpload = validateUploadedFile(
+      $_FILES['file'] ?? [],
+      ['jpg', 'jpeg', 'png', 'pdf'],
+      ['image/jpeg', 'image/png', 'application/pdf'],
+      5 * 1024 * 1024 // maks 5MB per berkas digital pasien
+    );
+    if (isset($cekUpload['error'])) {
+      echo htmlspecialchars($cekUpload['error'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      exit();
+    }
 
     if (MULTI_APP) {
 
@@ -957,14 +967,7 @@ class Admin extends AdminModule
       $cntr = 0;
 
       $id = convertNorawat($_POST['no_rawat']);
-      $temp = explode(".", $_FILES["file"]["name"]);
-      $extension = strtolower(end($temp));
-      $allowed_extensions = ['jpg', 'jpeg', 'png', 'pdf'];
-
-      if (!in_array($extension, $allowed_extensions)) {
-        echo 'Format file tidak diizinkan';
-        exit();
-      }
+      $extension = $cekUpload['extension'];
 
       $imgName = time() . $cntr++;
       $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $extension;
@@ -1835,7 +1838,7 @@ class Admin extends AdminModule
 
     // Render HTML langsung
     $html = $this->draw('pasien.export.pdf.html', [
-      'pasien' => $rows
+      'pasien' => htmlspecialchars_array($rows)
     ]);
 
     $mpdf = new \Mpdf\Mpdf([
@@ -1891,7 +1894,7 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'pasien', 'uploadphoto']));
     }
     $set_no_rkm_medis = $this->db('set_no_rkm_medis')->oneArray();
-    return $this->draw('settings.html', ['set_no_rkm_medis' => $set_no_rkm_medis]);
+    return $this->draw('settings.html', ['set_no_rkm_medis' => htmlspecialchars_array($set_no_rkm_medis)]);
   }
 
   public function postSaveSettings()

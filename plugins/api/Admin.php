@@ -433,7 +433,7 @@ public function postSaveSettingsApam()
         ->toArray();
 
       return $this->draw('payment.duitku.html', [
-        'paymentduitku' => $return
+        'paymentduitku' => htmlspecialchars_array($return)
       ]);
 
     }

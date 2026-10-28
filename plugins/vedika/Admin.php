@@ -1001,7 +1001,7 @@ class Admin extends AdminModule
       ['name' => 'User Vedika', 'url' => url([ADMIN, 'vedika', 'users']), 'icon' => 'code', 'desc' => 'User Vedika'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'vedika', 'settings']), 'icon' => 'code', 'desc' => 'Pengaturan Vedika'],
     ];
-    return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules), 'stats' => $stats, 'periode' => $date]);
+    return $this->draw('manage.html', ['sub_modules' => htmlspecialchars_array($sub_modules), 'stats' => htmlspecialchars_array($stats), 'periode' => htmlspecialchars_array($date)]);
   }
 
   public function Chart()
@@ -1065,6 +1065,14 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['simpanberkas'])) {
+      if (!empty($_FILES['files']['tmp_name'])) {
+        $cekUpload = validateUploadedFile($_FILES['files'], ['jpg', 'jpeg', 'png', 'gif', 'pdf'], ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'], 5 * 1024 * 1024);
+        if (isset($cekUpload['error'])) {
+          echo htmlspecialchars($cekUpload['error'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+          exit();
+        }
+      }
+
       if(MULTI_APP) {
 
         $curl = curl_init();
@@ -1259,7 +1267,7 @@ class Admin extends AdminModule
             ->where('no_rawat', $row['no_rawat'])
             ->toArray();
         }
-        $this->assign['list'][] = $row;
+        $this->assign['list'][] = htmlspecialchars_array($row);
       }
     }
 
@@ -1305,6 +1313,14 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['simpanberkas'])) {
+      if (!empty($_FILES['files']['tmp_name'])) {
+        $cekUpload = validateUploadedFile($_FILES['files'], ['jpg', 'jpeg', 'png', 'gif', 'pdf'], ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'], 5 * 1024 * 1024);
+        if (isset($cekUpload['error'])) {
+          echo htmlspecialchars($cekUpload['error'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+          exit();
+        }
+      }
+
 
       if(MULTI_APP) {
 
@@ -1497,7 +1513,7 @@ class Admin extends AdminModule
             ->where('no_rawat', $row['no_rawat'])
             ->toArray();
         }
-        $this->assign['list'][] = $row;
+        $this->assign['list'][] = htmlspecialchars_array($row);
       }
     }
 
@@ -1543,6 +1559,14 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['simpanberkas'])) {
+      if (!empty($_FILES['files']['tmp_name'])) {
+        $cekUpload = validateUploadedFile($_FILES['files'], ['jpg', 'jpeg', 'png', 'gif', 'pdf'], ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'], 5 * 1024 * 1024);
+        if (isset($cekUpload['error'])) {
+          echo htmlspecialchars($cekUpload['error'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+          exit();
+        }
+      }
+
 
       if(MULTI_APP) {
 
@@ -1733,7 +1757,7 @@ class Admin extends AdminModule
             ->where('no_rawat', $row['no_rawat'])
             ->toArray();
         }
-        $this->assign['list'][] = $row;
+        $this->assign['list'][] = htmlspecialchars_array($row);
       }
     }
 
@@ -1902,6 +1926,14 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['simpanberkas'])) {
+      if (!empty($_FILES['files']['tmp_name'])) {
+        $cekUpload = validateUploadedFile($_FILES['files'], ['jpg', 'jpeg', 'png', 'gif', 'pdf'], ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'], 5 * 1024 * 1024);
+        if (isset($cekUpload['error'])) {
+          echo htmlspecialchars($cekUpload['error'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+          exit();
+        }
+      }
+
 
       if(MULTI_APP) {
 
@@ -2085,7 +2117,7 @@ class Admin extends AdminModule
           $get_bangsal = $this->db('bangsal')->where('kd_bangsal', $get_kamar['kd_bangsal'])->oneArray();
           $row['nm_poli'] = $get_bangsal['nm_bangsal'].'/'.$get_kamar['kd_kamar'];
         }
-        $this->assign['list'][] = $row;
+        $this->assign['list'][] = htmlspecialchars_array($row);
       }
     }
 
@@ -2825,6 +2857,16 @@ class Admin extends AdminModule
 
   public function postSaveBerkasDigital()
   {
+    $cekUpload = validateUploadedFile(
+      $_FILES['files'] ?? [],
+      ['jpg', 'jpeg', 'png', 'gif', 'pdf'],
+      ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'],
+      5 * 1024 * 1024 // maks 5MB per berkas klaim
+    );
+    if (isset($cekUpload['error'])) {
+      echo htmlspecialchars($cekUpload['error'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+      exit();
+    }
 
     if(MULTI_APP) {
 
@@ -2979,7 +3021,7 @@ class Admin extends AdminModule
         $row['editURL'] = url([ADMIN, 'vedika', 'useredit', $row['id']]);
         $row['delURL']  = url([ADMIN, 'vedika', 'userdelete', $row['id']]);
     }
-    return $this->draw('users.html', ['users' => $rows]);
+    return $this->draw('users.html', ['users' => htmlspecialchars_array($rows)]);
   }
 
   public function getUserAdd()
@@ -3114,20 +3156,20 @@ class Admin extends AdminModule
     if($status_lanjut == 'Ralan') {
       echo $this->draw('form.resume.html', [
         'status_lanjut' => $status_lanjut,
-        'reg_periksa' => $this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
-        'diagnosa' => $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ralan')->oneArray(),
-        'prosedur' => $this->db('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ralan')->oneArray(),
-        'resume_pasien' => $this->db('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()
+        'reg_periksa' => htmlspecialchars_array($this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()),
+        'diagnosa' => htmlspecialchars_array($this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ralan')->oneArray()),
+        'prosedur' => htmlspecialchars_array($this->db('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ralan')->oneArray()),
+        'resume_pasien' => htmlspecialchars_array($this->db('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray())
       ]);
     }
     if($status_lanjut == 'Ranap') {
       echo $this->draw('form.resume.ranap.html', [
         'status_lanjut' => $status_lanjut,
-        'reg_periksa' => $this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
-        'kamar_inap' => $this->db('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
-        'diagnosa_utama' => $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ranap')->oneArray(),
-        'prosedur_utama' => $this->db('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ranap')->oneArray(),
-        'resume_pasien' => $this->db('resume_pasien_ranap')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()
+        'reg_periksa' => htmlspecialchars_array($this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()),
+        'kamar_inap' => htmlspecialchars_array($this->db('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()),
+        'diagnosa_utama' => htmlspecialchars_array($this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ranap')->oneArray()),
+        'prosedur_utama' => htmlspecialchars_array($this->db('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ranap')->oneArray()),
+        'resume_pasien' => htmlspecialchars_array($this->db('resume_pasien_ranap')->where('no_rawat', revertNoRawat($no_rawat))->oneArray())
       ]);
     }
     exit();
@@ -3268,7 +3310,7 @@ class Admin extends AdminModule
   public function getDisplayResume($no_rawat)
   {
     $resume_pasien = $this->db('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
-    echo $this->draw('display.resume.html', ['resume_pasien' => $resume_pasien]);
+    echo $this->draw('display.resume.html', ['resume_pasien' => htmlspecialchars_array($resume_pasien)]);
     exit();
   }
 
@@ -3374,7 +3416,7 @@ class Admin extends AdminModule
   public function getUbahDiagnosa($status_lanjut, $no_rawat)
   {
     $diagnosa_pasien = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', revertNoRawat($no_rawat))->where('diagnosa_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('ubah.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => htmlspecialchars_array($diagnosa_pasien), 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('ubah.diagnosa.html', ['no_rawat' => htmlspecialchars_array(revertNoRawat($no_rawat)), 'diagnosa_pasien' => htmlspecialchars_array($diagnosa_pasien), 'status_lanjut' => htmlspecialchars_array($status_lanjut)]);
     exit();
   }
 
@@ -3395,7 +3437,7 @@ class Admin extends AdminModule
   public function getUbahProsedur($status_lanjut, $no_rawat)
   {
     $prosedur_pasien = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('prosedur_pasien.no_rawat', revertNoRawat($no_rawat))->where('prosedur_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
-    echo $this->draw('ubah.prosedur.html', ['no_rawat' => revertNoRawat($no_rawat), 'prosedur_pasien' => htmlspecialchars_array($prosedur_pasien), 'status_lanjut' => $status_lanjut]);
+    echo $this->draw('ubah.prosedur.html', ['no_rawat' => htmlspecialchars_array(revertNoRawat($no_rawat)), 'prosedur_pasien' => htmlspecialchars_array($prosedur_pasien), 'status_lanjut' => htmlspecialchars_array($status_lanjut)]);
     exit();
   }
 
@@ -4026,32 +4068,32 @@ class Admin extends AdminModule
       $hide_input_data = true;
     }
     echo $this->draw('inacbgs.html', [
-      'reg_periksa' => $reg_periksa,
-      'biaya_non_bedah' => $total_biaya_non_bedah,
-      'biaya_bedah' => $total_biaya_bedah,
-      'biaya_konsultasi' => $total_biaya_konsultasi,
-      'biaya_tenaga_ahli' => $total_biaya_tenaga_ahli,
-      'biaya_keperawatan' => $total_biaya_keperawatan,
-      'biaya_penunjang' => $total_biaya_penunjang,
-      'biaya_radiologi' => $total_biaya_radiologi,
-      'biaya_laboratorium' => $total_biaya_laboratorium,
-      'biaya_pelayanan_darah' => $total_biaya_pelayanan_darah,
-      'biaya_rehabilitasi' => $total_biaya_rehabilitasi,
-      'biaya_kamar' => $total_biaya_kamar,
-      'biaya_rawat_intensif' => $total_biaya_rawat_intensif,
-      'biaya_obat' => $total_biaya_obat,
-      'biaya_obat_kronis' => $total_biaya_obat_kronis,
-      'biaya_obat_kemoterapi' => $total_biaya_obat_kemoterapi,
-      'biaya_alkes' => $total_biaya_alkes,
-      'biaya_bmhp' => $total_biaya_bmhp,
-      'biaya_sewa_alat' => $total_biaya_sewa_alat,
-      'biaya_tarif_poli_eks' => $total_biaya_tarif_poli_eks,
-      'biaya_add_payment_pct' => $total_biaya_add_payment_pct,
-      'get_claim_data' => $get_claim_data,
-      'penyakit' => $penyakit,
-      'prosedur' => $prosedur,
-      'adl' => $adl,
-      'hide_input_data' => $hide_input_data
+      'reg_periksa' => htmlspecialchars_array($reg_periksa),
+      'biaya_non_bedah' => htmlspecialchars_array($total_biaya_non_bedah),
+      'biaya_bedah' => htmlspecialchars_array($total_biaya_bedah),
+      'biaya_konsultasi' => htmlspecialchars_array($total_biaya_konsultasi),
+      'biaya_tenaga_ahli' => htmlspecialchars_array($total_biaya_tenaga_ahli),
+      'biaya_keperawatan' => htmlspecialchars_array($total_biaya_keperawatan),
+      'biaya_penunjang' => htmlspecialchars_array($total_biaya_penunjang),
+      'biaya_radiologi' => htmlspecialchars_array($total_biaya_radiologi),
+      'biaya_laboratorium' => htmlspecialchars_array($total_biaya_laboratorium),
+      'biaya_pelayanan_darah' => htmlspecialchars_array($total_biaya_pelayanan_darah),
+      'biaya_rehabilitasi' => htmlspecialchars_array($total_biaya_rehabilitasi),
+      'biaya_kamar' => htmlspecialchars_array($total_biaya_kamar),
+      'biaya_rawat_intensif' => htmlspecialchars_array($total_biaya_rawat_intensif),
+      'biaya_obat' => htmlspecialchars_array($total_biaya_obat),
+      'biaya_obat_kronis' => htmlspecialchars_array($total_biaya_obat_kronis),
+      'biaya_obat_kemoterapi' => htmlspecialchars_array($total_biaya_obat_kemoterapi),
+      'biaya_alkes' => htmlspecialchars_array($total_biaya_alkes),
+      'biaya_bmhp' => htmlspecialchars_array($total_biaya_bmhp),
+      'biaya_sewa_alat' => htmlspecialchars_array($total_biaya_sewa_alat),
+      'biaya_tarif_poli_eks' => htmlspecialchars_array($total_biaya_tarif_poli_eks),
+      'biaya_add_payment_pct' => htmlspecialchars_array($total_biaya_add_payment_pct),
+      'get_claim_data' => htmlspecialchars_array($get_claim_data),
+      'penyakit' => htmlspecialchars_array($penyakit),
+      'prosedur' => htmlspecialchars_array($prosedur),
+      'adl' => htmlspecialchars_array($adl),
+      'hide_input_data' => htmlspecialchars_array($hide_input_data)
     ]);
     exit();
   }
@@ -4220,10 +4262,10 @@ class Admin extends AdminModule
         'username' => $this->core->getUserInfo('username')
     ]);
     echo $this->draw('idrg.html', [
-      'reg_periksa' => $reg_periksa,
-      'noRawat' => revertNoRawat($no_rawat), 
-      'msg' => json_encode($msg),
-      'is_final' => $is_final
+      'reg_periksa' => htmlspecialchars_array($reg_periksa),
+      'noRawat' => htmlspecialchars_array(revertNoRawat($no_rawat)), 
+      'msg' => htmlspecialchars_array(json_encode($msg)),
+      'is_final' => htmlspecialchars_array($is_final)
     ]);
     exit();
   }
@@ -4477,6 +4519,13 @@ class Admin extends AdminModule
 
   public function postKirimDataCenter()
   {
+    if (!empty($_FILES['files']['tmp_name'])) {
+      $cekUpload = validateUploadedFile($_FILES['files'], ['jpg', 'jpeg', 'png', 'gif', 'pdf'], ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'], 5 * 1024 * 1024);
+      if (isset($cekUpload['error'])) {
+        echo htmlspecialchars($cekUpload['error'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        exit();
+      }
+    }
     $nosep = $_POST['nosep'];
     $this->KirimKlaimIndividualKeDC($nosep);
     $cntr   = 0;
@@ -5820,7 +5869,7 @@ class Admin extends AdminModule
       'filterUrl' => url([ADMIN, 'vedika', 'logseklaim']),
     ];
 
-    return $this->draw('logs.eklaim.html', ['logs' => $assign]);
+    return $this->draw('logs.eklaim.html', ['logs' => htmlspecialchars_array($assign)]);
   }
 
   public function getMliteEklaimLogs()

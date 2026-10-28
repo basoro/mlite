@@ -46,6 +46,16 @@ class Admin extends AdminModule
     {
         if (isset($_FILES['zip_module']['tmp_name']) && !FILE_LOCK) {
             $backURL = url([ADMIN, 'modules', 'upload']);
+            $cekUpload = validateUploadedFile(
+                $_FILES['zip_module'],
+                ['zip'],
+                ['application/zip', 'application/x-zip-compressed', 'multipart/x-zip'],
+                50 * 1024 * 1024 // maks 50MB per paket modul
+            );
+            if (isset($cekUpload['error'])) {
+                $this->notify('failure', $cekUpload['error']);
+                redirect($backURL);
+            }
             $file = $_FILES['zip_module']['tmp_name'];
 
             // Verify ZIP and check for malicious files

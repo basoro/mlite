@@ -226,10 +226,10 @@ class Admin extends AdminModule
         }
 
         echo $this->draw('mappingpoli.display.html', [
-          'mappingpoli' => $mappingpoli,
+          'mappingpoli' => htmlspecialchars_array($mappingpoli),
           'halaman' => htmlspecialchars($halaman, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'jumlah_data' => $jumlah_data,
-          'jml_halaman' => $jml_halaman
+          'jml_halaman' => htmlspecialchars_array($jml_halaman)
         ]);
 
         exit();
@@ -245,14 +245,14 @@ class Admin extends AdminModule
             $mappingpoli['kd_poli_pcare'] = htmlspecialchars($mappingpoli['kd_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $mappingpoli['nm_poli_pcare'] = htmlspecialchars($mappingpoli['nm_poli_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         }
-        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poliklinik), 'mappingpoli' => $mappingpoli]);
+        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poliklinik), 'mappingpoli' => htmlspecialchars_array($mappingpoli)]);
       } else {
         $mappingpoli = [
           'kd_poli_rs' => '',
           'kd_poli_pcare' => '',
           'nm_poli_pcare' => ''
         ];
-        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poliklinik), 'mappingpoli' => $mappingpoli]);
+        echo $this->draw('mappingpoli.form.html', ['poliklinik' => htmlspecialchars_array($poliklinik), 'mappingpoli' => htmlspecialchars_array($mappingpoli)]);
       }
       exit();
     }
@@ -356,10 +356,10 @@ class Admin extends AdminModule
         }
 
         echo $this->draw('mappingdokter.display.html', [
-          'mappingdokter' => $mappingdokter,
+          'mappingdokter' => htmlspecialchars_array($mappingdokter),
           'halaman' => htmlspecialchars($halaman, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
           'jumlah_data' => $jumlah_data,
-          'jml_halaman' => $jml_halaman
+          'jml_halaman' => htmlspecialchars_array($jml_halaman)
         ]);
 
         exit();
@@ -375,14 +375,14 @@ class Admin extends AdminModule
             $mappingdokter['kd_dokter_pcare'] = htmlspecialchars($mappingdokter['kd_dokter_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
             $mappingdokter['nm_dokter_pcare'] = htmlspecialchars($mappingdokter['nm_dokter_pcare'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         }
-        echo $this->draw('mappingdokter.form.html', ['dokter' => htmlspecialchars_array($dokter), 'mappingdokter' => $mappingdokter]);
+        echo $this->draw('mappingdokter.form.html', ['dokter' => htmlspecialchars_array($dokter), 'mappingdokter' => htmlspecialchars_array($mappingdokter)]);
       } else {
         $mappingdokter = [
           'kd_dokter' => '',
           'kd_dokter_pcare' => '',
           'nm_dokter_pcare' => ''
         ];
-        echo $this->draw('mappingdokter.form.html', ['dokter' => htmlspecialchars_array($dokter), 'mappingdokter' => $mappingdokter]);
+        echo $this->draw('mappingdokter.form.html', ['dokter' => htmlspecialchars_array($dokter), 'mappingdokter' => htmlspecialchars_array($mappingdokter)]);
       }
       exit();
     }

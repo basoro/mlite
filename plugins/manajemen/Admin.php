@@ -132,9 +132,9 @@ class Admin extends AdminModule
 
       return $this->draw('manage.html', [
         'settings' => $settings,
-        'stats' => $stats,
-        'pasien' => $this->db('pasien')->join('penjab', 'penjab.kd_pj = pasien.kd_pj')->desc('tgl_daftar')->limit('5')->toArray(),
-        'dokter' => $this->db('dokter')->join('spesialis', 'spesialis.kd_sps = dokter.kd_sps')->join('jadwal', 'jadwal.kd_dokter = dokter.kd_dokter')->where('jadwal.hari_kerja', $hari)->where('dokter.status', '1')->group(['dokter.kd_dokter', 'jadwal.jam_mulai', 'jadwal.jam_selesai'])->rand()->limit('6')->toArray(),
+        'stats' => htmlspecialchars_array($stats),
+        'pasien' => htmlspecialchars_array($this->db('pasien')->join('penjab', 'penjab.kd_pj = pasien.kd_pj')->desc('tgl_daftar')->limit('5')->toArray()),
+        'dokter' => htmlspecialchars_array($this->db('dokter')->join('spesialis', 'spesialis.kd_sps = dokter.kd_sps')->join('jadwal', 'jadwal.kd_dokter = dokter.kd_dokter')->where('jadwal.hari_kerja', $hari)->where('dokter.status', '1')->group(['dokter.kd_dokter', 'jadwal.jam_mulai', 'jadwal.jam_selesai'])->rand()->limit('6')->toArray()),
         'start_date' => $start_date,
         'end_date' => $end_date
       ]);
@@ -798,19 +798,37 @@ class Admin extends AdminModule
 
     public function countRanapByDateRange($tgl, $stts, $start_date, $end_date)
     {
-        $arr = is_array($stts) ? 'Yes' : 'No';
-        if ($arr == 'Yes') {
-            $poliklinik = implode("','", $stts);
-        } else {
-            $poliklinik = str_replace(",","','", $stts);
-        }
-        $sql = "SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE $tgl BETWEEN :start AND :end AND stts_pulang IN ('$poliklinik')";
+        $tgl = $this->_safeKamarInapColumn($tgl);
+        $sttsList = $this->_kamarInapStatusList($stts);
+        $placeholders = implode(',', array_fill(0, count($sttsList), '?'));
+        $sql = "SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE `$tgl` BETWEEN ? AND ? AND stts_pulang IN ($placeholders)";
         $stmt = $this->db()->pdo()->prepare($sql);
-        $stmt->bindValue(':start', $start_date);
-        $stmt->bindValue(':end', $end_date);
-        $stmt->execute();
+        $stmt->execute(array_merge([$start_date, $end_date], $sttsList));
         $count = $stmt->fetchColumn();
         return $count;
+    }
+
+    /**
+     * Whitelist for the kamar_inap date column used in raw count queries.
+     */
+    private function _safeKamarInapColumn($tgl)
+    {
+        return in_array($tgl, ['tgl_masuk', 'tgl_keluar'], true) ? $tgl : 'tgl_masuk';
+    }
+
+    /**
+     * Turn the status argument into a list of bound values.
+     *
+     * @return array
+     */
+    private function _kamarInapStatusList($stts)
+    {
+        $list = is_array($stts) ? $stts : explode(',', (string) $stts);
+        $list = array_values(array_filter($list, function ($value) {
+            return $value !== '' && $value !== null;
+        }));
+
+        return $list ?: ['-'];
     }
 
     public function countKamarInapByDateRange($start_date, $end_date)
@@ -1182,29 +1200,21 @@ class Admin extends AdminModule
     public function countRanap($tgl,$stts)
     {
         $date = date('Y-m-d');
-        $arr = is_array($stts) ? 'Yes' : 'No';
-        if ($arr == 'Yes') {
-            $poliklinik = implode("','",$stts);
-        } else {
-            $poliklinik = str_replace(",","','", $stts);
-        }
-        $query = $this->db()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE $tgl = '$date' AND stts_pulang IN ('$poliklinik')");
-        $query->execute();
+        $tgl = $this->_safeKamarInapColumn($tgl);
+        $sttsList = $this->_kamarInapStatusList($stts);
+        $placeholders = implode(',', array_fill(0, count($sttsList), '?'));
+        $query = $this->db()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE `$tgl` = ? AND stts_pulang IN ($placeholders)");
+        $query->execute(array_merge([$date], $sttsList));
         $count = $query->fetchColumn();
         return $count;
-    }
-
-    public function countLastRanap($tgl,$stts)
+    }    public function countLastRanap($tgl,$stts)
     {
         $date = date('Y-m-d', strtotime('-1 days'));
-        $arr = is_array($stts) ? 'Yes' : 'No';
-        if ($arr == 'Yes') {
-            $poliklinik = implode("','",$stts);
-        } else {
-            $poliklinik = str_replace(",","','", $stts);
-        }
-        $query = $this->db()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE $tgl = '$date' AND stts_pulang IN ('$poliklinik')");
-        $query->execute();
+        $tgl = $this->_safeKamarInapColumn($tgl);
+        $sttsList = $this->_kamarInapStatusList($stts);
+        $placeholders = implode(',', array_fill(0, count($sttsList), '?'));
+        $query = $this->db()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE `$tgl` = ? AND stts_pulang IN ($placeholders)");
+        $query->execute(array_merge([$date], $sttsList));
         $count = $query->fetchColumn();
         return $count;
     }
@@ -1422,7 +1432,7 @@ class Admin extends AdminModule
 
       return $this->draw('pendaftaran.html',[
         'settings' => $settings,
-        'stats' => $stats,
+        'stats' => htmlspecialchars_array($stats),
         'start_date' => $start_date,
         'end_date' => $end_date,
       ]);
@@ -1485,7 +1495,7 @@ class Admin extends AdminModule
 
       return $this->draw('rawatjalan.html',[
         'settings' => $settings,
-        'stats' => $stats,
+        'stats' => htmlspecialchars_array($stats),
         'start_date' => $start_date,
         'end_date' => $end_date,
       ]);
@@ -1558,7 +1568,7 @@ class Admin extends AdminModule
 
       return $this->draw('rawatinap.html',[
         'settings' => $settings,
-        'stats' => $stats,
+        'stats' => htmlspecialchars_array($stats),
         'start_date' => $start_date,
         'end_date' => $end_date,
       ]);
@@ -1595,7 +1605,7 @@ class Admin extends AdminModule
 
         return $this->draw('dokter.html',[
             'settings' => $settings,
-            'stats' => $stats,
+            'stats' => htmlspecialchars_array($stats),
             'start_date' => $start_date,
             'end_date' => $end_date,
         ]);
@@ -1662,7 +1672,7 @@ class Admin extends AdminModule
 
       return $this->draw('laboratorium.html',[
         'settings' => $settings,
-        'stats' => $stats,
+        'stats' => htmlspecialchars_array($stats),
         'start_date' => $start_date,
         'end_date' => $end_date,
       ]);
@@ -1729,7 +1739,7 @@ class Admin extends AdminModule
 
       return $this->draw('radiologi.html',[
         'settings' => $settings,
-        'stats' => $stats,
+        'stats' => htmlspecialchars_array($stats),
         'start_date' => $start_date,
         'end_date' => $end_date,
       ]);
@@ -1823,7 +1833,7 @@ class Admin extends AdminModule
         
         return $this->draw('farmasi.html',[
             'settings' => $settings,
-            'stats' => $stats,
+            'stats' => htmlspecialchars_array($stats),
             'start_date' => $start_date,
             'end_date' => $end_date,
         ]);
@@ -1897,7 +1907,7 @@ class Admin extends AdminModule
         $stats['percentDays'] = 0;
         return $this->draw('kasir.html',[
             'settings' => $settings,
-            'stats' => $stats,
+            'stats' => htmlspecialchars_array($stats),
             'start_date' => $start_date,
             'end_date' => $end_date,
         ]);
@@ -1978,7 +1988,7 @@ class Admin extends AdminModule
 
       return $this->draw('presensi.html',[
         'settings' => $settings,
-        'stats' => $stats,
+        'stats' => htmlspecialchars_array($stats),
         'start_date' => $start_date,
         'end_date' => $end_date,
         ]);

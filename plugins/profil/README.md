@@ -42,6 +42,7 @@ Modul pengelolaan profil dan kehadiran pegawai di mLITE.
 6. **Ganti Password**
    - Masukkan **Password Lama** dan **Password Baru**.
    - Password baru tidak boleh sama dengan password lama.
+   - Password baru minimal 8 karakter dan wajib mengandung kombinasi huruf besar, huruf kecil, serta angka.
    - Klik **Simpan** untuk memperbarui password.
 
 ## Panduan Admin

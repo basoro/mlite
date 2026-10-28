@@ -1494,49 +1494,49 @@
 </script>
 <script>
   {if: isset($_GET['no_rujukan']) && $_GET['no_rujukan'] != '' && isset($_GET['searchBy']) && $_GET['searchBy'] == 'PCare'}
-      $.get("{?=url([ADMIN, 'vclaim', 'caribynorujukan', $_GET['searchBy'], $_GET['no_rujukan']])?}", function(data){
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynorujukan', rawurlencode($_GET['searchBy']), rawurlencode($_GET['no_rujukan'])])?}", function(data){
         var data = JSON.parse(data);
         var data = JSON.stringify(data, null, '\t');
         $("pre").text(data);
       });
   {/if}
   {if: isset($_GET['no_rujukan']) && $_GET['no_rujukan'] != '' && isset($_GET['searchBy']) && $_GET['searchBy'] == 'RS'}
-      $.get("{?=url([ADMIN, 'vclaim', 'caribynorujukan', $_GET['searchBy'], $_GET['no_rujukan']])?}", function(data){
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynorujukan', rawurlencode($_GET['searchBy']), rawurlencode($_GET['no_rujukan'])])?}", function(data){
         var data = JSON.parse(data);
         var data = JSON.stringify(data, null, '\t');
         $("pre").text(data);
       });
   {/if}
   {if: isset($_GET['no_kartu']) && $_GET['no_kartu'] != '' && isset($_GET['searchBy']) && $_GET['searchBy'] == 'PCare'}
-      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', $_GET['searchBy'], $_GET['no_kartu']])?}", function(data){
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', rawurlencode($_GET['searchBy']), rawurlencode($_GET['no_kartu'])])?}", function(data){
         var data = JSON.parse(data);
         var data = JSON.stringify(data, null, '\t');
         $("pre").text(data);
       });
   {/if}
   {if: isset($_GET['no_kartu']) && $_GET['no_kartu'] != '' && isset($_GET['searchBy']) && $_GET['searchBy'] == 'RS'}
-      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', $_GET['searchBy'], $_GET['no_kartu']])?}", function(data){
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', rawurlencode($_GET['searchBy']), rawurlencode($_GET['no_kartu'])])?}", function(data){
         var data = JSON.parse(data);
         var data = JSON.stringify(data, null, '\t');
         $("pre").text(data);
       });
   {/if}
   {if: isset($_GET['no_kartu']) && $_GET['no_kartu'] != '' && isset($_GET['searchBy']) && $_GET['searchBy'] == 'PCare' && isset($_GET['multi']) && $_GET['multi'] == 'yes'}
-      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', $_GET['searchBy'], $_GET['no_kartu'], $_GET['multi']])?}", function(data){
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', rawurlencode($_GET['searchBy']), rawurlencode($_GET['no_kartu']), rawurlencode($_GET['multi'])])?}", function(data){
         var data = JSON.parse(data);
         var data = JSON.stringify(data, null, '\t');
         $("pre").text(data);
       });
   {/if}
   {if: isset($_GET['no_kartu']) && $_GET['no_kartu'] != '' && isset($_GET['searchBy']) && $_GET['searchBy'] == 'RS' && isset($_GET['multi']) && $_GET['multi'] == 'yes'}
-      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', $_GET['searchBy'], $_GET['no_kartu'], $_GET['multi']])?}", function(data){
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', rawurlencode($_GET['searchBy']), rawurlencode($_GET['no_kartu']), rawurlencode($_GET['multi'])])?}", function(data){
         var data = JSON.parse(data);
         var data = JSON.stringify(data, null, '\t');
         $("pre").text(data);
       });
   {/if}
   {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan'] != '' && isset($_GET['searchBy']) && $_GET['searchBy'] == 'PCare'}
-      $.get("{?=url([ADMIN, 'vclaim', 'caribytglrujukan', $_GET['searchBy'], $_GET['tgl_rujukan']])?}", function(data){
+      $.get("{?=url([ADMIN, 'vclaim', 'caribytglrujukan', rawurlencode($_GET['searchBy']), rawurlencode($_GET['tgl_rujukan'])])?}", function(data){
         var data = JSON.parse(data);
         var data = JSON.stringify(data, null, '\t');
         //$("pre").text(data);
@@ -1581,7 +1581,7 @@
       });
   {/if}
   {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan'] != '' && isset($_GET['searchBy']) && $_GET['searchBy'] == 'RS'}
-      $.get("{?=url([ADMIN, 'vclaim', 'caribytglrujukan', $_GET['searchBy'], $_GET['tgl_rujukan']])?}", function(data){
+      $.get("{?=url([ADMIN, 'vclaim', 'caribytglrujukan', rawurlencode($_GET['searchBy']), rawurlencode($_GET['tgl_rujukan'])])?}", function(data){
         var data = JSON.parse(data);
         var data = JSON.stringify(data, null, '\t');
         //$("pre").text(data);
@@ -1626,7 +1626,7 @@
        });
   {/if}
     {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan'] != '' && isset($_GET['no_kartu']) && $_GET['no_kartu'] != '' && isset($_GET['searchBy']) && $_GET['searchBy'] == 'kontrolcari'}
-        $.get("{?=url([ADMIN, 'vclaim', 'datakontrol', $_GET['no_kartu'], $_GET['tgl_rujukan']])?}", function(data){
+        $.get("{?=url([ADMIN, 'vclaim', 'datakontrol', rawurlencode($_GET['no_kartu']), rawurlencode($_GET['tgl_rujukan'])])?}", function(data){
             var data = JSON.parse(data);
             var data = JSON.stringify(data, null, '\t');
             $("pre").text(data);

@@ -906,7 +906,7 @@ class Admin extends AdminModule
 
         $backup_files = glob('../backups/*.sql.gz');
         // $backup_files = pathinfo($backup_files);
-        return $this->draw('backup.restore.html', ['databases' => htmlspecialchars_array($result), 'files' => $backup_files]);
+        return $this->draw('backup.restore.html', ['databases' => htmlspecialchars_array($result), 'files' => htmlspecialchars_array($backup_files)]);
     }
 
     public function getBackupDatabase()

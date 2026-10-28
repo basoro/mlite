@@ -1547,7 +1547,7 @@ class Admin extends AdminModule
       $row['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
       $bridging_pcare[] = $row;
     }
-    echo $this->draw('pendaftaranpcare.html', ['pasien' => $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray(), 'bridging_pcare' => $bridging_pcare, 'pendaftaran' => $reg_periksa, 'kode_fktp' => $this->settings->get('pcare.kode_fktp')]);
+    echo $this->draw('pendaftaranpcare.html', ['pasien' => htmlspecialchars_array($this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray()), 'bridging_pcare' => htmlspecialchars_array($bridging_pcare), 'pendaftaran' => htmlspecialchars_array($reg_periksa), 'kode_fktp' => $this->settings->get('pcare.kode_fktp')]);
     exit();
   }
 
@@ -1559,7 +1559,7 @@ class Admin extends AdminModule
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('mlite_bridging_pcare.no_rkm_medis', $no_rkm_medis)
       ->toArray();
-    echo $this->draw('bridgingpcare.html', ['pasien' => $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray(), 'pemeriksaan' => $this->db('pemeriksaan_ralan')->where('no_rawat', $pendaftaran['no_rawat'])->oneArray(), 'bridging_pcare' => $bridging_pcare]);
+    echo $this->draw('bridgingpcare.html', ['pasien' => htmlspecialchars_array($this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray()), 'pemeriksaan' => htmlspecialchars_array($this->db('pemeriksaan_ralan')->where('no_rawat', $pendaftaran['no_rawat'])->oneArray()), 'bridging_pcare' => htmlspecialchars_array($bridging_pcare)]);
     exit();
   }
 
@@ -1569,7 +1569,7 @@ class Admin extends AdminModule
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('mlite_bridging_pcare.no_rkm_medis', $no_rkm_medis)
       ->toArray();
-    echo $this->draw('bridgingpcare.pendaftaran.tampil.html', ['bridging_pcare' => $bridging_pcare]);
+    echo $this->draw('bridgingpcare.pendaftaran.tampil.html', ['bridging_pcare' => htmlspecialchars_array($bridging_pcare)]);
     exit();
   }
 
@@ -1580,7 +1580,7 @@ class Admin extends AdminModule
       ->where('terapi', '<>', '')
       ->where('mlite_bridging_pcare.no_rkm_medis', $no_rkm_medis)
       ->toArray();
-    echo $this->draw('bridgingpcare.kunjungan.tampil.html', ['bridging_pcare' => $bridging_pcare]);
+    echo $this->draw('bridgingpcare.kunjungan.tampil.html', ['bridging_pcare' => htmlspecialchars_array($bridging_pcare)]);
     exit();
   }
 
@@ -1592,7 +1592,7 @@ class Admin extends AdminModule
       ->orWhere('kode_ppk', '<>', '')
       ->where('mlite_bridging_pcare.no_rkm_medis', $no_rkm_medis)
       ->toArray();
-    echo $this->draw('bridgingpcare.rujukan.tampil.html', ['bridging_pcare' => $bridging_pcare]);
+    echo $this->draw('bridgingpcare.rujukan.tampil.html', ['bridging_pcare' => htmlspecialchars_array($bridging_pcare)]);
     exit();
   }
 
@@ -1605,7 +1605,7 @@ class Admin extends AdminModule
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('nomor_kunjungan', $nomor_kunjungan)
       ->oneArray();
-    echo $this->draw('bridgingpcare.rujukan.cetak.html', ['bridging_pcare' => $bridging_pcare, 'umur' => $this->hitungUmur($bridging_pcare['tgl_lahir'])]);
+    echo $this->draw('bridgingpcare.rujukan.cetak.html', ['bridging_pcare' => htmlspecialchars_array($bridging_pcare), 'umur' => htmlspecialchars_array($this->hitungUmur($bridging_pcare['tgl_lahir']))]);
     exit();
   }
 
@@ -1952,7 +1952,7 @@ class Admin extends AdminModule
 
     $ref_tindakan = json_decode($ref_tindakan,true);
 
-    echo $this->draw('bridgingpcare.tindakan.html', ['bridging_pcare' => $bridging_pcare, 'data_tindakan' => $data_tindakan, 'ref_tindakan' => $ref_tindakan]);
+    echo $this->draw('bridgingpcare.tindakan.html', ['bridging_pcare' => htmlspecialchars_array($bridging_pcare), 'data_tindakan' => htmlspecialchars_array($data_tindakan), 'ref_tindakan' => htmlspecialchars_array($ref_tindakan)]);
     exit();
   }
 
@@ -1986,7 +1986,7 @@ class Admin extends AdminModule
       }  
     }
 
-    echo $this->draw('bridgingpcare.obat.html', ['bridging_pcare' => $bridging_pcare, 'data_obat' => $data_obat]);
+    echo $this->draw('bridgingpcare.obat.html', ['bridging_pcare' => htmlspecialchars_array($bridging_pcare), 'data_obat' => htmlspecialchars_array($data_obat)]);
     exit();
   }
 

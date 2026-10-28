@@ -21,13 +21,13 @@ Modul ini umumnya hanya diakses oleh admin. Petugas dengan hak akses terbatas da
 
 2. **Mengubah Data Sendiri**
    - Pengguna dapat mengubah data pribadi melalui menu edit akun masing-masing.
-   - Password minimal 8 karakter (wajib mengandung kombinasi huruf besar, huruf kecil, angka, dan karakter khusus).
+   - Password minimal 8 karakter dan wajib mengandung kombinasi huruf besar, huruf kecil, serta angka. Form edit menyediakan indikator kekuatan password dan kolom konfirmasi.
 
 ## Panduan Admin
 
 1. **Tambah Pengguna Baru**
    - Buka submenu **Tambah Baru**.
-   - Isi **username** (unik), **email** (valid), **nama lengkap**, **deskripsi**, dan **password** (minimal 8 karakter).
+   - Isi **username** (unik), **email** (valid), **nama lengkap**, **deskripsi**, dan **password** (minimal 8 karakter, wajib mengandung huruf besar, huruf kecil, dan angka).
    - Pilih **Role** pengguna: `pengguna`, `kasir`, `rekammedis`, `radiologi`, `laboratorium`, `paramedis`, `apoteker`, `medis`, `manajemen`, atau `admin`.
    - Centang modul-modul yang dapat diakses pengguna ini, atau biarkan semua tercentang untuk akses penuh.
    - Jika modul kepegawaian aktif, pilih **Cap** (poliklinik/bangsal) untuk membatasi akses per unit.
@@ -36,7 +36,7 @@ Modul ini umumnya hanya diakses oleh admin. Petugas dengan hak akses terbatas da
 
 2. **Edit Pengguna**
    - Dari **Data Pengguna**, klik tombol **Edit** pada baris pengguna yang dituju.
-   - Ubah data yang diperlukan; kosongkan field password jika tidak ingin menggantinya.
+   - Ubah data yang diperlukan; kosongkan field password jika tidak ingin menggantinya. Password baru harus memenuhi aturan yang sama dan diketik ulang pada kolom konfirmasi.
    - Fitur **Salin Hak Akses** tersedia untuk menyalin konfigurasi akses modul dari pengguna lain.
 
 3. **Hak Akses CRUD per Modul**

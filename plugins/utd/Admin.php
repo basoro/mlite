@@ -153,7 +153,7 @@ class Admin extends AdminModule
       $this->tpl->set('cetak', $cetak);
 
       // render HTML TANPA HTTP
-      $html = $this->draw('cetak.utd.html', ['cetak' => $cetak]);
+      $html = $this->draw('cetak.utd.html', ['cetak' => htmlspecialchars_array($cetak)]);
 
       $mpdf->WriteHTML(
           $this->core->setPrintCss(),
@@ -181,7 +181,7 @@ class Admin extends AdminModule
       ->toArray();
     $pendonor = $this->db('utd_pendonor')->toArray();
     $petugas = $this->db('petugas')->toArray();
-    return $this->draw('data.donor.html', ['donor' => $donor, 'pendonor' => $pendonor, 'petugas' => $petugas]);
+    return $this->draw('data.donor.html', ['donor' => htmlspecialchars_array($donor), 'pendonor' => htmlspecialchars_array($pendonor), 'petugas' => htmlspecialchars_array($petugas)]);
   }
 
   public function postSaveDonor()
@@ -217,7 +217,7 @@ class Admin extends AdminModule
       ->join('utd_komponen_darah', 'utd_komponen_darah.kode=utd_stok_darah.kode_komponen')
       ->toArray();
     $komponendarah = $this->db('utd_komponen_darah')->toArray();
-    return $this->draw('stok.darah.html', ['stokdarah' => $stokdarah, 'komponendarah' => $komponendarah]);
+    return $this->draw('stok.darah.html', ['stokdarah' => htmlspecialchars_array($stokdarah), 'komponendarah' => htmlspecialchars_array($komponendarah)]);
   }
 
   public function postSaveStokDarah()
@@ -251,7 +251,7 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
     $komponendarah = $this->db('utd_komponen_darah')
       ->toArray();
-    return $this->draw('komponen.darah.html', ['komponendarah' => $komponendarah]);
+    return $this->draw('komponen.darah.html', ['komponendarah' => htmlspecialchars_array($komponendarah)]);
   }
 
   public function postSaveKomponenDarah()

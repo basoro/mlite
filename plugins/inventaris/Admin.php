@@ -52,7 +52,7 @@ class Admin extends AdminModule
       ->where('tgl_pinjam', '<=', $date_end)
       ->toArray();
 
-    return $this->draw('manage.html', ['tgl_awal' => $date_start, 'tgl_akhir' => $date_end, 'aset' => htmlspecialchars_array($aset), 'pemeliharaan' => htmlspecialchars_array($pemeliharaan), 'perbaikan' => htmlspecialchars_array($perbaikan), 'peminjaman' => htmlspecialchars_array($peminjaman)]);
+    return $this->draw('manage.html', ['tgl_awal' => htmlspecialchars_array($date_start), 'tgl_akhir' => htmlspecialchars_array($date_end), 'aset' => htmlspecialchars_array($aset), 'pemeliharaan' => htmlspecialchars_array($pemeliharaan), 'perbaikan' => htmlspecialchars_array($perbaikan), 'peminjaman' => htmlspecialchars_array($peminjaman)]);
   }
 
   public function getDataAset()
@@ -71,7 +71,7 @@ class Admin extends AdminModule
     }
     $inventaris_barang = $this->db('inventaris_barang')->toArray();
     $inventaris_ruang = $this->db('inventaris_ruang')->toArray();
-    return $this->draw('data.aset.html', ['inventaris' => $inventaris, 'inventaris_barang' => $inventaris_barang, 'inventaris_ruang' => $inventaris_ruang]);
+    return $this->draw('data.aset.html', ['inventaris' => htmlspecialchars_array($inventaris), 'inventaris_barang' => htmlspecialchars_array($inventaris_barang), 'inventaris_ruang' => htmlspecialchars_array($inventaris_ruang)]);
   }
 
   public function postSaveAset()
@@ -177,7 +177,7 @@ class Admin extends AdminModule
       ->oneArray();
     $perbaikan = url([ADMIN,'inventaris','perbaikan', $no_permintaan]);
     $perbaikanhapus = url([ADMIN,'inventaris','perbaikanhapus', $no_permintaan]);
-    return $this->draw('data.permintaan.perbaikan.detail.html', ['permintaan_perbaikan_inventaris' => $permintaan_perbaikan_inventaris, 'perbaikandetail' => htmlspecialchars_array($perbaikandetail), 'perbaikan' => htmlspecialchars_array($perbaikan), 'perbaikanhapus' => htmlspecialchars_array($perbaikanhapus)]);
+    return $this->draw('data.permintaan.perbaikan.detail.html', ['permintaan_perbaikan_inventaris' => htmlspecialchars_array($permintaan_perbaikan_inventaris), 'perbaikandetail' => htmlspecialchars_array($perbaikandetail), 'perbaikan' => htmlspecialchars_array($perbaikan), 'perbaikanhapus' => htmlspecialchars_array($perbaikanhapus)]);
   }
 
   public function postPermintaanPerbaikanSimpan($no_permintaan = null)
@@ -417,7 +417,7 @@ class Admin extends AdminModule
     $merk = $this->db('inventaris_merk')->toArray();
     $kategori = $this->db('inventaris_kategori')->toArray();
     $jenis = $this->db('inventaris_jenis')->toArray();
-    return $this->draw('data.barang.html', ['inventaris_barang' => $inventaris_barang, 'produsen' => $produsen, 'merk' => $merk, 'kategori' => $kategori, 'jenis' => $jenis]);
+    return $this->draw('data.barang.html', ['inventaris_barang' => htmlspecialchars_array($inventaris_barang), 'produsen' => htmlspecialchars_array($produsen), 'merk' => htmlspecialchars_array($merk), 'kategori' => htmlspecialchars_array($kategori), 'jenis' => htmlspecialchars_array($jenis)]);
   }
 
   public function postSaveInventarisBarang()
@@ -447,7 +447,7 @@ class Admin extends AdminModule
   {
     $this->_addHeaderFiles();
     $inventaris_jenis = $this->db('inventaris_jenis')->toArray();
-    return $this->draw('data.jenis.html', ['inventaris_jenis' => $inventaris_jenis]);
+    return $this->draw('data.jenis.html', ['inventaris_jenis' => htmlspecialchars_array($inventaris_jenis)]);
   }
 
   public function postSaveInventarisJenis()
@@ -477,7 +477,7 @@ class Admin extends AdminModule
   {
     $this->_addHeaderFiles();
     $inventaris_kategori = $this->db('inventaris_kategori')->toArray();
-    return $this->draw('data.kategori.html', ['inventaris_kategori' => $inventaris_kategori]);
+    return $this->draw('data.kategori.html', ['inventaris_kategori' => htmlspecialchars_array($inventaris_kategori)]);
   }
 
   public function postSaveInventarisKategori()
@@ -507,7 +507,7 @@ class Admin extends AdminModule
   {
     $this->_addHeaderFiles();
     $inventaris_merk = $this->db('inventaris_merk')->toArray();
-    return $this->draw('data.merk.html', ['inventaris_merk' => $inventaris_merk]);
+    return $this->draw('data.merk.html', ['inventaris_merk' => htmlspecialchars_array($inventaris_merk)]);
   }
 
   public function postSaveInventarisMerk()
@@ -537,7 +537,7 @@ class Admin extends AdminModule
   {
     $this->_addHeaderFiles();
     $inventaris_produsen = $this->db('inventaris_produsen')->toArray();
-    return $this->draw('data.produsen.html', ['inventaris_produsen' => $inventaris_produsen]);
+    return $this->draw('data.produsen.html', ['inventaris_produsen' => htmlspecialchars_array($inventaris_produsen)]);
   }
 
   public function postSaveInventarisProdusen()
@@ -567,7 +567,7 @@ class Admin extends AdminModule
   {
     $this->_addHeaderFiles();
     $inventaris_ruang = $this->db('inventaris_ruang')->toArray();
-    return $this->draw('data.ruang.html', ['inventaris_ruang' => $inventaris_ruang]);
+    return $this->draw('data.ruang.html', ['inventaris_ruang' => htmlspecialchars_array($inventaris_ruang)]);
   }
 
   public function postSaveInventarisRuang()
@@ -605,7 +605,7 @@ class Admin extends AdminModule
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->toArray();
     $pegawai = $this->db('pegawai')->toArray();
-    return $this->draw('data.peminjaman.html', ['inventaris_peminjaman' => $inventaris_peminjaman, 'inventaris' => $inventaris, 'pegawai' => $pegawai]);
+    return $this->draw('data.peminjaman.html', ['inventaris_peminjaman' => htmlspecialchars_array($inventaris_peminjaman), 'inventaris' => htmlspecialchars_array($inventaris), 'pegawai' => htmlspecialchars_array($pegawai)]);
   }
 
   public function postSavePeminjaman()
