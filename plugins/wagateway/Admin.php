@@ -100,7 +100,6 @@ class Admin extends AdminModule
             curl_setopt($curlHandle, CURLOPT_HEADER, 0);
             curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
-            curl_setopt($curlHandle, CURLOPT_POST, 1);
             curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
             curl_exec($curlHandle);
             curl_close($curlHandle);
@@ -136,7 +135,6 @@ class Admin extends AdminModule
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
-        curl_setopt($curlHandle, CURLOPT_POST, 1);
         curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
@@ -177,7 +175,6 @@ class Admin extends AdminModule
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
-        curl_setopt($curlHandle, CURLOPT_POST, 1);
         curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
@@ -218,7 +215,6 @@ class Admin extends AdminModule
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
-        curl_setopt($curlHandle, CURLOPT_POST, 1);
         curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
@@ -260,7 +256,6 @@ class Admin extends AdminModule
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT, $timeout);
-        curl_setopt($curlHandle, CURLOPT_POST, 1);
         curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, true);
         $response = curl_exec($curlHandle);
         $curlError = curl_error($curlHandle);
