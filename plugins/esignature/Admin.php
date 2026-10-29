@@ -284,8 +284,12 @@ class Admin extends AdminModule
                             $mpdfLocal->shrink_tables_to_fit = 1;
                             $mpdfLocal->use_kwt = true;
                             $mpdfLocal->WriteHTML($htmlDoc);
+                            if (in_array($ref_type, ['surat.sakit', 'surat.rujukan', 'surat.sehat', 'surat.perawatan'], true)) {
+                                $mpdfLocal->SetHTMLFooter($this->_footerTteSurat());
+                            } else {
                             $mpdfLocal->SetHTMLFooter('<p style="font-size:8px;color:#888;">Dokumen ini resmi dan telah ditandatangani secara elektronik sesuai UU ITE No 11 Tahun 2008.</p>
 <div class="footer"><table width="100%"><tr><td width="50%">Dicetak pada: '.date('d-m-Y H:i').'</td><td width="50%" align="right">Halaman {PAGENO} dari {nbpg}</td></tr></table></div>');
+                            }
                             $mpdfLocal->Output($fpath, 'F');
                             if (file_exists($fpath) && filesize($fpath) > 0) {
                                 $pdfSaved = true;
@@ -334,7 +338,24 @@ class Admin extends AdminModule
         exit;
     }
 
-    public function getGeneratePdf($ref_type, $ref_id)
+    /**
+     * Footer PDF pemberitahuan TTE untuk dokumen surat (sakit, rujukan,
+     * sehat, perawatan) — disamakan dengan footer faktur di modul kasir
+     * (kasir_rawat_jalan & kasir_rawat_inap: buildFakturBesar).
+     * Baris "Dicetak pada / Halaman x dari y" tetap dipertahankan.
+     */
+    private function _footerTteSurat(): string
+    {
+        return '<div style="font-size: 8px; color: #555; text-align: center;">'
+            .'Dokumen ini telah ditandatangani secara elektronik sesuai UU ITE No 11 Tahun 2008. Pindai kode QR untuk memverifikasi keaslian tanda tangannya.'
+            .'</div>'
+            .'<div style="font-size: 8px; color: #888;"><table width="100%"><tr>'
+            .'<td width="50%">Dicetak pada: '.date('d-m-Y H:i').'</td>'
+            .'<td width="50%" align="right">Halaman {PAGENO} dari {nbpg}</td>'
+            .'</tr></table></div>';
+    }
+
+    private function _generatePdfDocument($ref_type, $ref_id, $inline = true)
     {
         $signatures = $this->db('mlite_esignatures')
             ->where('ref_type', $ref_type)
@@ -346,6 +367,64 @@ class Admin extends AdminModule
             ->where('ref_id', $ref_id)
             ->desc('id')
             ->oneArray();
+
+        // === Faktur (ref_type = faktur.ralan / faktur.ranap, ref_id = no_rawat convertNorawat) ===
+        $faktur_types = ['faktur.ralan', 'faktur.ranap'];
+        $no_rawat = null;
+        if (in_array($ref_type, $faktur_types, true)) {
+            $faktur_no_rawat = @revertNorawat($ref_id);
+            $cekBilling = !empty($faktur_no_rawat)
+                ? $this->db('mlite_billing')->where('no_rawat', $faktur_no_rawat)->oneArray()
+                : [];
+            if (empty($cekBilling)) {
+                throw new \Exception('Data faktur tidak ditemukan untuk dokumen ini.');
+            }
+            $no_rawat = $faktur_no_rawat;
+        }
+
+        // === FAKTUR: samakan PDF dengan halaman cetak faktur (?show=besar) ===
+        // Render ulang lewat modul kasir (menulis ulang PDF invoices + cache
+        // esignature), lalu pakai PDF invoices hasil render itu apa adanya —
+        // sehingga isi PDF e-Signature identik dengan halaman faktur.
+        if (in_array($ref_type, $faktur_types, true) && !empty($no_rawat)) {
+            try {
+                $kasirModule = $ref_type === 'faktur.ranap' ? 'kasir_rawat_inap' : 'kasir_rawat_jalan';
+                $kdPrefix    = $ref_type === 'faktur.ranap' ? 'RI%' : 'RJ%';
+                $built = $this->core->getModuleMethod($kasirModule, 'buildFakturBesar', [$no_rawat, true]);
+                $cekFaktur = $this->db('mlite_billing')
+                    ->where('no_rawat', $no_rawat)
+                    ->like('kd_billing', $kdPrefix)
+                    ->desc('id_billing')
+                    ->oneArray();
+                $srcPdf = UPLOADS . '/invoices/' . ($cekFaktur['kd_billing'] ?? '') . '.pdf';
+                if (is_string($built) && $built !== ''
+                    && !empty($cekFaktur['kd_billing'])
+                    && is_file($srcPdf) && filesize($srcPdf) > 0
+                ) {
+                    $uploadDir = WEBAPPS_PATH . '/berkasrawat/pages/upload/';
+                    if (!file_exists($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+                    $timestamp = date('YmdHis');
+                    $fileName = 'doc_' . $ref_id . '_' . $timestamp . '.pdf';
+                    $filePath = $uploadDir . $fileName;
+                    copy($srcPdf, $filePath);
+                    $this->_registerBerkasDigital($filePath, $fileName, $no_rawat, $ref_type, $ref_id);
+
+                    if ($inline) {
+                        header('Content-Type: application/pdf');
+                        header('Content-Length: ' . filesize($filePath));
+                        readfile($filePath);
+                        exit;
+                    }
+
+                    return $filePath;
+                }
+                // Build tidak menghasilkan PDF invoices → jatuh ke jalur generik
+            } catch (\Throwable $e) {
+                // Gerbang/kesalahan render → jatuh ke jalur generik di bawah
+            }
+        }
 
         // Use mPDF (Standard in mLITE)
         $mpdf = new \Mpdf\Mpdf([
@@ -470,8 +549,11 @@ class Admin extends AdminModule
             
             <div class="content">';
             
-            // Load external content
-            $contentFile = WEBAPPS_PATH . '/../admin/tmp/'.$ref_type.'.html';
+            // Load external content (prioritas: konten per ref_id, mis. faktur.ralan.<ref_id>.html)
+            $contentFile = WEBAPPS_PATH . '/../admin/tmp/'.$ref_type.'.'.$ref_id.'.html';
+            if (!file_exists($contentFile)) {
+                $contentFile = WEBAPPS_PATH . '/../admin/tmp/'.$ref_type.'.html';
+            }
             if (file_exists($contentFile)) {
                 $rawContent = file_get_contents($contentFile);
                 $rawContent = preg_replace('/<del>.*?<\/del>/s', '', $rawContent);
@@ -479,6 +561,9 @@ class Admin extends AdminModule
                 $rawContent = preg_replace('/<div class="modal-footer">.*?<\/div>/s', '', $rawContent);
                 $rawContent = preg_replace('/<a.*?class="btn.*?>.*?<\/a>/s', '', $rawContent);
                 $html .= $rawContent;
+            } elseif (in_array($ref_type, $faktur_types, true)) {
+                $kasirLabel = $ref_type === 'faktur.ranap' ? 'kasir_rawat_inap' : 'kasir_rawat_jalan';
+                $html .= '<p class="meta-info">Konten faktur belum tersedia. Buka halaman cetak faktur ('.$kasirLabel.') terlebih dahulu, lalu ulangi lagi.</p>';
             } elseif (method_exists($this, '_buildFallbackErmPdfContent') && $this->_isNoRawatConverted($ref_type, $ref_id)) {
                 // === FALLBACK UTAMA: Auto-generate KONTEN ERM PDF dari Database ===
                 $fallback = $this->_buildFallbackErmPdfContent($ref_id);
@@ -518,8 +603,7 @@ class Admin extends AdminModule
                     <div class="signature-box">
                         <table width="100%">
                             <tr>
-                                <td width="60%" align="center">
-                                    <img src="'.$path.'" height="60" /><br>
+                                <td width="60%" align="center">'.(in_array($ref_type, $faktur_types, true) ? '' : '<img src="'.$path.'" height="60" /><br>').'
                                     <strong>'.$sig['signer_name'].'</strong><br>
                                     <small>'.$sig['signer_role'].'</small><br>
                                     <small>'.date('d-m-Y H:i', strtotime($sig['signed_at'])).'</small>
@@ -541,6 +625,9 @@ class Admin extends AdminModule
         $mpdf->use_kwt = true;
         $mpdf->WriteHTML($html);
 
+        if (in_array($ref_type, ['surat.sakit', 'surat.rujukan', 'surat.sehat', 'surat.perawatan'], true)) {
+            $mpdf->SetHTMLFooter($this->_footerTteSurat());
+        } else {
         $mpdf->SetHTMLFooter('
         <p style="font-size: 8px; color: #888;">
             Dokumen ini resmi dan telah ditandatangani secara elektronik sesuai dengan UU ITE No 11 Tahun 2008.
@@ -553,6 +640,7 @@ class Admin extends AdminModule
                 </tr>
             </table>
         </div>');
+        }
 
         $uploadDir = WEBAPPS_PATH . '/berkasrawat/pages/upload/';
         if (!file_exists($uploadDir)) {
@@ -565,6 +653,23 @@ class Admin extends AdminModule
 
         $mpdf->Output($filePath, 'F');
 
+        $this->_registerBerkasDigital($filePath, $fileName, $no_rawat, $ref_type, $ref_id);
+
+        if ($inline) {
+            $mpdf->Output($fileName, 'I');
+            exit;
+        }
+
+        return $filePath;
+    }
+
+    /**
+     * Simpan referensi PDF hasil generate ke berkas_digital_perawatan
+     * agar muncul di Folder Berkas Rawat (plugin pasien: getFolder).
+     * Blok ini dipakai bersama oleh jalur mPDF lama & jalur PDF faktur.
+     */
+    private function _registerBerkasDigital($filePath, $fileName, $no_rawat, $ref_type, $ref_id)
+    {
         // === INSERT KE berkas_digital_perawatan ===
         // Data dari insert ini AKAN MUNCUL di Folder Berkas Rawat (plugin pasien getFolder L619)
         // Join dengan master_berkas_digital via kolom `kode`. Kalau kode KOSONG, join GAGAL = row HILANG di UI!
@@ -618,9 +723,125 @@ class Admin extends AdminModule
                 }
             }
         }
+    }
 
-        $mpdf->Output($fileName, 'I');
+    /**
+     * Endpoint HTTP: tampilkan PDF hasil generate di browser
+     * (dibuka otomatis dari jendela popup setelah tanda tangan disimpan).
+     */
+    public function getGeneratePdf($ref_type, $ref_id)
+    {
+        try {
+            $this->_generatePdfDocument($ref_type, $ref_id, true);
+        } catch (\Throwable $e) {
+            echo '<!doctype html><html><body style="font-family:sans-serif;padding:40px;">'
+                .'<h3>PDF tidak dapat dibuat</h3><p>'
+                .htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8')
+                .'</p></body></html>';
+        }
         exit;
+    }
+
+    /**
+     * Kirim PDF dokumen yang SUDAH ditandatangani elektronik ke pasien
+     * via WhatsApp Gateway (endpoint uploadfile, multipart PDF).
+     * Didukung: surat (sakit, rujukan, sehat, perawatan) & faktur (rawat jalan, rawat inap).
+     */
+    public function postSendPdfToPatient($ref_type, $ref_id)
+    {
+        header('Content-type: application/json');
+
+        $surat_types = ['surat.sakit', 'surat.rujukan', 'surat.sehat', 'surat.perawatan'];
+        $faktur_types = ['faktur.ralan', 'faktur.ranap'];
+        if (!in_array($ref_type, $surat_types, true) && !in_array($ref_type, $faktur_types, true)) {
+            echo json_encode(['status' => 'error', 'msg' => 'Jenis dokumen tidak didukung']);
+            exit();
+        }
+
+        // 1. Wajib sudah ditandatangani elektronik (sesuai aturan: hanya PDF ber-TTE yang dikirim)
+        $signed = $this->db('mlite_esignatures')
+            ->where('ref_type', $ref_type)
+            ->where('ref_id', $ref_id)
+            ->count();
+        if (empty($signed)) {
+            echo json_encode(['status' => 'error', 'msg' => 'Dokumen belum ditandatangani elektronik. Bubuhkan tanda tangan (e-Signature) terlebih dahulu.']);
+            exit();
+        }
+
+        // 2. Resolusi pasien dari no_rawat (ref_id = no_rawat format padat)
+        $no_rawat = revertNorawat($ref_id);
+        $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+        // Nomor tujuan & caption diambil dari modal kirim (mengakomodasi nomor WA
+        // keluarga pasien). Jika nomor dikosongkan, fallback tetap ke no_tlp pasien.
+        $waTujuan = trim((string) ($_POST['number'] ?? ''));
+        $caption  = trim((string) ($_POST['message'] ?? ''));
+        $no_tlp = $waTujuan !== '' ? $waTujuan : trim((string) ($pasien['no_tlp'] ?? ''));
+        if ($no_tlp === '') {
+            echo json_encode(['status' => 'error', 'msg' => 'Nomor WhatsApp tujuan kosong dan nomor HP pasien belum terdaftar (kolom no_tlp kosong).']);
+            exit();
+        }
+        // Normalisasi nomor Indonesia: 08xx → 628xx, buang tanda +
+        if (strpos($no_tlp, '0') === 0) {
+            $no_tlp = '62'.substr($no_tlp, 1);
+        } elseif (strpos($no_tlp, '+') === 0) {
+            $no_tlp = substr($no_tlp, 1);
+        }
+
+        // 3. Konfigurasi WA Gateway
+        $server = rtrim((string) $this->settings('wagateway', 'server'), '/');
+        if ($server === '' || strpos($server, 'https://') !== 0) {
+            echo json_encode(['status' => 'error', 'msg' => 'WA Gateway belum dikonfigurasi. Atur dulu di menu WA Gateway - Pengaturan.']);
+            exit();
+        }
+
+        // 4. Generate PDF (sama persis dengan alur Cetak/e-Signature; juga terdaftar di Berkas Digital)
+        try {
+            $pdfPath = $this->_generatePdfDocument($ref_type, $ref_id, false);
+        } catch (\Throwable $e) {
+            echo json_encode(['status' => 'error', 'msg' => 'Gagal membuat PDF: '.$e->getMessage()]);
+            exit();
+        }
+        if (empty($pdfPath) || !is_file($pdfPath)) {
+            echo json_encode(['status' => 'error', 'msg' => 'PDF dokumen tidak ditemukan.']);
+            exit();
+        }
+
+        // 5. Upload PDF ke WA Gateway (uploadfile, multipart). Catatan: jangan meng-set
+        //    CURLOPT_POST setelah CURLOPT_POSTFIELDS (mengosongkan body di libcurl baru).
+        $fields = [
+            'sender'  => (string) $this->settings('wagateway', 'phonenumber'),
+            'number'  => $no_tlp,
+            'message' => $caption !== '' ? $caption
+                : (in_array($ref_type, $faktur_types, true) ? 'Bukti pembayaran dari ' : 'Surat keterangan dari ')
+                    .((string) $this->settings('settings', 'nama_instansi')).' (sudah ditandatangani elektronik).',
+            'file'    => new \CURLFile($pdfPath, 'application/pdf', basename($pdfPath)),
+        ];
+        $ch = curl_init($server.'/wagateway/uploadfile');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        $response = curl_exec($ch);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false || $response === '') {
+            echo json_encode(['status' => 'error', 'msg' => $curlError !== '' ? $curlError : 'Tidak ada respon dari WA Gateway']);
+            exit();
+        }
+        $decoded = json_decode($response, true);
+        if (!is_array($decoded)) {
+            echo json_encode(['status' => 'error', 'msg' => 'Respon tidak valid dari WA Gateway']);
+            exit();
+        }
+        if (!empty($decoded['status'])) {
+            echo json_encode(['status' => 'success', 'msg' => 'PDF dokumen berhasil dikirim ke WhatsApp ('.$no_tlp.').']);
+        } else {
+            echo json_encode(['status' => 'error', 'msg' => !empty($decoded['msg']) ? $decoded['msg'] : 'Gagal mengirim PDF via WA Gateway']);
+        }
+        exit();
     }
 
     /**

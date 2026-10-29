@@ -845,6 +845,11 @@ function terbilang($nilai) {
 		$hasil = "Minus ". trim(penyebut($nilai));
 	} else {
 		$hasil = trim(penyebut($nilai));
+		// nilai 0 menghasilkan string kosong -> tampilkan "Nol"
+		// agar baris "Terbilang : # ... Rupiah #" tetap terisi
+		if ($hasil === '') {
+			$hasil = 'Nol';
+		}
 	}
 	return $hasil;
 }

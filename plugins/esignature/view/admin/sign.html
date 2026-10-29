@@ -87,11 +87,20 @@
                 if(res.status == 'success') {
                     alert('Tanda tangan berhasil disimpan.\nHash: ' + res.hash);
                     
-                    // Open PDF in new window
-                    window.open('{?=url([ADMIN, "esignature", "generatepdf", $ref_type, $ref_id])?}', '_blank');
+                    // Mode modal (iframe): tab baru bisa diblokir browser.
+                    var diIframe = window.parent && window.parent !== window;
+                    if(!diIframe) {
+                        window.open('{?=url([ADMIN, "esignature", "generatepdf", $ref_type, $ref_id])?}', '_blank');
+                    }
 
-                    // Close window or refresh parent
-                    if(window.opener) {
+                    // SEMUA dokumen yang dibuka lewat modal (e-Resep, faktur, surat,
+                    // vedika): tutup modal begitu tombol OK pada notif ditekan,
+                    // TANPA me-reload halaman induk.
+                    if(diIframe) {
+                        if(window.parent && typeof window.parent.tutupSignModal === 'function') {
+                            window.parent.tutupSignModal();
+                        }
+                    } else if(window.opener) {
                         window.opener.location.reload();
                         window.close();
                     } else {

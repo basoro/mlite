@@ -516,6 +516,22 @@ class Admin extends AdminModule
                     \Mpdf\HTMLParserMode::HEADER_CSS
                 );
                 $mpdf->WriteHTML('<style>'.$css.'</style>');
+
+                // bootstrap.min.css di <head> dipakai mPDF SETELAH semua CSS
+                // di atas; border-collapse: collapse dari bootstrap/normalize
+                // menimpa aturan garis sehingga border sel di-stroke putih.
+                // Sisipkan override SETELAH link bootstrap agar menang cascade
+                // (pola sama dengan faktur rawat jalan & rawat inap).
+                $overrideCss = '<style>'
+                    . 'table { border-collapse: separate; border-spacing: 0; }'
+                    . 'td, th { border-bottom: 1px solid #000; }'
+                    . '</style>';
+                if (stripos($html, '</head>') !== false) {
+                    $html = preg_replace('#</head>#', $overrideCss . '</head>', $html, 1);
+                } else {
+                    $html = $overrideCss . $html;
+                }
+
                 $mpdf->WriteHTML($html);
 
                 $mpdf->Output($pdfPath, 'F');

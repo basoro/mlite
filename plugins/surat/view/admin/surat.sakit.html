@@ -13,7 +13,7 @@
     font-family: georgia;
   }
   @media print {
-    #saveButton, #printPageButton, #signButton {
+    #saveButton, #printPageButton, #signButton, #kirimPasienButton {
       display: none;
     }
     textarea {
@@ -173,4 +173,81 @@
 </script>
 <br><br>
 <button id="saveButton" onclick="Simpan()">&#9635; Simpan</button> <button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>
-<button id="signButton" onclick="window.open('{?=url([ADMIN, 'esignature', 'sign', 'surat.sakit', parseUrl(3)])?}', 'signwindow', 'width=600,height=800'); return false;"> &#x1F4CB; e-Signature</button>
+<button id="signButton" data-url="{?=url([ADMIN, 'esignature', 'sign', 'surat.sakit', parseUrl(3)])?}" onclick="bukaSignModal(this)"> &#x1F4CB; e-Signature</button>
+<!-- Modal e-Signature -->
+<div id="signModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9998; background:rgba(0,0,0,.5);">
+  <div style="background:#fff; width:680px; max-width:94%; margin:30px auto; border-radius:6px; box-shadow:0 4px 18px rgba(0,0,0,.3); overflow:hidden; text-align:left;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #ddd;">
+      <strong>e-Signature</strong>
+      <button type="button" class="btn btn-default btn-sm" onclick="tutupSignModal()">&times; Tutup</button>
+    </div>
+    <iframe id="signFrame" src="about:blank" style="width:100%; height:72vh; border:0; display:block;"></iframe>
+  </div>
+</div>
+<style>@media print { #signModal { display: none !important; } }</style>
+<script>
+function bukaSignModal(btn) {
+    var url = btn ? btn.getAttribute('data-url') : '';
+    if (!url) return;
+    document.getElementById('signFrame').src = url;
+    document.getElementById('signModal').style.display = 'block';
+}
+
+function tutupSignModal() {
+    document.getElementById('signModal').style.display = 'none';
+    document.getElementById('signFrame').src = 'about:blank';
+}
+</script>
+<button id="kirimPasienButton" data-url="{?=url([ADMIN, 'esignature', 'sendPdfToPatient', 'surat.sakit', parseUrl(3)])?}" onclick="bukaKirimWaModal()"> &#x1F4E8; Kirim ke Pasien (WA)</button>
+<!-- Modal Kirim ke Pasien (WA) -->
+<div id="kirimWaModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:rgba(0,0,0,.45);">
+  <div style="background:#fff; max-width:430px; margin:60px auto; padding:16px 20px 20px; border-radius:6px; box-shadow:0 4px 18px rgba(0,0,0,.3); text-align:left;">
+    <h4 style="margin:0 0 12px;">Kirim ke Pasien (WhatsApp)</h4>
+    <div style="margin-bottom:10px;">
+      <label for="waTujuan">Nomor WhatsApp Tujuan</label>
+      <input type="text" id="waTujuan" class="form-control" value="{?=isset_or($pasien.no_tlp)?}" placeholder="Nomor HP pasien (isi dengan nomor WA keluarga bila perlu)" style="width:100%;">
+      <small>Kosongkan untuk memakai nomor HP pasien.</small>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label for="waCaption">Caption / Pesan</label>
+      <textarea id="waCaption" class="form-control" rows="3" placeholder="Kosongkan untuk pesan bawaan" style="width:100%; resize:vertical;"></textarea>
+    </div>
+    <div style="text-align:right;">
+      <button type="button" class="btn btn-default" onclick="tutupKirimWaModal()">Batal</button>
+      <button type="button" class="btn btn-primary" onclick="kirimPdfKePasien(document.getElementById('kirimPasienButton'))">Kirim</button>
+    </div>
+  </div>
+</div>
+<style>@media print { #kirimWaModal { display: none !important; } }</style>
+<script>
+function bukaKirimWaModal() {
+    document.getElementById('kirimWaModal').style.display = 'block';
+}
+
+function tutupKirimWaModal() {
+    document.getElementById('kirimWaModal').style.display = 'none';
+}
+
+function kirimPdfKePasien(btn) {
+    if (!btn) return;
+    var $btn = $(btn);
+    var elNomor = document.getElementById('waTujuan');
+    var elCaption = document.getElementById('waCaption');
+    var number = elNomor ? String(elNomor.value).trim() : '';
+    var caption = elCaption ? String(elCaption.value).trim() : '';
+    $btn.prop('disabled', true).text('Mengirim...');
+    $.post($btn.data('url') + '&t={?=$_SESSION['token']?}', { number: number, message: caption }, function (res) {
+        if (res.status === 'success') {
+            tutupKirimWaModal();
+            $btn.text('Terkirim').prop('disabled', true);
+            alert(res.msg || 'PDF dokumen berhasil dikirim ke WhatsApp pasien.');
+        } else {
+            $btn.prop('disabled', false).text('Kirim ke Pasien (WA)');
+            alert(res.msg || 'Gagal mengirim PDF ke pasien.');
+        }
+    }, 'json').fail(function () {
+        $btn.prop('disabled', false).text('Kirim ke Pasien (WA)');
+        alert('Gagal mengirim PDF ke pasien.');
+    });
+}
+</script>

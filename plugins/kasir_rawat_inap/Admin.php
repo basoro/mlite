@@ -1982,6 +1982,327 @@ class Admin extends AdminModule
       exit();
     }
 
+    private function fakturMpdfFontConfig()
+    {
+        $styles = [
+            'R'  => 'Verdana.ttf',
+            'B'  => 'Verdana Bold.ttf',
+            'I'  => 'Verdana Italic.ttf',
+            'BI' => 'Verdana Bold Italic.ttf',
+        ];
+        $candidates = [
+            BASE_DIR . '/assets/fonts',
+            '/System/Library/Fonts/Supplemental',
+            '/System/Library/Fonts',
+            '/Library/Fonts',
+            'C:/Windows/Fonts',
+            '/usr/share/fonts/truetype/msttcorefonts',
+        ];
+
+        $foundDirs = [];
+        foreach ($candidates as $dir) {
+            $lengkap = true;
+            foreach ($styles as $file) {
+                if (!is_file(rtrim($dir, '/\\') . '/' . $file)) {
+                    $lengkap = false;
+                    break;
+                }
+            }
+            if ($lengkap) {
+                $foundDirs[] = rtrim($dir, '/\\');
+            }
+        }
+        if (empty($foundDirs)) {
+            return [];
+        }
+
+        $fontdata = (new \Mpdf\Config\FontVariables())->getDefaults()['fontdata'];
+        $fontdata['verdana'] = $styles;
+
+        $fontDirs = (new \Mpdf\Config\ConfigVariables())->getDefaults()['fontDir'];
+        if (!is_array($fontDirs)) {
+            $fontDirs = [$fontDirs];
+        }
+
+        return [
+            'fontDir'  => array_merge($fontDirs, $foundDirs),
+            'fontdata' => $fontdata,
+        ];
+    }
+
+    public function buildFakturBesar($noRawat, $throwOnError = false)
+    {
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+      $billingControl = $this->getBillingClosingState($noRawat);
+      if (!$billingControl['billing_exists']) {
+        if ($throwOnError) {
+          throw new \RuntimeException('Data faktur belum disimpan. Silahkan simpan dulu sebelum mencetak.');
+        }
+        echo 'Data faktur belum disimpan. Silahkan simpan dulu sebelum mencetak.';
+        exit();
+      }
+        $result = $this->db('mlite_billing')->where('no_rawat', $noRawat)->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
+
+        $result_detail['kamar_inap'] = $this->db('kamar_inap')
+          ->join('reg_periksa', 'reg_periksa.no_rawat = kamar_inap.no_rawat')
+          ->where('reg_periksa.no_rawat', $noRawat)
+          ->oneArray();
+
+        $result_detail['rawat_inap_dr'] = $this->db('rawat_inap_dr')
+          ->select('jns_perawatan_inap.nm_perawatan')
+          ->select(['biaya_rawat' => 'rawat_inap_dr.biaya_rawat'])
+          ->select(['jml' => 'COUNT(rawat_inap_dr.kd_jenis_prw)'])
+          ->select(['total_biaya_rawat_dr' => 'SUM(rawat_inap_dr.biaya_rawat)'])
+          ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')
+          ->where('rawat_inap_dr.no_rawat', $noRawat)
+          ->group('jns_perawatan_inap.nm_perawatan')
+          ->toArray();
+
+        $result_detail['rawat_inap_pr'] = $this->db('rawat_inap_pr')
+          ->select('jns_perawatan_inap.nm_perawatan')
+          ->select(['biaya_rawat' => 'rawat_inap_pr.biaya_rawat'])
+          ->select(['jml' => 'COUNT(rawat_inap_pr.kd_jenis_prw)'])
+          ->select(['total_biaya_rawat_pr' => 'SUM(rawat_inap_pr.biaya_rawat)'])
+          ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')
+          ->where('rawat_inap_pr.no_rawat', $noRawat)
+          ->group('jns_perawatan_inap.nm_perawatan')
+          ->toArray();
+
+        $result_detail['rawat_inap_drpr'] = $this->db('rawat_inap_drpr')
+          ->select('jns_perawatan_inap.nm_perawatan')
+          ->select(['biaya_rawat' => 'rawat_inap_drpr.biaya_rawat'])
+          ->select(['jml' => 'COUNT(rawat_inap_drpr.kd_jenis_prw)'])
+          ->select(['total_biaya_rawat_drpr' => 'SUM(rawat_inap_drpr.biaya_rawat)'])
+          ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')
+          ->where('rawat_inap_drpr.no_rawat', $noRawat)
+          ->group('jns_perawatan_inap.nm_perawatan')
+          ->toArray();
+
+        $result_detail['detail_pemberian_obat'] = $this->db('detail_pemberian_obat')
+          ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+          ->where('no_rawat', $noRawat)
+          ->where('detail_pemberian_obat.status', 'Ranap')
+          ->toArray();
+
+        $result_detail['periksa_lab'] = $this->db('periksa_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+          ->where('no_rawat', $noRawat)
+          ->where('periksa_lab.status', 'Ranap')
+          ->toArray();
+
+        $result_detail['periksa_radiologi'] = $this->db('periksa_radiologi')
+          ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+          ->where('no_rawat', $noRawat)
+          ->where('periksa_radiologi.status', 'Ranap')
+          ->toArray();
+
+        $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
+          ->where('no_rawat', $noRawat)
+          ->toArray();
+
+        $result_detail['resep_pulang'] = $this->db('resep_pulang')
+          ->join('databarang', 'databarang.kode_brng=resep_pulang.kode_brng')
+          ->where('resep_pulang.no_rawat', $noRawat)
+          ->toArray();
+
+        $jumlah_total_operasi = 0;
+        $operasis = $this->db('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $noRawat)->where('operasi.status', 'Ranap')->toArray();
+        $result_detail['operasi'] = [];
+        foreach ($operasis as $operasi) {
+          $operasi['jumlah'] = $operasi['biayaoperator1']+$operasi['biayaoperator2']+$operasi['biayaoperator3']+$operasi['biayaasisten_operator1']+$operasi['biayaasisten_operator2']+$operasi['biayadokter_anak']+$operasi['biayaperawaat_resusitas']+$operasi['biayadokter_anestesi']+$operasi['biayaasisten_anestesi']+$operasi['biayabidan']+$operasi['biayaperawat_luar'];
+          $jumlah_total_operasi += $operasi['jumlah'];
+          $result_detail['operasi'][] = $operasi;
+        }
+        $jumlah_total_obat_operasi = 0;
+        $obat_operasis = $this->db('beri_obat_operasi')->join('obatbhp_ok', 'obatbhp_ok.kd_obat=beri_obat_operasi.kd_obat')->where('no_rawat', $noRawat)->toArray();
+        $result_detail['obat_operasi'] = [];
+        foreach ($obat_operasis as $obat_operasi) {
+          $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
+          $jumlah_total_obat_operasi += $obat_operasi['harga'];
+          $result_detail['obat_operasi'][] = $obat_operasi;
+        }
+
+        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $noRawat)->oneArray();
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
+
+        /* ===============================
+        * E-SIGNATURE (TTE) + QR VERIFIKASI
+        * (QR umum admin/tmp/qrcode.png dihapus — baris tanda tangan
+        * Kasir kini memakai QR verifikasi e-Signature, lihat $qrCodeEsign)
+        * =============================== */
+        $faktur_ref_id = convertNorawat($noRawat);
+        $list_esignature = [];
+        $sigs = $this->db('mlite_esignatures')
+            ->where('ref_type', 'faktur.ranap')
+            ->where('ref_id', $faktur_ref_id)
+            ->toArray();
+        // 1 (nama|jabatan) = 1 tampilan, ambil yang terbaru (urutan id ASC, overwrite)
+        $uniqueSigs = [];
+        foreach ($sigs as $s) {
+            $sigKey = trim($s['signer_name'] ?? '').'|'.trim($s['signer_role'] ?? '');
+            $uniqueSigs[$sigKey] = $s;
+        }
+        foreach ($uniqueSigs as $s) {
+            $sigPath = WEBAPPS_PATH.'/berkas/esignature/'.$s['signature_path'];
+            if (!file_exists($sigPath)) {
+                continue;
+            }
+            $verifyUrl = url(['esignature', 'verify', $s['signature_hash']]);
+            $qrEsignFile = 'qrcode_esign_'.$s['signature_hash'].'.png';
+            $qrEsignPath = BASE_DIR.'/'.ADMIN.'/tmp/'.$qrEsignFile;
+            if (!is_file($qrEsignPath)) {
+                $qrEsign = QRCode::getMinimumQRCode($verifyUrl, QR_ERROR_CORRECT_LEVEL_L);
+                $imEsign = $qrEsign->createImage(4, 4);
+                imagepng($imEsign, $qrEsignPath);
+                imagedestroy($imEsign);
+            }
+            $list_esignature[] = [
+                'gambar'  => url().'/uploads/berkas/esignature/'.$s['signature_path'],
+                'qr'      => url()."/".ADMIN."/tmp/".$qrEsignFile,
+                'verify'  => $verifyUrl,
+                'nama'    => $s['signer_name'],
+                'jabatan' => $s['signer_role'],
+                'waktu'   => date('d-m-Y H:i', strtotime($s['signed_at'])),
+            ];
+        }
+
+        // QR verifikasi e-Signature terbaru — menggantikan qrcode.png lama
+        // pada baris tanda tangan Kasir (kosong bila belum ditandatangani)
+        $qrCodeEsign = '';
+        $verifyEsign = '';
+        if (!empty($list_esignature)) {
+            $lastSig = end($list_esignature);
+            $qrCodeEsign = $lastSig['qr'];
+            $verifyEsign = $lastSig['verify'];
+        }
+
+        /* ===============================
+        * PREPARE TEMPLATE DATA
+        * =============================== */
+        $this->tpl->set('billing_obat', $this->settings->get('settings.billing_obat'));
+        $this->tpl->set('wagateway', $this->settings->get('wagateway'));
+        $this->tpl->set('billing', $result);
+        $this->tpl->set('billing_besar_detail', $result_detail);
+        $this->tpl->set('pasien', $pasien);
+        $this->tpl->set('jumlah_total_operasi', $jumlah_total_operasi);
+        $this->tpl->set('qrCodeEsign', $qrCodeEsign);
+        $this->tpl->set('verifyEsign', $verifyEsign);
+        $this->tpl->set('faktur_ref_id', $faktur_ref_id);
+        $this->tpl->set('list_esignature', $list_esignature);
+        $this->tpl->set('fullname', $this->core->getUserInfo('fullname', null, true));
+
+        /* ===============================
+        * RENDER HTML SEKALI
+        * =============================== */
+        $html = $this->draw('billing.besar.html');
+
+        /* ===============================
+        * CACHE KONTEN FAKTUR UNTUK PDF BER-TTE
+        * (dipakai plugin esignature: generatepdf & kirim ke pasien)
+        * =============================== */
+        $fStart = strpos($html, '<div id="faktur">');
+        $fEnd = strpos($html, '<!-- CTRL_START -->');
+        if ($fStart !== false && $fEnd !== false && $fEnd > $fStart) {
+            $fakturContent = substr($html, $fStart, $fEnd - $fStart);
+            // Blok TTE tidak ikut di-cache agar di PDF esignature tidak duplikat
+            // (esignature menambahkan blok TTE-nya sendiri di akhir dokumen)
+            $fakturContent = preg_replace('#<!-- TTE_SIGNED_START -->.*?<!-- TTE_SIGNED_END -->#s', '', $fakturContent);
+            @file_put_contents(BASE_DIR.'/'.ADMIN.'/tmp/faktur.ranap.'.$faktur_ref_id.'.html', $fakturContent);
+        }
+
+        /* ===============================
+        * GENERATE PDF
+        * =============================== */
+        if (file_exists(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf')) {
+            unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
+        }
+
+        $mpdfFontConfig = $this->fakturMpdfFontConfig();
+        $mpdf = new \Mpdf\Mpdf(array_merge([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 10,
+            'margin_right' => 10,
+        ], $mpdfFontConfig));
+
+        // Footer PDF: pemberitahuan TTE di dasar SETIAP halaman (mPDF footer),
+        // hanya untuk dokumen yang sudah ditandatangani elektronik.
+        // Versi layar tetap ada sebagai footer konten (blok TTE_SIGNED_START/END),
+        // blok itu dibuang dari $htmlPdf di bawah agar tidak dobel di PDF.
+        if (!empty($list_esignature)) {
+            $mpdf->SetHTMLFooter(
+                '<div style="font-size:8px; color:#555; text-align:center; font-family:verdana, sans-serif;">'
+                .'Dokumen ini telah ditandatangani secara elektronik sesuai UU ITE No 11 Tahun 2008. Pindai kode QR untuk memverifikasi keaslian tanda tangannya.'
+                .'</div>'
+            );
+        }
+
+        // CSS PDF faktur disamakan dengan halaman HTML. TANPA setPrintCss()
+        // yang ternyata menambah: zebra tr:nth-child(even) #dddddd, pemaksaan
+        // font arial (-> DejaVu Condensed), div/table width:100%, dan margin
+        // @page 30mm — tidak ada satupun yang ada di halaman faktur.
+        // Garis horizontal (rules='rows' di HTML) digambar ulang per baris:
+        // mPDF tidak menggambar border <tr> dari CSS, dan border-collapse:
+        // collapse membuat mPDF menstroke border sel dengan WARNA PUTIH
+        // (parsial/tak terlihat). Kombinasi teruji: border-collapse: separate
+        // + border-spacing: 0 -> tiap sel digambar border bawah HITAM yang
+        // sambung menyambung, sama seperti rules=rows di Chrome.
+        $printCss = 'table { border-collapse: separate; border-spacing: 0; }'
+            . ' td, th { padding: 0px 0px 0px 10px; border-bottom: 1px solid #000; }';
+        if ($mpdfFontConfig !== []) {
+            $printCss = '* { font-family: verdana, sans-serif; } ' . $printCss;
+        }
+        $mpdf->WriteHTML($printCss, \Mpdf\HTMLParserMode::HEADER_CSS);
+
+        // Hapus tombol kontrol & modal dari PDF (hanya konten faktur yang dicetak)
+        $htmlPdf = preg_replace('#<!-- CTRL_START -->.*?<!-- CTRL_END -->#s', '', $html);
+        $htmlPdf = preg_replace('#<div class="modal fade".*?<!-- \.modal -->#s', '', $htmlPdf);
+        // Blok pemberitahuan TTE tidak ikut di konten PDF: teksnya sudah jadi
+        // mPDF footer (di atas), sehingga tampil di dasar tiap halaman tanpa dobel.
+        $htmlPdf = preg_replace('#<!-- TTE_SIGNED_START -->.*?<!-- TTE_SIGNED_END -->#s', '', $htmlPdf);
+
+        // <head> dokumen memuat bootstrap.min.css; mPDF memakainya SETELAH
+        // HEADER_CSS sehingga border-collapse/aturan font dari bootstrap
+        // (normalize) menimpa printCss -> border sel jadi di-stroke putih
+        // (tak terlihat). Sisipkan override SETELAH link bootstrap agar
+        // menang urutan cascade; layout bootstrap (pull-right dll) tetap dipakai
+        // agar PDF identik dengan tampilan Chrome.
+        $overrideCss = '<style>'
+            . ($mpdfFontConfig !== [] ? 'body, * { font-family: verdana, sans-serif; }' : '')
+            . 'table { border-collapse: separate; border-spacing: 0; }'
+            . 'td, th { padding: 0px 0px 0px 10px; border-bottom: 1px solid #000; }'
+            . '</style>';
+        if (stripos($htmlPdf, '</head>') !== false) {
+            $htmlPdf = preg_replace('#</head>#', $overrideCss . '</head>', $htmlPdf, 1);
+        } else {
+            $htmlPdf = $overrideCss . $htmlPdf;
+        }
+
+        // QR halaman dirender client-side (jquery.qrcode, seperti surat).
+        // mPDF tidak mengeksekusi JS → tukar div QR dengan gambar QR
+        // verifikasi e-Signature agar isi PDF identik dengan tampilan layar.
+        if ($qrCodeEsign !== '') {
+            $htmlPdf = preg_replace(
+                '#<div id="qrcode_faktur"[^>]*>\s*</div>#',
+                '<img src="'.$qrCodeEsign.'" width="132" style="margin-top:10px;">',
+                $htmlPdf
+            );
+        }
+
+        $mpdf->WriteHTML($htmlPdf);
+
+        $mpdf->Output(
+            UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',
+            'F'
+        );
+
+      return $html;
+    }
+
     public function anyFaktur()
     {
       $settings = $this->settings('settings');
@@ -2013,153 +2334,7 @@ class Admin extends AdminModule
         }
         break;
         case "besar":
-        if (!$billingControl['billing_exists']) {
-          echo 'Data faktur belum disimpan. Silahkan simpan dulu sebelum mencetak.';
-          exit();
-        }
-        $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
-
-        $result_detail['kamar_inap'] = $this->db('kamar_inap')
-          ->join('reg_periksa', 'reg_periksa.no_rawat = kamar_inap.no_rawat')
-          ->where('reg_periksa.no_rawat', $_GET['no_rawat'])
-          ->oneArray();
-
-        $result_detail['rawat_inap_dr'] = $this->db('rawat_inap_dr')
-          ->select('jns_perawatan_inap.nm_perawatan')
-          ->select(['biaya_rawat' => 'rawat_inap_dr.biaya_rawat'])
-          ->select(['jml' => 'COUNT(rawat_inap_dr.kd_jenis_prw)'])
-          ->select(['total_biaya_rawat_dr' => 'SUM(rawat_inap_dr.biaya_rawat)'])
-          ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')
-          ->where('rawat_inap_dr.no_rawat', $_GET['no_rawat'])
-          ->group('jns_perawatan_inap.nm_perawatan')
-          ->toArray();
-
-        $result_detail['rawat_inap_pr'] = $this->db('rawat_inap_pr')
-          ->select('jns_perawatan_inap.nm_perawatan')
-          ->select(['biaya_rawat' => 'rawat_inap_pr.biaya_rawat'])
-          ->select(['jml' => 'COUNT(rawat_inap_pr.kd_jenis_prw)'])
-          ->select(['total_biaya_rawat_pr' => 'SUM(rawat_inap_pr.biaya_rawat)'])
-          ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')
-          ->where('rawat_inap_pr.no_rawat', $_GET['no_rawat'])
-          ->group('jns_perawatan_inap.nm_perawatan')
-          ->toArray();
-
-        $result_detail['rawat_inap_drpr'] = $this->db('rawat_inap_drpr')
-          ->select('jns_perawatan_inap.nm_perawatan')
-          ->select(['biaya_rawat' => 'rawat_inap_drpr.biaya_rawat'])
-          ->select(['jml' => 'COUNT(rawat_inap_drpr.kd_jenis_prw)'])
-          ->select(['total_biaya_rawat_drpr' => 'SUM(rawat_inap_drpr.biaya_rawat)'])
-          ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')
-          ->where('rawat_inap_drpr.no_rawat', $_GET['no_rawat'])
-          ->group('jns_perawatan_inap.nm_perawatan')
-          ->toArray();
-
-        $result_detail['detail_pemberian_obat'] = $this->db('detail_pemberian_obat')
-          ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
-          ->where('no_rawat', $_GET['no_rawat'])
-          ->where('detail_pemberian_obat.status', 'Ranap')
-          ->toArray();
-
-        $result_detail['periksa_lab'] = $this->db('periksa_lab')
-          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
-          ->where('no_rawat', $_GET['no_rawat'])
-          ->where('periksa_lab.status', 'Ranap')
-          ->toArray();
-
-        $result_detail['periksa_radiologi'] = $this->db('periksa_radiologi')
-          ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
-          ->where('no_rawat', $_GET['no_rawat'])
-          ->where('periksa_radiologi.status', 'Ranap')
-          ->toArray();
-
-        $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
-          ->where('no_rawat', $_GET['no_rawat'])
-          ->toArray();
-
-        $result_detail['resep_pulang'] = $this->db('resep_pulang')
-          ->join('databarang', 'databarang.kode_brng=resep_pulang.kode_brng')
-          ->where('resep_pulang.no_rawat', $_GET['no_rawat'])
-          ->toArray();
-
-        $jumlah_total_operasi = 0;
-        $operasis = $this->db('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $_GET['no_rawat'])->where('operasi.status', 'Ranap')->toArray();
-        $result_detail['operasi'] = [];
-        foreach ($operasis as $operasi) {
-          $operasi['jumlah'] = $operasi['biayaoperator1']+$operasi['biayaoperator2']+$operasi['biayaoperator3']+$operasi['biayaasisten_operator1']+$operasi['biayaasisten_operator2']+$operasi['biayadokter_anak']+$operasi['biayaperawaat_resusitas']+$operasi['biayadokter_anestesi']+$operasi['biayaasisten_anestesi']+$operasi['biayabidan']+$operasi['biayaperawat_luar'];
-          $jumlah_total_operasi += $operasi['jumlah'];
-          $result_detail['operasi'][] = $operasi;
-        }
-        $jumlah_total_obat_operasi = 0;
-        $obat_operasis = $this->db('beri_obat_operasi')->join('obatbhp_ok', 'obatbhp_ok.kd_obat=beri_obat_operasi.kd_obat')->where('no_rawat', $_GET['no_rawat'])->toArray();
-        $result_detail['obat_operasi'] = [];
-        foreach ($obat_operasis as $obat_operasi) {
-          $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
-          $jumlah_total_obat_operasi += $obat_operasi['harga'];
-          $result_detail['obat_operasi'][] = $obat_operasi;
-        }
-
-        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
-        $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
-
-        /* ===============================
-        * QR CODE
-        * =============================== */
-        $qr = QRCode::getMinimumQRCode(
-            $this->core->getUserInfo('fullname', null, true),
-            QR_ERROR_CORRECT_LEVEL_L
-        );
-        $im = $qr->createImage(4,4);
-        imagepng($im, BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
-        imagedestroy($im);
-
-        $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
-
-        /* ===============================
-        * PREPARE TEMPLATE DATA
-        * =============================== */
-        $this->tpl->set('billing_obat', $this->settings->get('settings.billing_obat'));
-        $this->tpl->set('wagateway', $this->settings->get('wagateway'));
-        $this->tpl->set('billing', $result);
-        // $this->tpl->set('total_billing_obat', $total_detail_pemberian_obat);
-        $this->tpl->set('billing_besar_detail', $result_detail);
-        $this->tpl->set('pasien', $pasien);
-        $this->tpl->set('qrCode', $qrCode);
-        $this->tpl->set('fullname', $this->core->getUserInfo('fullname', null, true)); 
-
-        /* ===============================
-        * RENDER HTML SEKALI
-        * =============================== */
-        $html = $this->draw('billing.besar.html');
-
-        /* ===============================
-        * GENERATE PDF
-        * =============================== */
-        if (file_exists(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf')) {
-            unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
-        }
-
-        $mpdf = new \Mpdf\Mpdf([
-            'mode' => 'utf-8',
-            'format' => 'A4',
-            'orientation' => 'P'
-        ]);
-
-        $mpdf->WriteHTML(
-            $this->core->setPrintCss(),
-            \Mpdf\HTMLParserMode::HEADER_CSS
-        );
-
-        $mpdf->WriteHTML($html);
-
-        $mpdf->Output(
-            UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',
-            'F'
-        );
-
-        /* ===============================
-        * OUTPUT HTML (PREVIEW)
-        * =============================== */
-        echo $html;
+        echo $this->buildFakturBesar($noRawat);
         break;
         case "kecil":
         if (!$billingControl['billing_exists']) {

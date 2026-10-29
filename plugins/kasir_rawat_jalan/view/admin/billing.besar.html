@@ -6,23 +6,22 @@
 		<meta charset="UTF-8">
 		<link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+	<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+	<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
 		<script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
 	<style>
 	body {
 		margin-top:20px;
 	}
 	th,td {padding:0px 0px 0px 10px;}
+	@media print {
+		#printPageButton, #signButton, #kirimPasienButton, #emailButton {
+			display: none;
+		}
+	}
 	</style>
 
-	<script>
-	function printContent(el){
-	var restorepage = document.body.innerHTML;
-	var printcontent = document.getElementById(el).innerHTML;
-	document.body.innerHTML = printcontent;
-	window.print();
-	document.body.innerHTML = restorepage; window.close();
-	}
-	</script>
+	
 	</head>
 
 	<body>
@@ -261,53 +260,84 @@
 				<td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
 			</tr>
 			<tr>
-				<td colspan="3"></td>
-				<td colspan=3>
+				<td colspan="3" style="border-bottom: none;"></td>
+				<td colspan=3 style="border-bottom: none;">
 					<br><br>
-				<p align="center" ><strong>{?=isset_or($settings.kota)?}, {?=date('d-m-Y')?}</strong><br>
+				<p><strong>{?=isset_or($settings.kota)?}, {?=date('d-m-Y')?}</strong><br>
 				 Kasir<br><br>
-				 <img src="{?=isset_or($qrCode)?}">
+				 {if: !empty($list_esignature)}
+				 <div id="qrcode_faktur" style="margin-top:10px;width:132px;"></div>
+				 {else}
+				 <br><br><br>
+				 {/if}
 				 <br><br>
 				{?=isset_or($fullname)?}<br>
 				</p>
 				</td>
 			</tr>
 		</table></center>
+		
+		<!-- TTE_SIGNED_START -->
+		{if: !empty($list_esignature)}
+		<div style="clear: both; margin-top: 16px; padding-top: 6px; text-align: center;"><span style="font-size: 10px; font-family: verdana, sans-serif; color: #444;">Dokumen ini telah ditandatangani secara elektronik sesuai UU ITE No 11 Tahun 2008. Pindai kode QR untuk memverifikasi keaslian tanda tangannya.</span></div>
+		{/if}
+		<!-- TTE_SIGNED_END -->
 		</div>
 		<br><br><br>
-		<del>
-			<center>
-				<button type="button" class="btn btn-warning" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
-				<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
-				<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
-			</center>	
-		</del>
+		<!-- CTRL_START -->
+		<center>
+			<button type="button" class="btn btn-warning" id="emailButton" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
+			<button type="button" class="btn btn-default" id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>
+			<button type="button" class="btn btn-primary" id="signButton" data-url="{?=url([ADMIN, 'esignature', 'sign', 'faktur.ralan', $faktur_ref_id])?}" onclick="bukaSignModal(this)">&#x1F4CB; e-Signature</button>
+<!-- Modal e-Signature -->
+<div id="signModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9998; background:rgba(0,0,0,.5);">
+  <div style="background:#fff; width:680px; max-width:94%; margin:30px auto; border-radius:6px; box-shadow:0 4px 18px rgba(0,0,0,.3); overflow:hidden; text-align:left;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #ddd;">
+      <strong>e-Signature</strong>
+      <button type="button" class="btn btn-default btn-sm" onclick="tutupSignModal()">&times; Tutup</button>
+    </div>
+    <iframe id="signFrame" src="about:blank" style="width:100%; height:72vh; border:0; display:block;"></iframe>
+  </div>
+</div>
+<style>@media print { #signModal { display: none !important; } }</style>
+<script>
+function bukaSignModal(btn) {
+    var url = btn ? btn.getAttribute('data-url') : '';
+    if (!url) return;
+    document.getElementById('signFrame').src = url;
+    document.getElementById('signModal').style.display = 'block';
+}
 
-		<!-- Modal -->
-	  <div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
-	    <div class="modal-dialog">
-	      <div class="modal-content">
-	        <div class="modal-header">
-	          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	          <h4 class="modal-title">Kirim WhatsApp</h4>
-	        </div>
-	        <div class="modal-body">
-		        <div class="form-floating number">
-							<label for="floatingPassword">Nomor</label>
-		          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan" value="{?=isset_or($pasien.no_tlp)?}">
-		        </div>
-		        <div class="form-floating message">
-							<label for="floatingPassword">Pesan</label>
-		          <input type="text" name="message" class="form-control" id="message" placeholder="Tulis pesan anda.." value="Bukti Pembayaran">
-		        </div>
-	        </div>
-	        <div class="modal-footer">
-	          <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-	          <button type="button" class="btn btn-primary" onclick="KirimWA()" data-dismiss="modal">Kirim</button>
-	        </div>
-	      </div><!-- /.modal-content -->
-	    </div><!-- /.modal-dialog -->
-	  </div><!-- /.modal -->
+function tutupSignModal() {
+    document.getElementById('signModal').style.display = 'none';
+    document.getElementById('signFrame').src = 'about:blank';
+}
+</script>
+			<button type="button" class="btn btn-success" id="kirimPasienButton" data-url="{?=url([ADMIN, 'esignature', 'sendPdfToPatient', 'faktur.ralan', $faktur_ref_id])?}" onclick="bukaKirimWaModal()">&#x1F4E8; Kirim ke Pasien (WA)</button>
+<!-- Modal Kirim ke Pasien (WA) -->
+<div id="kirimWaModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:rgba(0,0,0,.45);">
+  <div style="background:#fff; max-width:430px; margin:60px auto; padding:16px 20px 20px; border-radius:6px; box-shadow:0 4px 18px rgba(0,0,0,.3); text-align:left;">
+    <h4 style="margin:0 0 12px;">Kirim ke Pasien (WhatsApp)</h4>
+    <div style="margin-bottom:10px;">
+      <label for="waTujuan">Nomor WhatsApp Tujuan</label>
+      <input type="text" id="waTujuan" class="form-control" value="{?=isset_or($pasien.no_tlp)?}" placeholder="Nomor HP pasien (isi dengan nomor WA keluarga bila perlu)" style="width:100%;">
+      <small>Kosongkan untuk memakai nomor HP pasien.</small>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label for="waCaption">Caption / Pesan</label>
+      <textarea id="waCaption" class="form-control" rows="3" placeholder="Kosongkan untuk pesan bawaan" style="width:100%; resize:vertical;"></textarea>
+    </div>
+    <div style="text-align:right;">
+      <button type="button" class="btn btn-default" onclick="tutupKirimWaModal()">Batal</button>
+      <button type="button" class="btn btn-primary" onclick="kirimPdfKePasien(document.getElementById('kirimPasienButton'))">Kirim</button>
+    </div>
+  </div>
+</div>
+<style>@media print { #kirimWaModal { display: none !important; } }</style>
+		</center>
+		<!-- CTRL_END -->
+
+		
 
 		<!-- Modal -->
 	  <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel" aria-hidden="true">
@@ -346,37 +376,46 @@ function KirimEmail() {
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("email=" + email + "&receiver=" + receiver + "&file=" + file);
 }
-function KirimWA() {
-	var xhttp = new XMLHttpRequest();
-	var api_key = '{?=isset_or($wagateway.token)?}';
-	var sender = '{?=isset_or($wagateway.phonenumber)?}';
-	var number = document.getElementById("number").value;
-	var message = document.getElementById("message").value;
-	var tipe = 'pdf';
-	var file = "{?=url()?}/uploads/invoices/{?=isset_or($billing.kd_billing)?}.pdf";
-	console.log(number + " - " + message);
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var data=xhttp.responseText;
-			var timeout = '504 Gateway Time-out';
-			if(data.indexOf(timeout) != -1) {
-    			alert('Timeout!!! Gagal mengirim pesan.');
-			} else {
-    			var jsonResponse = JSON.parse(data);
-    			if(jsonResponse["status"] == true) {
-    				alert('Sukses mengirim pesan.');
-    			} else {
-					alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
-    			}
-			}
-		}
-	};
-	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwa'])?}", true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
-	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwadocument'])?}", true);
-	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message + "&tipe=" + tipe + "&file=" + file);
+
+function Cetak() {
+	window.print();
 }
+
+function bukaKirimWaModal() {
+    document.getElementById('kirimWaModal').style.display = 'block';
+}
+
+function tutupKirimWaModal() {
+    document.getElementById('kirimWaModal').style.display = 'none';
+}
+
+function kirimPdfKePasien(btn) {
+    if (!btn) return;
+    var $btn = $(btn);
+    var elNomor = document.getElementById('waTujuan');
+    var elCaption = document.getElementById('waCaption');
+    var number = elNomor ? String(elNomor.value).trim() : '';
+    var caption = elCaption ? String(elCaption.value).trim() : '';
+    $btn.prop('disabled', true).text('Mengirim...');
+    $.post($btn.data('url') + '&t={?=$_SESSION['token']?}', { number: number, message: caption }, function (res) {
+        if (res.status === 'success') {
+            tutupKirimWaModal();
+            $btn.text('Terkirim').prop('disabled', true);
+            alert(res.msg || 'PDF dokumen berhasil dikirim ke WhatsApp pasien.');
+        } else {
+            $btn.prop('disabled', false).text('Kirim ke Pasien (WA)');
+            alert(res.msg || 'Gagal mengirim PDF ke pasien.');
+        }
+    }, 'json').fail(function () {
+        $btn.prop('disabled', false).text('Kirim ke Pasien (WA)');
+        alert('Gagal mengirim PDF ke pasien.');
+    });
+}
+
+{if: !empty($list_esignature)}
+jQuery(function () {
+	jQuery('#qrcode_faktur').qrcode({ text: "{?=isset_or($verifyEsign)?}", width: 132, height: 132 });
+});
+{/if}
 </script>
 </html>
