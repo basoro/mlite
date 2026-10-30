@@ -992,7 +992,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var biaya           = $('input:text[name=biaya]').val();
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
-  var jml             = $('input:text[name=jml_tindakan]').val();
+  var jml             = $('input:text[name=jml]').val();
   var jml_tindakan    = $('input:text[name=jml_tindakan]').val();
 
   var url = baseURL + '/rawat_inap/savedetail?t=' + mlite.token;

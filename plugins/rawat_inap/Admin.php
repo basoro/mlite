@@ -472,22 +472,22 @@ class Admin extends AdminModule
           $this->db()->pdo()->beginTransaction();
           try {
             $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
-            $cek_resep = $this->db('resep_obat')->join('resep_dokter', 'resep_obat.no_resep = resep_dokter.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', 'IS', 'NULL')->where('status', 'ranap')->oneArray();
+            $cek_resep = $this->db('resep_obat')->join('resep_dokter', 'resep_obat.no_resep = resep_dokter.no_resep')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->where('status', 'ranap')->oneArray();
 
             if(empty($cek_resep)) {
 
               $resep_obat = $this->db('resep_obat')
                 ->save([
                   'no_resep' => $no_resep,
-                  'tgl_perawatan' => null,
-                  'jam' => null,
+                  'tgl_perawatan' => '0000-00-00',
+                  'jam' => '00:00:00',
                   'no_rawat' => $_POST['no_rawat'],
                   'kd_dokter' => $_POST['kode_provider'],
                   'tgl_peresepan' => $_POST['tgl_perawatan'],
                   'jam_peresepan' => $_POST['jam_rawat'],
                   'status' => 'ranap',
-                  'tgl_penyerahan' => null,
-                  'jam_penyerahan' => null
+                  'tgl_penyerahan' => '0000-00-00',
+                  'jam_penyerahan' => '00:00:00'
                 ]);
 
               if ($this->db('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $_POST['kode_provider'])->oneArray()) {
@@ -517,7 +517,9 @@ class Admin extends AdminModule
             $success = true;
           } catch (\Exception $e) {
             $this->db()->pdo()->rollBack();
-            if ($e->getCode() == '23000') {
+            // retry hanya untuk pelanggaran constraint sementara (mis. no_resep kembar),
+            // percobaan terakhir tetap dilempar agar kegagalan tidak dianggap sukses
+            if ($e->getCode() == '23000' && $retryCount < $maxRetries - 1) {
               $retryCount++;
               usleep(100000);
               continue;
