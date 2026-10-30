@@ -6,6 +6,8 @@
       <th>Diagnosa</th>
       <th>Prosedur</th>
       <th>Pulang</th>
+      <th>Dokter</th>
+      <th>Aksi</th>
     </tr>
   </thead>
   <tbody>
@@ -18,11 +20,16 @@
       <td>{?=isset_or($value.prosedur_utama)?}</td>
       <td>{?=isset_or($value.keadaan)?}</td>
       <td>{?=isset_or($value.nm_dokter)?}</td>
+      <td>
+        <button type="button" class="btn btn-danger btn-xs hapus_resume" data-no_rawat="{?=isset_or($value.no_rawat)?}">
+          <i class="fa fa-trash"></i> Hapus
+        </button>
+      </td>
     </tr>
     {/loop}
     {else}
     <tr>
-      <td colspan="5">Tidak ada data</td>
+      <td colspan="7">Tidak ada data</td>
     </tr>
     {/if}
   </tbody>

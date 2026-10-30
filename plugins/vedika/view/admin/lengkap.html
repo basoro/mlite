@@ -177,7 +177,7 @@
                             <tr><td><br><a href="{?=isset_or($value.berkasPerawatan)?}"  data-toggle="modal" data-target="#moduleModal" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>
-                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{?=isset_or($data.lokasi_file)?}" class="gallery">{?=isset_or($data.nama)?}</a></td>
+                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{?=isset_or($data.lokasi_file)?}" class="gallery">{?=isset_or($data.nama)?}</a> <button class="btn btn-danger btn-xs fa fa-trash hapus_berkas" data-no_rawat="{?=convertNorawat($value.no_rawat)?}" data-nama_file="{?=basename($data.lokasi_file, '.'.pathinfo($data.lokasi_file)["extension"])?}" data-reload_url="{?=url([ADMIN,'vedika','berkasperawatan',convertNorawat($value.no_rawat)])?}"></button></td>
                             </tr>
                             {/loop}
                           </table>
@@ -921,5 +921,36 @@
     setTimeout(function() {
       $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
     }, 0);
+  });
+</script>
+<script type="text/javascript">
+  // ketika tombol hapus berkas ditekan
+  $("#display").on("click",".hapus_berkas", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    event.stopPropagation();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var nama_file = $(this).attr("data-nama_file");
+    var reloadUrl = $(this).attr("data-reload_url");
+    var $btn = $(this);
+
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        $.get(baseURL + '/vedika/hapusberkas/' + no_rawat + '/' + nama_file + '?t=' + mlite.token, function(response){
+          if (response.indexOf('sukses') !== -1) {
+            // hapus baris berkas dari daftar di tempat, tanpa open new tab
+            $btn.closest('tr').remove();
+            // jika modal berkas sedang terbuka, muat ulang isi modal saja, modal tetap terbuka
+            if ($('#moduleModal').is(':visible') && reloadUrl) {
+              $('#moduleModal').find('.modal-content').load(reloadUrl);
+            }
+          } else {
+            bootbox.alert(response);
+          }
+        });
+      }
+    });
+    return false;
   });
 </script>

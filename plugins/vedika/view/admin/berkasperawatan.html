@@ -1,6 +1,6 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title">Resume Perawatan</h4>
+    <h4 class="modal-title">Berkas Digital Perawatan</h4>
 </div>
 <div class="modal-body">
   <div class="panel-default">
@@ -15,13 +15,15 @@
                           <a href="{?=WEBAPPS_URL?}/berkasrawat/{?=isset_or($value.lokasi_file)?}" class="images">
                               <img src="{?=WEBAPPS_URL?}/berkasrawat/{?=isset_or($value.lokasi_file)?}" class="img-responsive">
                           </a>
+                          <button type="button" class="btn btn-danger btn-xs hapus_berkas" style="position:absolute;top:5px;right:15px;" data-no_rawat="{?=convertNorawat($berkasperawatan.no_rawat)?}" data-nama_file="{?=basename($value.lokasi_file, '.'.pathinfo($value.lokasi_file)["extension"])?}" data-reload_url="{?=url([ADMIN,'vedika','berkasperawatan',convertNorawat($berkasperawatan.no_rawat)])?}"></button>
                       </div>
                   </div>
               {/loop}
               </div>
           </div>
           {/if}
-          <form action="" method="POST" enctype="multipart/form-data">
+          <form action="" method="POST" enctype="multipart/form-data" id="form_berkas_perawatan">
+              <input type="hidden" name="reload_url" value="{?=url([ADMIN,'vedika','berkasperawatan',convertNorawat($berkasperawatan.no_rawat)])?}" />
               <div class="form-group">
                   <label>Nomor Rawat</label>
                   <input type="text" class="form-control" name="no_rawat" value="{?=isset_or($berkasperawatan.no_rawat)?}">
@@ -38,7 +40,7 @@
                   <label>Pilih Berkas</label>
                   <input type="file" name="files" class="form-control" />
               </div>
-              <input type="submit" class="btn btn-primary" name="simpanberkas" value="Unggah" />
+              <button type="submit" class="btn btn-primary" id="simpan_berkas">Unggah</button>
           </form>
       </div>
   </div>
@@ -48,5 +50,72 @@
 </div>
 <script type="text/javascript">
   $('select').selectator();
-  $('.images').lightbox();  
+  $('.images').lightbox();
+
+  // tombol hapus berkas di dalam modal: AJAX + reload isi modal, modal tetap terbuka
+  $('#moduleModal').off('click', '.hapus_berkas').on('click', '.hapus_berkas', function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    event.stopPropagation();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var nama_file = $(this).attr("data-nama_file");
+    var reloadUrl = $(this).attr("data-reload_url");
+
+    bootbox.confirm("Apakah Anda yakin ingin menghapus berkas ini?", function(result){
+      if (result){
+        $.get(baseURL + '/vedika/hapusberkas/' + no_rawat + '/' + nama_file + '?t=' + mlite.token, function(response){
+          if (response.indexOf('sukses') !== -1) {
+            $('#moduleModal').find('.modal-content').load(reloadUrl);
+          } else {
+            bootbox.alert(response);
+          }
+        });
+      }
+    });
+    return false;
+  });
+
+  // unggah berkas via AJAX agar modal tidak tertutup
+  $('#form_berkas_perawatan').on('submit', function(event){
+    event.preventDefault();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var form = this;
+    var reloadUrl = $('input[name=reload_url]', form).val();
+
+    if (!$('input[type=file][name=files]', form).val()) {
+      alert('Silakan pilih berkas terlebih dahulu.');
+      return;
+    }
+
+    var formData = new FormData(form);
+    var btn = $('button[type=submit]', form).prop('disabled', true).addClass('disabled').text('Mengunggah...');
+
+    $.ajax({
+      url: baseURL + '/vedika/saveberkasdigital?t=' + mlite.token,
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(data) {
+        // muat ulang isi modal agar galeri berkas terbarui, modal tetap terbuka
+        if (reloadUrl) {
+          // reload_url dari server umumnya sudah memuat ?t=<token>;
+          // jangan tumpuk ?t= lagi (token kosong/utuh gagal loginCheck dan memunculkan form login)
+          var reloadUrlFinal = /[?&]t=/.test(reloadUrl)
+            ? reloadUrl
+            : reloadUrl + (reloadUrl.indexOf('?') === -1 ? '?t=' : '&t=') + mlite.token;
+          $('#moduleModal').find('.modal-content').load(reloadUrlFinal);
+        } else {
+          $(form).after(data);
+          form.reset();
+          $('.images').lightbox();
+          $(btn).prop('disabled', false).removeClass('disabled').text('Unggah');
+        }
+      },
+      error: function() {
+        $(btn).prop('disabled', false).removeClass('disabled').text('Unggah');
+        alert('Gagal mengunggah berkas.');
+      }
+    });
+  });
 </script>

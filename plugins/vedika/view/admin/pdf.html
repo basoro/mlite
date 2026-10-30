@@ -38,11 +38,12 @@ Ralan :
 8. Lap op (after katarak dan laser unt px katarak yg komplikasi dm)
 -->
 <body>
-<a href="{?=url([ADMIN, 'esignature', 'sign', 'pdf', parseUrl(3)])?}"
+<button type="button"
+   data-url="{?=url([ADMIN, 'esignature', 'sign', 'pdf', parseUrl(3)])?}"
    onclick="bukaSignModal(this)"
    class="btn btn-primary">
    <i class="fa fa-pencil"></i> Tanda Tangani {?=parseUrl(3)?}
-</a>
+</button>
   <br><br>
   {if: isset($print_sep.bpjs_prb)}
   <fieldset style="page-break-before:always;">
@@ -2045,6 +2046,19 @@ function bukaSignModal(btn) {
 function tutupSignModal() {
     document.getElementById('signModal').style.display = 'none';
     document.getElementById('signFrame').src = 'about:blank';
+}
+
+/* Dipanggil oleh sign.html (iframe) setelah tanda tangan tersimpan:
+   tutup modal, lalu buka PDF hasil generate. Bila popup diblokir browser,
+   PDF ditampilkan di dalam modal sebagai gantinya. */
+function bukaHasilPdf(url) {
+    tutupSignModal();
+    var w = null;
+    try { w = window.open(url, '_blank'); } catch (e) { w = null; }
+    if (!w) {
+        document.getElementById('signFrame').src = url;
+        document.getElementById('signModal').style.display = 'block';
+    }
 }
 </script>
 </body>

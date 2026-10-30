@@ -741,9 +741,33 @@ abstract class Main
         }
         if($this->userHasRole($this->getUserInfo('role', $_SESSION['mlite_user'], true), 'admin')) {
             $permissions = array('can_create' => 'true', 'can_read' => 'true', 'can_update' => 'true', 'can_delete' => 'true');
-        }    
+        }
+
+        // Semua konsumen (template & modul) membandingkan nilai dengan 'true'/'false',
+        // sedangkan data lama / hasil import bisa berisi '1'/'0'. Samakan di sini
+        // agar tidak ada pembanding yang salah baca.
+        foreach (['can_create', 'can_read', 'can_update', 'can_delete'] as $key) {
+            if (array_key_exists($key, $permissions) && $permissions[$key] !== null) {
+                $permissions[$key] = $this->normalizePermissionValue($permissions[$key]);
+            }
+        }
 
         return $permissions;
+    }
+
+    /**
+     * Samakan nilai permission menjadi string 'true'/'false'.
+     *
+     * Skema menyimpan boolean sebagai teks ('true'/'false'), tetapi data lama atau
+     * hasil import bisa berupa '1'/'0'. Dipakai oleh checkPermission() dan
+     * loadCrudPermissions() supaya semua pembanding membaca nilai yang sama.
+     *
+     * @param  mixed $value
+     * @return string 'true' atau 'false'
+     */
+    public function normalizePermissionValue($value): string
+    {
+        return in_array(strtolower(trim((string) $value)), ['true', '1'], true) ? 'true' : 'false';
     }
 
     public function loadModules()
@@ -972,8 +996,12 @@ abstract class Main
         if (!$mlite_crud_permissions) {
             return true; 
         }
-        
-        return isset($mlite_crud_permissions[$action]) && $mlite_crud_permissions[$action] == 'true';
+
+        if (!isset($mlite_crud_permissions[$action]) || $mlite_crud_permissions[$action] === null) {
+            return false;
+        }
+
+        return $this->normalizePermissionValue($mlite_crud_permissions[$action]) === 'true';
     }
 
     private function userHasRole($roleValue, string $targetRole): bool

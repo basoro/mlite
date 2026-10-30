@@ -2155,15 +2155,18 @@ class Admin extends AdminModule
       $lokasi_file = $berkasPerawatan['lokasi_file'];
       $fileLoc = WEBAPPS_PATH . '/berkasrawat/' . $lokasi_file;
       if (file_exists($fileLoc)) {
-        //unlink($fileLoc);
-        $query = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->where('lokasi_file', $lokasi_file)->delete();
-        if ($query) {
-          echo 'Hapus berkas sukses';
-        } else {
-          echo 'Hapus berkas gagal';
+        // hapus file fisik bersama catatan DB
+        if (!@unlink($fileLoc)) {
+          echo 'Hapus berkas gagal, file pada server tidak dapat dihapus.';
+          exit();
         }
+      }
+      // hapus catatan DB walau file fisik sudah tidak ada, agar baris tak jadi orphan
+      $query = $this->db('berkas_digital_perawatan')->where('no_rawat', $berkasPerawatan['no_rawat'])->where('lokasi_file', $lokasi_file)->delete();
+      if ($query) {
+        echo 'Hapus berkas sukses';
       } else {
-        echo 'Hapus berkas gagal, berkas tidak ditemukan.';
+        echo 'Hapus berkas gagal';
       }
     } else {
       echo 'Hapus berkas gagal, tidak ada data perawatan.';

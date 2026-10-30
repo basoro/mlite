@@ -395,13 +395,15 @@ class Admin extends AdminModule
                 ];
             }
             
+            // Nilai mentah dari database bisa 'true'/'false' atau '1'/'0' (data lama),
+            // jadi jangan dibandingkan persis dengan 'true'.
             $permissions[] = [
                 'dir' => $dir,
                 'name' => $name,
-                'can_create' => $existing['can_create'] == 'true',
-                'can_read'   => $existing['can_read']   == 'true',
-                'can_update' => $existing['can_update'] == 'true',
-                'can_delete' => $existing['can_delete'] == 'true',
+                'can_create' => $this->core->normalizePermissionValue($existing['can_create']) === 'true',
+                'can_read'   => $this->core->normalizePermissionValue($existing['can_read'])   === 'true',
+                'can_update' => $this->core->normalizePermissionValue($existing['can_update']) === 'true',
+                'can_delete' => $this->core->normalizePermissionValue($existing['can_delete']) === 'true',
             ];
         }
         

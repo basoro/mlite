@@ -8,42 +8,43 @@
       <div class="form-group">
           <label>Nomor Rawat</label>
           <input type="text" name="no_rawat_resume" class="form-control" placeholder="Nomor Rawat" required value="{?=isset_or($reg_periksa.no_rawat)?}" readonly />
+          <input type="hidden" name="no_rkm_medis_resume" id="no_rkm_medis_resume" value="{?=isset_or($reg_periksa.no_rkm_medis)?}" />
       </div>
     </div>
     <div class="col-md-12">
       <div class="form-group">
           <label>Diagnosa Masuk</label>
-          <input type="text" name="diagnosa_masuk_resume" id="diagnosa_masuk_resume" class="form-control" placeholder="Diagnosa masuk" required value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.diagnosa_awal,'')?}{else}{?=isset_or($data_resume.pemeriksaan_ranap.keluhan,'')?}{/if}" />
+          <textarea name="diagnosa_masuk_resume" id="diagnosa_masuk_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.diagnosa_awal,'')?}{else}{?=isset_or($data_resume.diagnosa.nm_penyakit,'')?}{/if}</textarea>
       </div>
     </div>
     <div class="col-md-12">
       <div class="form-group">
           <label>Keluhan Utama</label>
-          <input type="text" name="keluhan_utama_resume" id="keluhan_utama_resume" class="form-control" placeholder="Diagnosa masuk" required value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.diagnosa_awal,'')?}{else}{?=isset_or($data_resume.pemeriksaan_ranap.keluhan,'')?}{/if}" />
+          <textarea name="keluhan_utama_resume" id="keluhan_utama_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.keluhan_utama,'')?}{else}{?=isset_or($data_resume.pemeriksaan_ranap.keluhan,'')?}{/if}</textarea>
       </div>
     </div>
     <div class="col-md-12">
       <div class="form-group">
-          <label>Ringkasan Riwayat Penyakit</label>
-          <textarea name="riwayat_penyakit_resume" id="riwayat_penyakit_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.keluhan_utama,'')?}{/if}</textarea>
+          <label>Ringkasan Riwayat Penyakit (Anamnesis, Pemeriksaan dan Tatalaksana pada rawat inap)</label>
+          <textarea name="riwayat_penyakit_resume" id="riwayat_penyakit_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.jalannya_penyakit,'')?}{/if}</textarea>
       </div>
     </div>
     <div class="col-md-12">
       <div class="form-group">
           <label>Pemeriksaan Fisik</label>
-          <textarea name="pemeriksaan_fisik_resume" id="pemeriksaan_fisik_resume" class="form-control" cols="3"></textarea>
+          <textarea name="pemeriksaan_fisik_resume" id="pemeriksaan_fisik_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.pemeriksaan_fisik,'')?}{/if}</textarea>
       </div>
     </div>
     <div class="col-md-12">
       <div class="form-group">
           <label>Pemeriksaan Penunjang Yang Penting</label>
-          <textarea name="pemeriksaan_pj_penting_resume" id="pemeriksaan_pj_penting_resume" class="form-control" cols="3"></textarea>
+          <textarea name="pemeriksaan_pj_penting_resume" id="pemeriksaan_pj_penting_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.pemeriksaan_penunjang,'')?}{/if}</textarea>
       </div>
     </div>
     <div class="col-md-12">
       <div class="form-group">
           <label>Pemeriksaan Laboratorium</label>
-          <textarea name="pemeriksaan_lab_resume" id="pemeriksaan_lab_resume" class="form-control" cols="3"></textarea>
+          <textarea name="pemeriksaan_lab_resume" id="pemeriksaan_lab_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.hasil_laborat,'')?}{/if}</textarea>
       </div>
     </div>
     <div class="col-md-6">
@@ -55,19 +56,19 @@
     <div class="col-md-6">
       <div class="form-group">
           <label>Diagnosa Sekunder</label>
-          <input type="text" name="diagnosa_sekunder_resume" id="diagnosa_sekunder_resume" class="form-control" placeholder="Diagnosa sekunder" value="" />
+          <input type="text" name="diagnosa_sekunder_resume" id="diagnosa_sekunder_resume" class="form-control" placeholder="Diagnosa sekunder" value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.diagnosa_sekunder,'')?}{/if}" />
       </div>
     </div>
     <div class="col-md-6">
       <div class="form-group">
           <label>Diagnosa Sekunder 2</label>
-          <input type="text" name="diagnosa_sekunder_2_resume" class="form-control" placeholder="Diagnosa sekunder 2" value="" />
+          <input type="text" name="diagnosa_sekunder_2_resume" class="form-control" placeholder="Diagnosa sekunder 2" value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.diagnosa_sekunder2,'')?}{/if}" />
       </div>
     </div>
     <div class="col-md-6">
       <div class="form-group">
           <label>Diagnosa Sekunder Lainnya</label>
-          <input type="text" name="diagnosa_sekunder_lain_resume" class="form-control" placeholder="Diagnosa sekunder lainnya" value="" />
+          <input type="text" name="diagnosa_sekunder_lain_resume" class="form-control" placeholder="Diagnosa sekunder lainnya" value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.diagnosa_sekunder3,'')?}{/if}" />
       </div>
     </div>
     <div class="col-md-6">
@@ -79,44 +80,47 @@
     <div class="col-md-6">
       <div class="form-group">
           <label>Prosedur Sekunder</label>
-          <input type="text" name="prosedur_sekunder_resume" id="prosedur_sekunder_resume" class="form-control" placeholder="Prosedur sekunder" value="" />
+          <input type="text" name="prosedur_sekunder_resume" id="prosedur_sekunder_resume" class="form-control" placeholder="Prosedur sekunder" value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.prosedur_sekunder,'')?}{/if}" />
       </div>
     </div>
     <div class="col-md-6">
       <div class="form-group">
           <label>Prosedur Sekunder 2</label>
-          <input type="text" name="prosedur_sekunder_2_resume" class="form-control" placeholder="Prosedur sekunder 2" value="" />
+          <input type="text" name="prosedur_sekunder_2_resume" class="form-control" placeholder="Prosedur sekunder 2" value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.prosedur_sekunder2,'')?}{/if}" />
       </div>
     </div>
     <div class="col-md-6">
       <div class="form-group">
           <label>Prosedur Sekunder Lainnya</label>
-          <input type="text" name="prosedur_sekunder_lain_resume" class="form-control" placeholder="Prosedur sekunder lainnya" value="" />
+          <input type="text" name="prosedur_sekunder_lain_resume" class="form-control" placeholder="Prosedur sekunder lainnya" value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.prosedur_sekunder3,'')?}{/if}" />
       </div>
-    </div>    
+    </div>
     <div class="col-md-12">
       <div class="form-group">
-          <label>Terapi</label>
-          <textarea name="obat_pulang_resume" id="obat_pulang_resume" class="form-control" cols="3"></textarea>
+          <label>Pengobatan Di RS</label>
+          <textarea name="obat_pulang_resume" id="obat_pulang_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.obat_di_rs,'')?}{/if}</textarea>
       </div>
     </div>
     <div class="col-md-12">
       <div class="form-group">
           <label>Terapi Pulang</label>
-          <textarea name="terapi_pulang_resume" id="terapi_pulang_resume" class="form-control" cols="3"></textarea>
+          <textarea name="terapi_pulang_resume" id="terapi_pulang_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.obat_pulang,'')?}{/if}</textarea>
       </div>
     </div>
     <div class="col-md-12">
       <div class="form-group">
           <label>Kondisi Pulang</label>
           <select name="kondisi_pulang" id="kondisi_pulang" class="form-control">
-              <option value="Membaik">Membaik</option>
-              <option value="Meninggal">Meninggal</option>
+              <option value="Membaik" {if: $resume_pasien}{if: isset_or($resume_pasien.0.keadaan,'') == 'Membaik'}selected{/if}{/if}>Membaik</option>
+              <option value="Meninggal" {if: $resume_pasien}{if: isset_or($resume_pasien.0.keadaan,'') == 'Meninggal'}selected{/if}{/if}>Meninggal</option>
           </select>
       </div>
     </div>
     <div class="col-md-12">
       <button class="btn btn-success" id="simpan_resume">Simpan</button>
+      <button type="button" class="btn btn-danger" id="cetak_resume_pdf" data-no_rkm_medis="{?=isset_or($reg_periksa.no_rkm_medis)?}">
+        <i class="fa fa-print"></i> Cetak Resume (PDF)
+      </button>
     </div>
     <br>
     <div class="tampildata">
@@ -129,6 +133,7 @@
             <th>Prosedur</th>
             <th>Pulang</th>
             <th>Dokter</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -141,11 +146,16 @@
             <td>{?=isset_or($value.prosedur_utama)?}</td>
             <td>{?=isset_or($value.keadaan)?}</td>
             <td>{?=isset_or($value.nm_dokter)?}</td>
+            <td>
+              <button type="button" class="btn btn-danger btn-xs hapus_resume" data-no_rawat="{?=isset_or($value.no_rawat)?}">
+                <i class="fa fa-trash"></i> Hapus
+              </button>
+            </td>
           </tr>
           {/loop}
           {else}
           <tr>
-            <td colspan="5">Tidak ada data</td>
+            <td colspan="7">Tidak ada data</td>
           </tr>
           {/if}
         </tbody>
@@ -159,6 +169,7 @@
 </div>
 
 <script type="text/javascript">
+$('select').selectator();
 $(document).ready(function(){
   $("#simpan_resume").click(function(){
     var baseURL = mlite.url + '/' + mlite.admin;
@@ -168,7 +179,7 @@ $(document).ready(function(){
     var keluhan_utama_resume = $('#keluhan_utama_resume').val();
     var riwayat_penyakit_resume = $('#riwayat_penyakit_resume').val();
     var pemeriksaan_fisik_resume = $('#pemeriksaan_fisik_resume').val();
-    var pemeriksaan_pj_penting_resume = $('#pemeriksaan_pj_pentings_resume').val();
+    var pemeriksaan_pj_penting_resume = $('#pemeriksaan_pj_penting_resume').val();
     var pemeriksaan_lab_resume = $('#pemeriksaan_lab_resume').val();
     var diagnosa_utama_resume = $('#diagnosa_utama_resume').val();
     var diagnosa_sekunder_resume = $('#diagnosa_sekunder_resume').val();
@@ -188,16 +199,49 @@ $(document).ready(function(){
       pemeriksaan_pj_penting: pemeriksaan_pj_penting_resume,
       pemeriksaan_lab: pemeriksaan_lab_resume,
       diagnosa_utama: diagnosa_utama_resume,
-      diagnosa_sekunder: diagnosa_masuk_resume,
+      diagnosa_sekunder: diagnosa_sekunder_resume,
       prosedur_utama: prosedur_utama_resume,
       prosedur_sekunder: prosedur_sekunder_resume,
-      obat_pulang: obat_pulang_resume,
-      terapi_pulang: terapi_pulang_resume,
+      obat_pulang: terapi_pulang_resume,
       kondisi_pulang: kondisi_pulang
     } ,function(data) {
       console.log(data);
       $('.tampildata').load(baseURL + '/dokter_ranap/resumetampil/' + set_no_rawat + '?t=' + mlite.token);
     });
+  });
+  // Event handler untuk button cetak resume PDF
+  $(document).on('click', '#cetak_resume_pdf', function(event){
+    event.preventDefault();
+    var no_rkm_medis = $('#no_rkm_medis_resume').val();
+    var no_rawat = $('input:text[name=no_rawat_resume]').val();
+    if (typeof openPdfTteModal === 'function') {
+      openPdfTteModal(no_rkm_medis, no_rawat);
+    } else {
+      window.open(
+        mlite.url + '/' + mlite.admin + '/pasien/pdfriwayatperawatan/' + no_rkm_medis + '/' + no_rawat.replace(/\//g, '') + '?t=' + mlite.token,
+        '_blank'
+      );
+    }
+  });
+
+  // Event handler untuk button hapus resume
+  $(document).on('click', '.hapus_resume', function(event){
+    event.preventDefault();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $(this).attr('data-no_rawat');
+    var set_no_rawat = no_rawat.replace(/\//g, '');
+
+    // Tampilkan dialog konfirmasi
+    if(confirm('Apakah Anda yakin ingin menghapus data resume ini?')) {
+      var url = baseURL + '/dokter_ranap/resumedelete/?t=' + mlite.token;
+      $.post(url, {
+        no_rawat: no_rawat
+      } ,function(data) {
+        console.log(data);
+        // Reload data resume ke table Filter, tanpa tombol, kirim form jika perlu
+        $('.tampildata').load(baseURL + '/dokter_ranap/resumetampil/' + set_no_rawat + '?t=' + mlite.token);
+      });
+    }
   });
 });
 </script>

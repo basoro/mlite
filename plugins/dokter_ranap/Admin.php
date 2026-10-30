@@ -1416,7 +1416,7 @@ class Admin extends AdminModule
     public function getResume($no_rawat)
     {
       $data_resume['pemeriksaan_ranap'] = $this->db('pemeriksaan_ranap')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
-      $data_resume['diagnosa'] = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ralan')->oneArray();
+      $data_resume['diagnosa'] = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ranap')->oneArray();
       $data_resume['prosedur'] = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ranap')->oneArray();
       echo $this->draw('resume.html', [
         'reg_periksa' => htmlspecialchars_array($this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()),
@@ -1436,7 +1436,7 @@ class Admin extends AdminModule
     {
       $_POST['kd_dokter']	= $this->core->getUserInfo('username', $_SESSION['mlite_user']);
 
-      if($this->db('resume_pasien_ranap')->where('no_rawat', $_POST['no_rawat'])->where('kd_dokter', $_POST['kd_dokter'])->oneArray()) {
+      if($this->db('resume_pasien_ranap')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
         $this->db('resume_pasien_ranap')
           ->where('no_rawat', $_POST['no_rawat'])
           ->save([
@@ -1444,15 +1444,15 @@ class Admin extends AdminModule
             'diagnosa_awal' => $_POST['diagnosa_masuk'],
             'alasan' => '-',
             'keluhan_utama' => $_POST['keluhan_utama'],
-            'pemeriksaan_fisik' => '-',
+            'pemeriksaan_fisik' => $_POST['pemeriksaan_fisik'],
             'jalannya_penyakit' => $_POST['riwayat_penyakit'],
-            'pemeriksaan_penunjang' => '-',
-            'hasil_laborat' => '-',
+            'pemeriksaan_penunjang' => $_POST['pemeriksaan_pj_penting'],
+            'hasil_laborat' => $_POST['pemeriksaan_lab'],
             'tindakan_dan_operasi' => '-',
             'obat_di_rs' => '-',
             'diagnosa_utama' => $_POST['diagnosa_utama'],
             'kd_diagnosa_utama' => '-',
-            'diagnosa_sekunder' => '-',
+            'diagnosa_sekunder' => $_POST['diagnosa_sekunder'],
             'kd_diagnosa_sekunder' => '-',
             'diagnosa_sekunder2' => '-',
             'kd_diagnosa_sekunder2' => '-',
@@ -1462,7 +1462,7 @@ class Admin extends AdminModule
             'kd_diagnosa_sekunder4' => '-',
             'prosedur_utama' => $_POST['prosedur_utama'],
             'kd_prosedur_utama' => '-',
-            'prosedur_sekunder' => '-',
+            'prosedur_sekunder' => $_POST['prosedur_sekunder'],
             'kd_prosedur_sekunder' => '-',
             'prosedur_sekunder2' => '-',
             'kd_prosedur_sekunder2' => '-',
@@ -1479,7 +1479,7 @@ class Admin extends AdminModule
             'dilanjutkan' => 'Lainnya',
             'ket_dilanjutkan' => '-',
             'kontrol' => date('Y-m-d H:i:s'),
-            'obat_pulang' => '-'
+            'obat_pulang' => $_POST['obat_pulang']
         ]);
       } else {
         $this->db('resume_pasien_ranap')->save([
@@ -1488,15 +1488,15 @@ class Admin extends AdminModule
           'diagnosa_awal' => $_POST['diagnosa_masuk'],
           'alasan' => '-',
           'keluhan_utama' => $_POST['keluhan_utama'],
-          'pemeriksaan_fisik' => '-',
+          'pemeriksaan_fisik' => $_POST['pemeriksaan_fisik'],
           'jalannya_penyakit' => $_POST['riwayat_penyakit'],
-          'pemeriksaan_penunjang' => '-',
-          'hasil_laborat' => '-',
+          'pemeriksaan_penunjang' => $_POST['pemeriksaan_pj_penting'],
+          'hasil_laborat' => $_POST['pemeriksaan_lab'],
           'tindakan_dan_operasi' => '-',
           'obat_di_rs' => '-',
           'diagnosa_utama' => $_POST['diagnosa_utama'],
           'kd_diagnosa_utama' => '-',
-          'diagnosa_sekunder' => '-',
+          'diagnosa_sekunder' => $_POST['diagnosa_sekunder'],
           'kd_diagnosa_sekunder' => '-',
           'diagnosa_sekunder2' => '-',
           'kd_diagnosa_sekunder2' => '-',
@@ -1506,7 +1506,7 @@ class Admin extends AdminModule
           'kd_diagnosa_sekunder4' => '-',
           'prosedur_utama' => $_POST['prosedur_utama'],
           'kd_prosedur_utama' => '-',
-          'prosedur_sekunder' => '-',
+          'prosedur_sekunder' => $_POST['prosedur_sekunder'],
           'kd_prosedur_sekunder' => '-',
           'prosedur_sekunder2' => '-',
           'kd_prosedur_sekunder2' => '-',
@@ -1523,9 +1523,15 @@ class Admin extends AdminModule
           'dilanjutkan' => 'Lainnya',
           'ket_dilanjutkan' => '-',
           'kontrol' => date('Y-m-d H:i:s'),
-          'obat_pulang' => '-'
+          'obat_pulang' => $_POST['obat_pulang']
         ]);
       }
+      exit();
+    }
+
+    public function postResumeDelete()
+    {
+      $this->db('resume_pasien_ranap')->where('no_rawat', $_POST['no_rawat'])->delete();
       exit();
     }
     

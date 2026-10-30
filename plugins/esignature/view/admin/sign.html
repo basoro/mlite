@@ -87,17 +87,21 @@
                 if(res.status == 'success') {
                     alert('Tanda tangan berhasil disimpan.\nHash: ' + res.hash);
                     
+                    var pdfUrl = '{?=url([ADMIN, "esignature", "generatepdf", $ref_type, $ref_id])?}';
                     // Mode modal (iframe): tab baru bisa diblokir browser.
                     var diIframe = window.parent && window.parent !== window;
                     if(!diIframe) {
-                        window.open('{?=url([ADMIN, "esignature", "generatepdf", $ref_type, $ref_id])?}', '_blank');
+                        window.open(pdfUrl, '_blank');
                     }
 
                     // SEMUA dokumen yang dibuka lewat modal (e-Resep, faktur, surat,
                     // vedika): tutup modal begitu tombol OK pada notif ditekan,
-                    // TANPA me-reload halaman induk.
+                    // TANPA me-reload halaman induk. Halaman induk yang menyediakan
+                    // bukaHasilPdf() (mis. vedika/pdf) juga membuka hasil PDF-nya.
                     if(diIframe) {
-                        if(window.parent && typeof window.parent.tutupSignModal === 'function') {
+                        if(window.parent && typeof window.parent.bukaHasilPdf === 'function') {
+                            window.parent.bukaHasilPdf(pdfUrl);
+                        } else if(window.parent && typeof window.parent.tutupSignModal === 'function') {
                             window.parent.tutupSignModal();
                         }
                     } else if(window.opener) {
