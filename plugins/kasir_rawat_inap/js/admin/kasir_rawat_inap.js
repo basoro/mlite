@@ -530,6 +530,12 @@ $("#rincian").on("click",".hapus_detail", function(event){
         jam_rawat: jam_rawat,
         provider: provider
       } ,function(data) {
+
+        // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+        if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+          $('#notif').html(data).show();
+          return;
+        }
         var response = parseKasirResponse(data);
         if (response && response.status === 'error') {
           showKasirNotif('danger', response.message);
@@ -537,6 +543,14 @@ $("#rincian").on("click",".hapus_detail", function(event){
         }
         refreshKasirRincian(baseURL, no_rawat);
         showKasirNotif('success', 'Data rincian rawat inap telah dihapus!');
+      }).fail(function(xhr) {
+        // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+        var pesan = 'Data rincian rawat inap gagal dihapus!';
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res && res.message) { pesan = res.message; }
+        } catch (e) {}
+        showKasirNotif('danger', $("<div>").text(pesan).html());
       });
     }
   });
@@ -567,6 +581,12 @@ $("#rincian").on("click",".hapus_obat", function(event){
         jam_peresepan: jam_peresepan,
         jml: jml
       } ,function(data) {
+
+        // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+        if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+          $('#notif').html(data).show();
+          return;
+        }
         var response = parseKasirResponse(data);
         if (response && response.status === 'error') {
           showKasirNotif('danger', response.message);
@@ -574,6 +594,14 @@ $("#rincian").on("click",".hapus_obat", function(event){
         }
         refreshKasirRincian(baseURL, no_rawat);
         showKasirNotif('success', 'Data rincian obat rawat inap telah dihapus!');
+      }).fail(function(xhr) {
+        // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+        var pesan = 'Data rincian obat rawat inap gagal dihapus!';
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res && res.message) { pesan = res.message; }
+        } catch (e) {}
+        showKasirNotif('danger', $("<div>").text(pesan).html());
       });
     }
   });
@@ -602,6 +630,12 @@ $("#rincian").on("click",".hapus_laboratorium", function(event){
         jam_rawat: jam_rawat,
         provider: provider
       } ,function(data) {
+
+        // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+        if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+          $('#notif').html(data).show();
+          return;
+        }
         var response = parseKasirResponse(data);
         if (response && response.status === 'error') {
           showKasirNotif('danger', response.message);
@@ -609,6 +643,14 @@ $("#rincian").on("click",".hapus_laboratorium", function(event){
         }
         refreshKasirRincian(baseURL, no_rawat);
         showKasirNotif('success', 'Data rincian laboratorium rawat inap telah dihapus!');
+      }).fail(function(xhr) {
+        // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+        var pesan = 'Data rincian laboratorium rawat inap gagal dihapus!';
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res && res.message) { pesan = res.message; }
+        } catch (e) {}
+        showKasirNotif('danger', $("<div>").text(pesan).html());
       });
     }
   });
@@ -637,6 +679,12 @@ $("#rincian").on("click",".hapus_radiologi", function(event){
         jam_rawat: jam_rawat,
         provider: provider
       } ,function(data) {
+
+        // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+        if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+          $('#notif').html(data).show();
+          return;
+        }
         var response = parseKasirResponse(data);
         if (response && response.status === 'error') {
           showKasirNotif('danger', response.message);
@@ -644,6 +692,14 @@ $("#rincian").on("click",".hapus_radiologi", function(event){
         }
         refreshKasirRincian(baseURL, no_rawat);
         showKasirNotif('success', 'Data rincian radiologi rawat inap telah dihapus!');
+      }).fail(function(xhr) {
+        // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+        var pesan = 'Data rincian radiologi rawat inap gagal dihapus!';
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res && res.message) { pesan = res.message; }
+        } catch (e) {}
+        showKasirNotif('danger', $("<div>").text(pesan).html());
       });
     }
   });
@@ -666,6 +722,12 @@ $("#rincian").on("click",".hapus_tambahan_biaya", function(event){
         nama_biaya: nama_biaya,
         no_rawat: no_rawat
       } ,function(data) {
+
+        // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+        if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+          $('#notif').html(data).show();
+          return;
+        }
         var response = parseKasirResponse(data);
         if (response && response.status === 'error') {
           showKasirNotif('danger', response.message);
@@ -673,6 +735,14 @@ $("#rincian").on("click",".hapus_tambahan_biaya", function(event){
         }
         refreshKasirRincian(baseURL, no_rawat);
         showKasirNotif('success', 'Data tambahan biaya rawat inap telah dihapus!');
+      }).fail(function(xhr) {
+        // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+        var pesan = 'Data tambahan biaya rawat inap gagal dihapus!';
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res && res.message) { pesan = res.message; }
+        } catch (e) {}
+        showKasirNotif('danger', $("<div>").text(pesan).html());
       });
     }
   });

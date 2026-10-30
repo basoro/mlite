@@ -127,10 +127,26 @@
       no_rawat: no_rawat,
       prioritas: prioritas
     } ,function(data) {
+      // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+      if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+        $('#notif').html(data).show();
+        return;
+      }
       $("#display_icd").show().load(baseURL + '/dokter_igd/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
       $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data rincian ICD 10 telah dihapus!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    }).fail(function(xhr) {
+      // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+      var pesan = 'Data rincian ICD 10 gagal dihapus!';
+      try {
+        var res = JSON.parse(xhr.responseText);
+        if (res && res.message) { pesan = res.message; }
+      } catch (e) {}
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      $("<div>").text(pesan).html()+
       "</div>").show();
     });
   });
@@ -147,10 +163,26 @@
       id: id,
       no_rawat: no_rawat
     } ,function(data) {
+      // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+      if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+        $('#notif').html(data).show();
+        return;
+      }
       $("#display_icd").show().load(baseURL + '/dokter_igd/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
       $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Mapping SNOMED-CT telah dihapus!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    }).fail(function(xhr) {
+      // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+      var pesan = 'Mapping SNOMED-CT gagal dihapus!';
+      try {
+        var res = JSON.parse(xhr.responseText);
+        if (res && res.message) { pesan = res.message; }
+      } catch (e) {}
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      $("<div>").text(pesan).html()+
       "</div>").show();
     });
   });
@@ -167,10 +199,26 @@
       id: id,
       no_rawat: no_rawat
     } ,function(data) {
+      // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+      if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+        $('#notif').html(data).show();
+        return;
+      }
       $("#display_icd").show().load(baseURL + '/dokter_igd/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
       $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Mapping SNOMED-CT ICD 9 telah dihapus!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    }).fail(function(xhr) {
+      // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+      var pesan = 'Mapping SNOMED-CT ICD 9 gagal dihapus!';
+      try {
+        var res = JSON.parse(xhr.responseText);
+        if (res && res.message) { pesan = res.message; }
+      } catch (e) {}
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      $("<div>").text(pesan).html()+
       "</div>").show();
     });
   });
@@ -189,10 +237,26 @@
       no_rawat: no_rawat,
       prioritas: prioritas
     } ,function(data) {
+      // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+      if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+        $('#notif').html(data).show();
+        return;
+      }
       $("#display_icd").show().load(baseURL + '/dokter_igd/displayicd?no_rawat=' + no_rawat + '&t=' + mlite.token);
       $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data rincian ICD 9 telah dihapus!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    }).fail(function(xhr) {
+      // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+      var pesan = 'Data rincian ICD 9 gagal dihapus!';
+      try {
+        var res = JSON.parse(xhr.responseText);
+        if (res && res.message) { pesan = res.message; }
+      } catch (e) {}
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      $("<div>").text(pesan).html()+
       "</div>").show();
     });
   });

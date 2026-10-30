@@ -291,6 +291,11 @@
       kd_jenis_prw: kd_jenis_prw,
       id_template: id_template
     } ,function(data) {
+      // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+      if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+        $('#notif').html(data).show();
+        return;
+      }
       var no_rawat = $('input:text[name=no_rawat]').val();
       var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
       $.post(url, {no_rawat : no_rawat,
@@ -298,6 +303,17 @@
         // tampilkan data
         $("#rincian").html(data).show();
       });
+    }).fail(function(xhr) {
+      // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+      var pesan = 'Detail permintaan laboratorium gagal dihapus!';
+      try {
+        var res = JSON.parse(xhr.responseText);
+        if (res && res.message) { pesan = res.message; }
+      } catch (e) {}
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      $("<div>").text(pesan).html()+
+      "</div>").show();
     });
     //$('#detailModal').modal('hidden');
     //$('body').removeClass('modal-open')

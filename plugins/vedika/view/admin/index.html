@@ -259,6 +259,14 @@
           } else {
             bootbox.alert(response);
           }
+        }).fail(function(xhr) {
+          // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+          var pesan = 'Hapus berkas gagal!';
+          try {
+            var res = JSON.parse(xhr.responseText);
+            if (res && res.message) { pesan = res.message; }
+          } catch (e) {}
+          bootbox.alert(pesan);
         });
       }
     });

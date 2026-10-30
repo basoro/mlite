@@ -128,6 +128,11 @@
           tgl_peresepan: tgl_peresepan,
           jam_peresepan: jam_peresepan
         } ,function(data) {
+          // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+          if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+            $('#notif').html(data).show();
+            return;
+          }
           var url = baseURL + '/dokter_igd/rincianeresep?t=' + mlite.token;
           $.post(url, {no_rawat : no_rawat,
           }, function(data) {
@@ -135,8 +140,19 @@
             $("#rincian").html(data).show();
           });
           $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-          "Data rincian rawat jalan telah dihapus!"+
+          "e-Resep telah dihapus!"+
           "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        }).fail(function(xhr) {
+          // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+          var pesan = 'e-Resep gagal dihapus!';
+          try {
+            var res = JSON.parse(xhr.responseText);
+            if (res && res.message) { pesan = res.message; }
+          } catch (e) {}
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          $("<div>").text(pesan).html()+
           "</div>").show();
         });
       }
@@ -162,6 +178,11 @@
           no_rawat: no_rawat,
           kd_jenis_prw: kd_jenis_prw
         } ,function(data) {
+          // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+          if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+            $('#notif').html(data).show();
+            return;
+          }
           var url = baseURL + '/dokter_igd/rincianeresep?t=' + mlite.token;
           $.post(url, {no_rawat : no_rawat,
           }, function(data) {
@@ -169,8 +190,19 @@
             $("#rincian_eresep").html(data).show();
           });
           $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-          "Data rincian rawat jalan telah dihapus!"+
+          "Obat pada e-Resep telah dihapus!"+
           "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        }).fail(function(xhr) {
+          // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+          var pesan = 'Obat pada e-Resep gagal dihapus!';
+          try {
+            var res = JSON.parse(xhr.responseText);
+            if (res && res.message) { pesan = res.message; }
+          } catch (e) {}
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          $("<div>").text(pesan).html()+
           "</div>").show();
         });
       }

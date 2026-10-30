@@ -199,6 +199,14 @@
           kode: kode,
           prioritas: prioritas
         } ,function(data) {
+          // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+          if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+            var $err = $('<div>').html(data);
+            var judul = $err.find('h4').text().trim();
+            var isi = $err.find('p').text().trim();
+            alert(judul || isi || 'Terjadi kesalahan pada server');
+            return;
+          }
           alert('Data prosedur ' + kode + ' telah dihapus!!');
           // Refresh tabel prosedur lalu update input prosedur di INACBGs
           $("#data_prosedur").show().load(baseURL + '/vedika/displayprosedur/' + status + '/{?=convertNoRawat($no_rawat)?}/?t=' + mlite.token, function() {
@@ -215,6 +223,14 @@
               inacbgsModal.find('input#procedure, input[name="procedure"]').val(joinedCodes);
             }
           });
+        }).fail(function(xhr) {
+          // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+          var pesan = 'Data prosedur gagal dihapus!';
+          try {
+            var res = JSON.parse(xhr.responseText);
+            if (res && res.message) { pesan = res.message; }
+          } catch (e) {}
+          alert(pesan);
         });
       }
     });

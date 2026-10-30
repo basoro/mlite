@@ -299,7 +299,7 @@ class Admin extends AdminModule
             $success = true;
           } catch (\Exception $e) {
             $this->db()->pdo()->rollBack();
-            if ($e->getCode() == '23000') {
+            if ($e->getCode() == '23000' && $retryCount < $maxRetries - 1) {
               $retryCount++;
               usleep(100000);
               continue;
@@ -412,7 +412,7 @@ class Admin extends AdminModule
             $success = true;
           } catch (\Exception $e) {
             $this->db()->pdo()->rollBack();
-            if ($e->getCode() == '23000') {
+            if ($e->getCode() == '23000' && $retryCount < $maxRetries - 1) {
               $retryCount++;
               usleep(100000);
               continue;
@@ -495,7 +495,7 @@ class Admin extends AdminModule
             $success = true;
           } catch (\Exception $e) {
             $this->db()->pdo()->rollBack();
-            if ($e->getCode() == '23000') {
+            if ($e->getCode() == '23000' && $retryCount < $maxRetries - 1) {
               $retryCount++;
               usleep(100000);
               continue;
@@ -555,7 +555,7 @@ class Admin extends AdminModule
             $success = true;
           } catch (\Exception $e) {
             $this->db()->pdo()->rollBack();
-            if ($e->getCode() == '23000') {
+            if ($e->getCode() == '23000' && $retryCount < $maxRetries - 1) {
               $retryCount++;
               usleep(100000);
               continue;

@@ -74,6 +74,11 @@ $("#form").on("click","#hapus", function(event){
       $.post(url, {
         stts: stts
       } ,function(data) {
+        // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+        if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+          $('#notif').html(data).show();
+          return;
+        }
         // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
         $("#form").hide();
         $("#tutupform").val("Buka Form");
@@ -82,6 +87,17 @@ $("#form").on("click","#hapus", function(event){
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
         "Data statuskerja telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }).fail(function(xhr) {
+        // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+        var pesan = 'Data statuskerja gagal dihapus!';
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res && res.message) { pesan = res.message; }
+        } catch (e) {}
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        $("<div>").text(pesan).html()+
         "</div>").show();
       });
     }

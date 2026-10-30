@@ -208,6 +208,14 @@
           kd_penyakit: kd_penyakit,
           prioritas: prioritas
         } ,function(data) {
+          // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+          if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+            var $err = $('<div>').html(data);
+            var judul = $err.find('h4').text().trim();
+            var isi = $err.find('p').text().trim();
+            alert(judul || isi || 'Terjadi kesalahan pada server');
+            return;
+          }
           // tampilkan notif
           alert('Data diagnosa ' + kd_penyakit + ' telah dihapus!!');
 
@@ -232,6 +240,14 @@
           var status = $('input:hidden[name=status]').val();
           $("#data_diagnosa").show().load(baseURL + '/vedika/displaydiagnosa/' + status + '/{?=convertNoRawat($no_rawat)?}/?t=' + mlite.token);
 
+        }).fail(function(xhr) {
+          // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+          var pesan = 'Data diagnosa gagal dihapus!';
+          try {
+            var res = JSON.parse(xhr.responseText);
+            if (res && res.message) { pesan = res.message; }
+          } catch (e) {}
+          alert(pesan);
         });
       }
     });

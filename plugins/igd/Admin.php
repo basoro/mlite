@@ -368,7 +368,7 @@ class Admin extends AdminModule
           }
         } catch (\Exception $e) {
           $this->db()->pdo()->rollBack();
-          if ($e->getCode() == '23000' || $e->getCode() == 1) { // 1 is for custom error above
+          if (($e->getCode() == '23000' || $e->getCode() == 1) && $retryCount < $maxRetries - 1) { // 1 is for custom error above
             $retryCount++;
             usleep(100000);
             continue;
@@ -546,7 +546,7 @@ class Admin extends AdminModule
             $success = true;
           } catch (\Exception $e) {
             $this->db()->pdo()->rollBack();
-            if ($e->getCode() == '23000') {
+            if ($e->getCode() == '23000' && $retryCount < $maxRetries - 1) {
               $retryCount++;
               usleep(100000);
               continue;

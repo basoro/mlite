@@ -853,6 +853,11 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   informasi_tambahan : informasi_tambahan,
   diagnosa_klinis      : diagnosa_klinis
   }, function(data) {
+    // server mengirim HTML alert ketika penyimpanan gagal (status tetap 200)
+    if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+      $('#notif').html(data).show();
+      return;
+    }
     console.log(data);
     if(typeof ws != 'undefined' && typeof ws.readyState != 'undefined' && ws.readyState == 1){
       if(kat == 'obat' || kat == 'racikan') {
@@ -909,6 +914,17 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+    "</div>").show();
+  }).fail(function(xhr) {
+    // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+    var pesan = 'Data rincian gagal disimpan!';
+    try {
+      var res = JSON.parse(xhr.responseText);
+      if (res && res.message) { pesan = res.message; }
+    } catch (e) {}
+    $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+    "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+    $("<div>").text(pesan).html()+
     "</div>").show();
   });
 });
@@ -1160,6 +1176,11 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
   });
 
   $.post(url_save, data, function(data) {
+    // server mengirim HTML alert ketika penyimpanan gagal (status tetap 200)
+    if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+      $('#notif').html(data).show();
+      return;
+    }
     //alert(data);
     //if(data == 'ErrorError') {
     //  alert('Stok tidak mencukupi pada satu atau lebih obat.');
@@ -1175,6 +1196,17 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
       "</div>").show();
 
     //}
+  }).fail(function(xhr) {
+    // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+    var pesan = 'Resep gagal disimpan!';
+    try {
+      var res = JSON.parse(xhr.responseText);
+      if (res && res.message) { pesan = res.message; }
+    } catch (e) {}
+    $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+    "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+    $("<div>").text(pesan).html()+
+    "</div>").show();
   });
 
 });

@@ -410,6 +410,24 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postHapusResep()
+    {
+      if(isset($_POST['kd_jenis_prw'])) {
+        $this->db('resep_dokter')
+        ->where('no_resep', $_POST['no_resep'])
+        ->where('kode_brng', $_POST['kd_jenis_prw'])
+        ->delete();
+      } else {
+        $this->db('resep_obat')
+        ->where('no_resep', $_POST['no_resep'])
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('tgl_peresepan', $_POST['tgl_peresepan'])
+        ->where('jam_peresepan', $_POST['jam_peresepan'])
+        ->delete();
+      }
+      exit();
+    }
+
     public function getBookingOperasi()
     {
       $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));

@@ -133,12 +133,29 @@ $("#form").on("click","#hapus", function(event){
       $.post(url, {
         no_rawat: no_rawat
       } ,function(data) {
+
+        // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+        if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+          $('#notif').html(data).show();
+          return;
+        }
         // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
         $("#display").load(baseURL + '/operasi/display?t=' + mlite.token);
         bersih();
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
         "Data pasien telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }).fail(function(xhr) {
+        // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+        var pesan = 'Data pasien gagal dihapus!';
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res && res.message) { pesan = res.message; }
+        } catch (e) {}
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        $("<div>").text(pesan).html()+
         "</div>").show();
       });
     }
@@ -274,6 +291,12 @@ $("#rincian").on("click",".hapus_detail", function(event){
         kd_obat: kd_obat,
         tanggal: tanggal
       } ,function(data) {
+
+        // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+        if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+          $('#notif').html(data).show();
+          return;
+        }
         var url = baseURL + '/operasi/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
@@ -281,8 +304,19 @@ $("#rincian").on("click",".hapus_detail", function(event){
           $("#rincian").html(data).show();
         });
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data rincian rawat jalan telah dihapus!"+
+        "Obat operasi telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }).fail(function(xhr) {
+        // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+        var pesan = 'Obat operasi gagal dihapus!';
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res && res.message) { pesan = res.message; }
+        } catch (e) {}
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        $("<div>").text(pesan).html()+
         "</div>").show();
       });
     }
@@ -310,6 +344,12 @@ $("#rincian").on("click",".hapus_resep_obat", function(event){
         tgl_peresepan: tgl_peresepan,
         jam_peresepan: jam_peresepan
       } ,function(data) {
+
+        // server mengirim HTML alert ketika penghapusan gagal (status tetap 200)
+        if (typeof data === 'string' && data.indexOf('alert-danger') !== -1) {
+          $('#notif').html(data).show();
+          return;
+        }
         var url = baseURL + '/operasi/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
@@ -317,8 +357,19 @@ $("#rincian").on("click",".hapus_resep_obat", function(event){
           $("#rincian").html(data).show();
         });
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data rincian rawat jalan telah dihapus!"+
+        "e-Resep telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }).fail(function(xhr) {
+        // permintaan ditolak server (mis. CSRF 403) atau error jaringan
+        var pesan = 'e-Resep gagal dihapus!';
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (res && res.message) { pesan = res.message; }
+        } catch (e) {}
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        $("<div>").text(pesan).html()+
         "</div>").show();
       });
     }
