@@ -2,6 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/font-awesome.css">
     <style>
       body{
         margin: 20px;
@@ -44,6 +45,7 @@ Ralan :
    class="btn btn-primary">
    <i class="fa fa-pencil"></i> Tanda Tangani {?=parseUrl(3)?}
 </button>
+<button type="button" class="btn btn-danger" id="btn_verifikasi_klaim" data-no_rawat="{?=parseUrl(3)?}"><i class="fa fa-magic"></i> Verifikasi Klaim AI</button>
   <br><br>
   {if: isset($print_sep.bpjs_prb)}
   <fieldset style="page-break-before:always;">
@@ -2024,6 +2026,58 @@ Ralan :
   		text	: "Kasir: KASIR {if: isset($print_sep.nama_instansi)}{?=isset_or($print_sep.nama_instansi)?}{/if}"
   	});
   </script>
+<!-- Modal Verifikasi Klaim AI: loader pengiriman + detail hasil analisis -->
+<div id="vkLoaderModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:rgba(0,0,0,.55);">
+  <div style="background:#fff; width:440px; max-width:92%; margin:110px auto 0; border-radius:6px; box-shadow:0 4px 18px rgba(0,0,0,.3); padding:26px 22px; text-align:center;">
+    <div class="spinner-border text-primary" style="width:3rem; height:3rem;" role="status">
+      <span class="sr-only">Memuat...</span>
+    </div>
+    <h4 style="margin:16px 0 6px;">Verifikasi Klaim AI</h4>
+    <p class="text-muted" id="vkLoaderPesan" style="margin-bottom:6px;">Mengirim bundle klaim ke OpenAI&hellip;</p>
+    <p class="text-muted" id="vkLoaderWaktu" style="margin-bottom:18px;"><small>0 detik</small></p>
+    <button type="button" class="btn btn-default btn-sm" id="vkLoaderBatal">Batalkan</button>
+  </div>
+</div>
+
+<div id="vkHasilModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:rgba(0,0,0,.5);">
+  <div style="background:#fff; width:920px; max-width:96%; margin:30px auto; border-radius:6px; box-shadow:0 4px 18px rgba(0,0,0,.3); overflow:hidden; text-align:left; max-height:92vh; display:flex; flex-direction:column;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #ddd; flex:0 0 auto;">
+      <strong><i class="fa fa-magic"></i> Hasil Analisis Klaim AI (OpenAI)</strong>
+      <button type="button" class="btn btn-default btn-sm" id="vkHasilTutup">&times; Tutup</button>
+    </div>
+    <div id="vkHasilKonten" style="padding:15px; overflow:auto; flex:1 1 auto;">Memuat&hellip;</div>
+  </div>
+</div>
+
+<style>
+/* Detail hasil analisis memakai markup Bootstrap 3 (panel/label/dl-horizontal),
+   sedangkan halaman PDF ini memakai Bootstrap 4 — dipetakan di dalam modal ini saja. */
+#vkHasilKonten .panel { border:1px solid #e3e3e3; border-radius:4px; margin-bottom:15px; background:#fff; }
+#vkHasilKonten .panel-heading { padding:10px 15px; border-bottom:1px solid #e3e3e3; background:#f5f5f5; border-radius:3px 3px 0 0; font-weight:bold; }
+#vkHasilKonten .panel-body { padding:15px; }
+#vkHasilKonten .panel:last-child { margin-bottom:0; }
+#vkHasilKonten .label { display:inline; padding:.25em .6em; font-size:75%; font-weight:700; line-height:1; color:#fff; border-radius:3px; white-space:nowrap; background:#777; }
+#vkHasilKonten .label-success { background:#5cb85c; }
+#vkHasilKonten .label-warning { background:#f0ad4e; }
+#vkHasilKonten .label-danger { background:#d9534f; }
+#vkHasilKonten .label-info { background:#5bc0de; }
+#vkHasilKonten .label-default { background:#777; }
+#vkHasilKonten .dl-horizontal dt { float:left; width:170px; clear:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#vkHasilKonten .dl-horizontal dd { margin-left:185px; margin-bottom:5px; }
+#vkHasilKonten .btn-xs { padding:2px 7px; font-size:12px; line-height:1.5; border-radius:3px; }
+#vkHasilKonten .table { width:100%; margin-bottom:15px; border-collapse:collapse; }
+#vkHasilKonten .table > thead > tr > th { border-bottom:2px solid #ddd; padding:8px; text-align:left; vertical-align:bottom; }
+#vkHasilKonten .table > tbody > tr > td { border-top:1px solid #ddd; padding:8px; vertical-align:top; }
+#vkHasilKonten .table-striped > tbody > tr:nth-of-type(odd) { background-color:#f9f9f9; }
+#vkHasilKonten pre { display:block; padding:9px; margin:0 0 10px; font-size:13px; line-height:1.45; background:#f5f5f5; border:1px solid #ccc; border-radius:4px; overflow:auto; white-space:pre-wrap; word-break:break-word; }
+#vkHasilKonten .alert { padding:12px 15px; border:1px solid transparent; border-radius:4px; margin-bottom:15px; }
+#vkHasilKonten .alert-danger { color:#a94442; background-color:#f2dede; border-color:#ebccd1; }
+#vkHasilKonten .alert-info { color:#31708f; background-color:#d9edf7; border-color:#bce8f1; }
+#vkHasilKonten .text-danger { color:#a94442; }
+@media (max-width: 767px) { #vkHasilKonten .hidden-xs { display:none !important; } }
+@media print { #vkLoaderModal, #vkHasilModal { display:none !important; } }
+</style>
+
 <!-- Modal e-Signature -->
 <div id="signModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9998; background:rgba(0,0,0,.5);">
   <div style="background:#fff; width:680px; max-width:94%; margin:30px auto; border-radius:6px; box-shadow:0 4px 18px rgba(0,0,0,.3); overflow:hidden; text-align:left;">
@@ -2060,6 +2114,126 @@ function bukaHasilPdf(url) {
         document.getElementById('signModal').style.display = 'block';
     }
 }
+</script>
+<script>
+/* Verifikasi Klaim AI dari halaman PDF klaim.
+   Kirim bundle ke OpenAI memakai endpoint modul Verifikasi Klaim
+   (/verifikasi_klaim/kirim?provider=openai), tampilkan loader selama proses,
+   lalu muat detail hasil analisis (/verifikasi_klaim/detail) ke modal. */
+var VK_URL_KIRIM = "{?=url([ADMIN, 'verifikasi_klaim', 'kirim'])?}";
+var VK_URL_DETAIL = "{?=url([ADMIN, 'verifikasi_klaim', 'detail'])?}";
+var VK_NO_RAWAT = "{?=parseUrl(3)?}";
+var vkXhr = null;
+var vkTimer = null;
+var vkDetik = 0;
+
+function vkEscape(t) {
+    return String(t === null || t === undefined ? "" : t)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function vkLoaderBuka() {
+    vkDetik = 0;
+    document.getElementById("vkLoaderPesan").textContent = "Mengirim bundle klaim ke OpenAI...";
+    document.getElementById("vkLoaderWaktu").innerHTML = "<small>0 detik</small>";
+    document.getElementById("vkLoaderModal").style.display = "block";
+    if (vkTimer) { clearInterval(vkTimer); }
+    vkTimer = setInterval(function () {
+        vkDetik++;
+        document.getElementById("vkLoaderWaktu").innerHTML = "<small>" + vkDetik +
+            " detik — analisis AI bisa memakan waktu sampai 60 detik, mohon tunggu...</small>";
+    }, 1000);
+}
+
+function vkLoaderTutup(batal) {
+    if (vkTimer) { clearInterval(vkTimer); vkTimer = null; }
+    document.getElementById("vkLoaderModal").style.display = "none";
+    if (batal && vkXhr) { try { vkXhr.abort(); } catch (e) {} }
+    vkXhr = null;
+}
+
+function vkHasilBuka(html) {
+    document.getElementById("vkHasilKonten").innerHTML = html;
+    document.getElementById("vkHasilModal").style.display = "block";
+}
+
+function vkHasilError(pesan) {
+    vkLoaderTutup(true);
+    document.getElementById("vkHasilKonten").innerHTML =
+        "<div class=\"alert alert-danger\" style=\"margin-bottom:0\"><strong>Verifikasi klaim gagal.</strong> " +
+        vkEscape(pesan) + "</div>";
+    document.getElementById("vkHasilModal").style.display = "block";
+}
+
+/* Respons bisa berupa objek JSON, string JSON, atau halaman HTML (403/404/500). */
+function vkParse(data) {
+    if (typeof data === "string") {
+        if (data.indexOf("alert-danger") !== -1) {
+            return { status: "error", message: "Server menolak permintaan (akses modul Verifikasi Klaim ditolak). Muat ulang halaman lalu coba lagi." };
+        }
+        try { var o = JSON.parse(data); return (o && o.status) ? o : null; } catch (e) { return null; }
+    }
+    if (data && data.status) { return data; }
+    return null;
+}
+
+function vkPesanXhr(xhr, pesanDefault) {
+    if (xhr && xhr.responseText) {
+        try { var o = JSON.parse(xhr.responseText); if (o && o.message) { return o.message; } } catch (e) {}
+        if (xhr.responseText.indexOf("alert-danger") !== -1) {
+            return pesanDefault + " Server menolak permintaan.";
+        }
+    }
+    return pesanDefault + (xhr && xhr.status ? " (HTTP " + xhr.status + ")" : "");
+}
+
+jQuery(document).on("click", "#btn_verifikasi_klaim", function () {
+    var noRawat = jQuery(this).attr("data-no_rawat") || VK_NO_RAWAT;
+    if (!noRawat) {
+        vkHasilError("Nomor rawat tidak ditemukan pada halaman ini.");
+        return;
+    }
+    vkLoaderBuka();
+    vkXhr = jQuery.post(VK_URL_KIRIM, { no_rawat: noRawat, provider: "openai" }, function (data) {
+        vkXhr = null;
+        var res = vkParse(data);
+        if (!res) {
+            vkHasilError("Respons server tidak valid saat mengirim klaim. Muat ulang halaman lalu coba lagi.");
+            return;
+        }
+        if (res.status !== "success") {
+            vkHasilError(res.message || "Pengiriman klaim ke OpenAI gagal.");
+            return;
+        }
+        document.getElementById("vkLoaderPesan").textContent = "Analisis selesai, memuat detail hasil...";
+        vkXhr = jQuery.post(VK_URL_DETAIL, { id: res.id }, function (html) {
+            vkXhr = null;
+            if (typeof html !== "string") {
+                vkHasilError((html && html.message) || "Detail hasil analisis tidak dapat dimuat.");
+                return;
+            }
+            if (html.length < 40 || html.indexOf("panel") === -1) {
+                vkHasilError("Detail hasil analisis tidak dapat dimuat.");
+                return;
+            }
+            vkLoaderTutup(false);
+            vkHasilBuka(html);
+        }).fail(function (xhr) {
+            vkXhr = null;
+            if (xhr && xhr.statusText === "abort") { return; }
+            vkHasilError(vkPesanXhr(xhr, "Memuat detail hasil analisis gagal!"));
+        });
+    }).fail(function (xhr) {
+        vkXhr = null;
+        if (xhr && xhr.statusText === "abort") { return; }
+        vkHasilError(vkPesanXhr(xhr, "Pengiriman klaim ke OpenAI gagal!"));
+    });
+});
+
+document.getElementById("vkLoaderBatal").addEventListener("click", function () { vkLoaderTutup(true); });
+document.getElementById("vkHasilTutup").addEventListener("click", function () {
+    document.getElementById("vkHasilModal").style.display = "none";
+});
 </script>
 </body>
 </html>

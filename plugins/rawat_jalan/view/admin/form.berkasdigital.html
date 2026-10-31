@@ -66,6 +66,29 @@
   </div>
 </div>
 <script type="text/javascript">
+  function pesanGagalBerkasDigital(xhr, status){
+    var pesan = 'Gagal mengunggah berkas digital.';
+    if (status === 'timeout') {
+      pesan = 'Waktu unggah habis. Coba lagi dengan berkas lebih kecil atau periksa koneksi/jaringan.';
+    } else if (xhr.status === 403) {
+      pesan = 'Akses ditolak (403). Muat ulang halaman karena token sesi bisa sudah tidak valid, atau unggahan diblokir WAF/firewall.';
+    } else if (xhr.status === 413) {
+      pesan = 'Ukuran berkas terlalu besar (413). Perkecil berkas atau minta admin memperbesar batas upload server.';
+    } else if (xhr.status >= 500) {
+      pesan = 'Kesalahan server saat menyimpan berkas (kode ' + xhr.status + ').';
+    } else if (xhr.status > 0) {
+      pesan = 'Kesalahan saat mengunggah (kode ' + xhr.status + ').';
+    }
+    var detail = $.trim(String(xhr.responseText || ''));
+    if (detail) {
+      var teks = $.trim(detail.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' '));
+      if (teks) {
+        pesan += ' Detail: ' + teks.substring(0, 300);
+      }
+    }
+    return '<div class="alert alert-danger">' + pesan + '</div>';
+  }
+
   $("#form_berkasdigital").on("click", "#simpan_berkas_digital", function(event){
       var property = document.getElementById('berkas').files[0];
       var image_name = property.name;
@@ -87,6 +110,7 @@
         contentType:false,
         cache:false,
         processData:false,
+        timeout:60000,
         beforeSend:function(){
           $('#berkasdigitalstatus').html('Loading......');
         },
@@ -102,6 +126,9 @@
             $("#berkasdigital").html(data).show();
           });
 
+        },
+        error:function(xhr, status, errorThrown){
+          $('#berkasdigitalstatus').html(pesanGagalBerkasDigital(xhr, status));
         }
       });
 

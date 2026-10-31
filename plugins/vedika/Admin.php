@@ -2357,7 +2357,7 @@ class Admin extends AdminModule
     }
   }
 
-  public function getPDF($id)
+  public function getPdfData($id)
   {
     $berkas_digital = $this->db('berkas_digital_perawatan')
       ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
@@ -2378,7 +2378,7 @@ class Admin extends AdminModule
     $rows = [];
     $total = '';
 
-    $this->tpl->set('total', $total);
+    $data['total'] = $total;
 
     $instansi['logo'] = $this->settings->get('settings.logo');
     $instansi['nama_instansi'] = $this->settings->get('settings.nama_instansi');
@@ -2388,13 +2388,13 @@ class Admin extends AdminModule
     $instansi['nomor_telepon'] = $this->settings->get('settings.nomor_telepon');
     $instansi['email'] = $this->settings->get('settings.email');
 
-    $this->tpl->set('billing', $rows);
+    $data['billing'] = $rows;
 
     /* Menggunakan billing bawaan mLITE */
 
     if($this->settings->get('vedika.billing') == 'mlite') {
         $settings = $this->settings('settings');
-        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+        $data['settings'] = $this->tpl->noParse_array(htmlspecialchars_array($settings));
 
        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
        if($reg_periksa['status_lanjut'] == 'Ralan') {
@@ -2597,13 +2597,13 @@ class Admin extends AdminModule
 
        }
 
-       $this->tpl->set('billing', $result_detail);
+       $data['billing'] = $result_detail;
 
     }
 
     /* End menggunakan billing bawaan mlITE */
 
-    $this->tpl->set('instansi', $instansi);
+    $data['instansi'] = $instansi;
 
     $print_sep = array();
     if (!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
@@ -2631,10 +2631,10 @@ class Admin extends AdminModule
     }
     $print_sep['nama_instansi'] = $this->settings->get('settings.nama_instansi');
     $print_sep['logoURL'] = url(MODULES . '/vclaim/img/bpjslogo.png');
-    $this->tpl->set('print_sep', $print_sep);
+    $data['print_sep'] = $print_sep;
 
     $cek_spri = $this->db('bridging_surat_pri_bpjs')->where('no_rawat', $this->revertNorawat($id))->oneArray();
-    $this->tpl->set('cek_spri', $cek_spri);
+    $data['cek_spri'] = $cek_spri;
 
     $print_spri = array();
     if (!empty($this->_getSPRIInfo('no_surat', $no_rawat))) {
@@ -2642,7 +2642,7 @@ class Admin extends AdminModule
     }
     $print_spri['nama_instansi'] = $this->settings->get('settings.nama_instansi');
     $print_spri['logoURL'] = url(MODULES . '/vclaim/img/bpjslogo.png');
-    $this->tpl->set('print_spri', $print_spri);
+    $data['print_spri'] = $print_spri;
 
     $resume_pasien = $this->db('resume_pasien')
       ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
@@ -2654,7 +2654,7 @@ class Admin extends AdminModule
         ->where('no_rawat', $this->revertNorawat($id))
         ->oneArray();
     }
-    $this->tpl->set('resume_pasien', $resume_pasien);
+    $data['resume_pasien'] = $resume_pasien;
 
     $pasien = $this->db('pasien')
       ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')
@@ -2788,36 +2788,45 @@ class Admin extends AdminModule
       ->where('no_rawat', $this->revertNorawat($id))
       ->oneArray();
 
-    $this->tpl->set('pasien', $pasien);
-    $this->tpl->set('reg_periksa', $reg_periksa);
-    //$this->tpl->set('rujukan_internal', $rujukan_internal);
-    $this->tpl->set('dpjp_ranap', $dpjp_ranap);
-    $this->tpl->set('diagnosa_pasien', $diagnosa_pasien);
-    $this->tpl->set('prosedur_pasien', $prosedur_pasien);
-    $this->tpl->set('pemeriksaan_ralan', $pemeriksaan_ralan);
-    $this->tpl->set('pemeriksaan_ranap', $pemeriksaan_ranap);
-    $this->tpl->set('rawat_jl_dr', $rawat_jl_dr);
-    $this->tpl->set('rawat_jl_pr', $rawat_jl_pr);
-    $this->tpl->set('rawat_jl_drpr', $rawat_jl_drpr);
-    $this->tpl->set('rawat_inap_dr', $rawat_inap_dr);
-    $this->tpl->set('rawat_inap_pr', $rawat_inap_pr);
-    $this->tpl->set('rawat_inap_drpr', $rawat_inap_drpr);
-    $this->tpl->set('kamar_inap', $kamar_inap);
-    $this->tpl->set('operasi', $operasi);
-    $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
-    $this->tpl->set('hasil_radiologi', $hasil_radiologi);
-    //$this->tpl->set('saran_rad', $saran_rad);
-    $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
-    $this->tpl->set('pemberian_obat', $pemberian_obat);
-    $this->tpl->set('obat_operasi', $obat_operasi);
-    $this->tpl->set('resep_pulang', $resep_pulang);
-    $this->tpl->set('laporan_operasi', $laporan_operasi);
+    $data['pasien'] = $pasien;
+    $data['reg_periksa'] = $reg_periksa;
+    //$data['rujukan_internal'] = $rujukan_internal;
+    $data['dpjp_ranap'] = $dpjp_ranap;
+    $data['diagnosa_pasien'] = $diagnosa_pasien;
+    $data['prosedur_pasien'] = $prosedur_pasien;
+    $data['pemeriksaan_ralan'] = $pemeriksaan_ralan;
+    $data['pemeriksaan_ranap'] = $pemeriksaan_ranap;
+    $data['rawat_jl_dr'] = $rawat_jl_dr;
+    $data['rawat_jl_pr'] = $rawat_jl_pr;
+    $data['rawat_jl_drpr'] = $rawat_jl_drpr;
+    $data['rawat_inap_dr'] = $rawat_inap_dr;
+    $data['rawat_inap_pr'] = $rawat_inap_pr;
+    $data['rawat_inap_drpr'] = $rawat_inap_drpr;
+    $data['kamar_inap'] = $kamar_inap;
+    $data['operasi'] = $operasi;
+    $data['tindakan_radiologi'] = $tindakan_radiologi;
+    $data['hasil_radiologi'] = $hasil_radiologi;
+    //$data['saran_rad'] = $saran_rad;
+    $data['pemeriksaan_laboratorium'] = $pemeriksaan_laboratorium;
+    $data['pemberian_obat'] = $pemberian_obat;
+    $data['obat_operasi'] = $obat_operasi;
+    $data['resep_pulang'] = $resep_pulang;
+    $data['laporan_operasi'] = $laporan_operasi;
 
-    $this->tpl->set('berkas_digital', $berkas_digital);
-    $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
-    $this->tpl->set('gambar_radiologi', $this->db('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
-    $this->tpl->set('vedika', htmlspecialchars_array($this->settings('vedika')));
-    $this->tpl->set('pengaturan_billing', $this->settings->get('vedika.billing'));
+    $data['berkas_digital'] = $berkas_digital;
+    $data['hasil_radiologi'] = $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray();
+    $data['gambar_radiologi'] = $this->db('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray();
+    $data['vedika'] = htmlspecialchars_array($this->settings('vedika'));
+    $data['pengaturan_billing'] = $this->settings->get('vedika.billing');
+    return $data;
+  }
+
+  public function getPDF($id)
+  {
+    $data = $this->getPdfData($id);
+    foreach ($data as $key => $value) {
+      $this->tpl->set($key, $value);
+    }
     echo $this->tpl->draw(MODULES . '/vedika/view/admin/pdf.html', true);
     exit();
   }
