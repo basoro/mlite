@@ -68,7 +68,7 @@ define('WEBAPPS_URL', env('APPURL') ?: 'http://localhost:8000/uploads'); // Sesu
 define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
-define('MULTI_APP', env('MULTIAPP') ?: 'false');
+define('MULTI_APP', in_array(strtolower(trim((string) env('MULTIAPP'))), ['1', 'true', 'on', 'yes'], true));
 define('MULTI_APP_REDIRECT', env('MULTIAPP_REDIRECT') ?: '');
 
 // Admin cat name
