@@ -167,30 +167,59 @@ class QueryWrapper
             return $this;
         }
 
+        // Number of arguments the caller really passed. This is what separates
+        // the documented shorthand where($value) from where($column, null).
+        $argc = func_num_args();
+
         if ($operator === null) {
-            $value = $column;
-            $column = static::$options['primary_key'];
-            $operator = '=';
+            if ($argc === 1) {
+                // Shorthand: where($value) => <primary_key> = $value
+                $value = $column;
+                $column = static::$options['primary_key'];
+                $operator = '=';
+            } else {
+                // where($column, null): explicit NULL value. Keep the column and
+                // build "IS NULL" instead of silently falling back to the primary
+                // key — many tables (e.g. mutasi_berkas) have no 'id' column and
+                // that fallback produced SQLSTATE 42S22 "Unknown column 'id'".
+                $operator = 'IS NULL';
+            }
         } elseif ($value === null) {
-            $value = $operator;
-            $operator = '=';
+            if ($argc <= 2) {
+                // where($column, $value): the second argument is the value
+                $value = $operator;
+                $operator = '=';
+            } elseif ($operator === '=') {
+                // where($column, '=', null) => column IS NULL
+                $operator = 'IS NULL';
+            }
+            // Any other operator keeps the NULL value: column <op> NULL never matches
         }
 
-        if (is_array($value) && !empty($value)) {
-            foreach ($value as $v) {
-                array_push($this->condition_binds, $v);
-            }
-            $valueCount = count($value);
-            $value = '(' . implode(',', array_fill(0, $valueCount, '?')) . ')';
+        if ($operator === 'IS NULL') {
+            $condition = "$column IS NULL";
         } else {
-            array_push($this->condition_binds, $value);
-            $value = "?";
+            if (is_array($value) && !empty($value)) {
+                foreach ($value as $v) {
+                    array_push($this->condition_binds, $v);
+                }
+                $valueCount = count($value);
+                $value = '(' . implode(',', array_fill(0, $valueCount, '?')) . ')';
+            } elseif ($value === null && ($operator === 'IN' || $operator === 'NOT IN')) {
+                // "column IN ?" with a NULL bind is invalid SQL — use a literal
+                $value = '(NULL)';
+            } else {
+                array_push($this->condition_binds, $value);
+                $value = "?";
+            }
+
+            $condition = "$column $operator $value";
         }
 
         if (empty($this->conditions) || strpos(end($this->conditions), '(') !== false) {
-            array_push($this->conditions, "$column $operator $value");
+            array_push($this->conditions, $condition);
         } else {
-            array_push($this->conditions, "$ao $column $operator $value");
+            array_push($this->conditions, "$ao $condition");
         }
 
         return $this;
@@ -198,6 +227,21 @@ class QueryWrapper
 
     public function orWhere($column, $operator = null, $value = null)
     {
+        // Preserve the original argument count so where() can still tell the
+        // shorthand orWhere($value) from orWhere($column, null).
+        $argc = func_num_args();
+        if ($argc === 1) {
+            // Shorthand: OR <primary_key> = $column
+            return $this->where(static::$options['primary_key'], '=', $column, 'OR');
+        }
+        if ($argc === 2) {
+            if ($operator === null) {
+                // orWhere($column, null) => OR column IS NULL
+                return $this->where($column, null, null, 'OR');
+            }
+            // orWhere($column, $value) => OR column = $value
+            return $this->where($column, '=', $operator, 'OR');
+        }
         return $this->where($column, $operator, $value, 'OR');
     }
 
@@ -417,7 +461,13 @@ class QueryWrapper
     public function oneArray($column = null, $value = null)
     {
         if ($column !== null) {
-            $this->where($column, $value);
+            // Keep the documented oneArray($id) shorthand: a single argument has
+            // to reach where() as where($value), not as where($column, null).
+            if (func_num_args() < 2) {
+                $this->where($column);
+            } else {
+                $this->where($column, $value);
+            }
         }
         $st = $this->_build();
         //return $st->fetch(\PDO::FETCH_ASSOC);
@@ -427,7 +477,11 @@ class QueryWrapper
     public function oneObject($column = null, $value = null)
     {
         if ($column !== null) {
-            $this->where($column, $value);
+            if (func_num_args() < 2) {
+                $this->where($column);
+            } else {
+                $this->where($column, $value);
+            }
         }
         $st = $this->_build();
         return $st->fetch(\PDO::FETCH_OBJ);
@@ -436,7 +490,11 @@ class QueryWrapper
     public function oneJson($column = null, $value = null)
     {
         if ($column !== null) {
-            $this->where($column, $value);
+            if (func_num_args() < 2) {
+                $this->where($column);
+            } else {
+                $this->where($column, $value);
+            }
         }
         $row = $this->oneArray();
         return json_encode($row, static::$options['json_options']);
@@ -456,7 +514,11 @@ class QueryWrapper
     public function delete($column = null, $value = null)
     {
         if ($column !== null) {
-            $this->where($column, $value);
+            if (func_num_args() < 2) {
+                $this->where($column);
+            } else {
+                $this->where($column, $value);
+            }
         }
         $st = $this->_build('delete');
 

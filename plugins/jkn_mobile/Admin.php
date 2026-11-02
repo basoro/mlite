@@ -161,8 +161,14 @@ class Admin extends AdminModule
         $url = url([ADMIN, 'vclaim', 'caribynokartu', 'PCare', $no_peserta, 'yes']);
       } else {
         $carinorkmmedis = $this->db('pasien')->select('no_rkm_medis')->where('no_peserta',$no_peserta)->oneArray();
-        $no_rawat = $this->db('reg_periksa')->where('no_rkm_medis',$carinorkmmedis['no_rkm_medis'])->where('tgl_registrasi',$tgl)->oneArray();
-        $url = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($no_rawat['no_rawat']).''.$no_rawat['no_reg'];
+        $no_rawat = [];
+        if(!empty($carinorkmmedis['no_rkm_medis'])) {
+          $no_rawat = $this->db('reg_periksa')->where('no_rkm_medis',$carinorkmmedis['no_rkm_medis'])->where('tgl_registrasi',$tgl)->oneArray();
+        }
+        $url = '';
+        if(!empty($no_rawat['no_rawat'])) {
+          $url = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($no_rawat['no_rawat']).''.$no_rawat['no_reg'];
+        }
       }
       echo $this->draw('form.onsite.html', ['no_peserta' => htmlspecialchars_array($no_peserta), 'json' => htmlspecialchars_array($url) , 'jenispasien' => htmlspecialchars_array($jenispasien)]);
       exit();
@@ -387,7 +393,9 @@ class Admin extends AdminModule
 
       $rows = [];
       foreach ($query as $q) {
-          $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', '<>', 'Batal')->oneArray();
+          // Pakai no_rawat dari baris query utama ($q), karena query cek ulang dengan
+          // filter stts <> 'Batal' bisa kosong (registrasi batal) dan menyebabkan
+          // undefined key + where() jatuh ke primary key 'id' pada tabel tanpa kolom id.
           $reg_periksa2 = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
           $batal = '0000-00-00 00:00:00';
           if($reg_periksa2) {
@@ -397,11 +405,11 @@ class Admin extends AdminModule
           if(!$mlite_antrian_referensi) {
               $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
           }
-          $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
-          $mutasi_berkas2 = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
-          $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
-          $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
-          $resep_obat2 = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+          $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $q['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
+          $mutasi_berkas2 = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $q['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
+          $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $q['no_rawat'])->oneArray();
+          $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $q['no_rawat'])->oneArray();
+          $resep_obat2 = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $q['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
 
           $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('postdate', $date)->where('type','Loket')->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
           $task1 = '';
@@ -503,6 +511,10 @@ class Admin extends AdminModule
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->where('no_rawat', $no_rawat)
         ->oneArray();
+      if (empty($pasien['no_rawat'])) {
+        echo 'Data registrasi tidak ditemukan';
+        exit();
+      }
       $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $pasien['tgl_registrasi'])->oneArray();
       $nomor_referensi = '';
       $kode_booking = '';
@@ -535,7 +547,17 @@ class Admin extends AdminModule
       $taskid['7'] = date('Y-m-d H:i:s', isset_or($taskid7['waktu'], strtotime($datetime_reg_periksa) * 1000) / 1000 );
       
       $taskid99 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '99')->oneArray();
-      $taskid['99'] = date('Y-m-d H:i:s', $taskid99['waktu'] / 1000 );
+      // oneArray() mengembalikan [] jika taskid belum ada — inisialisasi agar
+      // tidak memicu "Undefined array key" pada kondisi dan perhitungan di bawah
+      $taskid1['waktu'] = $taskid1['waktu'] ?? '';
+      $taskid2['waktu'] = $taskid2['waktu'] ?? '';
+      $taskid3['waktu'] = $taskid3['waktu'] ?? '';
+      $taskid4['waktu'] = $taskid4['waktu'] ?? '';
+      $taskid5['waktu'] = $taskid5['waktu'] ?? '';
+      $taskid6['waktu'] = $taskid6['waktu'] ?? '';
+      $taskid7['waktu'] = $taskid7['waktu'] ?? '';
+      $taskid99['waktu'] = $taskid99['waktu'] ?? '';
+      $taskid['99'] = $taskid99['waktu'] === '' ? '' : date('Y-m-d H:i:s', $taskid99['waktu'] / 1000 );
       
       $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('postdate', $pasien['tgl_registrasi'])->oneArray();
       $berkas_dikirim = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $pasien['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
@@ -708,7 +730,15 @@ class Admin extends AdminModule
       $no_rawat = revertNorawat($no_rawat);
       $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $no_rawat)
         ->oneArray();
+      if (empty($reg_periksa['no_rawat'])) {
+        echo 'Data registrasi tidak ditemukan';
+        exit();
+      }
       $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
+      if (empty($pasien['no_rkm_medis'])) {
+        echo 'Data pasien tidak ditemukan';
+        exit();
+      }
       $date = $reg_periksa['tgl_registrasi'];
       $tentukan_hari=date('D',strtotime($date));
       $day = array(
@@ -725,6 +755,18 @@ class Admin extends AdminModule
       $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
       $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
       $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+      if (empty($maping_dokter_dpjpvclaim['kd_dokter_bpjs'])) {
+        echo 'Mapping dokter BPJS tidak ditemukan';
+        exit();
+      }
+      if (empty($maping_poli_bpjs['kd_poli_bpjs'])) {
+        echo 'Mapping poliklinik BPJS tidak ditemukan';
+        exit();
+      }
+      if (empty($jadwaldokter['jam_mulai'])) {
+        echo 'Jadwal dokter tidak ditemukan';
+        exit();
+      }
       $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
       $minutes = $no_urut_reg * 10;
       $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
@@ -761,10 +803,11 @@ class Admin extends AdminModule
 
       if($jenispasien == 'JKN') {
           $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
-          $nomorreferensi = $bridging_sep['no_rujukan'];
-          if(!$bridging_sep) {
+          if($bridging_sep) {
+            $nomorreferensi = $bridging_sep['no_rujukan'];
+          } else {
             $bridging_sep_internal = $this->db('bridging_sep_internal')->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
-            $nomorreferensi = $bridging_sep_internal['no_rujukan'];
+            $nomorreferensi = isset_or($bridging_sep_internal['no_rujukan'], '');
           }
       }
 
@@ -823,10 +866,18 @@ class Admin extends AdminModule
     {
 
       $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('nomor_referensi', $nomor_referensi)->where('kodebooking', $kode_booking)->oneArray();
+      if (empty($mlite_antrian_referensi['kodebooking'])) {
+        echo 'Data referensi antrean tidak ditemukan';
+        exit();
+      }
       $reg_periksa = $this->db('reg_periksa')
         ->where('tgl_registrasi', $mlite_antrian_referensi['tanggal_periksa'])
         ->where('no_rkm_medis', $mlite_antrian_referensi['no_rkm_medis'])
         ->oneArray();
+      if (empty($reg_periksa['no_rawat'])) {
+        echo 'Data registrasi tidak ditemukan';
+        exit();
+      }
 
       $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)', 'no_resep' => 'no_resep'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
       $jenisresep = 'Non racikan';
@@ -845,6 +896,16 @@ class Admin extends AdminModule
       $taskid6 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '6')->where('status','Belum')->oneArray();
       $taskid7 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '7')->where('status','Belum')->oneArray();
       $taskid99 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '99')->where('status','Belum')->oneArray();
+      // oneArray() mengembalikan [] jika taskid belum ada — inisialisasi agar
+      // payload di bawah tidak memicu "Undefined array key"
+      $taskid1['waktu'] = $taskid1['waktu'] ?? '';
+      $taskid2['waktu'] = $taskid2['waktu'] ?? '';
+      $taskid3['waktu'] = $taskid3['waktu'] ?? '';
+      $taskid4['waktu'] = $taskid4['waktu'] ?? '';
+      $taskid5['waktu'] = $taskid5['waktu'] ?? '';
+      $taskid6['waktu'] = $taskid6['waktu'] ?? '';
+      $taskid7['waktu'] = $taskid7['waktu'] ?? '';
+      $taskid99['waktu'] = $taskid99['waktu'] ?? '';
 
       if ($versi == 'batal') {
         $data1 = [
@@ -1186,8 +1247,8 @@ class Admin extends AdminModule
         foreach ($query as $q) {
             $no_rawat = $this->db('reg_periksa')->select(['no_rawat' => 'reg_periksa.no_rawat'])->where('no_rkm_medis', $q['no_rkm_medis'])->where('tgl_registrasi', $date)->oneArray();
             $q['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $q['no_rkm_medis']);
-            $q['no_rawat'] = $no_rawat['no_rawat'];
-            $q['no_rawat_conv'] = convertNorawat($no_rawat['no_rawat']);
+            $q['no_rawat'] = $no_rawat['no_rawat'] ?? '';
+            $q['no_rawat_conv'] = convertNorawat($no_rawat['no_rawat'] ?? '');
             $rows[] = $q;
         }
 
@@ -1536,10 +1597,12 @@ class Admin extends AdminModule
         $pasien = [];
         if($referensi) {
             $pasien = $this->db('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
-            $booking_registrasi = $this->db('booking_registrasi')
-            ->where('no_rkm_medis', $pasien['no_rkm_medis'])
-            ->where('tanggal_periksa', $referensi['tanggal_periksa'])
-            ->oneArray();
+            if($pasien) {
+                $booking_registrasi = $this->db('booking_registrasi')
+                ->where('no_rkm_medis', $pasien['no_rkm_medis'])
+                ->where('tanggal_periksa', $referensi['tanggal_periksa'])
+                ->oneArray();
+            }
         }
         if(!$booking_registrasi) {
           date_default_timezone_set('UTC');
@@ -1559,11 +1622,10 @@ class Admin extends AdminModule
           if ($json == NULL) {
             $notif = 'Data Booking di JKN Mobile Tidak Ada!';
           } else if ($json['metadata']['code'] == 200) {
-            $this->db('mlite_antrian_referensi_batal')->save([
-              'tanggal_batal' => date('Y-m-d'),
-              'nomor_referensi' => $referensi['nomor_referensi'],
-              'kodebooking' => $_POST['kodebooking'],
-              'keterangan' => $_POST['keterangan']
+            $this->db('mlite_antrian_referensi_batal')->save([                'tanggal_batal' => date('Y-m-d'),
+                'nomor_referensi' => isset_or($referensi['nomor_referensi'], ''),
+                'kodebooking' => $_POST['kodebooking'],
+                'keterangan' => $_POST['keterangan']
             ]);
             $this->db('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->update([
               'status_kirim' => 'Batal',

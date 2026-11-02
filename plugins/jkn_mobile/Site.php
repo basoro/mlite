@@ -334,13 +334,13 @@ class Site extends SiteModule
             if(empty($decode['kodepoli'])) {
                $errors[] = 'Kode poli tidak boleh kosong';
             }
-            if(!empty($decode['kodepoli']) && $poli == 0) {
+            if(!empty($decode['kodepoli']) && !$poli) {
                $errors[] = 'Kode poli tidak ditemukan';
             }
             if(empty($decode['kodedokter'])) {
                $errors[] = 'Kode dokter tidak boleh kosong';
             }
-            if(!empty($decode['kodedokter']) && $dokter == 0) {
+            if(!empty($decode['kodedokter']) && !$dokter) {
                $errors[] = 'Kode dokter tidak ditemukan';
             }
             if(isset($decode['jeniskunjungan']) && ($decode['jeniskunjungan'] < 1 || $decode['jeniskunjungan'] > 4)) {
@@ -667,7 +667,7 @@ class Site extends SiteModule
                             'namadokter' => $data['nm_dokter'] ?? ($kddokter['nm_dokter_bpjs'] ?? ''),
                             'totalantrean' => $data['total_antrean'],
                             'sisaantrean' => (int)$data['sisa_antrean'],
-                            'antreanpanggil' => "A-".$max_antrian['no_reg'],
+                            'antreanpanggil' => "A-".($max_antrian['no_reg'] ?? ''),
                             'sisakuotajkn' => ($kuota['kuota']-$data['total_antrean']),
                             'kuotajkn' => ($kuota['kuota']-$data['total_antrean']),
                             'sisakuotanonjkn' => ($kuota['kuota']-$data['total_antrean']),
@@ -761,10 +761,12 @@ class Site extends SiteModule
                 $pasien = [];
                 if($referensi) {
                   $pasien = $this->db('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
-                  $booking_registrasi = $this->db('booking_registrasi')
-                    ->where('no_rkm_medis', $pasien['no_rkm_medis'])
-                    ->where('tanggal_periksa', $referensi['tanggal_periksa'])
-                    ->oneArray();
+                  if($pasien) {
+                    $booking_registrasi = $this->db('booking_registrasi')
+                      ->where('no_rkm_medis', $pasien['no_rkm_medis'])
+                      ->where('tanggal_periksa', $referensi['tanggal_periksa'])
+                      ->oneArray();
+                  }
                 }
                 if(!$booking_registrasi) {
                     $response = array(
@@ -794,7 +796,7 @@ class Site extends SiteModule
                     }else if($booking_registrasi['status']=='Terdaftar'){
 
                         $reg_periksa = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])->oneArray();
-                        $resep = $this->db('resep_obat')->where('no_rawat', $reg_periksa['no_rawat'])->where('status', 'ralan')->oneArray();
+                        $resep = $this->db('resep_obat')->where('no_rawat', $reg_periksa['no_rawat'] ?? '')->where('status', 'ralan')->oneArray();
 
                         $mlite_antrian_loket = $this->db('mlite_antrian_loket')
                         ->select([
@@ -823,7 +825,7 @@ class Site extends SiteModule
                             $response = array(
                                 'response' => array(
                                     'jenisresep' => $jenis_resep,
-                                    'nomorantrean' => $get_mlite_antrian_loket['noantrian'],
+                                    'nomorantrean' => $get_mlite_antrian_loket['noantrian'] ?? '',
                                     'keterangan' => "Resep dibuat secara elektronik di poli"
                                 ),
                                 'metadata' => array(
@@ -896,10 +898,12 @@ class Site extends SiteModule
                 $pasien = [];
                 if($referensi) {
                   $pasien = $this->db('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
-                  $booking_registrasi = $this->db('booking_registrasi')
-                    ->where('no_rkm_medis', $pasien['no_rkm_medis'])
-                    ->where('tanggal_periksa', $referensi['tanggal_periksa'])
-                    ->oneArray();
+                  if($pasien) {
+                    $booking_registrasi = $this->db('booking_registrasi')
+                      ->where('no_rkm_medis', $pasien['no_rkm_medis'])
+                      ->where('tanggal_periksa', $referensi['tanggal_periksa'])
+                      ->oneArray();
+                  }
                 }
                 if(!$booking_registrasi) {
                     $response = array(
@@ -929,7 +933,7 @@ class Site extends SiteModule
                     }else if($booking_registrasi['status']=='Terdaftar'){
 
                         $reg_periksa = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])->oneArray();
-                        $resep = $this->db('resep_obat')->where('no_rawat', $reg_periksa['no_rawat'])->where('status', 'ralan')->oneArray();
+                        $resep = $this->db('resep_obat')->where('no_rawat', $reg_periksa['no_rawat'] ?? '')->where('status', 'ralan')->oneArray();
 
                         $mlite_antrian_loket = $this->db('mlite_antrian_loket')
                         ->select([
@@ -1044,10 +1048,12 @@ class Site extends SiteModule
                 $pasien = [];
                 if($referensi) {
                   $pasien = $this->db('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
-                  $booking_registrasi = $this->db('booking_registrasi')
-                    ->where('no_rkm_medis', $pasien['no_rkm_medis'])
-                    ->where('tanggal_periksa', $referensi['tanggal_periksa'])
-                    ->oneArray();
+                  if($pasien) {
+                    $booking_registrasi = $this->db('booking_registrasi')
+                      ->where('no_rkm_medis', $pasien['no_rkm_medis'])
+                      ->where('tanggal_periksa', $referensi['tanggal_periksa'])
+                      ->oneArray();
+                  }
                 }
                 if(($this->settings->get('jkn_mobile.ambil_antrian') ?: 'booking') == 'nonbooking' && !empty($pasien['no_rkm_medis']) && !empty($referensi['tanggal_periksa'])) {
                     // Mode Non-Booking: antrean tersimpan di reg_periksa
@@ -1111,11 +1117,11 @@ class Site extends SiteModule
                         if ($data['nm_poli'] != '') {
                             $response = array(
                                 'response' => array(
-                                    'nomorantrean' => "A-".$noreg['no_reg'],
+                                    'nomorantrean' => "A-".($noreg['no_reg'] ?? ''),
                                     'namapoli' => $data['nm_poli'],
                                     'namadokter' => $data['nm_dokter'],
                                     'sisaantrean' => ($data['sisa_antrean']>0?$data['sisa_antrean']:0),
-                                    'antreanpanggil' => "A-".$max_antrian['no_reg'] ?? '000',
+                                    'antreanpanggil' => "A-".($max_antrian['no_reg'] ?? '000'),
                                     'waktutunggu' => (($data['sisa_antrean']*10)*1000),
                                     'keterangan' => "Datanglah Minimal 30 Menit, jika no antrian anda terlewat, silakan konfirmasi ke layanan pelanggan, Terima Kasih .."
                                 ),
@@ -1213,10 +1219,12 @@ class Site extends SiteModule
                 $pasien = [];
                 if($referensi) {
                   $pasien = $this->db('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
-                  $booking_registrasi = $this->db('booking_registrasi')
-                    ->where('no_rkm_medis', $pasien['no_rkm_medis'])
-                    ->where('tanggal_periksa', $referensi['tanggal_periksa'])
-                    ->oneArray();
+                  if($pasien) {
+                    $booking_registrasi = $this->db('booking_registrasi')
+                      ->where('no_rkm_medis', $pasien['no_rkm_medis'])
+                      ->where('tanggal_periksa', $referensi['tanggal_periksa'])
+                      ->oneArray();
+                  }
                 }
                 if(($this->settings->get('jkn_mobile.ambil_antrian') ?: 'booking') == 'nonbooking' && !empty($pasien['no_rkm_medis']) && !empty($referensi['tanggal_periksa'])) {
                     // Mode Non-Booking: antrean tersimpan di reg_periksa
@@ -1804,10 +1812,12 @@ class Site extends SiteModule
                 $pasien = [];
                 if($referensi) {
                   $pasien = $this->db('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
-                  $booking_registrasi = $this->db('booking_registrasi')
-                    ->where('no_rkm_medis', $pasien['no_rkm_medis'])
-                    ->where('tanggal_periksa', $referensi['tanggal_periksa'])
-                    ->oneArray();
+                  if($pasien) {
+                    $booking_registrasi = $this->db('booking_registrasi')
+                      ->where('no_rkm_medis', $pasien['no_rkm_medis'])
+                      ->where('tanggal_periksa', $referensi['tanggal_periksa'])
+                      ->oneArray();
+                  }
                 }
                 if(($this->settings->get('jkn_mobile.ambil_antrian') ?: 'booking') == 'nonbooking' && !empty($pasien['no_rkm_medis']) && !empty($referensi['tanggal_periksa'])) {
                     // Mode Non-Booking: pasien sudah terdaftar di reg_periksa, checkin tidak diperlukan
@@ -1871,7 +1881,7 @@ class Site extends SiteModule
                         $selisihHari = (int) round((strtotime($booking_registrasi['tanggal_periksa']) - strtotime($tanggal)) / 86400);
 
                         if($selisihHari<=0){
-                            if (strtotime($jam) >= strtotime($cekjam['jam_selesai'])) {
+                            if (strtotime($jam) >= strtotime($cekjam['jam_selesai'] ?? '')) {
                                 # code...
                                 $response = array(
                                     'metadata' => array(
@@ -2235,7 +2245,7 @@ class Site extends SiteModule
             $sql->execute();
             $sql = $sql->fetchAll();
 
-            if($cek_nopeserta == 0) {
+            if(!$cek_nopeserta) {
                $errors[] = 'Nomor peserta tidak ditemukan';
             }
             if (!empty($decode['nopeserta']) && !ctype_digit($decode['nopeserta']) ){
@@ -2431,14 +2441,14 @@ class Site extends SiteModule
                 $jenispasien = 'JKN';
               }
 
-              $nomorreferensi = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$q['no_reg'];
+              $nomorreferensi = convertNorawat($q['no_rawat']).''.($maping_poli_bpjs['kd_poli_bpjs'] ?? '').''.$q['no_reg'];
               if($jenispasien == 'JKN') {
                 $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $q['no_rawat'])->oneArray();
-                $nomorreferensi = $bridging_sep['no_rujukan'];
+                $nomorreferensi = $bridging_sep['no_rujukan'] ?? '';
               }
 
               $kode_ppk  = $this->settings->get('settings.ppk_bpjs');
-              $kodebooking = $kode_ppk.convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$q['no_reg'];
+              $kodebooking = $kode_ppk.convertNorawat($q['no_rawat']).''.($maping_poli_bpjs['kd_poli_bpjs'] ?? '').''.$q['no_reg'];
 
               echo 'code...<br>';
 
@@ -2480,10 +2490,19 @@ class Site extends SiteModule
         if($checkAntrian){
           foreach ($checkAntrian as $q) {
             $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            if(!$reg_periksa) {
+                echo 'Registrasi '.$q['no_rkm_medis'].' tidak ditemukan, dilewati<br>';
+                continue;
+            }
             $pasien = $this->db('pasien')->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
             $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
             $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
             $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+            if(!$pasien || !$maping_dokter_dpjpvclaim || !$maping_poli_bpjs || !$jadwaldokter) {
+                echo 'Data pendukung antrol belum lengkap untuk '.$q['no_rkm_medis'].'<br>';
+                continue;
+            }
+            $jeniskunjungan = 3;
             $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
             $minutes = $no_urut_reg * 10;
             $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
@@ -2567,7 +2586,7 @@ class Site extends SiteModule
 
               $jenisresep = 'Non Racikan';
 
-              $resep_dokter_racikan = $this->db('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+              $resep_dokter_racikan = $this->db('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'] ?? '')->oneArray();
               if(!empty($resep_dokter_racikan)) {
                 $jenisresep = 'Racikan';
               }
@@ -2582,7 +2601,7 @@ class Site extends SiteModule
               $data_antrian_farmasi = [
                 'kodebooking' => $q['kodebooking'],
                 'jenisresep' => $jenisresep,
-                'nomorantrean' => $mlite_antrian_loket['noantrian'],
+                'nomorantrean' => $mlite_antrian_loket['noantrian'] ?? '',
                 'keterangan' => 'Resep dibuat secara elektronik di poli.'
               ];
 
@@ -2725,15 +2744,15 @@ class Site extends SiteModule
                     $jenispasien = 'JKN';
                   }
 
-                  $nomorreferensi = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$q['no_reg'];
+                  $nomorreferensi = convertNorawat($q['no_rawat']).''.($maping_poli_bpjs['kd_poli_bpjs'] ?? '').''.$q['no_reg'];
                   if($jenispasien == 'JKN') {
                       $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $q['no_rawat'])->oneArray();
-                      $nomorreferensi = $bridging_sep['no_rujukan'];
+                      $nomorreferensi = $bridging_sep['no_rujukan'] ?? '';
                   }
                 
                   $q['no_reg'] = str_replace('OP','',$q['no_reg']);
                   $kode_ppk  = $this->settings->get('settings.ppk_bpjs');
-              	  $kodebooking = $kode_ppk.convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$q['no_reg'];
+              	  $kodebooking = $kode_ppk.convertNorawat($q['no_rawat']).''.($maping_poli_bpjs['kd_poli_bpjs'] ?? '').''.$q['no_reg'];
 
                     
                     echo 'code...<br>';
@@ -2777,10 +2796,18 @@ class Site extends SiteModule
         foreach ($checkAntrian as $q) {
             //if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray() || !$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
               $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+              if(!$reg_periksa) {
+                  echo 'Registrasi '.$q['no_rkm_medis'].' tidak ditemukan, dilewati<br>';
+                  continue;
+              }
               $pasien = $this->db('pasien')->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
               $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
               $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
               $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+              if(!$pasien || !$maping_dokter_dpjpvclaim || !$maping_poli_bpjs || !$jadwaldokter) {
+                  echo 'Data pendukung antrol belum lengkap untuk '.$q['no_rkm_medis'].'<br>';
+                  continue;
+              }
               $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
               $minutes = $no_urut_reg * 10;
               $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
@@ -2988,6 +3015,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                 $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -3033,6 +3061,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                 $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -3078,6 +3107,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                 $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
                 if($mutasi_berkas){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -3123,6 +3153,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                 $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
                 if($mutasi_berkas){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -3168,10 +3199,11 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                 $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
                 $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)', 'no_resep' => 'no_resep'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
                 $jenisresep = 'Non racikan';
-                $resep_dokter_racikan = $this->db('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+                $resep_dokter_racikan = $this->db('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'] ?? '')->oneArray();
                 if(!empty($resep_dokter_racikan)) {
                   $jenisresep = 'Racikan';
                 }
@@ -3220,9 +3252,10 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                 $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)', 'no_resep' => 'no_resep'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
                 $jenisresep = 'Non racikan';
-                $resep_dokter_racikan = $this->db('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+                $resep_dokter_racikan = $this->db('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'] ?? '')->oneArray();
                 if(!empty($resep_dokter_racikan)) {
                   $jenisresep = 'Racikan';
                 }
@@ -3271,9 +3304,10 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                 $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)', 'no_resep' => 'no_resep'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
                 $jenisresep = 'Non racikan';
-                $resep_dokter_racikan = $this->db('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+                $resep_dokter_racikan = $this->db('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'] ?? '')->oneArray();
                 if(!empty($resep_dokter_racikan)) {
                   $jenisresep = 'Racikan';
                 }
@@ -3397,6 +3431,7 @@ class Site extends SiteModule
                         $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                     }
                     $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                     $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                     if($mlite_antrian_loket){
                         date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -3428,6 +3463,7 @@ class Site extends SiteModule
                     $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                     }
                     $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                     $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                     if($mlite_antrian_loket){
                             date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -3459,6 +3495,7 @@ class Site extends SiteModule
                     $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                     }
                     $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                   	echo $q['no_rkm_medis'].'<br>';
                     $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '>', '1970-01-01 00:00:00')->oneArray();
                     if($mutasi_berkas){
@@ -3492,6 +3529,7 @@ class Site extends SiteModule
                     $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                     }
                     $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                     $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '>', '1970-01-01 00:00:00')->oneArray();
                     if($mutasi_berkas){
                             date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -3523,6 +3561,7 @@ class Site extends SiteModule
                     $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                     }
                     $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                     $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
                     if($pemeriksaan_ralan){
                         echo 'A';
@@ -3550,6 +3589,7 @@ class Site extends SiteModule
             foreach ($query as $q) {
                 if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['kodebooking'])->where('status','Sudah')->where('taskid', 6)->oneArray()) {
                     $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                     $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
 
                     if($resep_obat){
@@ -3577,6 +3617,7 @@ class Site extends SiteModule
             foreach ($query as $q) {
                 if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['kodebooking'])->where('status','Sudah')->where('taskid', 7)->oneArray()) {
                     $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                if(!$reg_periksa) { continue; }
                     $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
                     if($resep_obat){
                             date_default_timezone_set($this->settings->get('settings.timezone'));
