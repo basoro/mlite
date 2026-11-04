@@ -6,6 +6,9 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    // Ambang "segera kedaluwarsa" (hari) untuk peringatan stok, daftar batch, dan filter.
+    const EXPIRE_SOON_DAYS = 90;
+
     public $assign = [];
 
     public function navigation()
@@ -44,7 +47,7 @@ class Admin extends AdminModule
         $sub_modules = [];
       }
 
-      // Peringatan batch kedaluwarsa / segera kedaluwarsa ≤ 90 hari (stok tersisa)
+      // Peringatan batch kedaluwarsa / segera kedaluwarsa ≤ EXPIRE_SOON_DAYS hari (stok tersisa)
       $expired_alert = [];
       $stmt = $this->db()->pdo()->prepare("SELECT b.kode_brng, d.nama_brng, g.nm_bangsal, b.no_batch, b.expire, b.stok, d.kode_sat
         FROM mlite_farmasi_obat_batch b
@@ -52,7 +55,7 @@ class Admin extends AdminModule
         LEFT JOIN bangsal g ON g.kd_bangsal = b.kd_bangsal
         WHERE b.stok > 0 AND b.expire IS NOT NULL AND b.expire <= ?
         ORDER BY b.expire ASC, b.kode_brng ASC");
-      $stmt->execute([date('Y-m-d', strtotime('+90 day'))]);
+      $stmt->execute([date('Y-m-d', strtotime('+' . self::EXPIRE_SOON_DAYS . ' day'))]);
       foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
         $selisih = (int) floor((strtotime((string) $row['expire']) - strtotime(date('Y-m-d'))) / 86400);
         $row['selisih_hari'] = $selisih;
@@ -361,7 +364,7 @@ class Admin extends AdminModule
             $selisihHari = (int) floor(($expireTs - strtotime(date('Y-m-d'))) / 86400);
             if ($selisihHari < 0) {
               $batch['status_expire'] = 'Kedaluwarsa';
-            } elseif ($selisihHari <= 90) {
+            } elseif ($selisihHari <= self::EXPIRE_SOON_DAYS) {
               $batch['status_expire'] = 'Segera Kedaluwarsa';
             } else {
               $batch['status_expire'] = 'Aman';
@@ -400,11 +403,17 @@ class Admin extends AdminModule
 
     public function postOpnameData()
     {
-      $opname = $this->db('opname')
-        ->join('databarang', 'databarang.kode_brng=opname.kode_brng')
-        ->join('bangsal', 'bangsal.kd_bangsal=opname.kd_bangsal')
-        ->where('databarang.status', '1')
-        ->toJson();
+      try {
+        $opname = $this->db('opname')
+          ->join('databarang', 'databarang.kode_brng=opname.kode_brng')
+          ->join('bangsal', 'bangsal.kd_bangsal=opname.kd_bangsal')
+          ->where('databarang.status', '1')
+          ->toJson();
+      } catch (\Throwable $e) {
+        // Endpoint AJAX: kegagalan query tetap dibalas JSON kosong, bukan halaman HTML.
+        error_log('farmasi/opnamedata gagal: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        $opname = json_encode([]);
+      }
       echo $opname;
       exit();
     }
@@ -990,7 +999,7 @@ class Admin extends AdminModule
                 $expire_filter = 'all';
             }
 
-            $hari90 = date('Y-m-d', strtotime('+90 day'));
+            $hari90 = date('Y-m-d', strtotime('+' . self::EXPIRE_SOON_DAYS . ' day'));
 
             $searchQuery = " ";
             $params = [];
@@ -1127,96 +1136,112 @@ class Admin extends AdminModule
 
     public function postRiwayatbarangmedisData()
     {
-        $draw = $_POST['draw'];
-        $row1 = $_POST['start'];
-        $rowperpage = $_POST['length']; // Rows display per page
-        $columnIndex = $_POST['order'][0]['column']; // Column index
-        $columnName = $_POST['columns'][$columnIndex]['data']; // Column name
-        $columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
-        $searchValue = $_POST['search']['value']; // Search value
+        try {
+            $draw = (int) ($_POST['draw'] ?? 0);
+            $row1 = (int) ($_POST['start'] ?? 0);
+            $rowperpage = (int) ($_POST['length'] ?? 25); // Rows display per page
+            $columnIndex = (int) ($_POST['order'][0]['column'] ?? 0); // Column index
+            $columnName = (string) ($_POST['columns'][$columnIndex]['data'] ?? 'kode_brng'); // Column name
+            $columnSortOrder = (string) ($_POST['order'][0]['dir'] ?? 'asc'); // asc or desc
 
-        ## Custom Field value
-        $search_field_riwayat_barang_medis= $_POST['search_field_riwayat_barang_medis'];
-        $search_text_riwayat_barang_medis = $_POST['search_text_riwayat_barang_medis'];
+            ## Custom Field value
+            $search_field_riwayat_barang_medis = (string) ($_POST['search_field_riwayat_barang_medis'] ?? 'kode_brng');
+            $search_text_riwayat_barang_medis = (string) ($_POST['search_text_riwayat_barang_medis'] ?? '');
 
-        $allowed_fields = ['kode_brng', 'stok_awal', 'masuk', 'keluar', 'stok_akhir', 'posisi', 'tanggal', 'jam', 'petugas', 'kd_bangsal', 'status', 'no_batch', 'no_faktur', 'keterangan'];
-        if (!in_array($search_field_riwayat_barang_medis, $allowed_fields)) {
-            $search_field_riwayat_barang_medis = 'kode_brng';
-        }
+            $allowed_fields = ['kode_brng', 'stok_awal', 'masuk', 'keluar', 'stok_akhir', 'posisi', 'tanggal', 'jam', 'petugas', 'kd_bangsal', 'status', 'no_batch', 'no_faktur', 'keterangan'];
+            if (!in_array($search_field_riwayat_barang_medis, $allowed_fields)) {
+                $search_field_riwayat_barang_medis = 'kode_brng';
+            }
 
-        $allowed_sort = ['asc', 'desc'];
-        if (!in_array(strtolower($columnSortOrder), $allowed_sort)) {
-            $columnSortOrder = 'asc';
-        }
-        if (!in_array($columnName, $allowed_fields)) {
-            $columnName = 'kode_brng';
-        }
+            $allowed_sort = ['asc', 'desc'];
+            if (!in_array(strtolower($columnSortOrder), $allowed_sort)) {
+                $columnSortOrder = 'asc';
+            }
+            if (!in_array($columnName, $allowed_fields)) {
+                $columnName = 'kode_brng';
+            }
 
-        $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
-        $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
+            $tgl_awal = isset_or($_POST['tgl_awal'], date('Y-m-d'));
+            $tgl_akhir = isset_or($_POST['tgl_akhir'], date('Y-m-d'));
 
-        $searchQuery = " ";
-        $params = [];
-        if($search_text_riwayat_barang_medis != ''){
-            $searchQuery .= " and (".$search_field_riwayat_barang_medis." like ? ) ";
-            $params[] = "%".$search_text_riwayat_barang_medis."%";
-        }
+            $searchQuery = " ";
+            $params = [];
+            if($search_text_riwayat_barang_medis != ''){
+                $searchQuery .= " and (".$search_field_riwayat_barang_medis." like ? ) ";
+                $params[] = "%".$search_text_riwayat_barang_medis."%";
+            }
 
-        $searchQuery .= " and (tanggal between ? and ?) ";
-        $params[] = $tgl_awal;
-        $params[] = $tgl_akhir;
+            $searchQuery .= " and (tanggal between ? and ?) ";
+            $params[] = $tgl_awal;
+            $params[] = $tgl_akhir;
 
-        ## Total number of records without filtering
-        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis");
-        $sel->execute();
-        $records = $sel->fetch();
-        $totalRecords = $records['allcount'];
+            ## Total number of records without filtering
+            $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis");
+            $sel->execute();
+            $records = $sel->fetch();
+            $totalRecords = $records['allcount'];
 
-        ## Total number of records with filtering
-        $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis WHERE 1 ".$searchQuery);
-        $sel->execute($params);
-        $records = $sel->fetch();
-        $totalRecordwithFilter = $records['allcount'];
+            ## Total number of records with filtering
+            $sel = $this->db()->pdo()->prepare("select count(*) as allcount from riwayat_barang_medis WHERE 1 ".$searchQuery);
+            $sel->execute($params);
+            $records = $sel->fetch();
+            $totalRecordwithFilter = $records['allcount'];
 
-        ## Fetch records
-        $sel = $this->db()->pdo()->prepare("select * from riwayat_barang_medis WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".(int)$row1.",".(int)$rowperpage);
-        $sel->execute($params);
-        $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
+            ## Fetch records
+            $sel = $this->db()->pdo()->prepare("select * from riwayat_barang_medis WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".(int)$row1.",".(int)$rowperpage);
+            $sel->execute($params);
+            $result = $sel->fetchAll(\PDO::FETCH_ASSOC);
 
-        $data = array();
-        foreach($result as $row) {
-            $databarang = $this->db('databarang')->select('nama_brng')->where('kode_brng', $row['kode_brng'])->oneArray();
-            $bangsal = $this->db('bangsal')->select('nm_bangsal')->where('kd_bangsal', $row['kd_bangsal'])->oneArray();
-            $data[] = array(
-                'kode_brng'=>$row['kode_brng'],
-                'nama_brng'=>$databarang['nama_brng'],
-                'stok_awal'=>$row['stok_awal'],
-                'masuk'=>$row['masuk'],
-                'keluar'=>$row['keluar'],
-                'stok_akhir'=>$row['stok_akhir'],
-                'posisi'=>$row['posisi'],
-                'tanggal'=>$row['tanggal'],
-                'jam'=>$row['jam'],
-                'petugas'=>$row['petugas'],
-                'kd_bangsal'=>$row['kd_bangsal'],
-                'nm_bangsal'=>$bangsal['nm_bangsal'],
-                'status'=>$row['status'],
-                'no_batch'=>$row['no_batch'],
-                'no_faktur'=>$row['no_faktur'],
-                'keterangan'=>$row['keterangan']
+            $data = array();
+            foreach($result as $row) {
+                $databarang = $this->db('databarang')->select('nama_brng')->where('kode_brng', $row['kode_brng'])->oneArray();
+                $bangsal = $this->db('bangsal')->select('nm_bangsal')->where('kd_bangsal', $row['kd_bangsal'])->oneArray();
+                $data[] = array(
+                    'kode_brng'=>$row['kode_brng'],
+                    'nama_brng'=>$databarang['nama_brng'] ?? '',
+                    'stok_awal'=>$row['stok_awal'],
+                    'masuk'=>$row['masuk'],
+                    'keluar'=>$row['keluar'],
+                    'stok_akhir'=>$row['stok_akhir'],
+                    'posisi'=>$row['posisi'],
+                    'tanggal'=>$row['tanggal'],
+                    'jam'=>$row['jam'],
+                    'petugas'=>$row['petugas'],
+                    'kd_bangsal'=>$row['kd_bangsal'],
+                    'nm_bangsal'=>$bangsal['nm_bangsal'] ?? '',
+                    'status'=>$row['status'],
+                    'no_batch'=>$row['no_batch'],
+                    'no_faktur'=>$row['no_faktur'],
+                    'keterangan'=>$row['keterangan']
+                );
+            }
+
+            ## Response
+            $response = array(
+                "draw" => intval(htmlspecialchars($_POST['draw'] ?? 0, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
+                "iTotalRecords" => $totalRecords,
+                "iTotalDisplayRecords" => $totalRecordwithFilter,
+                "aaData" => $data
             );
+
+            echo json_encode(htmlspecialchars_array($response));
+            exit();
+        } catch (\Throwable $e) {
+            // Endpoint AJAX: kegagalan query harus tetap berupa JSON, karena respons
+            // HTML membuat DataTables hanya menampilkan "Invalid JSON response".
+            error_log('farmasi/riwayatbarangmedisdata gagal: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+            if (!headers_sent()) {
+                header('Content-Type: application/json');
+            }
+            echo json_encode([
+                'draw' => (int) ($_POST['draw'] ?? 0),
+                'iTotalRecords' => 0,
+                'iTotalDisplayRecords' => 0,
+                'aaData' => [],
+                'error' => $e->getMessage(),
+            ]);
+            exit();
         }
-
-        ## Response
-        $response = array(
-            "draw" => intval(htmlspecialchars($_POST['draw'] ?? 0, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordwithFilter,
-            "aaData" => $data
-        );
-
-        echo json_encode(htmlspecialchars_array($response));
-        exit();
     }
 
     public function getRiwayatbarangmedisJS()
@@ -1332,7 +1357,8 @@ class Admin extends AdminModule
                 "recordsFiltered" => intval($totalRecordwithFilter),
                 "data" => $data
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            error_log('farmasi/daruratstokdata gagal: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
             $response = [
                 "draw" => intval(htmlspecialchars($_POST['draw'] ?? 1, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')),
                 "recordsTotal" => 0,
@@ -1462,7 +1488,7 @@ class Admin extends AdminModule
             $expire = 'all';
         }
 
-        $hari90 = date('Y-m-d', strtotime('+90 day'));
+        $hari90 = date('Y-m-d', strtotime('+' . self::EXPIRE_SOON_DAYS . ' day'));
         $where = " WHERE b.stok <> 0";
         $params = [];
         if ($kode_brng !== '') {
@@ -1508,7 +1534,7 @@ class Admin extends AdminModule
             if (!empty($row['expire'])) {
                 $selisih = (int)floor((strtotime((string)$row['expire']) - strtotime(date('Y-m-d'))) / 86400);
                 $row['selisih_hari'] = $selisih;
-                $row['status_expire'] = $selisih < 0 ? 'Kedaluwarsa' : ($selisih <= 90 ? 'Segera Kedaluwarsa' : 'Aman');
+                $row['status_expire'] = $selisih < 0 ? 'Kedaluwarsa' : ($selisih <= self::EXPIRE_SOON_DAYS ? 'Segera Kedaluwarsa' : 'Aman');
             } else {
                 $row['selisih_hari'] = null;
                 $row['status_expire'] = 'Aman';
@@ -1598,7 +1624,7 @@ class Admin extends AdminModule
             $expire = 'all';
         }
 
-        $hari90 = date('Y-m-d', strtotime('+90 day'));
+        $hari90 = date('Y-m-d', strtotime('+' . self::EXPIRE_SOON_DAYS . ' day'));
         $where = " WHERE p.tgl_perawatan BETWEEN ? AND ?";
         $params = [$tgl_awal, $tgl_akhir];
         if ($search !== '') {
