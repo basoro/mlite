@@ -696,7 +696,17 @@
     }
     var prov_umum_peserta_text = $('#prov_umum_peserta').text();
     if (prov_umum_peserta_text && prov_umum_peserta_text.trim() !== '') {
-      $('#sep_asal_rujukan_nama').val(prov_umum_peserta_text.trim());
+      // Jangan set value yang tidak ada opsinya: itu membuat selectedIndex -1
+      // dan selectator error saat opsinya diklik. Tambahkan opsinya dulu.
+      var $ppk = $('#sep_asal_rujukan_nama');
+      var nama_ppk = prov_umum_peserta_text.trim();
+      if ($ppk.find('option').filter(function(){ return this.value === nama_ppk; }).length === 0) {
+        $ppk.append($('<option>').attr('value', nama_ppk).text(nama_ppk));
+      }
+      $ppk.val(nama_ppk);
+      if ($ppk.data('selectator')) {
+        $ppk.selectator('refresh');
+      }
     }
   });
   $("#sep_nomor_rujukan").on("focus click",function(event){
@@ -1044,13 +1054,13 @@ async function openFrista(noka) {
     var tglrujukan = $('#sep_tanggal_rujukan').val();
     var norujukan = $('#sep_nomor_rujukan').val();
     var kdppkrujukan = $('#sep_asal_rujukan_kode').val();
-    var nmppkrujukan = $('#sep_asal_rujukan_nama').val();
+    var nmppkrujukan = $('#sep_asal_rujukan_nama option:selected').text();
     var jnspelayanan = $('#sep_pelayanan_kode').val();
     var catatan = $('#sep_catatan').val();
     var diagawal = $('#sep_diagnosa_kode').val();
-    var nmdiagnosaawal = $('#sep_diagnosa_nama').val();
+    var nmdiagnosaawal = $('#sep_diagnosa_nama option:selected').text();
     var kdpolitujuan = $('#sep_spesialis_kode').val();
-    var nmpolitujuan = $('#sep_spesialis_nama').val();
+    var nmpolitujuan = $('#sep_spesialis_nama option:selected').text();
     var klsrawat = $('#sep_kelas_kode').val();
     var lakalantas = $('#sep_status_kecelakaan_kode').val();
     var noLp = $('#sep_nomor_laporan_polisi').val();
@@ -1085,16 +1095,16 @@ async function openFrista(noka) {
     var suplesi = $('#sep_suplesi_kode').val();
     var no_sep_suplesi = $('#sep_nomor_suplesi').val();
     var kdprop = $('#id_provinsi').val();
-    var nmprop = $('#provinsi').val();
+    var nmprop = $('#provinsi option:selected').text();
     var kdkab = $('#id_kabupaten').val();
-    var nmkab = $('#kabupaten').val();
+    var nmkab = $('#kabupaten option:selected').text();
     var kdkec = $('#id_kecamatan').val();
-    var nmkec = $('#kecamatan').val();
+    var nmkec = $('#kecamatan option:selected').text();
     var noskdp = $('#sep_nomor_skdp').val();
     var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
-    var nmdpdjp = $('#sep_dpjp_yang_melayani_nama').val();
+    var nmdpdjp = $('#sep_dpjp_yang_melayani_nama option:selected').text();
     var kddpjppelayanan = $('#sep_dpjp_pelayanan_kode').val();
-    var nmdpjppelayanan = $('#sep_dpjp_pelayanan_nama').val();
+    var nmdpjppelayanan = $('#sep_dpjp_pelayanan_nama option:selected').text();
     var prolanis_prb = $('.prolainis_peserta').text();
     var no_sep = $('#get_no_sep').val();
     $.ajax({
@@ -1167,6 +1177,28 @@ async function openFrista(noka) {
   });
 </script>
 <script type="text/javascript">
+  // Pilih nilai select (selectator) berdasarkan KODE.
+  // Select statis memakai kode sebagai value, sedangkan select dinamis
+  // (PPK Rujukan, Spesialis, Diagnosa) opsinya baru dimuat saat user mengetik,
+  // jadi opsi dari data BPJS ditambahkan dulu supaya nilainya tampil.
+  function setSepSelect(selector, kode, nama) {
+    var $sel = $(selector);
+    if (!$sel.length || kode === undefined || kode === null || kode === '') {
+      return;
+    }
+    kode = String(kode);
+    if ($sel.find('option').filter(function(){ return this.value === kode; }).length === 0) {
+      $sel.append($('<option>').attr('value', kode).text(nama || kode));
+    }
+    $sel.val(kode);
+    var kodeField = $sel.data('kode');
+    if (kodeField) {
+      $('#' + kodeField).val(kode);
+    }
+    if ($sel.data('selectator')) {
+      $sel.selectator('refresh');
+    }
+  }
   // ketika inputbox pencarian diisi
   $('#parameter_no_rujukan_pcare').on('click',function(e){
     var baseURL = mlite.url + '/' + mlite.admin;
@@ -1189,40 +1221,40 @@ async function openFrista(noka) {
             if(json_obj[0].response.rujukan.peserta.sex == 'P') {
               var jenis_kelamin = 'Perempuan';
             }
-            $('#sep_jenis_kelamin_nama').val(jenis_kelamin);
+            setSepSelect('#sep_jenis_kelamin_nama', json_obj[0].response.rujukan.peserta.sex);
             $('#sep_jenis_kelamin_kode').val(json_obj[0].response.rujukan.peserta.sex);
             $('input:text[name=sep_tanggal_lahir]').val(json_obj[0].response.rujukan.peserta.tglLahir);
             $('input:text[name=sep_jenis_peserta]').val(json_obj[0].response.rujukan.peserta.jenisPeserta.keterangan);
             $('input:text[name=sep_no_kartu]').val(json_obj[0].response.rujukan.peserta.noKartu);
             $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
             $('#sep_eksekutif_kode').val("0");
-            $('#sep_eksekutif_nama').val("Tidak");
+            setSepSelect('#sep_eksekutif_nama', "0");
             $('#sep_kunjungan_kode').val("0");
-            $('#sep_kunjungan_nama').val("Normal");
+            setSepSelect('#sep_kunjungan_nama', "0");
             $('#sep_cob_kode').val("0");
-            $('#sep_cob_nama').val("Tidak");
+            setSepSelect('#sep_cob_nama', "0");
             $('#sep_katarak_kode').val("0");
-            $('#sep_katarak_nama').val("Tidak");
+            setSepSelect('#sep_katarak_nama', "0");
             $('#sep_status_kecelakaan_kode').val("0");
-            $('#sep_status_kecelakaan_nama').val("Tidak");
+            setSepSelect('#sep_status_kecelakaan_nama', "0");
             $('#sep_penjamin_kecelakaan_kode').val("0");
-            $('#sep_penjamin_kecelakaan_nama').val("Tidak");
+            setSepSelect('#sep_penjamin_kecelakaan_nama', "0");
             $('#sep_suplesi_kode').val("0");
-            $('#sep_suplesi_nama').val("Tidak");
+            setSepSelect('#sep_suplesi_nama', "0");
             $('#sep_pelayanan_kode').val(json_obj[0].response.rujukan.pelayanan.kode);
-            $('#sep_pelayanan_nama').val(json_obj[0].response.rujukan.pelayanan.nama);
+            setSepSelect('#sep_pelayanan_nama', json_obj[0].response.rujukan.pelayanan.kode);
             $('#sep_kelas_kode').val(json_obj[0].response.rujukan.peserta.hakKelas.kode);
-            $('#sep_kelas_nama').val(json_obj[0].response.rujukan.peserta.hakKelas.keterangan);
+            setSepSelect('#sep_kelas_nama', json_obj[0].response.rujukan.peserta.hakKelas.kode);
             $('#sep_asal_faskes_kode').val(json_obj[0].response.asalFaskes);
-            $('#sep_asal_faskes_nama').val(asalFaskes_nama);
-            $('#sep_asal_rujukan_nama').val(json_obj[0].response.rujukan.provPerujuk.nama);
+            setSepSelect('#sep_asal_faskes_nama', json_obj[0].response.asalFaskes);
+            setSepSelect('#sep_asal_rujukan_nama', json_obj[0].response.rujukan.provPerujuk.kode, json_obj[0].response.rujukan.provPerujuk.nama);
             $('#sep_asal_rujukan_kode').val(json_obj[0].response.rujukan.provPerujuk.kode);
             $('input:text[name=sep_tanggal_rujukan]').val(json_obj[0].response.rujukan.tglKunjungan);
             $('input:text[name=sep_nomor_rujukan]').val(json_obj[0].response.rujukan.noKunjungan);
             $('#sep_spesialis_kode').val(json_obj[0].response.rujukan.poliRujukan.kode);
-            $('#sep_spesialis_nama').val(json_obj[0].response.rujukan.poliRujukan.nama);
+            setSepSelect('#sep_spesialis_nama', json_obj[0].response.rujukan.poliRujukan.kode, json_obj[0].response.rujukan.poliRujukan.nama);
             $('#sep_diagnosa_kode').val(json_obj[0].response.rujukan.diagnosa.kode);
-            $('#sep_diagnosa_nama').val(json_obj[0].response.rujukan.diagnosa.nama);
+            setSepSelect('#sep_diagnosa_nama', json_obj[0].response.rujukan.diagnosa.kode, json_obj[0].response.rujukan.diagnosa.nama);
             $('input:text[name=sep_nomor_telepon]').val(json_obj[0].response.rujukan.peserta.mr.noTelepon);
           } else {
             alert(json_obj[0].metaData.message);
@@ -1255,40 +1287,40 @@ async function openFrista(noka) {
             if(json_obj[0].response.rujukan.peserta.sex == 'P') {
               var jenis_kelamin = 'Perempuan';
             }
-            $('#sep_jenis_kelamin_nama').val(jenis_kelamin);
+            setSepSelect('#sep_jenis_kelamin_nama', json_obj[0].response.rujukan.peserta.sex);
             $('#sep_jenis_kelamin_kode').val(json_obj[0].response.rujukan.peserta.sex);
             $('input:text[name=sep_tanggal_lahir]').val(json_obj[0].response.rujukan.peserta.tglLahir);
             $('input:text[name=sep_jenis_peserta]').val(json_obj[0].response.rujukan.peserta.jenisPeserta.keterangan);
             $('input:text[name=sep_no_kartu]').val(json_obj[0].response.rujukan.peserta.noKartu);
             $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
             $('#sep_eksekutif_kode').val("0");
-            $('#sep_eksekutif_nama').val("Tidak");
+            setSepSelect('#sep_eksekutif_nama', "0");
             $('#sep_kunjungan_kode').val("0");
-            $('#sep_kunjungan_nama').val("Normal");
+            setSepSelect('#sep_kunjungan_nama', "0");
             $('#sep_cob_kode').val("0");
-            $('#sep_cob_nama').val("Tidak");
+            setSepSelect('#sep_cob_nama', "0");
             $('#sep_katarak_kode').val("0");
-            $('#sep_katarak_nama').val("Tidak");
+            setSepSelect('#sep_katarak_nama', "0");
             $('#sep_status_kecelakaan_kode').val("0");
-            $('#sep_status_kecelakaan_nama').val("Tidak");
+            setSepSelect('#sep_status_kecelakaan_nama', "0");
             $('#sep_penjamin_kecelakaan_kode').val("0");
-            $('#sep_penjamin_kecelakaan_nama').val("Tidak");
+            setSepSelect('#sep_penjamin_kecelakaan_nama', "0");
             $('#sep_suplesi_kode').val("0");
-            $('#sep_suplesi_nama').val("Tidak");
+            setSepSelect('#sep_suplesi_nama', "0");
             $('#sep_pelayanan_kode').val(json_obj[0].response.rujukan.pelayanan.kode);
-            $('#sep_pelayanan_nama').val(json_obj[0].response.rujukan.pelayanan.nama);
+            setSepSelect('#sep_pelayanan_nama', json_obj[0].response.rujukan.pelayanan.kode);
             $('#sep_kelas_kode').val(json_obj[0].response.rujukan.peserta.hakKelas.kode);
-            $('#sep_kelas_nama').val(json_obj[0].response.rujukan.peserta.hakKelas.keterangan);
+            setSepSelect('#sep_kelas_nama', json_obj[0].response.rujukan.peserta.hakKelas.kode);
             $('#sep_asal_faskes_kode').val(json_obj[0].response.asalFaskes);
-            $('#sep_asal_faskes_nama').val(asalFaskes_nama);
-            $('#sep_asal_rujukan_nama').val(json_obj[0].response.rujukan.provPerujuk.nama);
+            setSepSelect('#sep_asal_faskes_nama', json_obj[0].response.asalFaskes);
+            setSepSelect('#sep_asal_rujukan_nama', json_obj[0].response.rujukan.provPerujuk.kode, json_obj[0].response.rujukan.provPerujuk.nama);
             $('#sep_asal_rujukan_kode').val(json_obj[0].response.rujukan.provPerujuk.kode);
             $('input:text[name=sep_tanggal_rujukan]').val(json_obj[0].response.rujukan.tglKunjungan);
             $('input:text[name=sep_nomor_rujukan]').val(json_obj[0].response.rujukan.noKunjungan);
             $('#sep_spesialis_kode').val(json_obj[0].response.rujukan.poliRujukan.kode);
-            $('#sep_spesialis_nama').val(json_obj[0].response.rujukan.poliRujukan.nama);
+            setSepSelect('#sep_spesialis_nama', json_obj[0].response.rujukan.poliRujukan.kode, json_obj[0].response.rujukan.poliRujukan.nama);
             $('#sep_diagnosa_kode').val(json_obj[0].response.rujukan.diagnosa.kode);
-            $('#sep_diagnosa_nama').val(json_obj[0].response.rujukan.diagnosa.nama);
+            setSepSelect('#sep_diagnosa_nama', json_obj[0].response.rujukan.diagnosa.kode, json_obj[0].response.rujukan.diagnosa.nama);
             $('input:text[name=sep_nomor_telepon]').val(json_obj[0].response.rujukan.peserta.mr.noTelepon);
           } else {
             alert(json_obj[0].metaData.message);
@@ -1324,43 +1356,43 @@ async function openFrista(noka) {
               var jenis_kelamin = 'Perempuan';
             }
             if(kode_pelayanan == '1') {
-              $('#sep_asal_rujukan_nama').val(json_obj[0].response.rujukan.provPerujuk.nama);
+              setSepSelect('#sep_asal_rujukan_nama', json_obj[0].response.rujukan.provPerujuk.kode, json_obj[0].response.rujukan.provPerujuk.nama);
               $('#sep_asal_rujukan_kode').val(json_obj[0].response.rujukan.provPerujuk.kode);
             } else {
-              $('#sep_jenis_kelamin_nama').val(jenis_kelamin);
+              setSepSelect('#sep_jenis_kelamin_nama', json_obj[0].response.rujukan.peserta.sex);
               $('#sep_jenis_kelamin_kode').val(json_obj[0].response.rujukan.peserta.sex);
               $('input:text[name=sep_tanggal_lahir]').val(json_obj[0].response.rujukan.peserta.tglLahir);
               $('input:text[name=sep_jenis_peserta]').val(json_obj[0].response.rujukan.peserta.jenisPeserta.keterangan);
               $('input:text[name=sep_no_kartu]').val(json_obj[0].response.rujukan.peserta.noKartu);
               $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
               $('#sep_eksekutif_kode').val("0");
-              $('#sep_eksekutif_nama').val("Tidak");
+              setSepSelect('#sep_eksekutif_nama', "0");
               $('#sep_kunjungan_kode').val("0");
-              $('#sep_kunjungan_nama').val("Normal");
+              setSepSelect('#sep_kunjungan_nama', "0");
               $('#sep_cob_kode').val("0");
-              $('#sep_cob_nama').val("Tidak");
+              setSepSelect('#sep_cob_nama', "0");
               $('#sep_katarak_kode').val("0");
-              $('#sep_katarak_nama').val("Tidak");
+              setSepSelect('#sep_katarak_nama', "0");
               $('#sep_status_kecelakaan_kode').val("0");
-              $('#sep_status_kecelakaan_nama').val("Tidak");
+              setSepSelect('#sep_status_kecelakaan_nama', "0");
               $('#sep_penjamin_kecelakaan_kode').val("0");
-              $('#sep_penjamin_kecelakaan_nama').val("Tidak");
+              setSepSelect('#sep_penjamin_kecelakaan_nama', "0");
               $('#sep_suplesi_kode').val("0");
-              $('#sep_suplesi_nama').val("Tidak");
+              setSepSelect('#sep_suplesi_nama', "0");
               $('#sep_pelayanan_kode').val(json_obj[0].response.rujukan.pelayanan.kode);
-              $('#sep_pelayanan_nama').val(json_obj[0].response.rujukan.pelayanan.nama);
+              setSepSelect('#sep_pelayanan_nama', json_obj[0].response.rujukan.pelayanan.kode);
               $('#sep_kelas_kode').val(json_obj[0].response.rujukan.peserta.hakKelas.kode);
-              $('#sep_kelas_nama').val(json_obj[0].response.rujukan.peserta.hakKelas.keterangan);
+              setSepSelect('#sep_kelas_nama', json_obj[0].response.rujukan.peserta.hakKelas.kode);
               $('#sep_asal_faskes_kode').val(json_obj[0].response.asalFaskes);
-              $('#sep_asal_faskes_nama').val(asalFaskes_nama);
-              $('#sep_asal_rujukan_nama').val(json_obj[0].response.rujukan.provPerujuk.nama);
+              setSepSelect('#sep_asal_faskes_nama', json_obj[0].response.asalFaskes);
+              setSepSelect('#sep_asal_rujukan_nama', json_obj[0].response.rujukan.provPerujuk.kode, json_obj[0].response.rujukan.provPerujuk.nama);
               $('#sep_asal_rujukan_kode').val(json_obj[0].response.rujukan.provPerujuk.kode);
               $('input:text[name=sep_tanggal_rujukan]').val(json_obj[0].response.rujukan.tglKunjungan);
               $('input:text[name=sep_nomor_rujukan]').val(json_obj[0].response.rujukan.noKunjungan);
               $('#sep_spesialis_kode').val(json_obj[0].response.rujukan.poliRujukan.kode);
-              $('#sep_spesialis_nama').val(json_obj[0].response.rujukan.poliRujukan.nama);
+              setSepSelect('#sep_spesialis_nama', json_obj[0].response.rujukan.poliRujukan.kode, json_obj[0].response.rujukan.poliRujukan.nama);
               $('#sep_diagnosa_kode').val(json_obj[0].response.rujukan.diagnosa.kode);
-              $('#sep_diagnosa_nama').val(json_obj[0].response.rujukan.diagnosa.nama);
+              setSepSelect('#sep_diagnosa_nama', json_obj[0].response.rujukan.diagnosa.kode, json_obj[0].response.rujukan.diagnosa.nama);
               $('input:text[name=sep_nomor_telepon]').val(json_obj[0].response.rujukan.peserta.mr.noTelepon);
             }
           } else {
@@ -1395,40 +1427,40 @@ async function openFrista(noka) {
             if(json_obj[0].response.rujukan.peserta.sex == 'P') {
               var jenis_kelamin = 'Perempuan';
             }
-            $('#sep_jenis_kelamin_nama').val(jenis_kelamin);
+            setSepSelect('#sep_jenis_kelamin_nama', json_obj[0].response.rujukan.peserta.sex);
             $('#sep_jenis_kelamin_kode').val(json_obj[0].response.rujukan.peserta.sex);
             $('input:text[name=sep_tanggal_lahir]').val(json_obj[0].response.rujukan.peserta.tglLahir);
             $('input:text[name=sep_jenis_peserta]').val(json_obj[0].response.rujukan.peserta.jenisPeserta.keterangan);
             $('input:text[name=sep_no_kartu]').val(json_obj[0].response.rujukan.peserta.noKartu);
             $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
             $('#sep_eksekutif_kode').val("0");
-            $('#sep_eksekutif_nama').val("Tidak");
+            setSepSelect('#sep_eksekutif_nama', "0");
             $('#sep_kunjungan_kode').val("0");
-            $('#sep_kunjungan_nama').val("Normal");
+            setSepSelect('#sep_kunjungan_nama', "0");
             $('#sep_cob_kode').val("0");
-            $('#sep_cob_nama').val("Tidak");
+            setSepSelect('#sep_cob_nama', "0");
             $('#sep_katarak_kode').val("0");
-            $('#sep_katarak_nama').val("Tidak");
+            setSepSelect('#sep_katarak_nama', "0");
             $('#sep_status_kecelakaan_kode').val("0");
-            $('#sep_status_kecelakaan_nama').val("Tidak");
+            setSepSelect('#sep_status_kecelakaan_nama', "0");
             $('#sep_penjamin_kecelakaan_kode').val("0");
-            $('#sep_penjamin_kecelakaan_nama').val("Tidak");
+            setSepSelect('#sep_penjamin_kecelakaan_nama', "0");
             $('#sep_suplesi_kode').val("0");
-            $('#sep_suplesi_nama').val("Tidak");
+            setSepSelect('#sep_suplesi_nama', "0");
             $('#sep_pelayanan_kode').val(json_obj[0].response.rujukan.pelayanan.kode);
-            $('#sep_pelayanan_nama').val(json_obj[0].response.rujukan.pelayanan.nama);
+            setSepSelect('#sep_pelayanan_nama', json_obj[0].response.rujukan.pelayanan.kode);
             $('#sep_kelas_kode').val(json_obj[0].response.rujukan.peserta.hakKelas.kode);
-            $('#sep_kelas_nama').val(json_obj[0].response.rujukan.peserta.hakKelas.keterangan);
+            setSepSelect('#sep_kelas_nama', json_obj[0].response.rujukan.peserta.hakKelas.kode);
             $('#sep_asal_faskes_kode').val(json_obj[0].response.asalFaskes);
-            $('#sep_asal_faskes_nama').val(asalFaskes_nama);
-            $('#sep_asal_rujukan_nama').val(json_obj[0].response.rujukan.provPerujuk.nama);
+            setSepSelect('#sep_asal_faskes_nama', json_obj[0].response.asalFaskes);
+            setSepSelect('#sep_asal_rujukan_nama', json_obj[0].response.rujukan.provPerujuk.kode, json_obj[0].response.rujukan.provPerujuk.nama);
             $('#sep_asal_rujukan_kode').val(json_obj[0].response.rujukan.provPerujuk.kode);
             $('input:text[name=sep_tanggal_rujukan]').val(json_obj[0].response.rujukan.tglKunjungan);
             $('input:text[name=sep_nomor_rujukan]').val(json_obj[0].response.rujukan.noKunjungan);
             $('#sep_spesialis_kode').val(json_obj[0].response.rujukan.poliRujukan.kode);
-            $('#sep_spesialis_nama').val(json_obj[0].response.rujukan.poliRujukan.nama);
+            setSepSelect('#sep_spesialis_nama', json_obj[0].response.rujukan.poliRujukan.kode, json_obj[0].response.rujukan.poliRujukan.nama);
             $('#sep_diagnosa_kode').val(json_obj[0].response.rujukan.diagnosa.kode);
-            $('#sep_diagnosa_nama').val(json_obj[0].response.rujukan.diagnosa.nama);
+            setSepSelect('#sep_diagnosa_nama', json_obj[0].response.rujukan.diagnosa.kode, json_obj[0].response.rujukan.diagnosa.nama);
             $('input:text[name=sep_nomor_telepon]').val(json_obj[0].response.rujukan.peserta.mr.noTelepon);
           } else {
             alert(json_obj[0].metaData.message);
@@ -1645,33 +1677,60 @@ async function openFrista(noka) {
     });
 
     // === DPJP (dokter search) ===
+    // Parameter Spesialis pada API BPJS harus KODE SPESIALIS, bukan teks yang
+    // diketik user. Teks ketikan hanya dipakai untuk memfilter nama dokter dari
+    // daftar DPJP pada spesialis tersebut (daftar di-cache per spesialis/tanggal).
+    var dpjpCache = { key: null, list: [] };
+
+    function filterDpjpByNama(list, query) {
+      var keyword = (query || '').toLowerCase();
+      var results = [];
+      for (var i = 0; i < list.length; i++) {
+        var kode = String(list[i].kode);
+        var nama = list[i].nama || '';
+        if (keyword === '' || nama.toLowerCase().indexOf(keyword) !== -1 || kode.toLowerCase().indexOf(keyword) !== -1) {
+          results.push({value: list[i].kode, text: nama});
+        }
+      }
+      return results;
+    }
+
+    function loadDpjpBySpesialisKode(query, callback) {
+      var sep_pelayanan_kode = $('#sep_pelayanan_kode').val();
+      var sep_spesialis_kode = $('#sep_spesialis_kode').val();
+      if (sep_spesialis_kode == 'IGD') sep_pelayanan_kode = '1';
+      var sep_tanggal_sep = $('#sep_tanggal_sep').val();
+      if (!sep_spesialis_kode) {
+        callback([]);
+        return;
+      }
+      var cacheKey = sep_pelayanan_kode + '|' + sep_tanggal_sep + '|' + sep_spesialis_kode;
+      if (dpjpCache.key === cacheKey) {
+        callback(filterDpjpByNama(dpjpCache.list, query));
+        return;
+      }
+      $.ajax({
+        url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(sep_spesialis_kode) + '?t={?=$_SESSION["token"]?}',
+        method: 'GET',
+        data: {},
+        success: function(data) {
+          var data = JSON.parse(data);
+          var list = [];
+          if (data.metaData.code == 200 && data.response && data.response.list) {
+            list = data.response.list;
+          }
+          dpjpCache.key = cacheKey;
+          dpjpCache.list = list;
+          callback(filterDpjpByNama(list, query));
+        }
+      });
+    }
+
     var $dpjp = $('#sep_dpjp_yang_melayani_nama');
     $dpjp.selectator({
       useSearch: true,
       minSearchLength: 1,
-      load: function(query, callback) {
-        var sep_pelayanan_kode = $('#sep_pelayanan_kode').val();
-        var sep_spesialis_kode = $('#sep_spesialis_kode').val();
-        if (sep_spesialis_kode == 'IGD') sep_pelayanan_kode = '1';
-        var sep_tanggal_sep = $('#sep_tanggal_sep').val();
-        $.ajax({
-          url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION["token"]?}',
-          method: 'GET',
-          data: {},
-          success: function(data) {
-            var data = JSON.parse(data);
-            var json_obj = [data];
-            var results = [];
-            if (json_obj[0].metaData.code == 200) {
-              var dokterdpjp = json_obj[0].response.list;
-              for (var i = 0; i < dokterdpjp.length; i++) {
-                results.push({value: dokterdpjp[i].kode, text: dokterdpjp[i].nama});
-              }
-            }
-            callback(results);
-          }
-        });
-      }
+      load: loadDpjpBySpesialisKode
     });
     $dpjp.on('change', function() {
       var kode_pelayanan = $('#sep_pelayanan_kode').val();
@@ -1687,7 +1746,7 @@ async function openFrista(noka) {
       if ($dpjpPelayanan.data('selectator')) {
         try { $dpjpPelayanan.selectator('destroy'); } catch(e) {}
       }
-      $dpjpPelayanan.selectator({ useSearch: true });
+      $dpjpPelayanan.selectator({ useSearch: true, minSearchLength: 1, load: loadDpjpBySpesialisKode });
       if (kode_pelayanan == '1') {
         $spesialis.val('');
         $('#sep_spesialis_kode').val('');
@@ -1703,27 +1762,7 @@ async function openFrista(noka) {
     $dpjpPelayanan.selectator({
       useSearch: true,
       minSearchLength: 1,
-      load: function(query, callback) {
-        var sep_pelayanan_kode = $('#sep_pelayanan_kode').val();
-        var sep_tanggal_sep = $('#sep_tanggal_sep').val();
-        $.ajax({
-          url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION["token"]?}',
-          method: 'GET',
-          data: {},
-          success: function(data) {
-            var data = JSON.parse(data);
-            var json_obj = [data];
-            var results = [];
-            if (json_obj[0].metaData.code == 200) {
-              var dokterdpjp = json_obj[0].response.list;
-              for (var i = 0; i < dokterdpjp.length; i++) {
-                results.push({value: dokterdpjp[i].kode, text: dokterdpjp[i].nama});
-              }
-            }
-            callback(results);
-          }
-        });
-      }
+      load: loadDpjpBySpesialisKode
     });
     $dpjpPelayanan.on('change', function() {
       $('#sep_dpjp_pelayanan_kode').val($(this).val());
@@ -1731,32 +1770,19 @@ async function openFrista(noka) {
 
     // === Load DPJP by spesialis kode (auto-load when spesialis selected) ===
     var loadDpjpBySpesialis = function() {
-      var query = $('#sep_spesialis_kode').val();
-      var sep_pelayanan_kode = $('#sep_pelayanan_kode').val();
-      if (query == 'IGD') sep_pelayanan_kode = '1';
-      var sep_tanggal_sep = $('#sep_tanggal_sep').val();
-      if (query != '') {
-        $.ajax({
-          url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION["token"]?}',
-          method: 'GET',
-          data: {},
-          success: function(data) {
-            var data = JSON.parse(data);
-            var json_obj = [data];
-            if (json_obj[0].metaData.code == 200) {
-              var dokterdpjp = json_obj[0].response.list;
-              $dpjp.find('option').not(':first').remove();
-              for (var i = 0; i < dokterdpjp.length; i++) {
-                $dpjp.append('<option value="' + dokterdpjp[i].kode + '">' + dokterdpjp[i].nama + '</option>');
-              }
-              if ($dpjp.data('selectator')) {
-                try { $dpjp.selectator('destroy'); } catch(e) {}
-              }
-              $dpjp.selectator({ useSearch: true });
-            }
-          }
-        });
+      if (!$('#sep_spesialis_kode').val()) {
+        return;
       }
+      loadDpjpBySpesialisKode('', function(results) {
+        $dpjp.find('option').not(':first').remove();
+        for (var i = 0; i < results.length; i++) {
+          $dpjp.append($('<option>').attr('value', results[i].value).text(results[i].text));
+        }
+        if ($dpjp.data('selectator')) {
+          try { $dpjp.selectator('destroy'); } catch(e) {}
+        }
+        $dpjp.selectator({ useSearch: true, minSearchLength: 1, load: loadDpjpBySpesialisKode });
+      });
     };
 
     // === Diagnosa (diagnosa search) ===

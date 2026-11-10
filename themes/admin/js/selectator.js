@@ -736,12 +736,18 @@
 			// select option
 			if (is_single) {
 				var lastSelectedItem = self.$source_element.find('option:selected').last()[0];
-				lastSelectedItem.removeAttribute('selected');
-				lastSelectedItem.selected = false;
+				if (lastSelectedItem) {
+					lastSelectedItem.removeAttribute('selected');
+					lastSelectedItem.selected = false;
+				}
 			}
 			var $active = self.$options_element.find('.active');
-			$active.data('source_option_element').setAttribute('selected', '');
-			$active.data('source_option_element').selected = true;
+			var source_option_element = $active.data('source_option_element');
+			if (source_option_element === undefined) {
+				return;
+			}
+			source_option_element.setAttribute('selected', '');
+			source_option_element.selected = true;
 			self.$source_element.trigger('change');
 			if (!self.options.keepOpen) {
 				self.$input_element.val('');
