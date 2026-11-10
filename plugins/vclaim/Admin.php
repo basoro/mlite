@@ -3669,6 +3669,23 @@ class Admin extends AdminModule
       return $this->draw('mappingdokter.html', ['row' => htmlspecialchars_array($this->db('maping_dokter_dpjpvclaim')->toArray()), 'dokter' => htmlspecialchars_array($dokter)]);
   }
 
+  public function getDpjpMapping()
+  {
+      $rows = $this->db('maping_dokter_dpjpvclaim')->toArray();
+      $list = [];
+      foreach ($rows as $row) {
+          if (!empty($row['kd_dokter_bpjs'])) {
+              $list[] = [
+                  'kd_dokter_bpjs' => $row['kd_dokter_bpjs'],
+                  'nm_dokter_bpjs' => $row['nm_dokter_bpjs']
+              ];
+          }
+      }
+      header('Content-Type: application/json');
+      echo json_encode(['list' => $list]);
+      exit();
+  }
+
   public function postDokter_Save()
   {
 

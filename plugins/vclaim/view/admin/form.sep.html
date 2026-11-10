@@ -1680,7 +1680,73 @@ async function openFrista(noka) {
     // Parameter Spesialis pada API BPJS harus KODE SPESIALIS, bukan teks yang
     // diketik user. Teks ketikan hanya dipakai untuk memfilter nama dokter dari
     // daftar DPJP pada spesialis tersebut (daftar di-cache per spesialis/tanggal).
+    // Jika spesialis belum dipilih, nama dokter dicari lewat referensi/dokter/{nama}.
     var dpjpCache = { key: null, list: [] };
+
+    // Daftar kode dokter BPJS yang sudah dipetakan pada menu Mapping Dokter
+    // (tabel maping_dokter_dpjpvclaim). Dipakai untuk menyaring hasil fallback
+    // pencarian dokter berdasarkan nama agar DPJP yang dipilih valid untuk SEP.
+    var dpjpMapping = null;
+    var dpjpMappingLoading = false;
+    var dpjpMappingCallbacks = [];
+
+    function withDpjpMapping(callback) {
+      if (dpjpMapping !== null) {
+        callback(dpjpMapping);
+        return;
+      }
+      dpjpMappingCallbacks.push(callback);
+      if (dpjpMappingLoading) {
+        return;
+      }
+      dpjpMappingLoading = true;
+      $.ajax({
+        url: '{?=url()?}/{?=ADMIN?}/vclaim/dpjpmapping?t={?=$_SESSION["token"]?}',
+        method: 'GET',
+        success: function(data) {
+          var list = [];
+          try {
+            var parsed = JSON.parse(data);
+            if (parsed && parsed.list) {
+              list = parsed.list;
+            } else if (parsed && parsed.length) {
+              list = parsed;
+            }
+          } catch (e) {
+            list = [];
+          }
+          dpjpMapping = list;
+        },
+        error: function() {
+          dpjpMapping = [];
+        },
+        complete: function() {
+          var callbacks = dpjpMappingCallbacks;
+          dpjpMappingCallbacks = [];
+          for (var i = 0; i < callbacks.length; i++) {
+            callbacks[i](dpjpMapping);
+          }
+        }
+      });
+    }
+
+    function filterDpjpTerdaftar(list) {
+      // Kalau mapping belum diisi sama sekali, jangan saring apa pun.
+      if (!dpjpMapping || !dpjpMapping.length) {
+        return list;
+      }
+      var terdaftar = {};
+      for (var i = 0; i < dpjpMapping.length; i++) {
+        terdaftar[String(dpjpMapping[i].kd_dokter_bpjs)] = true;
+      }
+      var results = [];
+      for (var j = 0; j < list.length; j++) {
+        if (terdaftar[String(list[j].kode)]) {
+          results.push(list[j]);
+        }
+      }
+      return results;
+    }
 
     function filterDpjpByNama(list, query) {
       var keyword = (query || '').toLowerCase();
@@ -1701,7 +1767,41 @@ async function openFrista(noka) {
       if (sep_spesialis_kode == 'IGD') sep_pelayanan_kode = '1';
       var sep_tanggal_sep = $('#sep_tanggal_sep').val();
       if (!sep_spesialis_kode) {
-        callback([]);
+        // Fallback: belum ada spesialis (mis. Rawat Inap) -> cari dokter
+        // berdasarkan nama lewat referensi/dokter/{nama}, bukan DPJP per spesialis.
+        if (!query) {
+          callback([]);
+          return;
+        }
+        var dokterKey = 'dokter|' + query.toLowerCase();
+        if (dpjpCache.key === dokterKey) {
+          callback(dpjpCache.list);
+          return;
+        }
+        $.ajax({
+          url: '{?=url()?}/{?=ADMIN?}/vclaim/dokter/' + encodeURIComponent(query) + '?t={?=$_SESSION["token"]?}',
+          method: 'GET',
+          data: {},
+          success: function(data) {
+            var data = JSON.parse(data);
+            var list = [];
+            if (data.metaData.code == 200 && data.response) {
+              if (data.response.list) {
+                list = data.response.list;
+              } else if (data.response.kode) {
+                list = [data.response];
+              } else if (data.response.length) {
+                list = data.response;
+              }
+            }
+            withDpjpMapping(function() {
+              var terdaftar = filterDpjpTerdaftar(list);
+              dpjpCache.key = dokterKey;
+              dpjpCache.list = terdaftar;
+              callback(filterDpjpByNama(terdaftar, ''));
+            });
+          }
+        });
         return;
       }
       var cacheKey = sep_pelayanan_kode + '|' + sep_tanggal_sep + '|' + sep_spesialis_kode;
@@ -1770,6 +1870,22 @@ async function openFrista(noka) {
 
     // === Load DPJP by spesialis kode (auto-load when spesialis selected) ===
     var loadDpjpBySpesialis = function() {
+      // Spesialis berubah: DPJP lama tidak valid lagi, kosongkan pilihan beserta
+      // kodenya supaya SEP tidak tersimpan dengan DPJP dari poli sebelumnya.
+      $('#sep_dpjp_yang_melayani_kode').val('');
+      $('#sep_dpjp_pelayanan_kode').val('');
+      $dpjp.find('option').not(':first').remove();
+      $dpjp.val('');
+      var $dpjpPelayananReset = $('#sep_dpjp_pelayanan_nama');
+      $dpjpPelayananReset.find('option').not(':first').remove();
+      $dpjpPelayananReset.val('');
+      if ($dpjp.data('selectator')) {
+        try { $dpjp.selectator('refresh'); } catch(e) {}
+      }
+      if ($dpjpPelayananReset.data('selectator')) {
+        try { $dpjpPelayananReset.selectator('refresh'); } catch(e) {}
+      }
+
       if (!$('#sep_spesialis_kode').val()) {
         return;
       }
@@ -1779,9 +1895,8 @@ async function openFrista(noka) {
           $dpjp.append($('<option>').attr('value', results[i].value).text(results[i].text));
         }
         if ($dpjp.data('selectator')) {
-          try { $dpjp.selectator('destroy'); } catch(e) {}
+          try { $dpjp.selectator('refresh'); } catch(e) {}
         }
-        $dpjp.selectator({ useSearch: true, minSearchLength: 1, load: loadDpjpBySpesialisKode });
       });
     };
 
