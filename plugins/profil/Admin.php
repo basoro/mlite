@@ -6,12 +6,19 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    // Pembatasan percobaan passphrase saat mengganti passphrase lama.
+    const PASSPHRASE_MAX_ATTEMPTS = 5;
+    const PASSPHRASE_LOCK_SECONDS = 900; // 15 menit
+
+    private static $passphraseTableReady = false;
+    private static $attemptTablesReady = [];
+
     // Property declarations to fix PHP 8.3 deprecation warnings
     public $assign;
 
     public function navigation()
     {
-        return [
+        $navigation = [
             'Kelola' => 'manage',
             'Biodata' => 'biodata',
             'Presensi Masuk' => 'presensi',
@@ -19,6 +26,13 @@ class Admin extends AdminModule
             'Jadwal Pegawai' => 'jadwal',
             'Ganti Password' => 'ganti_pass'
         ];
+
+        // Submodul passphrase hanya relevan bila plugin eSignature aktif.
+        if ($this->core->ActiveModule('esignature')) {
+            $navigation['Passphrase TTE'] = 'passphrase';
+        }
+
+        return $navigation;
     }
 
     public function getManage()
@@ -30,6 +44,11 @@ class Admin extends AdminModule
             ['name' => 'Jadwal', 'url' => url([ADMIN, 'profil', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
             ['name' => 'Ganti Password', 'url' => url([ADMIN, 'profil', 'ganti_pass']), 'icon' => 'cubes', 'desc' => 'Ganti Pasword'],
         ];
+
+        // Submodul passphrase tanda tangan elektronik (bila plugin eSignature aktif).
+        if ($this->core->ActiveModule('esignature')) {
+            $sub_modules[] = ['name' => 'Passphrase TTE', 'url' => url([ADMIN, 'profil', 'passphrase']), 'icon' => 'pencil-square-o', 'desc' => 'Passphrase Tanda Tangan Elektronik'];
+        }
         $username = $this->core->getUserInfo('username', null, true);
         $cek_profil = $this->db('pegawai')->where('nik', $username)->oneArray();
         if(!$cek_profil) {
@@ -531,6 +550,193 @@ class Admin extends AdminModule
         }
 
         redirect($location, $_POST);
+    }
+
+    /**
+     * Passphrase pribadi untuk menandatangani dokumen elektronik.
+     * Hanya tersedia bila plugin eSignature aktif.
+     */
+    public function getPassphrase()
+    {
+        if (!$this->core->ActiveModule('esignature')) {
+            $this->notify('failure', 'Plugin eSignature tidak aktif.');
+            redirect(url([ADMIN, 'profil', 'manage']));
+        }
+
+        $this->_addHeaderFiles();
+        $user_id = (string) $this->core->getUserInfo('username', null, true);
+        $row = $this->_passphraseRow($user_id);
+
+        $this->assign['username'] = $user_id;
+        $this->assign['has_passphrase'] = !empty($row['passphrase']);
+        $this->assign['updated_at'] = (string) ($row['updated_at'] ?? '');
+
+        return $this->draw('passphrase.html', ['passphrase' => htmlspecialchars_array($this->assign)]);
+    }
+
+    public function postPassphrase()
+    {
+        if (!$this->core->ActiveModule('esignature')) {
+            $this->notify('failure', 'Plugin eSignature tidak aktif.');
+            redirect(url([ADMIN, 'profil', 'manage']));
+        }
+
+        $location = url([ADMIN, 'profil', 'passphrase']);
+        $user_id = (string) $this->core->getUserInfo('username', null, true);
+        $current = (string) ($_POST['current_passphrase'] ?? '');
+        $new = (string) ($_POST['new_passphrase'] ?? '');
+        $confirm = (string) ($_POST['confirm_passphrase'] ?? '');
+        $row = $this->_passphraseRow($user_id);
+        $attemptTable = 'mlite_esignature_passphrase_attempt';
+        $blocked = ($user_id !== '' && !empty($row['passphrase']))
+            ? $this->_attemptBlockMessage($user_id, $attemptTable)
+            : null;
+
+        if ($user_id === '') {
+            $this->notify('failure', 'Sesi pengguna tidak dikenali. Silakan login ulang.');
+        } elseif ($blocked !== null) {
+            // Pembatasan yang sama dengan saat menandatangani dokumen.
+            $this->notify('failure', $blocked);
+        } elseif (!empty($row['passphrase']) && !$this->_verifyPassphrase($user_id, $current)) {
+            $this->notify('failure', $this->_attemptFailMessage($user_id, $attemptTable));
+        } elseif (strlen($new) < 6) {
+            $this->notify('failure', 'Passphrase baru minimal 6 karakter.');
+        } elseif ($new !== $confirm) {
+            $this->notify('failure', 'Konfirmasi passphrase tidak sama.');
+        } else {
+            $data = [
+                'passphrase' => password_hash($new, PASSWORD_DEFAULT),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+            if (!empty($row['passphrase'])) {
+                $this->db('mlite_esignature_passphrase')->where('user_id', $user_id)->update($data);
+            } else {
+                $this->db('mlite_esignature_passphrase')->save(array_merge(['user_id' => $user_id], $data));
+            }
+            $this->_clearAttempts($user_id, $attemptTable);
+            $this->notify('success', 'Passphrase berhasil disimpan. Gunakan passphrase ini saat menandatangani dokumen.');
+        }
+
+        redirect($location);
+    }
+
+    /**
+     * Tabel passphrase TTE (dibuat oleh plugin eSignature; dibuat ulang di sini
+     * secara idempoten agar submodul ini tetap aman bila tabel belum ada).
+     */
+    private function _ensurePassphraseTable()
+    {
+        if (self::$passphraseTableReady) {
+            return;
+        }
+        self::$passphraseTableReady = true;
+        try {
+            $this->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_esignature_passphrase` (\n"
+                . "  `user_id` varchar(50) NOT NULL,\n"
+                . "  `passphrase` varchar(255) NOT NULL,\n"
+                . "  `updated_at` datetime NOT NULL,\n"
+                . "  PRIMARY KEY (`user_id`)\n"
+                . ")");
+        } catch (\Throwable $e) {
+            // Diabaikan: pemanggil akan memberi tahu bila passphrase tidak bisa disimpan.
+        }
+    }
+
+    private function _passphraseRow($user_id)
+    {
+        $user_id = (string) $user_id;
+        if ($user_id === '') {
+            return [];
+        }
+        $this->_ensurePassphraseTable();
+        $row = $this->db('mlite_esignature_passphrase')->where('user_id', $user_id)->oneArray();
+        return is_array($row) ? $row : [];
+    }
+
+    private function _verifyPassphrase($user_id, $passphrase)
+    {
+        $row = $this->_passphraseRow($user_id);
+        if (empty($row['passphrase'])) {
+            return false;
+        }
+        return password_verify((string) $passphrase, (string) $row['passphrase']);
+    }
+
+    private function _ensureAttemptTable($table)
+    {
+        if (!empty(self::$attemptTablesReady[$table])) {
+            return;
+        }
+        self::$attemptTablesReady[$table] = true;
+        try {
+            $this->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `" . $table . "` (\n"
+                . "  `user_id` varchar(50) NOT NULL,\n"
+                . "  `attempts` int NOT NULL DEFAULT 0,\n"
+                . "  `last_attempt` datetime NOT NULL,\n"
+                . "  PRIMARY KEY (`user_id`)\n"
+                . ")");
+        } catch (\Throwable $e) {
+            // Diabaikan: tanpa tabel, pembatasan percobaan tidak aktif.
+        }
+    }
+
+    private function _attemptRow($user_id, $table)
+    {
+        $user_id = (string) $user_id;
+        if ($user_id === '') {
+            return [];
+        }
+        $this->_ensureAttemptTable($table);
+        $row = $this->db($table)->where('user_id', $user_id)->oneArray();
+        return is_array($row) ? $row : [];
+    }
+
+    private function _attemptBlockMessage($user_id, $table)
+    {
+        $row = $this->_attemptRow($user_id, $table);
+        if (empty($row) || (int) $row['attempts'] < self::PASSPHRASE_MAX_ATTEMPTS) {
+            return null;
+        }
+        $remaining = self::PASSPHRASE_LOCK_SECONDS - (time() - strtotime((string) $row['last_attempt']));
+        if ($remaining <= 0) {
+            $this->_clearAttempts($user_id, $table);
+            return null;
+        }
+        return 'Terlalu banyak percobaan passphrase yang salah. Coba lagi dalam ' . (int) ceil($remaining / 60) . ' menit.';
+    }
+
+    private function _attemptFailMessage($user_id, $table)
+    {
+        $row = $this->_attemptRow($user_id, $table);
+        $attempts = empty($row) ? 1 : ((int) $row['attempts'] + 1);
+        $now = date('Y-m-d H:i:s');
+        if (empty($row)) {
+            $this->db($table)->save([
+                'user_id' => (string) $user_id,
+                'attempts' => $attempts,
+                'last_attempt' => $now
+            ]);
+        } else {
+            $this->db($table)->where('user_id', $user_id)->update([
+                'attempts' => $attempts,
+                'last_attempt' => $now
+            ]);
+        }
+
+        if ($attempts >= self::PASSPHRASE_MAX_ATTEMPTS) {
+            return 'Passphrase salah. Percobaan habis, coba lagi dalam ' . (int) (self::PASSPHRASE_LOCK_SECONDS / 60) . ' menit.';
+        }
+        return 'Passphrase salah. Sisa percobaan: ' . (self::PASSPHRASE_MAX_ATTEMPTS - $attempts) . '.';
+    }
+
+    private function _clearAttempts($user_id, $table)
+    {
+        try {
+            $this->_ensureAttemptTable($table);
+            $this->db($table)->where('user_id', (string) $user_id)->delete();
+        } catch (\Throwable $e) {
+            // Diabaikan.
+        }
     }
 
     public function getJavascript()

@@ -1,0 +1,220 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Penetapan Passphrase Pengguna (Admin)</h3>
+            </div>
+            <div class="panel-body">
+                <p class="text-muted">
+                    Daftar pengguna diambil langsung dari tabel pengguna (<code>mlite_users</code>). Isi kolom
+                    <strong>Tetapkan Passphrase</strong> untuk memberikan passphrase kepada pengguna yang belum pernah
+                    membuatnya, atau <strong>Reset</strong> bila pengguna lupa passphrase-nya. Reset hanya menghapus
+                    passphrase, sehingga pengguna wajib membuat passphrase baru sebelum dapat menandatangani dokumen.
+                    Riwayat tanda tangan tidak berubah.
+                </p>
+                <form method="get" action="{?=url([ADMIN, 'esignature', 'passphrase'])?}" class="form-inline" style="margin-bottom:12px;">
+                    {if: !empty($lq)}
+                    <input type="hidden" name="lq" value="{?=isset_or($lq)?}">
+                    {/if}
+                    {if: $lpage > 1}
+                    <input type="hidden" name="lpage" value="{?=isset_or($lpage)?}">
+                    {/if}
+                    <div class="input-group input-group-sm" style="max-width:340px; display:inline-flex; vertical-align:middle;">
+                        <input type="text" name="q" class="form-control" placeholder="Cari nama atau username" value="{?=isset_or($q)?}">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default">Cari</button>
+                        </span>
+                    </div>
+                    {if: !empty($q)}
+                    <a href="{?=url([ADMIN, 'esignature', 'passphrase'])?}{if: !empty($lq)}?lq={?=urlencode($lq)?}{/if}" class="btn btn-sm btn-link">Hapus pencarian</a>
+                    <span class="text-muted"><small>Hasil untuk &ldquo;{?=isset_or($q)?}&rdquo;: {?=isset_or($total)?} pengguna</small></span>
+                    {/if}
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr class="active">
+                                <th>Pengguna</th>
+                                <th width="170">Status Passphrase</th>
+                                <th width="260">Tetapkan Passphrase (Admin)</th>
+                                <th class="text-center" width="90">Reset</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {if: count($users) > 0}
+                                {loop: $users}
+                                <tr>
+                                    <td>
+                                        <strong>{?=isset_or($value.fullname)?}</strong><br>
+                                        <small class="text-muted">{?=isset_or($value.username)?}</small>
+                                    </td>
+                                    <td>
+                                        {if: !empty($value.has_passphrase)}
+                                        <span class="label label-success">Sudah diatur</span>
+                                        {else}
+                                        <span class="label label-default">Belum diatur</span>
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        <form method="post" action="{?=url([ADMIN, 'esignature', 'setuserpassphrase'])?}" class="form-inline" style="margin:0;" autocomplete="off">
+                                            <input type="hidden" name="user_id" value="{?=isset_or($value.username)?}">
+                                            <input type="hidden" name="q" value="{?=isset_or($q)?}">
+                                            <input type="hidden" name="page" value="{?=isset_or($page)?}">
+                                            <input type="hidden" name="lq" value="{?=isset_or($lq)?}">
+                                            <input type="hidden" name="lpage" value="{?=isset_or($lpage)?}">
+                                            <input type="password" name="new_passphrase" class="form-control input-sm" style="width:150px;" placeholder="Passphrase baru" minlength="6" autocomplete="new-password" required>
+                                            <button type="submit" class="btn btn-xs btn-primary">Simpan</button>
+                                        </form>
+                                    </td>
+                                    <td class="text-center">
+                                        {if: !empty($value.has_passphrase)}
+                                        <form method="post" action="{?=url([ADMIN, 'esignature', 'resetpassphrase'])?}" style="margin:0;" onsubmit="return confirm('Reset passphrase pengguna ini?');">
+                                            <input type="hidden" name="user_id" value="{?=isset_or($value.username)?}">
+                                            <input type="hidden" name="q" value="{?=isset_or($q)?}">
+                                            <input type="hidden" name="page" value="{?=isset_or($page)?}">
+                                            <input type="hidden" name="lq" value="{?=isset_or($lq)?}">
+                                            <input type="hidden" name="lpage" value="{?=isset_or($lpage)?}">
+                                            <button type="submit" class="btn btn-xs btn-danger">Reset</button>
+                                        </form>
+                                        {else}
+                                        <span class="text-muted">-</span>
+                                        {/if}
+                                    </td>
+                                </tr>
+                                {/loop}
+                            {else}
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    {if: !empty($q)}
+                                    Tidak ada pengguna yang cocok dengan pencarian.
+                                    {else}
+                                    Belum ada data pengguna.
+                                    {/if}
+                                </td>
+                            </tr>
+                            {/if}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="text-muted" style="margin:10px 0;">
+                            <small>Menampilkan {?=isset_or($first_no)?}-{?=isset_or($last_no)?} dari {?=isset_or($total)?} pengguna.</small>
+                        </p>
+                    </div>
+                    <div class="col-sm-6">
+                        {if: count($pages) > 0}
+                        <ul class="pagination pagination-sm pull-right" style="margin:4px 0;">
+                            {loop: $pages}
+                            <li class="{if: !empty($value.active)}active{/if}{if: !empty($value.disabled)} disabled{/if}">
+                                {if: !empty($value.active) || !empty($value.disabled)}
+                                <span>{?=$value.label?}</span>
+                                {else}
+                                <a href="{?=$value.url?}">{?=$value.label?}</a>
+                                {/if}
+                            </li>
+                            {/loop}
+                        </ul>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Riwayat Aktivitas Passphrase (Audit)</h3>
+            </div>
+            <div class="panel-body">
+                <form method="get" action="{?=url([ADMIN, 'esignature', 'passphrase'])?}" class="form-inline" style="margin-bottom:12px;">
+                    {if: !empty($q)}
+                    <input type="hidden" name="q" value="{?=isset_or($q)?}">
+                    {/if}
+                    {if: $page > 1}
+                    <input type="hidden" name="page" value="{?=isset_or($page)?}">
+                    {/if}
+                    <div class="input-group input-group-sm" style="max-width:340px; display:inline-flex; vertical-align:middle;">
+                        <input type="text" name="lq" class="form-control" placeholder="Cari pengguna, pelaku, atau keterangan" value="{?=isset_or($lq)?}">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default">Cari</button>
+                        </span>
+                    </div>
+                    {if: !empty($lq)}
+                    <a href="{?=url([ADMIN, 'esignature', 'passphrase'])?}{if: !empty($q)}?q={?=urlencode($q)?}{/if}" class="btn btn-sm btn-link">Hapus pencarian</a>
+                    <span class="text-muted"><small>Hasil untuk &ldquo;{?=isset_or($lq)?}&rdquo;: {?=isset_or($log_total)?} aktivitas</small></span>
+                    {/if}
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-condensed table-striped">
+                        <thead>
+                            <tr class="active">
+                                <th width="150">Waktu</th>
+                                <th>Pengguna</th>
+                                <th width="90">Aksi</th>
+                                <th>Dilakukan Oleh</th>
+                                <th>Keterangan</th>
+                                <th width="110">IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {if: count($logs) > 0}
+                                {loop: $logs}
+                                <tr>
+                                    <td>{?=date('d-m-Y H:i:s', strtotime($value.created_at))?}</td>
+                                    <td><strong>{?=isset_or($value.user_id)?}</strong></td>
+                                    <td>
+                                        {if: $value.action == 'reset_by_admin'}
+                                        <span class="label label-danger">Reset</span>
+                                        {else}
+                                        <span class="label label-info">Ditetapkan admin</span>
+                                        {/if}
+                                    </td>
+                                    <td>{?=isset_or($value.actor_name)?} <small class="text-muted">({?=isset_or($value.actor_id)?})</small></td>
+                                    <td><small>{?=isset_or($value.note)?}</small></td>
+                                    <td><small>{?=isset_or($value.ip_address)?}</small></td>
+                                </tr>
+                                {/loop}
+                            {else}
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    {if: !empty($lq)}
+                                    Tidak ada aktivitas yang cocok dengan pencarian.
+                                    {else}
+                                    Belum ada aktivitas passphrase.
+                                    {/if}
+                                </td>
+                            </tr>
+                            {/if}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="text-muted" style="margin:10px 0;">
+                            <small>Menampilkan {?=isset_or($log_first_no)?}-{?=isset_or($log_last_no)?} dari {?=isset_or($log_total)?} aktivitas passphrase.</small>
+                        </p>
+                    </div>
+                    <div class="col-sm-6">
+                        {if: count($log_pages) > 0}
+                        <ul class="pagination pagination-sm pull-right" style="margin:4px 0;">
+                            {loop: $log_pages}
+                            <li class="{if: !empty($value.active)}active{/if}{if: !empty($value.disabled)} disabled{/if}">
+                                {if: !empty($value.active) || !empty($value.disabled)}
+                                <span>{?=$value.label?}</span>
+                                {else}
+                                <a href="{?=$value.url?}">{?=$value.label?}</a>
+                                {/if}
+                            </li>
+                            {/loop}
+                        </ul>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,12 +5,21 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    // Pembatasan percobaan passphrase saat menandatangani dokumen.
+    const SIGN_MAX_ATTEMPTS = 5;
+    const SIGN_LOCK_SECONDS = 900; // 15 menit
+
+    private static $passphraseTableReady = false;
+    private static $attemptTablesReady = [];
+    private static $passphraseLogTableReady = false;
+
     protected $assign = [];
 
     public function navigation()
     {
         return [
             'Kelola' => 'manage',
+            'Passphrase' => 'passphrase',
             'Pengaturan' => 'settings'
         ];
     }
@@ -83,7 +92,8 @@ class Admin extends AdminModule
             'ref_id' => htmlspecialchars_array($ref_id),
             'signer_role' => htmlspecialchars_array($signer_role),
             'signer_id' => htmlspecialchars_array($signer_id),
-            'signer_name' => htmlspecialchars_array($signer_name)
+            'signer_name' => htmlspecialchars_array($signer_name),
+            'has_passphrase' => $this->_hasPassphrase($signer_id)
         ]));
     }
 
@@ -101,36 +111,17 @@ class Admin extends AdminModule
         header('Content-Type: application/json');
 
         try {
-            if (!isset($_POST['ref_type']) || !isset($_POST['ref_id']) || !isset($_POST['image_data'])) {
+            if (!isset($_POST['ref_type']) || !isset($_POST['ref_id']) || !isset($_POST['passphrase'])) {
                 throw new \Exception("Missing parameters");
             }
 
             $ref_type = $_POST['ref_type'];
             $ref_id = $_POST['ref_id'];
-            $image_data = $_POST['image_data']; 
-            
-            $filename = 'sign_' . time() . '_' . uniqid() . '.png';
-            $dir = WEBAPPS_PATH . '/berkas/esignature/';
-            
-            if (!file_exists($dir)) {
-                if (!mkdir($dir, 0755, true)) {
-                    throw new \Exception("Failed to create directory: $dir");
-                }
-            }
+            $passphrase = (string) $_POST['passphrase'];
 
-            if (!is_writable($dir)) {
-                throw new \Exception("Directory not writable: $dir");
+            if (trim($passphrase) === '') {
+                throw new \Exception("Passphrase wajib diisi.");
             }
-
-            $path = $dir . $filename;
-            $image_data = str_replace('data:image/png;base64,', '', $image_data);
-            $image_data = str_replace(' ', '+', $image_data);
-            
-            if (file_put_contents($path, base64_decode($image_data)) === false) {
-                 throw new \Exception("Failed to save image file");
-            }
-
-            $hash = hash_file('sha256', $path);
 
             $auth_id       = (string)$this->core->getUserInfo('username');
             $auth_name     = (string)$this->core->getUserInfo('fullname');
@@ -139,19 +130,40 @@ class Admin extends AdminModule
             $signer_name   = !empty($auth_name) ? $auth_name : (string)($_POST['signer_name'] ?? 'unknown');
             $signer_role   = $this->_resolveSignerRole($auth_rawrole, $signer_name, $signer_id);
 
+            // Tanpa gambar tanda tangan: keabsahan ditentukan oleh passphrase
+            // pribadi penandatangan yang tersimpan (hash) di plugin ini.
+            if (!$this->_hasPassphrase($signer_id)) {
+                throw new \Exception("Passphrase belum diatur. Atur passphrase Anda di menu Profil > Passphrase TTE.");
+            }
+            $blocked = $this->_attemptBlockMessage($signer_id, 'mlite_esignature_sign_attempt');
+            if ($blocked !== null) {
+                throw new \Exception($blocked);
+            }
+            if (!$this->_verifyPassphrase($signer_id, $passphrase)) {
+                throw new \Exception($this->_attemptFailMessage($signer_id, 'mlite_esignature_sign_attempt'));
+            }
+            $this->_clearAttempts($signer_id, 'mlite_esignature_sign_attempt');
+
+            $signed_at = date('Y-m-d H:i:s');
+            $hash = hash('sha256', implode('|', [
+                $ref_type, $ref_id, $signer_id, $signer_name, $signer_role, $signed_at, bin2hex(random_bytes(16))
+            ]));
+
             $save = $this->db('mlite_esignatures')->save([
                 'ref_type' => $ref_type,
                 'ref_id' => $ref_id,
                 'signer_role' => $signer_role,
                 'signer_id' => $signer_id,
                 'signer_name' => $signer_name,
-                'signature_path' => $filename,
+                'signature_path' => '',
                 'signature_hash' => $hash,
-                'signed_at' => date('Y-m-d H:i:s'),
+                'signed_at' => $signed_at,
                 'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
                 'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
                 'legal_basis' => 'UU ITE No 11 Tahun 2008',
                 'audit_json' => json_encode([
+                    'method' => 'passphrase',
+                    'passphrase_verified' => true,
                     'server' => $_SERVER,
                     'headers' => function_exists('apache_request_headers') ? apache_request_headers() : []
                 ])
@@ -265,12 +277,12 @@ class Admin extends AdminModule
                         foreach ($listSigs as $sig) {
                             $path = WEBAPPS_PATH . '/berkas/esignature/' . $sig['signature_path'];
                             $vurl = url(['esignature','verify',$sig['signature_hash']]);
-                            if (file_exists($path)) {
-                                $htmlDoc .= '<div class="signature-box"><table width="100%"><tr>';
-                                $htmlDoc .= '<td width="60%" align="center"><img src="'.$path.'" height="60" /><br><strong>'.$sig['signer_name'].'</strong><br><small>'.$sig['signer_role'].'</small><br><small>'.date('d-m-Y H:i', strtotime($sig['signed_at'])).'</small></td>';
-                                $htmlDoc .= '<td width="40%" align="center"><barcode code="'.$vurl.'" type="QR" class="barcode" size="0.7" error="M" disableborder="1" /><br><small>Verify</small></td>';
-                                $htmlDoc .= '</tr></table></div>';
-                            }
+                            // TTE berbasis passphrase: tidak selalu ada berkas gambar.
+                            $imgPath = (!empty($sig['signature_path']) && file_exists($path)) ? $path : '';
+                            $htmlDoc .= '<div class="signature-box"><table width="100%"><tr>';
+                            $htmlDoc .= '<td width="60%" align="center">'.($imgPath !== '' ? '<img src="'.$imgPath.'" height="60" /><br>' : '').'<strong>'.$sig['signer_name'].'</strong><br><small>'.$sig['signer_role'].'</small><br><small>'.date('d-m-Y H:i', strtotime($sig['signed_at'])).'</small><br><small><i>Ditandatangani dengan passphrase</i></small></td>';
+                            $htmlDoc .= '<td width="40%" align="center"><barcode code="'.$vurl.'" type="QR" class="barcode" size="0.7" error="M" disableborder="1" /><br><small>Verify</small></td>';
+                            $htmlDoc .= '</tr></table></div>';
                         }
                         $htmlDoc .= '</div></div>';
 
@@ -336,6 +348,461 @@ class Admin extends AdminModule
         }
         
         exit;
+    }
+
+    /**
+     * Tabel passphrase TTE per pengguna. Dibuat otomatis (idempoten) agar
+     * instalasi yang sudah berjalan tetap bisa memakai fitur ini tanpa upgrade.
+     */
+    private function _ensurePassphraseTable()
+    {
+        if (self::$passphraseTableReady) {
+            return;
+        }
+        self::$passphraseTableReady = true;
+        try {
+            $this->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_esignature_passphrase` (\n"
+                ."  `user_id` varchar(50) NOT NULL,\n"
+                ."  `passphrase` varchar(255) NOT NULL,\n"
+                ."  `updated_at` datetime NOT NULL,\n"
+                ."  PRIMARY KEY (`user_id`)\n"
+                .")");
+        } catch (\Throwable $e) {
+            // Diabaikan: pemanggil akan memberi tahu bila passphrase tidak bisa disimpan.
+        }
+    }
+
+    private function _getPassphraseRow($user_id)
+    {
+        $user_id = (string) $user_id;
+        if ($user_id === '') {
+            return [];
+        }
+        $this->_ensurePassphraseTable();
+        $row = $this->db('mlite_esignature_passphrase')->where('user_id', $user_id)->oneArray();
+        return is_array($row) ? $row : [];
+    }
+
+    /**
+     * Tabel audit aktivitas passphrase (mis. reset oleh admin).
+     * Tanpa kunci surrogate agar kompatibel MySQL & SQLite.
+     */
+    private function _ensurePassphraseLogTable()
+    {
+        if (self::$passphraseLogTableReady) {
+            return;
+        }
+        self::$passphraseLogTableReady = true;
+        try {
+            $this->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_esignature_passphrase_log` (\n"
+                ."  `user_id` varchar(50) NOT NULL,\n"
+                ."  `action` varchar(30) NOT NULL,\n"
+                ."  `note` varchar(255) DEFAULT NULL,\n"
+                ."  `actor_id` varchar(50) NOT NULL,\n"
+                ."  `actor_name` varchar(255) NOT NULL,\n"
+                ."  `ip_address` varchar(45) NOT NULL,\n"
+                ."  `created_at` datetime NOT NULL\n"
+                .")");
+        } catch (\Throwable $e) {
+            // Audit tidak boleh menggagalkan aksi utama.
+        }
+    }
+
+    private function _logPassphraseEvent($user_id, $action, $note = '')
+    {
+        try {
+            $this->_ensurePassphraseLogTable();
+            $this->db('mlite_esignature_passphrase_log')->save([
+                'user_id' => (string) $user_id,
+                'action' => (string) $action,
+                'note' => (string) $note,
+                'actor_id' => (string) $this->core->getUserInfo('username'),
+                'actor_name' => (string) $this->core->getUserInfo('fullname'),
+                'ip_address' => (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown'),
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+        } catch (\Throwable $e) {
+            // Diabaikan.
+        }
+    }
+
+    /**
+     * Tabel pencatatan percobaan passphrase salah (di luar tabel passphrase
+     * agar tidak perlu ALTER pada instalasi lama). Dipakai terpisah untuk
+     * penandatanganan dokumen dan penggantian passphrase.
+     */
+    private function _ensureAttemptTable($table)
+    {
+        if (!empty(self::$attemptTablesReady[$table])) {
+            return;
+        }
+        self::$attemptTablesReady[$table] = true;
+        try {
+            $this->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `" . $table . "` (\n"
+                ."  `user_id` varchar(50) NOT NULL,\n"
+                ."  `attempts` int NOT NULL DEFAULT 0,\n"
+                ."  `last_attempt` datetime NOT NULL,\n"
+                ."  PRIMARY KEY (`user_id`)\n"
+                .")");
+        } catch (\Throwable $e) {
+            // Diabaikan: tanpa tabel, pembatasan percobaan tidak aktif.
+        }
+    }
+
+    private function _attemptRow($user_id, $table)
+    {
+        $user_id = (string) $user_id;
+        if ($user_id === '') {
+            return [];
+        }
+        $this->_ensureAttemptTable($table);
+        $row = $this->db($table)->where('user_id', $user_id)->oneArray();
+        return is_array($row) ? $row : [];
+    }
+
+    /**
+     * Pesan blokir bila percobaan salah sudah habis; null bila boleh mencoba.
+     */
+    private function _attemptBlockMessage($user_id, $table)
+    {
+        $row = $this->_attemptRow($user_id, $table);
+        if (empty($row) || (int) $row['attempts'] < self::SIGN_MAX_ATTEMPTS) {
+            return null;
+        }
+        $elapsed = time() - strtotime((string) $row['last_attempt']);
+        $remaining = self::SIGN_LOCK_SECONDS - $elapsed;
+        if ($remaining <= 0) {
+            $this->_clearAttempts($user_id, $table);
+            return null;
+        }
+        return 'Terlalu banyak percobaan passphrase yang salah. Coba lagi dalam ' . (int) ceil($remaining / 60) . ' menit.';
+    }
+
+    /**
+     * Catat percobaan salah dan kembalikan pesan untuk pengguna.
+     */
+    private function _attemptFailMessage($user_id, $table)
+    {
+        $row = $this->_attemptRow($user_id, $table);
+        $attempts = empty($row) ? 1 : ((int) $row['attempts'] + 1);
+        $now = date('Y-m-d H:i:s');
+        if (empty($row)) {
+            $this->db($table)->save([
+                'user_id' => (string) $user_id,
+                'attempts' => $attempts,
+                'last_attempt' => $now
+            ]);
+        } else {
+            $this->db($table)->where('user_id', $user_id)->update([
+                'attempts' => $attempts,
+                'last_attempt' => $now
+            ]);
+        }
+
+        if ($attempts >= self::SIGN_MAX_ATTEMPTS) {
+            return 'Passphrase salah. Percobaan habis, coba lagi dalam ' . (int) (self::SIGN_LOCK_SECONDS / 60) . ' menit.';
+        }
+        return 'Passphrase salah. Sisa percobaan: ' . (self::SIGN_MAX_ATTEMPTS - $attempts) . '.';
+    }
+
+    private function _clearAttempts($user_id, $table)
+    {
+        try {
+            $this->_ensureAttemptTable($table);
+            $this->db($table)->where('user_id', (string) $user_id)->delete();
+        } catch (\Throwable $e) {
+            // Diabaikan.
+        }
+    }
+
+    private function _hasPassphrase($user_id)
+    {
+        $row = $this->_getPassphraseRow($user_id);
+        return !empty($row['passphrase']);
+    }
+
+    private function _verifyPassphrase($user_id, $passphrase)
+    {
+        $row = $this->_getPassphraseRow($user_id);
+        if (empty($row['passphrase'])) {
+            return false;
+        }
+        return password_verify((string) $passphrase, (string) $row['passphrase']);
+    }
+
+    /**
+     * URL halaman passphrase dengan mempertahankan kata kunci pencarian dan
+     * nomor halaman yang sedang dibuka (dipakai setelah aksi simpan/reset).
+     */
+    private function _passphraseUrl()
+    {
+        $params = [];
+        foreach (['q', 'lq'] as $key) {
+            $val = trim((string) ($_POST[$key] ?? ''));
+            if ($val !== '') {
+                $params[$key] = $val;
+            }
+        }
+        foreach (['page', 'lpage'] as $key) {
+            $num = (int) ($_POST[$key] ?? 0);
+            if ($num > 1) {
+                $params[$key] = $num;
+            }
+        }
+        $url = url([ADMIN, 'esignature', 'passphrase']);
+        return empty($params) ? $url : $url . '?' . http_build_query($params);
+    }
+
+    /**
+     * Nomor halaman yang ditampilkan pada navigasi paginasi (maks. 5 angka).
+     */
+    private function _paginationLinks($page, $total_page, $page_key = 'page', $extra = [])
+    {
+        $make = function ($p) use ($page_key, $extra) {
+            $params = $extra;
+            if ($p > 1) {
+                $params[$page_key] = $p;
+            }
+            return url([ADMIN, 'esignature', 'passphrase']) . (empty($params) ? '' : '?' . http_build_query($params));
+        };
+
+        $links = [[
+            'label' => 'Sebelumnya',
+            'url' => $page > 1 ? $make($page - 1) : '#',
+            'active' => false,
+            'disabled' => $page <= 1
+        ]];
+
+        $start = max(1, $page - 2);
+        $end = min($total_page, $start + 4);
+        $start = max(1, $end - 4);
+        for ($i = $start; $i <= $end; $i++) {
+            $links[] = [
+                'label' => (string) $i,
+                'url' => $make($i),
+                'active' => $i === $page,
+                'disabled' => false
+            ];
+        }
+
+        $links[] = [
+            'label' => 'Berikutnya',
+            'url' => $page < $total_page ? $make($page + 1) : '#',
+            'active' => false,
+            'disabled' => $page >= $total_page
+        ];
+
+        return $links;
+    }
+
+    public function getPassphrase()
+    {
+        // Form passphrase pribadi kini berada di plugin Profil (submodul
+        // "Passphrase TTE"); halaman ini khusus pengelolaan oleh admin.
+        $is_admin = $this->core->getUserInfo('role') == 'admin';
+        if (!$is_admin) {
+            $this->notify('failure', 'Halaman pengelolaan passphrase hanya untuk admin. Passphrase pribadi Anda dapat diatur melalui menu Profil.');
+            redirect(url([ADMIN, 'profil', 'passphrase']));
+        }
+
+        // Admin dapat menetapkan dan mereset passphrase pengguna (dengan pencarian & paginasi).
+        $users = [];
+        $logs = [];
+        $q = trim((string) ($_GET['q'] ?? ''));
+        $per_page = 10;
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $total = 0;
+        $pages = [];
+
+        // Pencarian & paginasi riwayat aktivitas passphrase (audit).
+        $lq = trim((string) ($_GET['lq'] ?? ''));
+        $log_per_page = 10;
+        $log_page = max(1, (int) ($_GET['lpage'] ?? 1));
+        $log_total = 0;
+        $log_pages = [];
+        if ($is_admin) {
+            $this->_ensurePassphraseTable();
+            $sudah = [];
+            foreach ($this->db('mlite_esignature_passphrase')->toArray() as $r) {
+                $sudah[(string) ($r['user_id'] ?? '')] = true;
+            }
+
+            // Filter berdasarkan nama lengkap atau username (tanpa membedakan huruf besar/kecil).
+            $needle = function_exists('mb_strtolower') ? mb_strtolower($q, 'UTF-8') : strtolower($q);
+            $lower = function ($text) {
+                return function_exists('mb_strtolower') ? mb_strtolower((string) $text, 'UTF-8') : strtolower((string) $text);
+            };
+
+            $filtered = [];
+            foreach ($this->db('mlite_users')->asc('fullname')->toArray() as $u) {
+                $username = (string) ($u['username'] ?? '');
+                $fullname = (string) ($u['fullname'] ?? '');
+                if ($needle !== ''
+                    && strpos($lower($fullname), $needle) === false
+                    && strpos($lower($username), $needle) === false) {
+                    continue;
+                }
+                $filtered[] = [
+                    'username' => $username,
+                    'fullname' => $fullname,
+                    'has_passphrase' => !empty($sudah[$username])
+                ];
+            }
+
+            $total = count($filtered);
+            $total_page = max(1, (int) ceil($total / $per_page));
+            if ($page > $total_page) {
+                $page = $total_page;
+            }
+            $users = array_slice($filtered, ($page - 1) * $per_page, $per_page);
+            if ($total_page > 1) {
+                $user_params = [];
+                foreach (['q' => $q, 'lq' => $lq] as $key => $val) {
+                    if ($val !== '') {
+                        $user_params[$key] = $val;
+                    }
+                }
+                if ($log_page > 1) {
+                    $user_params['lpage'] = $log_page;
+                }
+                $pages = $this->_paginationLinks($page, $total_page, 'page', $user_params);
+            }
+
+            // Riwayat aktivitas passphrase (audit), dapat dicari & dipaginasi.
+            $this->_ensurePassphraseLogTable();
+            $logQuery = function () use ($lq) {
+                $query = $this->db('mlite_esignature_passphrase_log');
+                if ($lq !== '') {
+                    $like = '%' . $lq . '%';
+                    $query->where(function ($w) use ($like) {
+                        $w->like('user_id', $like)
+                            ->orLike('actor_name', $like)
+                            ->orLike('actor_id', $like)
+                            ->orLike('note', $like);
+                    });
+                }
+                return $query;
+            };
+
+            $log_total = (int) $logQuery()->count();
+            $log_total_page = max(1, (int) ceil($log_total / $log_per_page));
+            if ($log_page > $log_total_page) {
+                $log_page = $log_total_page;
+            }
+            $logs = $logQuery()
+                ->desc('created_at')
+                ->limit((($log_page - 1) * $log_per_page) . ',' . $log_per_page)
+                ->toArray();
+            if ($log_total_page > 1) {
+                $log_params = [];
+                if ($q !== '') {
+                    $log_params['q'] = $q;
+                }
+                if ($lq !== '') {
+                    $log_params['lq'] = $lq;
+                }
+                if ($page > 1) {
+                    $log_params['page'] = $page;
+                }
+                $log_pages = $this->_paginationLinks($log_page, $log_total_page, 'lpage', $log_params);
+            }
+        }
+
+        return $this->draw('passphrase.html', [
+            'is_admin' => $is_admin,
+            'users' => htmlspecialchars_array($users),
+            'q' => htmlspecialchars_array($q),
+            'page' => $page,
+            'per_page' => $per_page,
+            'total' => $total,
+            'first_no' => $total > 0 ? ($page - 1) * $per_page + 1 : 0,
+            'last_no' => min($total, $page * $per_page),
+            'pages' => htmlspecialchars_array($pages),
+            'logs' => htmlspecialchars_array($logs),
+            'lq' => htmlspecialchars_array($lq),
+            'lpage' => $log_page,
+            'log_per_page' => $log_per_page,
+            'log_total' => $log_total,
+            'log_first_no' => $log_total > 0 ? ($log_page - 1) * $log_per_page + 1 : 0,
+            'log_last_no' => min($log_total, $log_page * $log_per_page),
+            'log_pages' => htmlspecialchars_array($log_pages)
+        ]);
+    }
+
+    public function postResetPassphrase()
+    {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk tindakan ini.');
+            redirect(url([ADMIN, 'esignature', 'manage']));
+        }
+
+        $target = (string) ($_POST['user_id'] ?? '');
+        if ($target === '') {
+            $this->notify('failure', 'Pengguna yang akan direset tidak ditentukan.');
+            redirect($this->_passphraseUrl());
+        }
+
+        $this->_ensurePassphraseTable();
+        $adaPassphrase = $this->db('mlite_esignature_passphrase')->where('user_id', $target)->count() > 0;
+        $this->db('mlite_esignature_passphrase')->where('user_id', $target)->delete();
+        $this->_clearAttempts($target, 'mlite_esignature_sign_attempt');
+        $this->_clearAttempts($target, 'mlite_esignature_passphrase_attempt');
+
+        // Jejak audit: siapa admin yang mereset, kapan, dan untuk pengguna mana.
+        $this->_logPassphraseEvent(
+            $target,
+            'reset_by_admin',
+            $adaPassphrase ? 'Passphrase pengguna dihapus oleh admin.' : 'Tidak ada passphrase untuk dihapus.'
+        );
+
+        $this->notify('success', 'Passphrase pengguna ' . $target . ' telah direset. Pengguna harus membuat passphrase baru sebelum menandatangani dokumen.');
+        redirect($this->_passphraseUrl());
+    }
+
+    /**
+     * Admin menetapkan (assign) passphrase untuk pengguna tertentu, mis. saat
+     * pengguna belum pernah membuat passphrase sendiri.
+     */
+    public function postSetUserPassphrase()
+    {
+        if ($this->core->getUserInfo('role') != 'admin') {
+            $this->notify('failure', 'Anda tidak memiliki hak akses untuk tindakan ini.');
+            redirect(url([ADMIN, 'esignature', 'manage']));
+        }
+
+        $target = (string) ($_POST['user_id'] ?? '');
+        $new = (string) ($_POST['new_passphrase'] ?? '');
+
+        if ($target === '') {
+            $this->notify('failure', 'Pengguna yang akan diberi passphrase tidak ditentukan.');
+        } elseif (strlen($new) < 6) {
+            $this->notify('failure', 'Passphrase minimal 6 karakter.');
+        } elseif (empty($this->db('mlite_users')->where('username', $target)->oneArray())) {
+            $this->notify('failure', 'Pengguna ' . $target . ' tidak ditemukan pada data pengguna.');
+        } else {
+            $this->_ensurePassphraseTable();
+            $row = $this->_getPassphraseRow($target);
+            $data = [
+                'passphrase' => password_hash($new, PASSWORD_DEFAULT),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+            if (!empty($row['passphrase'])) {
+                $this->db('mlite_esignature_passphrase')->where('user_id', $target)->update($data);
+            } else {
+                $this->db('mlite_esignature_passphrase')->save(array_merge(['user_id' => $target], $data));
+            }
+            // Passphrase baru dari admin: buka kunci percobaan untuk pengguna ini.
+            $this->_clearAttempts($target, 'mlite_esignature_sign_attempt');
+            $this->_clearAttempts($target, 'mlite_esignature_passphrase_attempt');
+            $this->_logPassphraseEvent(
+                $target,
+                'set_by_admin',
+                !empty($row['passphrase']) ? 'Passphrase diganti oleh admin.' : 'Passphrase ditetapkan oleh admin.'
+            );
+            $this->notify('success', 'Passphrase pengguna ' . $target . ' berhasil disimpan.');
+        }
+
+        redirect($this->_passphraseUrl());
     }
 
     /**
@@ -597,26 +1064,27 @@ class Admin extends AdminModule
             foreach ($signaturesToRender as $sig) {
                 $path = WEBAPPS_PATH . '/berkas/esignature/' . $sig['signature_path'];
                 $verifyUrl = url(['esignature', 'verify', $sig['signature_hash']]);
+                // TTE berbasis passphrase: gambar hanya ada pada tanda tangan lama.
+                $imgPath = (!empty($sig['signature_path']) && file_exists($path)) ? $path : '';
 
-                if (file_exists($path)) {
-                    $html .= '
-                    <div class="signature-box">
-                        <table width="100%">
-                            <tr>
-                                <td width="60%" align="center">'.(in_array($ref_type, $faktur_types, true) ? '' : '<img src="'.$path.'" height="60" /><br>').'
-                                    <strong>'.$sig['signer_name'].'</strong><br>
-                                    <small>'.$sig['signer_role'].'</small><br>
-                                    <small>'.date('d-m-Y H:i', strtotime($sig['signed_at'])).'</small>
-                                </td>
-                                <td width="40%" align="center">
-                                    <barcode code="'.$verifyUrl.'" type="QR" class="barcode" size="0.7" error="M" disableborder="1" />
-                                    <br>
-                                    <small>Verify</small>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>';
-                }
+                $html .= '
+                <div class="signature-box">
+                    <table width="100%">
+                        <tr>
+                            <td width="60%" align="center">'.(($imgPath !== '' && !in_array($ref_type, $faktur_types, true)) ? '<img src="'.$imgPath.'" height="60" /><br>' : '').'
+                                <strong>'.$sig['signer_name'].'</strong><br>
+                                <small>'.$sig['signer_role'].'</small><br>
+                                <small>'.date('d-m-Y H:i', strtotime($sig['signed_at'])).'</small><br>
+                                <small><i>Ditandatangani dengan passphrase</i></small>
+                            </td>
+                            <td width="40%" align="center">
+                                <barcode code="'.$verifyUrl.'" type="QR" class="barcode" size="0.7" error="M" disableborder="1" />
+                                <br>
+                                <small>Verify</small>
+                            </td>
+                        </tr>
+                    </table>
+                </div>';
             }
             $html .= '</div></div>';
         }

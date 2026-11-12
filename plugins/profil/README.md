@@ -13,6 +13,7 @@ Modul pengelolaan profil dan kehadiran pegawai di mLITE.
   - Rekap Presensi
   - Jadwal Pegawai
   - Ganti Password
+  - Passphrase TTE (hanya tampil bila plugin eSignature aktif)
 
 ## Panduan Pengguna (Petugas)
 
@@ -44,6 +45,13 @@ Modul pengelolaan profil dan kehadiran pegawai di mLITE.
    - Password baru tidak boleh sama dengan password lama.
    - Password baru minimal 8 karakter dan wajib mengandung kombinasi huruf besar, huruf kecil, serta angka.
    - Klik **Simpan** untuk memperbarui password.
+
+7. **Passphrase TTE**
+   - Submodul ini hanya muncul bila plugin **eSignature** aktif.
+   - Passphrase dipakai sebagai pengganti gambar tanda tangan saat menandatangani dokumen elektronik, dan bersifat pribadi per pengguna (disimpan sebagai hash `password_hash` di tabel `mlite_esignature_passphrase`).
+   - Bila belum pernah diatur, cukup isi **Passphrase Baru** dan **Ulangi Passphrase Baru** (minimal 6 karakter). Bila sudah ada, isi juga **Passphrase Lama**.
+   - Setelah 5 kali passphrase lama salah, penggantian passphrase dikunci 15 menit (tabel `mlite_esignature_passphrase_attempt`).
+   - Passphrase yang lupa dapat direset administrator melalui plugin eSignature (menu Passphrase).
 
 ## Panduan Admin
 

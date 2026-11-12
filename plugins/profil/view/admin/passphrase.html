@@ -1,0 +1,65 @@
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Passphrase Tanda Tangan Elektronik</h3>
+            </div>
+            <div class="panel-body">
+                <div class="alert alert-info">
+                    <p>Passphrase digunakan sebagai pengganti gambar tanda tangan saat menandatangani dokumen elektronik.</p>
+                    <p>Passphrase bersifat pribadi per pengguna. Jangan membagikannya kepada siapa pun.</p>
+                </div>
+
+                <dl class="dl-horizontal">
+                    <dt>Pengguna</dt>
+                    <dd>{?=isset_or($passphrase.username)?}</dd>
+                    <dt>Status</dt>
+                    <dd>
+                        {if: !empty($passphrase.has_passphrase)}
+                        <span class="label label-success">Sudah diatur</span>
+                        <small class="text-muted">Diperbarui: {?=isset_or($passphrase.updated_at)?}</small>
+                        {else}
+                        <span class="label label-warning">Belum diatur</span>
+                        {/if}
+                    </dd>
+                </dl>
+
+                <hr>
+
+                <form method="post" action="{?=url([ADMIN, 'profil', 'passphrase'])?}" class="form-horizontal" autocomplete="off">
+                    {if: !empty($passphrase.has_passphrase)}
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Passphrase Lama</label>
+                        <div class="col-sm-8">
+                            <input type="password" name="current_passphrase" class="form-control" autocomplete="current-password" required>
+                            <p class="help-block">Setelah 5 kali passphrase lama salah, penggantian passphrase dikunci 15 menit.</p>
+                        </div>
+                    </div>
+                    {/if}
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Passphrase Baru</label>
+                        <div class="col-sm-8">
+                            <input type="password" name="new_passphrase" class="form-control" autocomplete="new-password" minlength="6" required>
+                            <p class="help-block">Minimal 6 karakter.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Ulangi Passphrase Baru</label>
+                        <div class="col-sm-8">
+                            <input type="password" name="confirm_passphrase" class="form-control" autocomplete="new-password" minlength="6" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-4 col-sm-8">
+                            <button type="submit" class="btn btn-primary">Simpan Passphrase</button>
+                        </div>
+                    </div>
+                </form>
+
+                <p class="text-muted" style="margin-bottom:0;">
+                    <small>Lupa passphrase? Hubungi administrator untuk mereset passphrase Anda melalui plugin eSignature.</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

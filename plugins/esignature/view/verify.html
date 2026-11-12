@@ -52,7 +52,11 @@
             </tr>
         </table>
         <div style="margin-top: 20px; text-align: center;">
+            {if: !empty($signature.signature_path)}
              <img src="{?=url(WEBAPPS_URL.'/berkas/esignature/'.$signature.signature_path)?}" style="max-width: 200px; border: 1px dashed #ccc;">
+            {else}
+             <p style="font-size: 0.9em; color: #555;">Ditandatangani dengan passphrase pribadi penandatangan.</p>
+            {/if}
         </div>
     {else}
         <div class="error">

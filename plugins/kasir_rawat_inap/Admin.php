@@ -2144,10 +2144,9 @@ class Admin extends AdminModule
             $uniqueSigs[$sigKey] = $s;
         }
         foreach ($uniqueSigs as $s) {
+            // TTE berbasis passphrase tidak menyimpan file gambar tanda tangan;
+            // cukup hash verifikasi + QR yang ditampilkan.
             $sigPath = WEBAPPS_PATH.'/berkas/esignature/'.$s['signature_path'];
-            if (!file_exists($sigPath)) {
-                continue;
-            }
             $verifyUrl = url(['esignature', 'verify', $s['signature_hash']]);
             $qrEsignFile = 'qrcode_esign_'.$s['signature_hash'].'.png';
             $qrEsignPath = BASE_DIR.'/'.ADMIN.'/tmp/'.$qrEsignFile;
@@ -2158,7 +2157,7 @@ class Admin extends AdminModule
                 imagedestroy($imEsign);
             }
             $list_esignature[] = [
-                'gambar'  => url().'/uploads/berkas/esignature/'.$s['signature_path'],
+                'gambar'  => (!empty($s['signature_path']) && file_exists($sigPath)) ? url().'/uploads/berkas/esignature/'.$s['signature_path'] : '',
                 'qr'      => url()."/".ADMIN."/tmp/".$qrEsignFile,
                 'verify'  => $verifyUrl,
                 'nama'    => $s['signer_name'],
