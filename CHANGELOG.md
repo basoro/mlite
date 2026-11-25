@@ -19,6 +19,13 @@
 - VClaim: Perkuat penanganan pesan kesalahan saat respons BPJS null/tidak valid (fallback ke “Unknown error”).
 - VClaim: Perbaiki kesalahan kecil dan pengutipan token sesi di beberapa URL AJAX (mis. label “Faskes” dan pengutipan token).
 
+## [6.4.3] - 2026-11-26
+
+### Changed
+- Rilis 6.4.3: `settings.version` di `mlite_db.sql` dinaikkan ke `6.4.3` sehingga workflow Auto Release membuat tag `6.4.3` dan GitHub Release `v6.4.3` pada push ke `master`.
+- Upgrade: `case '6.4.2'` di `systems/upgrade.php` sekarang mengembalikan `6.4.3` (fallback akhir juga `6.4.3`), agar instalasi 6.4.2 ikut naik lewat menu Pembaruan.
+- Farmasi: migrasi ledger batch & pengaturan "Terapkan Nomor Batch" diselaraskan ke 6.4.3; seluruh langkah tetap idempoten sehingga aman dijalankan ulang pada instalasi 6.4.2.
+
 ## [2026-04-08]
 
 ### Changed

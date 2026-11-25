@@ -2813,9 +2813,10 @@ switch ($version) {
         break;
 
     case '6.4.2':
-        // Bagian farmasi ini tidak menaikkan versi: tetap di 6.4.2 agar
-        // migrasi ledger batch & pengaturan "Terapkan Nomor Batch" bersifat
-        // idempoten (aman dijalankan berulang tanpa mengubah nomor versi).
+        // Release v6.4.3: migrasi farmasi ini dinaikkan ke 6.4.3 sehingga
+        // instalasi 6.4.2 ikut tersinkron. Langkahnya idempoten: CREATE TABLE
+        // IF NOT EXISTS, penambahan kolom dicek dulu, backfill INSERT IGNORE/
+        // OR IGNORE yang dijaga unique key uq_batch, setting dicek dulu. Aman diulang.
         // - Tabel ledger batch `mlite_farmasi_obat_batch` (harga beli + expire per batch).
         // - Kolom harga_beli / no_batch / expire pada penerimaan obat.
         // - Backfill ledger dari stok gudangbarang yang sudah ada.
@@ -2910,12 +2911,12 @@ switch ($version) {
             }
         } catch (\Exception $e) {}
 
-        $return = '6.4.2';
+        $return = '6.4.3';
         break;
     }
 
     if (!isset($return) || !$return) {
-        $return = '6.4.2';
+        $return = '6.4.3';
     }
 
 return $return;
