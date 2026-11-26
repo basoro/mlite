@@ -26,6 +26,10 @@
 - Upgrade: `case '6.4.2'` di `systems/upgrade.php` sekarang mengembalikan `6.4.3` (fallback akhir juga `6.4.3`), agar instalasi 6.4.2 ikut naik lewat menu Pembaruan.
 - Farmasi: migrasi ledger batch & pengaturan "Terapkan Nomor Batch" diselaraskan ke 6.4.3; seluruh langkah tetap idempoten sehingga aman dijalankan ulang pada instalasi 6.4.2.
 
+### Fixed
+- Upgrade: case `6.3.3`–`6.3.5` kini punya cabang SQLite sehingga tabel clinical pathway dan billing terbentuk pada instalasi SQLite, tidak lagi gagal karena sintaks MySQL (`AUTO_INCREMENT`, `ENGINE`, `KEY`).
+- Upgrade: case `4.1.5`–`5.3.0` melewati migrasi khusus MySQL saat driver SQLite (versi tersebut memang tidak pernah berjalan di SQLite).
+
 ## [2026-04-08]
 
 ### Changed

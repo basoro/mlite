@@ -9,7 +9,10 @@
  * di-include dua kali dalam satu proses PHP.
  *
  * Pemakaian:
- *   php systems/tests/upgrade_case_runner.php <file.sdb> <versi_awal> [file_upgrade.php]
+ *   php systems/tests/upgrade_case_runner.php <file.sdb|dsn-mysql> <versi_awal> [file_upgrade.php]
+ *
+ * Target diawali `mysql:` diperlakukan sebagai DSN MySQL; kredensial dibaca
+ * dari environment UPGRADE_DB_USER / UPGRADE_DB_PASS.
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -26,9 +29,10 @@ $version = $argv[2];
 
 $root = dirname(__DIR__, 2);
 $fileUpgrade = $argv[3] ?? ($root . '/systems/upgrade.php');
+$driver = strpos($dbFile, 'mysql:') === 0 ? 'mysql' : 'sqlite';
 
 define('UPGRADABLE', true);
-define('DBDRIVER', 'sqlite');
+define('DBDRIVER', $driver);
 define('BASE_DIR', $root);
 
 require_once __DIR__ . '/UpgradeTestHarness.php';
@@ -42,8 +46,17 @@ $hasil = [
 ];
 
 try {
-    $pdo = new \PDO('sqlite:' . $dbFile);
-    $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    if ($driver === 'mysql') {
+        $pdo = new \PDO(
+            $dbFile,
+            getenv('UPGRADE_DB_USER') ?: '',
+            getenv('UPGRADE_DB_PASS') ?: '',
+            [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]
+        );
+    } else {
+        $pdo = new \PDO('sqlite:' . $dbFile);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    }
 
     $harness = new UpgradeTestHarness($pdo);
     $hasil['return'] = $harness->jalankan($fileUpgrade, $version);

@@ -64,6 +64,12 @@ switch ($version) {
         $return = '4.1.5';        
         break;
     case '4.1.5':
+        // SQLite baru didukung sejak 6.2.0, jadi instalasi SQLite tidak pernah
+        // berada di versi ini. Migrasi di bawah ini khusus MySQL.
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $return = '4.1.6';
+            break;
+        }
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'websocket', 'tidak')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'websocket_proxy', '')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'username_fp', '')");
@@ -73,6 +79,11 @@ switch ($version) {
         $return = '4.1.6';        
         break;
     case '4.1.6':
+        // Migrasi khusus MySQL (ALTER ... CHANGE + DDL MySQL).
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $return = '4.1.7';
+            break;
+        }
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_settings` CHANGE `module` `module` VARCHAR(100) NOT NULL");
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_settings` CHANGE `field` `field` VARCHAR(100) NOT NULL");
         $this->core->db()->pdo()->exec("ALTER TABLE `mlite_settings` CHANGE `value` `value` VARCHAR(1000) NOT NULL");
@@ -144,6 +155,11 @@ switch ($version) {
         $return = '4.1.7';
         break;
     case '4.1.7':
+        // Migrasi khusus MySQL.
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $return = '4.1.8';
+            break;
+        }
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'billing_obat', 'false')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'instansi_induk', '')");
 
@@ -776,6 +792,11 @@ switch ($version) {
         $return = '4.1.8'; 
         break;
     case '4.1.8':
+        // Migrasi khusus MySQL (ALTER ... CHANGE + DDL MySQL).
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $return = '5.0.0';
+            break;
+        }
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'prefix_surat', 'RS')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'keterangan_etiket', '')");
         $this->core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('pcare', 'consumerUserKeyAntrol', '')");
@@ -794,6 +815,11 @@ switch ($version) {
         $return = '5.2.0'; 
         break;
     case '5.2.0':
+        // Seluruh DDL case ini khusus MySQL (KEY/ENGINE/enum).
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $return = '5.3.0';
+            break;
+        }
         $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `catatan_adime_gizi` (
           `no_rawat` varchar(17) NOT NULL,
           `tanggal` datetime NOT NULL,
@@ -1659,6 +1685,11 @@ switch ($version) {
         break; 
 
     case '5.3.0':
+        // DDL case ini khusus MySQL; instalasi SQLite baru ada sejak 6.2.0.
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $return = '6.0.0';
+            break;
+        }
         $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_kasir_shift` (
           `id_shift` INT AUTO_INCREMENT PRIMARY KEY,
           `user_id` VARCHAR(64) NOT NULL,
@@ -2374,6 +2405,126 @@ switch ($version) {
         $return = '6.3.3';
         break;
     case '6.3.3':
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            // DDL SQLite untuk tabel clinical pathway (case ini juga berjalan di SQLite).
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `kode_cp` TEXT NOT NULL, `nama_cp` TEXT NOT NULL,
+              `jenis_layanan` TEXT NOT NULL DEFAULT 'Ranap', `target_los` INTEGER NOT NULL DEFAULT 0,
+              `target_tarif` REAL NOT NULL DEFAULT 0, `confidence_score` REAL NOT NULL DEFAULT 0.00,
+              `evidence_note` TEXT, `guideline_note` TEXT, `aktif` TEXT NOT NULL DEFAULT 'Ya',
+              `created_at` TEXT DEFAULT CURRENT_TIMESTAMP, `updated_at` TEXT DEFAULT CURRENT_TIMESTAMP
+            )");
+            $this->core->db()->pdo()->exec("CREATE UNIQUE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_kode_cp` ON `mlite_clinical_pathway` (`kode_cp`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_nama_cp` ON `mlite_clinical_pathway` (`nama_cp`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_jenis_layanan` ON `mlite_clinical_pathway` (`jenis_layanan`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_aktif` ON `mlite_clinical_pathway` (`aktif`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_diagnosis` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `clinical_pathway_id` INTEGER NOT NULL,
+              `kd_penyakit` TEXT NOT NULL, `prioritas` INTEGER NOT NULL DEFAULT 1,
+              `tipe` TEXT NOT NULL DEFAULT 'Utama',
+              FOREIGN KEY (`clinical_pathway_id`) REFERENCES `mlite_clinical_pathway` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+              FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE UNIQUE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_diagnosis_cp_diagnosis_unique` ON `mlite_clinical_pathway_diagnosis` (`clinical_pathway_id`,`kd_penyakit`,`tipe`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_diagnosis_kd_penyakit` ON `mlite_clinical_pathway_diagnosis` (`kd_penyakit`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_day` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `clinical_pathway_id` INTEGER NOT NULL,
+              `hari_ke` INTEGER NOT NULL, `label_hari` TEXT DEFAULT NULL, `tujuan_harian` TEXT,
+              FOREIGN KEY (`clinical_pathway_id`) REFERENCES `mlite_clinical_pathway` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE UNIQUE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_day_cp_day_unique` ON `mlite_clinical_pathway_day` (`clinical_pathway_id`,`hari_ke`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_activity` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `clinical_pathway_day_id` INTEGER NOT NULL,
+              `kategori` TEXT NOT NULL, `uraian_kegiatan` TEXT DEFAULT NULL, `sumber_tabel` TEXT DEFAULT NULL,
+              `item_kode` TEXT DEFAULT NULL, `item_nama` TEXT NOT NULL, `keterangan` TEXT,
+              `evidence_frequency` INTEGER NOT NULL DEFAULT 0, `evidence_percentage` REAL NOT NULL DEFAULT 0.00,
+              `evidence_status` TEXT NOT NULL DEFAULT 'Opsional', `wajib` TEXT NOT NULL DEFAULT 'Ya',
+              `urutan` INTEGER NOT NULL DEFAULT 0,
+              FOREIGN KEY (`clinical_pathway_day_id`) REFERENCES `mlite_clinical_pathway_day` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_activity_clinical_pathway_day_id` ON `mlite_clinical_pathway_activity` (`clinical_pathway_day_id`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_activity_kategori` ON `mlite_clinical_pathway_activity` (`kategori`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_activity_item_kode` ON `mlite_clinical_pathway_activity` (`item_kode`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_patient` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `no_rawat` TEXT NOT NULL,
+              `clinical_pathway_id` INTEGER NOT NULL, `kd_penyakit` TEXT DEFAULT NULL,
+              `tanggal_mulai` TEXT NOT NULL, `tanggal_selesai` TEXT DEFAULT NULL,
+              `status` TEXT NOT NULL DEFAULT 'Aktif', `auto_generated` TEXT NOT NULL DEFAULT 'Ya',
+              FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
+              FOREIGN KEY (`clinical_pathway_id`) REFERENCES `mlite_clinical_pathway` (`id`) ON UPDATE CASCADE,
+              FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE UNIQUE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_patient_no_rawat` ON `mlite_clinical_pathway_patient` (`no_rawat`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_patient_clinical_pathway_id` ON `mlite_clinical_pathway_patient` (`clinical_pathway_id`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_patient_kd_penyakit` ON `mlite_clinical_pathway_patient` (`kd_penyakit`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_patient_status` ON `mlite_clinical_pathway_patient` (`status`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_execution` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `clinical_pathway_patient_id` INTEGER NOT NULL,
+              `clinical_pathway_activity_id` INTEGER NOT NULL, `hari_ke` INTEGER NOT NULL,
+              `tanggal_rencana` TEXT DEFAULT NULL, `tanggal_realisasi` TEXT DEFAULT NULL,
+              `status` TEXT NOT NULL DEFAULT 'Planned', `sumber_data` TEXT DEFAULT NULL,
+              `sumber_referensi` TEXT DEFAULT NULL, `petugas` TEXT DEFAULT NULL, `catatan` TEXT,
+              FOREIGN KEY (`clinical_pathway_patient_id`) REFERENCES `mlite_clinical_pathway_patient` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+              FOREIGN KEY (`clinical_pathway_activity_id`) REFERENCES `mlite_clinical_pathway_activity` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE UNIQUE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_execution_cp_exec_unique` ON `mlite_clinical_pathway_execution` (`clinical_pathway_patient_id`,`clinical_pathway_activity_id`,`hari_ke`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_execution_clinical_pathway_activity_id` ON `mlite_clinical_pathway_execution` (`clinical_pathway_activity_id`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_execution_status` ON `mlite_clinical_pathway_execution` (`status`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_execution_tanggal_rencana` ON `mlite_clinical_pathway_execution` (`tanggal_rencana`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_variance` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `clinical_pathway_patient_id` INTEGER NOT NULL,
+              `clinical_pathway_execution_id` INTEGER DEFAULT NULL, `kategori_variance` TEXT NOT NULL,
+              `penyebab` TEXT DEFAULT NULL, `deskripsi` TEXT NOT NULL,
+              `severity` TEXT NOT NULL DEFAULT 'Sedang', `tanggal_variance` TEXT NOT NULL,
+              `status_tindak_lanjut` TEXT NOT NULL DEFAULT 'Open',
+              FOREIGN KEY (`clinical_pathway_patient_id`) REFERENCES `mlite_clinical_pathway_patient` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+              FOREIGN KEY (`clinical_pathway_execution_id`) REFERENCES `mlite_clinical_pathway_execution` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_variance_clinical_pathway_patient_id` ON `mlite_clinical_pathway_variance` (`clinical_pathway_patient_id`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_variance_clinical_pathway_execution_id` ON `mlite_clinical_pathway_variance` (`clinical_pathway_execution_id`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_variance_kategori_variance` ON `mlite_clinical_pathway_variance` (`kategori_variance`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_compliance` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `clinical_pathway_patient_id` INTEGER NOT NULL,
+              `planned_activity` INTEGER NOT NULL DEFAULT 0, `completed_activity` INTEGER NOT NULL DEFAULT 0,
+              `missed_activity` INTEGER NOT NULL DEFAULT 0, `compliance_percentage` REAL NOT NULL DEFAULT 0.00,
+              `kategori_kepatuhan` TEXT NOT NULL DEFAULT 'Tidak Patuh', `last_calculated_at` TEXT DEFAULT NULL,
+              FOREIGN KEY (`clinical_pathway_patient_id`) REFERENCES `mlite_clinical_pathway_patient` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE UNIQUE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_compliance_clinical_pathway_patient_id` ON `mlite_clinical_pathway_compliance` (`clinical_pathway_patient_id`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_audit` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `clinical_pathway_patient_id` INTEGER DEFAULT NULL,
+              `clinical_pathway_id` INTEGER DEFAULT NULL, `aksi` TEXT NOT NULL,
+              `referensi` TEXT DEFAULT NULL, `deskripsi` TEXT, `user_aksi` TEXT DEFAULT NULL,
+              `created_at` TEXT NOT NULL,
+              FOREIGN KEY (`clinical_pathway_patient_id`) REFERENCES `mlite_clinical_pathway_patient` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+              FOREIGN KEY (`clinical_pathway_id`) REFERENCES `mlite_clinical_pathway` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_audit_clinical_pathway_patient_id` ON `mlite_clinical_pathway_audit` (`clinical_pathway_patient_id`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_audit_clinical_pathway_id` ON `mlite_clinical_pathway_audit` (`clinical_pathway_id`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_audit_aksi` ON `mlite_clinical_pathway_audit` (`aksi`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_cppt_template` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `kd_penyakit` TEXT NOT NULL, `ppra` TEXT NOT NULL,
+              `subjective` TEXT NOT NULL, `objective` TEXT NOT NULL, `assessment` TEXT NOT NULL,
+              `plan` TEXT NOT NULL, `aktif` TEXT NOT NULL DEFAULT 'Ya',
+              `created_at` TEXT DEFAULT CURRENT_TIMESTAMP, `updated_at` TEXT DEFAULT CURRENT_TIMESTAMP,
+              FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE UNIQUE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_cppt_template_cppt_template_kd_penyakit_ppra` ON `mlite_clinical_pathway_cppt_template` (`kd_penyakit`,`ppra`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_cppt_template_cppt_template_aktif` ON `mlite_clinical_pathway_cppt_template` (`aktif`)");
+
+            $return = '6.3.4';
+            break;
+        }
+
         $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway` (
           `id` int(11) NOT NULL AUTO_INCREMENT,
           `kode_cp` varchar(30) NOT NULL,
@@ -2554,6 +2705,20 @@ switch ($version) {
         break;
 
     case '6.3.4':
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_cppt_template` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `kd_penyakit` TEXT NOT NULL, `ppra` TEXT NOT NULL,
+              `subjective` TEXT NOT NULL, `objective` TEXT NOT NULL, `assessment` TEXT NOT NULL,
+              `plan` TEXT NOT NULL, `aktif` TEXT NOT NULL DEFAULT 'Ya',
+              `created_at` TEXT DEFAULT CURRENT_TIMESTAMP, `updated_at` TEXT DEFAULT CURRENT_TIMESTAMP,
+              FOREIGN KEY (`kd_penyakit`) REFERENCES `penyakit` (`kd_penyakit`) ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE UNIQUE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_cppt_template_cppt_template_kd_penyakit_ppra` ON `mlite_clinical_pathway_cppt_template` (`kd_penyakit`,`ppra`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_clinical_pathway_cppt_template_cppt_template_aktif` ON `mlite_clinical_pathway_cppt_template` (`aktif`)");
+
+            $return = '6.3.5';
+            break;
+        }
 
         $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_clinical_pathway_cppt_template` (
           `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2580,6 +2745,29 @@ switch ($version) {
         break;
 
     case '6.3.5':
+        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_billing_pembayaran` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `no_rawat` TEXT NOT NULL, `tgl_bayar` TEXT NOT NULL,
+              `jam_bayar` TEXT NOT NULL, `metode` TEXT NOT NULL DEFAULT 'Tunai',
+              `jumlah_bayar` REAL NOT NULL DEFAULT 0, `id_user` INTEGER DEFAULT NULL,
+              `keterangan` TEXT DEFAULT NULL
+            )");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_billing_pembayaran_idx_billing_pembayaran_rawat` ON `mlite_billing_pembayaran` (`no_rawat`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_billing_pembayaran_idx_billing_pembayaran_tgl` ON `mlite_billing_pembayaran` (`tgl_bayar`)");
+
+            $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_billing_pembayaran_detail` (
+              `id` INTEGER PRIMARY KEY AUTOINCREMENT, `pembayaran_id` INTEGER NOT NULL,
+              `kelompok` TEXT NOT NULL, `jumlah_alokasi` REAL NOT NULL DEFAULT 0,
+              `ref_modul` TEXT DEFAULT NULL, `kd_jenis_prw` TEXT DEFAULT NULL,
+              `tgl_periksa` TEXT DEFAULT NULL, `jam` TEXT DEFAULT NULL, `status_periksa` TEXT DEFAULT NULL,
+              FOREIGN KEY (`pembayaran_id`) REFERENCES `mlite_billing_pembayaran` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            )");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_billing_pembayaran_detail_idx_billing_pembayaran_detail_pembayaran` ON `mlite_billing_pembayaran_detail` (`pembayaran_id`)");
+            $this->core->db()->pdo()->exec("CREATE INDEX IF NOT EXISTS `idx_mlite_billing_pembayaran_detail_idx_billing_pembayaran_detail_kelompok` ON `mlite_billing_pembayaran_detail` (`kelompok`)");
+
+            $return = '6.3.6';
+            break;
+        }
         $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_billing_pembayaran` (
           `id` int(11) NOT NULL AUTO_INCREMENT,
           `no_rawat` varchar(17) NOT NULL,

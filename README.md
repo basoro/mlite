@@ -237,7 +237,17 @@ Untuk merilis versi baru (contoh: dari `6.4.1` ke `6.4.2`):
    php systems/tests/upgrade_idempotent_test.php
    ```
 
-   Uji ini membangun database SQLite sementara dari `mlite_db.sql`, lalu menjalankan setiap `case` di `systems/upgrade.php` **dua kali** dan memastikan run kedua tidak mengubah hasil, memunculkan galat baru, atau mengubah isi database. Gunakan `--only=6.4.2` untuk memeriksa satu versi saja.
+   Uji ini membangun database SQLite sementara dari `mlite_db.sql`, lalu menjalankan setiap `case` di `systems/upgrade.php` **dua kali** dan memastikan run kedua tidak mengubah hasil, memunculkan galat baru, atau mengubah isi database. Uji juga memeriksa sinkronisasi versi: fallback `upgrade.php` serta rantai `case` harus berakhir di `settings.version` milik `mlite_db.sql`. Gunakan `--only=6.4.2` untuk memeriksa satu versi saja.
+
+   Untuk jalur MySQL, tambahkan mode driver (butuh `pdo_mysql`):
+
+   ```bash
+   php systems/tests/upgrade_idempotent_test.php --driver=mysql \
+       --mysql-dsn="mysql:host=127.0.0.1;dbname=mlite_test;charset=utf8mb4" \
+       --mysql-user=USER --mysql-password=PASS
+   ```
+
+   **Mode MySQL menghapus seluruh tabel pada database di DSN tersebut** untuk setiap versi yang diuji (tabel dibuat ulang dari `mlite_db.sql`). Arahkan hanya ke database uji, jangan ke database berisi data nyata.
 
 4. **Commit dan push ke `master`.** Workflow otomatis akan membuat tag versi tersebut dan GitHub Release `v`-nya.
 

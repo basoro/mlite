@@ -1,25 +1,34 @@
 <?php
 
 /**
- * Uji idempotensi seluruh case di systems/upgrade.php pada SQLite sementara.
+ * Uji idempotensi seluruh case di systems/upgrade.php.
  *
  * Untuk setiap versi awal (`case 'x.y.z':`), uji ini:
- *   1. menyalin database SQLite bersih hasil konversi mlite_db.sql,
+ *   1. menyiapkan database bersih hasil impor/konversi mlite_db.sql,
  *   2. menjalankan case tersebut sekali (run-1),
  *   3. menjalankan case yang sama sekali lagi pada database yang sama (run-2),
  *   4. membandingkan hasil dan isi database antara run-1 dan run-2.
  *
  * Uji GAGAL bila menjalankan case untuk kedua kalinya mengubah hasil, memunculkan
  * galat baru, atau mengubah jumlah baris/skema database. Case yang memang sudah
- * gagal pada run-1 (SQL khusus MySQL pada driver SQLite atau karena data awal
- * uji) hanya dilaporkan sebagai PERHATIAN, selama run-2 tetap konsisten.
+ * gagal pada run-1 (SQL khusus MySQL pada driver SQLite atau sebaliknya) hanya
+ * dilaporkan sebagai PERHATIAN, selama run-2 tetap konsisten.
  *
- * Pemakaian:
+ * Uji ini juga memeriksa sinkronisasi versi: fallback upgrade.php dan rantai
+ * `case` harus berakhir di settings.version milik mlite_db.sql.
+ *
+ * Pemakaian (SQLite, default):
  *   php systems/tests/upgrade_idempotent_test.php [--only=6.4.0,6.4.2] [--keep]
  *        [--base=file.sdb] [--file=path/upgrade.php]
  *
- * Catatan: jalur MySQL tidak diuji di sini (butuh server MySQL); uji ini
- * memakai DBDRIVER = sqlite.
+ * Pemakaian (MySQL):
+ *   php systems/tests/upgrade_idempotent_test.php --driver=mysql \
+ *        --mysql-dsn="mysql:host=127.0.0.1;dbname=mlite_test;charset=utf8mb4" \
+ *        --mysql-user=root --mysql-password=secret
+ *
+ * PERINGATAN: mode MySQL menghapus SELURUH tabel pada database di DSN tersebut
+ * untuk setiap versi yang diuji (tabel dibuat ulang dari mlite_db.sql). Jangan
+ * arahkan ke database berisi data nyata.
  */
 
 if (PHP_SAPI !== 'cli') {
@@ -32,6 +41,11 @@ $fileSeed    = $root . '/mlite_db.sql';
 $fileRunner  = __DIR__ . '/upgrade_case_runner.php';
 $fileConvert = $root . '/convert_mysql_to_sqlite.py';
 
+$driver = 'sqlite';
+$mysqlDsn  = getenv('UPGRADE_MYSQL_DSN') ?: '';
+$mysqlUser = getenv('UPGRADE_MYSQL_USER') ?: '';
+$mysqlPass = getenv('UPGRADE_MYSQL_PASS') ?: '';
+
 $opsi = ['only' => [], 'keep' => false, 'base' => null];
 
 foreach (array_slice($argv, 1) as $arg) {
@@ -43,10 +57,28 @@ foreach (array_slice($argv, 1) as $arg) {
         $opsi['base'] = substr($arg, 7);
     } elseif (strpos($arg, '--file=') === 0) {
         $fileUpgrade = substr($arg, 7);
+    } elseif (strpos($arg, '--driver=') === 0) {
+        $driver = substr($arg, 9);
+    } elseif (strpos($arg, '--mysql-dsn=') === 0) {
+        $mysqlDsn = substr($arg, 12);
+    } elseif (strpos($arg, '--mysql-user=') === 0) {
+        $mysqlUser = substr($arg, 13);
+    } elseif (strpos($arg, '--mysql-password=') === 0) {
+        $mysqlPass = substr($arg, 17);
     } else {
         fwrite(STDERR, "Opsi tidak dikenal: {$arg}\n");
         exit(2);
     }
+}
+
+if (!in_array($driver, ['sqlite', 'mysql'], true)) {
+    fwrite(STDERR, "Driver tidak didukung: {$driver} (pakai sqlite atau mysql)\n");
+    exit(2);
+}
+
+if ($driver === 'mysql' && ($mysqlDsn === '' || strpos($mysqlDsn, 'mysql:') !== 0)) {
+    fwrite(STDERR, "Mode MySQL butuh --mysql-dsn=\"mysql:host=...;dbname=...;charset=utf8mb4\".\n");
+    exit(2);
 }
 
 if (!is_file($fileUpgrade) || !is_file($fileSeed) || !is_file($fileRunner)) {
@@ -64,7 +96,7 @@ if (!is_dir($dirKerja) && !mkdir($dirKerja, 0775, true) && !is_dir($dirKerja)) {
 /* Database dasar                                                            */
 /* ------------------------------------------------------------------------- */
 
-function bangunBase($fileSeed, $fileConvert, $dirKerja, $baseDariOpsi)
+function bangunBaseSqlite($fileSeed, $fileConvert, $dirKerja, $baseDariOpsi)
 {
     if ($baseDariOpsi !== null) {
         if (!is_file($baseDariOpsi)) {
@@ -118,7 +150,36 @@ function bangunBase($fileSeed, $fileConvert, $dirKerja, $baseDariOpsi)
     return $base;
 }
 
-$base = bangunBase($fileSeed, $fileConvert, $dirKerja, $opsi['base']);
+/**
+ * Koneksi MySQL dengan multi-statement (dipakai untuk impor mlite_db.sql).
+ */
+function koneksiMysql($dsn, $user, $pass)
+{
+    return new \PDO($dsn, $user, $pass, [
+        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+        \PDO::MYSQL_ATTR_MULTI_STATEMENTS => true,
+    ]);
+}
+
+/**
+ * Kembalikan database MySQL ke kondisi hasil impor mlite_db.sql.
+ */
+function resetMysql(\PDO $pdo, $fileSeed)
+{
+    $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
+    $tabel = $pdo->query('SHOW TABLES')->fetchAll(\PDO::FETCH_COLUMN);
+    foreach ($tabel as $nama) {
+        $pdo->exec("DROP TABLE IF EXISTS `{$nama}`");
+    }
+
+    $sql = file_get_contents($fileSeed);
+    if ($sql === false) {
+        throw new \RuntimeException("Gagal membaca {$fileSeed}");
+    }
+
+    $pdo->exec($sql);
+    $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
+}
 
 /* ------------------------------------------------------------------------- */
 /* Daftar case                                                               */
@@ -142,7 +203,7 @@ if (!$versiUji) {
 /* Utilitas                                                                  */
 /* ------------------------------------------------------------------------- */
 
-function bukaDb($file)
+function bukaSqlite($file)
 {
     $pdo = new \PDO('sqlite:' . $file);
     $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -150,11 +211,11 @@ function bukaDb($file)
 }
 
 /**
- * Ringkasan isi database: jumlah baris per tabel + sidik jari skema.
+ * Ringkasan isi database SQLite: jumlah baris per tabel + sidik jari skema.
  */
-function potret($file)
+function potretSqlite($file)
 {
-    $pdo = bukaDb($file);
+    $pdo = bukaSqlite($file);
 
     $tabel = [];
     $namaTabel = $pdo->query("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
@@ -169,6 +230,38 @@ function potret($file)
         ->fetchAll(\PDO::FETCH_ASSOC);
 
     return ['tabel' => $tabel, 'skema' => md5((string) json_encode($skema))];
+}
+
+/**
+ * Ringkasan isi database MySQL: jumlah baris per tabel + sidik jari skema
+ * (kolom dan indeks, dari information_schema).
+ */
+function potretMysql(\PDO $pdo)
+{
+    $namaTabel = $pdo->query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME")
+        ->fetchAll(\PDO::FETCH_COLUMN);
+
+    // Satu query UNION ALL untuk semua jumlah baris.
+    $bagian = [];
+    foreach ($namaTabel as $nama) {
+        $bagian[] = 'SELECT ' . $pdo->quote($nama) . ' AS t, COUNT(*) AS c FROM `' . $nama . '`';
+    }
+    $tabel = [];
+    if ($bagian) {
+        foreach ($pdo->query(implode(' UNION ALL ', $bagian))->fetchAll(\PDO::FETCH_KEY_PAIR) as $nama => $jumlah) {
+            $tabel[(string) $nama] = (int) $jumlah;
+        }
+    }
+
+    $kolom = $pdo->query("SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT, COLUMN_KEY, EXTRA
+        FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()
+        ORDER BY TABLE_NAME, ORDINAL_POSITION")->fetchAll(\PDO::FETCH_ASSOC);
+
+    $indeks = $pdo->query("SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE, SEQ_IN_INDEX, COLUMN_NAME
+        FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE()
+        ORDER BY TABLE_NAME, INDEX_NAME, SEQ_IN_INDEX")->fetchAll(\PDO::FETCH_ASSOC);
+
+    return ['tabel' => $tabel, 'skema' => md5((string) json_encode([$kolom, $indeks]))];
 }
 
 function bedaPotret(array $sebelum, array $sesudah)
@@ -192,14 +285,21 @@ function bedaPotret(array $sebelum, array $sesudah)
     return $beda;
 }
 
-function jalankanCase($fileRunner, $fileUpgrade, $fileDb, $versi)
+function jalankanCase($fileRunner, $fileUpgrade, $target, $versi, $driver)
 {
     $perintah = escapeshellarg(PHP_BINARY)
         . ' ' . escapeshellarg($fileRunner)
-        . ' ' . escapeshellarg($fileDb)
+        . ' ' . escapeshellarg($target)
         . ' ' . escapeshellarg($versi)
         . ' ' . escapeshellarg($fileUpgrade)
         . ' 2>&1';
+
+    if ($driver === 'mysql') {
+        // Teruskan kredensial ke proses anak lewat environment, bukan argumen.
+        $perintah = 'UPGRADE_DB_USER=' . escapeshellarg($GLOBALS['mysqlUser'])
+            . ' UPGRADE_DB_PASS=' . escapeshellarg($GLOBALS['mysqlPass'])
+            . ' ' . $perintah;
+    }
 
     $keluaran = [];
     $kode = 0;
@@ -233,32 +333,66 @@ function ringkasHasil(array $hasil)
 
 $fileKerja = $dirKerja . '/kerja.sdb';
 
+if ($driver === 'sqlite') {
+    $base = bangunBaseSqlite($fileSeed, $fileConvert, $dirKerja, $opsi['base']);
+    $target = $fileKerja;
+} else {
+    $base = null;
+    $target = $mysqlDsn;
+    try {
+        $pdoMysql = koneksiMysql($mysqlDsn, $mysqlUser, $mysqlPass);
+    } catch (\Throwable $e) {
+        fwrite(STDERR, "Gagal terhubung ke MySQL: " . $e->getMessage() . "\n");
+        exit(2);
+    }
+}
+
 $lulus = 0;
 $gagal = 0;
 $perhatian = 0;
 $barisGagal = [];
+$petaReturn = [];
+
+// Versi sumber kebenaran: settings.version di mlite_db.sql.
+$isiSeed = file_get_contents($fileSeed);
+$versiSeed = null;
+if (preg_match('/"settings"\s*,\s*"version"\s*,\s*"([0-9]+(?:\.[0-9]+)+)"/', (string) $isiSeed, $cocokSeed)) {
+    $versiSeed = $cocokSeed[1];
+}
 
 echo "Uji idempotensi upgrade.php\n";
-echo "Basis data : {$base}\n";
+echo "Driver     : {$driver}\n";
+if ($driver === 'sqlite') {
+    echo "Basis data : {$base}\n";
+} else {
+    echo "MySQL DSN  : {$mysqlDsn}\n";
+}
 echo "Berkas uji : {$fileUpgrade}\n";
+echo "settings.version: " . ($versiSeed ?? 'TIDAK DITEMUKAN') . "\n";
 echo "Jumlah case: " . count($versiUji) . " versi\n\n";
 
 printf("%-8s %-34s %-34s %s\n", 'VERSI', 'RUN-1', 'RUN-2', 'STATUS');
 echo str_repeat('-', 110) . "\n";
 
 foreach ($versiUji as $versi) {
-    if (!copy($base, $fileKerja)) {
-        fwrite(STDERR, "Gagal menyalin database dasar untuk versi {$versi}.\n");
-        exit(2);
+    if ($driver === 'sqlite') {
+        if (!copy($base, $fileKerja)) {
+            fwrite(STDERR, "Gagal menyalin database dasar untuk versi {$versi}.\n");
+            exit(2);
+        }
+        $awal = potretSqlite($fileKerja);
+    } else {
+        resetMysql($pdoMysql, $fileSeed);
+        $awal = potretMysql($pdoMysql);
     }
 
-    $awal = potret($fileKerja);
+    $run1 = jalankanCase($fileRunner, $fileUpgrade, $target, $versi, $driver);
+    $setelah1 = $driver === 'sqlite' ? potretSqlite($fileKerja) : potretMysql($pdoMysql);
 
-    $run1 = jalankanCase($fileRunner, $fileUpgrade, $fileKerja, $versi);
-    $setelah1 = potret($fileKerja);
+    $run2 = jalankanCase($fileRunner, $fileUpgrade, $target, $versi, $driver);
+    $setelah2 = $driver === 'sqlite' ? potretSqlite($fileKerja) : potretMysql($pdoMysql);
 
-    $run2 = jalankanCase($fileRunner, $fileUpgrade, $fileKerja, $versi);
-    $setelah2 = potret($fileKerja);
+    $petaReturn[$versi] = $run1['data']['return'] ?? null;
 
     $galat1 = $run1['data']['galat'] ?? null;
     $galat2 = $run2['data']['galat'] ?? null;
@@ -307,14 +441,104 @@ foreach ($versiUji as $versi) {
 
     printf("%-8s %-34s %-34s %s\n", $versi, ringkasHasil($run1), ringkasHasil($run2), $status);
 
-    if (!$opsi['keep']) {
+    if ($driver === 'sqlite' && !$opsi['keep']) {
         @unlink($fileKerja);
+    }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Pemeriksaan sinkronisasi versi                                            */
+/* ------------------------------------------------------------------------- */
+
+echo "\nPemeriksaan sinkronisasi versi\n";
+echo str_repeat('-', 110) . "\n";
+
+if ($versiSeed === null) {
+    echo "GAGAL: settings.version tidak ditemukan di mlite_db.sql.\n";
+    $gagal++;
+}
+
+// Fallback upgrade.php (versi tidak dikenal) harus mengembalikan versi terbaru.
+if ($versiSeed !== null) {
+    if ($driver === 'sqlite') {
+        if (!copy($base, $fileKerja)) {
+            fwrite(STDERR, "Gagal menyalin database dasar untuk uji fallback.\n");
+            exit(2);
+        }
+        $targetFallback = $fileKerja;
+    } else {
+        resetMysql($pdoMysql, $fileSeed);
+        $targetFallback = $mysqlDsn;
+    }
+
+    $fallback = jalankanCase($fileRunner, $fileUpgrade, $targetFallback, '0.0.0', $driver);
+    $versiFallback = $fallback['data']['return'] ?? null;
+
+    if ($fallback['kode'] !== 0 || $versiFallback === null) {
+        echo "GAGAL: fallback upgrade.php gagal dijalankan: " . trim($fallback['mentah']) . "\n";
+        $gagal++;
+    } elseif ($versiFallback !== $versiSeed) {
+        echo "GAGAL: fallback upgrade.php mengembalikan '{$versiFallback}', settings.version '{$versiSeed}'.\n";
+        $gagal++;
+    } else {
+        echo "OK: fallback upgrade.php mengembalikan '{$versiFallback}' (sama dengan settings.version).\n";
+    }
+
+    if ($driver === 'sqlite' && !$opsi['keep']) {
+        @unlink($fileKerja);
+    }
+}
+
+// Setiap case harus mengembalikan versi yang punya case sendiri atau versi terbaru.
+if ($opsi['only']) {
+    echo "Rantai versi tidak diperiksa penuh karena --only dipakai (dasar: " . ($versiSemua[0] ?? '-') . ").\n";
+} else {
+    $putus = [];
+
+    foreach ($petaReturn as $dari => $ke) {
+        // null berarti case gagal dijalankan pada fixture ini; itu sudah
+        // dilaporkan sebagai PERHATIAN, bukan rantai yang salah.
+        if ($ke !== null && $ke !== $versiSeed && !in_array($ke, $versiSemua, true)) {
+            $putus[] = "{$dari} -> {$ke} (tidak ada case '{$ke}' dan bukan versi terbaru)";
+        }
+    }
+
+    $kini = $versiSemua[0] ?? null;
+    $dilewati = [];
+    $terhenti = null;
+    while ($kini !== null && $kini !== $versiSeed) {
+        if (isset($dilewati[$kini])) {
+            $putus[] = "rantai versi berputar di {$kini}";
+            break;
+        }
+        if (($petaReturn[$kini] ?? null) === null) {
+            $terhenti = $kini;
+            break;
+        }
+        $dilewati[$kini] = true;
+        $kini = $petaReturn[$kini];
+    }
+
+    if ($terhenti !== null) {
+        echo "PERHATIAN: rantai versi tidak bisa ditelusuri melewati '{$terhenti}' "
+            . "(case itu gagal dijalankan pada fixture ini, lihat baris PERHATIAN di atas).\n";
+    } elseif ($kini !== $versiSeed) {
+        $putus[] = "rantai versi berakhir di " . ($kini ?? 'null') . ", bukan {$versiSeed}";
+    }
+
+    if ($putus) {
+        foreach ($putus as $pesan) {
+            echo "GAGAL: {$pesan}.\n";
+            $gagal++;
+        }
+    } elseif ($terhenti === null) {
+        echo "OK: rantai versi utuh dan berakhir di '{$versiSeed}'.\n";
     }
 }
 
 echo str_repeat('-', 110) . "\n";
 echo "Lulus: {$lulus}  Perhatian: {$perhatian}  Gagal: {$gagal}\n";
-echo "Jalur MySQL tidak diuji (uji ini memakai DBDRIVER = sqlite).\n";
+echo "Driver diuji: {$driver}.\n";
 
 if ($barisGagal) {
     echo "\nRincian kegagalan:\n";
