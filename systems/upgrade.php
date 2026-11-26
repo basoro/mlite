@@ -2821,7 +2821,22 @@ switch ($version) {
         // - Kolom harga_beli / no_batch / expire pada penerimaan obat.
         // - Backfill ledger dari stok gudangbarang yang sudah ada.
         $pdoBatch = $this->core->db()->pdo();
-        if (defined('DBDRIVER') && DBDRIVER == 'sqlite') {
+        $isSqliteBatch = defined('DBDRIVER') && DBDRIVER == 'sqlite';
+
+        // Instalasi lama bisa belum punya tabel penerimaan obat. Tanpa penjaga,
+        // ALTER TABLE di bawah akan melempar exception.
+        $adaTabelPenerimaan = false;
+        try {
+            if ($isSqliteBatch) {
+                $cekTabel = $pdoBatch->query("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'mlite_farmasi_penerimaan_obat'");
+            } else {
+                $cekTabel = $pdoBatch->query("SHOW TABLES LIKE 'mlite_farmasi_penerimaan_obat'");
+            }
+            $adaTabelPenerimaan = (bool) $cekTabel->fetchColumn();
+        } catch (\Exception $e) {
+        }
+
+        if ($isSqliteBatch) {
             $pdoBatch->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_obat_batch` (
                 `id` INTEGER PRIMARY KEY AUTOINCREMENT,
                 `kode_brng` TEXT NOT NULL,
@@ -2835,20 +2850,26 @@ switch ($version) {
                 `updated_at` TEXT,
                 CONSTRAINT uq_batch UNIQUE (kode_brng, kd_bangsal, no_batch, no_faktur)
             )");
-            // Tambah kolom penerimaan bila belum ada
-            $cekCol = $pdoBatch->query("PRAGMA table_info(`mlite_farmasi_penerimaan_obat`)")->fetchAll(\PDO::FETCH_ASSOC);
-            $kolomAda = array_column($cekCol, 'name');
-            if (!in_array('harga_beli', $kolomAda)) {
-                $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `harga_beli` REAL DEFAULT 0");
-            }
-            if (!in_array('no_batch', $kolomAda)) {
-                $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `no_batch` TEXT DEFAULT '0'");
-            }
-            if (!in_array('expire', $kolomAda)) {
-                $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `expire` TEXT");
+            // Tambah kolom penerimaan bila belum ada (dan tabelnya memang ada)
+            if ($adaTabelPenerimaan) {
+                try {
+                    $cekCol = $pdoBatch->query("PRAGMA table_info(`mlite_farmasi_penerimaan_obat`)")->fetchAll(\PDO::FETCH_ASSOC);
+                    $kolomAda = array_column($cekCol, 'name');
+                    if (!in_array('harga_beli', $kolomAda)) {
+                        $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `harga_beli` REAL DEFAULT 0");
+                    }
+                    if (!in_array('no_batch', $kolomAda)) {
+                        $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `no_batch` TEXT DEFAULT '0'");
+                    }
+                    if (!in_array('expire', $kolomAda)) {
+                        $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `expire` TEXT");
+                    }
+                } catch (\Exception $e) {
+                }
             }
             // Backfill ledger dari stok yang sudah ada
-            $pdoBatch->exec("INSERT OR IGNORE INTO `mlite_farmasi_obat_batch`
+            try {
+                $pdoBatch->exec("INSERT OR IGNORE INTO `mlite_farmasi_obat_batch`
                 (`kode_brng`, `kd_bangsal`, `no_batch`, `no_faktur`, `h_beli`, `stok`, `created_at`, `updated_at`)
                 SELECT g.kode_brng, g.kd_bangsal, g.no_batch, g.no_faktur,
                     COALESCE(NULLIF(d.h_beli, 0), NULLIF(d.dasar, 0), 0),
@@ -2856,6 +2877,8 @@ switch ($version) {
                 FROM gudangbarang g
                 LEFT JOIN databarang d ON d.kode_brng = g.kode_brng
                 WHERE g.stok <> 0");
+            } catch (\Exception $e) {
+            }
         } else {
             $pdoBatch->exec("CREATE TABLE IF NOT EXISTS `mlite_farmasi_obat_batch` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2872,22 +2895,28 @@ switch ($version) {
                 UNIQUE KEY `uq_batch` (`kode_brng`,`kd_bangsal`,`no_batch`,`no_faktur`),
                 KEY `idx_bill_expire` (`kode_brng`,`kd_bangsal`,`expire`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC");
-            $kolomAda = [];
-            try {
-                $cekCol = $pdoBatch->query("SHOW COLUMNS FROM `mlite_farmasi_penerimaan_obat`")->fetchAll(\PDO::FETCH_ASSOC);
-                $kolomAda = array_column($cekCol, 'Field');
-            } catch (\Exception $e) {}
-            if (!in_array('harga_beli', $kolomAda)) {
-                $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `harga_beli` double DEFAULT 0");
-            }
-            if (!in_array('no_batch', $kolomAda)) {
-                $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `no_batch` varchar(30) DEFAULT '0'");
-            }
-            if (!in_array('expire', $kolomAda)) {
-                $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `expire` date DEFAULT NULL");
+            if ($adaTabelPenerimaan) {
+                try {
+                    $kolomAda = [];
+                    try {
+                        $cekCol = $pdoBatch->query("SHOW COLUMNS FROM `mlite_farmasi_penerimaan_obat`")->fetchAll(\PDO::FETCH_ASSOC);
+                        $kolomAda = array_column($cekCol, 'Field');
+                    } catch (\Exception $e) {}
+                    if (!in_array('harga_beli', $kolomAda)) {
+                        $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `harga_beli` double DEFAULT 0");
+                    }
+                    if (!in_array('no_batch', $kolomAda)) {
+                        $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `no_batch` varchar(30) DEFAULT '0'");
+                    }
+                    if (!in_array('expire', $kolomAda)) {
+                        $pdoBatch->exec("ALTER TABLE `mlite_farmasi_penerimaan_obat` ADD COLUMN `expire` date DEFAULT NULL");
+                    }
+                } catch (\Exception $e) {
+                }
             }
             // Backfill ledger dari stok yang sudah ada
-            $pdoBatch->exec("INSERT IGNORE INTO `mlite_farmasi_obat_batch`
+            try {
+                $pdoBatch->exec("INSERT IGNORE INTO `mlite_farmasi_obat_batch`
                 (`kode_brng`, `kd_bangsal`, `no_batch`, `no_faktur`, `h_beli`, `stok`, `created_at`, `updated_at`)
                 SELECT g.kode_brng, g.kd_bangsal, g.no_batch, g.no_faktur,
                     COALESCE(NULLIF(d.h_beli, 0), NULLIF(d.dasar, 0), 0),
@@ -2895,6 +2924,8 @@ switch ($version) {
                 FROM gudangbarang g
                 LEFT JOIN databarang d ON d.kode_brng = g.kode_brng
                 WHERE g.stok <> 0");
+            } catch (\Exception $e) {
+            }
         }
 
         // Pengaturan "Terapkan Nomor Batch" (default Iya)

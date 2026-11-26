@@ -231,7 +231,15 @@ Untuk merilis versi baru (contoh: dari `6.4.1` ke `6.4.2`):
 
    Perhatikan juga `case` terakhir dan fallback `if (!isset($return) || !$return)` di akhir file — keduanya harus dikembalikan ke versi terbaru.
 
-3. **Commit dan push ke `master`.** Workflow otomatis akan membuat tag `6.4.1` dan GitHub Release `v6.4.1`.
+3. **Jalankan uji idempotensi upgrade** (butuh `python3`):
+
+   ```bash
+   php systems/tests/upgrade_idempotent_test.php
+   ```
+
+   Uji ini membangun database SQLite sementara dari `mlite_db.sql`, lalu menjalankan setiap `case` di `systems/upgrade.php` **dua kali** dan memastikan run kedua tidak mengubah hasil, memunculkan galat baru, atau mengubah isi database. Gunakan `--only=6.4.2` untuk memeriksa satu versi saja.
+
+4. **Commit dan push ke `master`.** Workflow otomatis akan membuat tag versi tersebut dan GitHub Release `v`-nya.
 
 ### Aturan penting
 
