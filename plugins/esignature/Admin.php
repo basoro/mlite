@@ -52,7 +52,7 @@ class Admin extends AdminModule
 
         return $this->draw('manage.html', [
             'signatures' => htmlspecialchars_array($signatures),
-            'pagination' => htmlspecialchars_array($this->assign['pagination']),
+            'pagination' => $this->assign['pagination'],
             'phrase' => htmlspecialchars_array($phrase)
         ]);
     }
