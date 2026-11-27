@@ -884,7 +884,8 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=kandungan]').val("");
     $('.row_racikan').remove();
     $('input:text[name=jam_rawat]').last().val("");
-    $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+    // peringatan master obat (mis. kapasitas 0) dari server menggantikan notif sukses
+    $('#notif').html((typeof data === 'string' && data.indexOf('alert-warning') !== -1) ? data : "<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
     "</div>").show();

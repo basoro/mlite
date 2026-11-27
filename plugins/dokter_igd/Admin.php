@@ -110,6 +110,7 @@ class Admin extends AdminModule
 
     public function postSaveDetail()
     {
+      $kapasitas_kosong = [];
       if($_POST['kat'] == 'tindakan') {
         $jns_perawatan = $this->db('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         $this->db('rawat_jl_dr')->save([
@@ -248,6 +249,7 @@ class Admin extends AdminModule
                   $isi_kemasan = isset($kapasitas['kapasitas']) ? (float) $kapasitas['kapasitas'] : 0;
                   if ($isi_kemasan <= 0) {
                     $isi_kemasan = 1;
+                    $kapasitas_kosong[$kode_brng] = isset($kapasitas['nama_brng']) ? $kapasitas['nama_brng'] : $kode_brng;
                   }
                   $jml = round(($_POST['jml'] * $kandungan) / $isi_kemasan, 1);
                   $this->db('resep_dokter_racikan_detail')
@@ -297,6 +299,7 @@ class Admin extends AdminModule
                 $isi_kemasan = isset($kapasitas['kapasitas']) ? (float) $kapasitas['kapasitas'] : 0;
                 if ($isi_kemasan <= 0) {
                   $isi_kemasan = 1;
+                  $kapasitas_kosong[$kode_brng] = isset($kapasitas['nama_brng']) ? $kapasitas['nama_brng'] : $kode_brng;
                 }
                 $jml = round(($_POST['jml'] * $kandungan) / $isi_kemasan, 1);
                 $this->db('resep_dokter_racikan_detail')
@@ -324,6 +327,15 @@ class Admin extends AdminModule
             throw $e;
           }
         }
+      }
+
+      if (!empty($kapasitas_kosong)) {
+        $daftar_obat = implode(', ', array_map('htmlspecialchars', $kapasitas_kosong));
+        echo '<div class="alert alert-warning alert-dismissible fade in" role="alert" style="border-radius:0px;margin-top:-15px;">'
+          . '<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>'
+          . 'Resep tersimpan, tetapi kapasitas obat berikut masih 0/kosong: <strong>' . $daftar_obat . '</strong>. '
+          . 'Jumlah racikan dihitung dengan asumsi isi kemasan 1. Lengkapi kapasitasnya di master Data Barang.'
+          . '</div>';
       }
 
       if($_POST['kat'] == 'laboratorium') {
