@@ -333,19 +333,32 @@ class Admin extends AdminModule
                   ]);
                 $post_kode_brng = json_decode($_POST['kode_brng'], true);
                 $post_kandungan = json_decode($_POST['kandungan'], true);
+                $post_kode_brng = is_array($post_kode_brng) ? $post_kode_brng : [];
+                $post_kandungan = is_array($post_kandungan) ? $post_kandungan : [];
                 $kode_brng_count = count($post_kode_brng);
                 for ($i = 0; $i < $kode_brng_count; $i++) {
-                  $kapasitas = $this->db('databarang')->where('kode_brng', $post_kode_brng[$i]['value'])->oneArray();
-                  $jml = $_POST['jml']*$post_kandungan[$i]['value'];
-                  $jml = round(($jml/$kapasitas['kapasitas']),1);
+                  $kode_brng = isset($post_kode_brng[$i]['value']) ? $post_kode_brng[$i]['value'] : '';
+                  if ($kode_brng === '') {
+                    continue;
+                  }
+                  $kapasitas = $this->db('databarang')->where('kode_brng', $kode_brng)->oneArray();
+                  $kandungan = isset($post_kandungan[$i]['value']) && $post_kandungan[$i]['value'] !== '' ? (float) $post_kandungan[$i]['value'] : 0;
+                  // Master obat dengan kapasitas 0/kosong membuat pembagian gagal
+                  // (DivisionByZeroError pada PHP 8) sehingga resep racikan tidak
+                  // tersimpan. Anggap isi kemasan 1 bila datanya tidak valid.
+                  $isi_kemasan = isset($kapasitas['kapasitas']) ? (float) $kapasitas['kapasitas'] : 0;
+                  if ($isi_kemasan <= 0) {
+                    $isi_kemasan = 1;
+                  }
+                  $jml = round(($_POST['jml'] * $kandungan) / $isi_kemasan, 1);
                   $this->db('resep_dokter_racikan_detail')
                     ->save([
                       'no_resep' => $no_resep,
                       'no_racik' => $no_racik,
-                      'kode_brng' => $post_kode_brng[$i]['value'],
+                      'kode_brng' => $kode_brng,
                       'p1' => '1',
                       'p2' => '1',
-                      'kandungan' => $post_kandungan[$i]['value'],
+                      'kandungan' => $kandungan,
                       'jml' => $jml
                     ]);
                 }
@@ -369,19 +382,32 @@ class Admin extends AdminModule
                 ]);
               $post_kode_brng = json_decode($_POST['kode_brng'], true);
               $post_kandungan = json_decode($_POST['kandungan'], true);
+              $post_kode_brng = is_array($post_kode_brng) ? $post_kode_brng : [];
+              $post_kandungan = is_array($post_kandungan) ? $post_kandungan : [];
               $kode_brng_count = count($post_kode_brng);
               for ($i = 0; $i < $kode_brng_count; $i++) {
-                $kapasitas = $this->db('databarang')->where('kode_brng', $post_kode_brng[$i]['value'])->oneArray();
-                $jml = $_POST['jml']*$post_kandungan[$i]['value'];
-                $jml = round(($jml/$kapasitas['kapasitas']),1);
+                $kode_brng = isset($post_kode_brng[$i]['value']) ? $post_kode_brng[$i]['value'] : '';
+                if ($kode_brng === '') {
+                  continue;
+                }
+                $kapasitas = $this->db('databarang')->where('kode_brng', $kode_brng)->oneArray();
+                $kandungan = isset($post_kandungan[$i]['value']) && $post_kandungan[$i]['value'] !== '' ? (float) $post_kandungan[$i]['value'] : 0;
+                // Master obat dengan kapasitas 0/kosong membuat pembagian gagal
+                // (DivisionByZeroError pada PHP 8) sehingga resep racikan tidak
+                // tersimpan. Anggap isi kemasan 1 bila datanya tidak valid.
+                $isi_kemasan = isset($kapasitas['kapasitas']) ? (float) $kapasitas['kapasitas'] : 0;
+                if ($isi_kemasan <= 0) {
+                  $isi_kemasan = 1;
+                }
+                $jml = round(($_POST['jml'] * $kandungan) / $isi_kemasan, 1);
                 $this->db('resep_dokter_racikan_detail')
                   ->save([
                     'no_resep' => $no_resep,
                     'no_racik' => $no_racik,
-                    'kode_brng' => $post_kode_brng[$i]['value'],
+                    'kode_brng' => $kode_brng,
                     'p1' => '1',
                     'p2' => '1',
-                    'kandungan' => $post_kandungan[$i]['value'],
+                    'kandungan' => $kandungan,
                     'jml' => $jml
                   ]);
               }
