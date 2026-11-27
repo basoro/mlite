@@ -13,6 +13,7 @@
                     Riwayat tanda tangan tidak berubah.
                 </p>
                 <form method="get" action="{?=url([ADMIN, 'esignature', 'passphrase'])?}" class="form-inline" style="margin-bottom:12px;">
+                    <input type="hidden" name="t" value="{?=csrfToken()?}">
                     {if: !empty($lq)}
                     <input type="hidden" name="lq" value="{?=isset_or($lq)?}">
                     {/if}
@@ -26,7 +27,7 @@
                         </span>
                     </div>
                     {if: !empty($q)}
-                    <a href="{?=url([ADMIN, 'esignature', 'passphrase'])?}{if: !empty($lq)}?lq={?=urlencode($lq)?}{/if}" class="btn btn-sm btn-link">Hapus pencarian</a>
+                    <a href="{?=isset_or($clear_users_url)?}" class="btn btn-sm btn-link">Hapus pencarian</a>
                     <span class="text-muted"><small>Hasil untuk &ldquo;{?=isset_or($q)?}&rdquo;: {?=isset_or($total)?} pengguna</small></span>
                     {/if}
                 </form>
@@ -57,6 +58,7 @@
                                     </td>
                                     <td>
                                         <form method="post" action="{?=url([ADMIN, 'esignature', 'setuserpassphrase'])?}" class="form-inline" style="margin:0;" autocomplete="off">
+                                            <input type="hidden" name="_token" value="{?=csrfToken()?}">
                                             <input type="hidden" name="user_id" value="{?=isset_or($value.username)?}">
                                             <input type="hidden" name="q" value="{?=isset_or($q)?}">
                                             <input type="hidden" name="page" value="{?=isset_or($page)?}">
@@ -69,6 +71,7 @@
                                     <td class="text-center">
                                         {if: !empty($value.has_passphrase)}
                                         <form method="post" action="{?=url([ADMIN, 'esignature', 'resetpassphrase'])?}" style="margin:0;" onsubmit="return confirm('Reset passphrase pengguna ini?');">
+                                            <input type="hidden" name="_token" value="{?=csrfToken()?}">
                                             <input type="hidden" name="user_id" value="{?=isset_or($value.username)?}">
                                             <input type="hidden" name="q" value="{?=isset_or($q)?}">
                                             <input type="hidden" name="page" value="{?=isset_or($page)?}">
@@ -131,6 +134,7 @@
             </div>
             <div class="panel-body">
                 <form method="get" action="{?=url([ADMIN, 'esignature', 'passphrase'])?}" class="form-inline" style="margin-bottom:12px;">
+                    <input type="hidden" name="t" value="{?=csrfToken()?}">
                     {if: !empty($q)}
                     <input type="hidden" name="q" value="{?=isset_or($q)?}">
                     {/if}
@@ -144,7 +148,7 @@
                         </span>
                     </div>
                     {if: !empty($lq)}
-                    <a href="{?=url([ADMIN, 'esignature', 'passphrase'])?}{if: !empty($q)}?q={?=urlencode($q)?}{/if}" class="btn btn-sm btn-link">Hapus pencarian</a>
+                    <a href="{?=isset_or($clear_logs_url)?}" class="btn btn-sm btn-link">Hapus pencarian</a>
                     <span class="text-muted"><small>Hasil untuk &ldquo;{?=isset_or($lq)?}&rdquo;: {?=isset_or($log_total)?} aktivitas</small></span>
                     {/if}
                 </form>

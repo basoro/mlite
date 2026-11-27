@@ -549,8 +549,22 @@ class Admin extends AdminModule
                 $params[$key] = $num;
             }
         }
+        return $this->_passphrasePageUrl($params);
+    }
+
+    /**
+     * URL halaman passphrase + parameter tambahan. Token CSRF dari url()
+     * dipertahankan sebagai parameter tersendiri, sehingga parameter berikutnya
+     * disambung dengan '&' (bukan '?' kedua yang merusak nilai token).
+     */
+    private function _passphrasePageUrl(array $params = [])
+    {
         $url = url([ADMIN, 'esignature', 'passphrase']);
-        return empty($params) ? $url : $url . '?' . http_build_query($params);
+        if (empty($params)) {
+            return $url;
+        }
+        $separator = strpos($url, '?') === false ? '?' : '&';
+        return $url . $separator . http_build_query($params);
     }
 
     /**
@@ -563,7 +577,7 @@ class Admin extends AdminModule
             if ($p > 1) {
                 $params[$page_key] = $p;
             }
-            return url([ADMIN, 'esignature', 'passphrase']) . (empty($params) ? '' : '?' . http_build_query($params));
+            return $this->_passphrasePageUrl($params);
         };
 
         $links = [[
@@ -725,7 +739,9 @@ class Admin extends AdminModule
             'log_total' => $log_total,
             'log_first_no' => $log_total > 0 ? ($log_page - 1) * $log_per_page + 1 : 0,
             'log_last_no' => min($log_total, $log_page * $log_per_page),
-            'log_pages' => htmlspecialchars_array($log_pages)
+            'log_pages' => htmlspecialchars_array($log_pages),
+            'clear_users_url' => htmlspecialchars_array($this->_passphrasePageUrl($lq !== '' ? ['lq' => $lq] : [])),
+            'clear_logs_url' => htmlspecialchars_array($this->_passphrasePageUrl($q !== '' ? ['q' => $q] : []))
         ]);
     }
 
