@@ -86,15 +86,17 @@
                     }
 
                     // SEMUA dokumen yang dibuka lewat modal (e-Resep, faktur, surat,
-                    // vedika): tutup modal begitu tombol OK pada notif ditekan,
-                    // TANPA me-reload halaman induk. Halaman induk yang menyediakan
-                    // bukaHasilPdf() (mis. vedika/pdf) juga membuka hasil PDF-nya.
+                    // vedika): tutup modal begitu tombol OK pada notif ditekan, lalu
+                    // segarkan halaman induk agar status TTD langsung terbarui.
+                    // Halaman induk yang menyediakan bukaHasilPdf() (mis. vedika/pdf)
+                    // juga membuka hasil PDF-nya.
                     if(diIframe) {
                         if(window.parent && typeof window.parent.bukaHasilPdf === 'function') {
                             window.parent.bukaHasilPdf(pdfUrl);
                         } else if(window.parent && typeof window.parent.tutupSignModal === 'function') {
                             window.parent.tutupSignModal();
                         }
+                        window.parent.location.reload();
                     } else if(window.opener) {
                         window.opener.location.reload();
                         window.close();
